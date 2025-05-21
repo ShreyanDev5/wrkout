@@ -227,7 +227,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
     },
   }
 
-  // Simplified JSX to avoid syntax errors
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
@@ -299,7 +298,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                               : "hover:scale-110"
                           } ${color.value}`}
                           title={`${color.name.charAt(0).toUpperCase() + color.name.slice(1)} theme`}
-                        />
+                        ></button>
                       ))}
                     </div>
                   </div>
@@ -331,7 +330,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                   dangerouslySetInnerHTML={{ __html: editContent }}
                   onInput={(e) => setEditContent(e.currentTarget.innerHTML)}
                   onBlur={(e) => setEditContent(e.currentTarget.innerHTML)}
-                />
+                ></div>
 
                 <div className="flex justify-end mt-3 gap-2">
                   <Button
@@ -412,7 +411,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                       className="prose prose-sm max-w-none overflow-auto"
                       style={{ color: getNoteTextColorClass(note.color).replace("text-", "") }}
                       dangerouslySetInnerHTML={{ __html: note.content }}
-                    />
+                    ></div>
                   </CardContent>
                 </Card>
               </motion.div>
