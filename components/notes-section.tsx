@@ -227,9 +227,9 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
     },
   }
 
+  // Simplified JSX to avoid syntax errors
   return (
     <div className="space-y-6">
-      {/* Add Note Button */}
       <div className="flex justify-end">
         <Button
           onClick={handleAddNote}
@@ -241,15 +241,12 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
         </Button>
       </div>
 
-      {/* Editor */}
       <AnimatePresence>
         {editingNoteId && editorMounted && (
           <motion.div initial="hidden" animate="visible" exit="hidden" variants={editorVariants}>
             <Card className="mb-6 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
               <CardContent className="p-4">
-                {/* Editor Toolbar */}
                 <div className="flex flex-wrap items-center gap-2 mb-3 bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg">
-                  {/* Format buttons */}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -289,7 +286,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
 
                   <div className="h-5 w-px bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
 
-                  {/* Color selector */}
                   <div className="flex items-center gap-1">
                     <Palette className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 mr-1" />
                     <div className="flex gap-1">
@@ -308,7 +304,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                     </div>
                   </div>
 
-                  {/* Emoji shortcuts */}
                   <div className="ml-auto flex flex-wrap gap-1">
                     {["💪", "🏋️", "🏃", "✅", "⚠️", "🔥"].map((emoji) => (
                       <Button
@@ -325,19 +320,19 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                   </div>
                 </div>
 
-                {/* Editor area */}
                 <div
                   ref={editorRef}
-                  className={`min-h-[180px] border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-[#34A853] ${getNoteColorClass(
-                    selectedColor,
-                  )} ${getNoteTextColorClass(selectedColor)} overflow-auto`}
+                  className="min-h-[180px] border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-[#34A853]"
+                  style={{
+                    backgroundColor: getNoteColorClass(selectedColor).replace("bg-", ""),
+                    color: getNoteTextColorClass(selectedColor).replace("text-", ""),
+                  }}
                   contentEditable
                   dangerouslySetInnerHTML={{ __html: editContent }}
                   onInput={(e) => setEditContent(e.currentTarget.innerHTML)}
                   onBlur={(e) => setEditContent(e.currentTarget.innerHTML)}
                 />
 
-                {/* Action buttons */}
                 <div className="flex justify-end mt-3 gap-2">
                   <Button
                     variant="outline"
@@ -363,16 +358,14 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
         )}
       </AnimatePresence>
 
-      {/* Notes list */}
       <ScrollArea className="h-[calc(100vh-280px)] sm:h-[500px] pr-4">
         <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
           {filteredNotes.length > 0 ? (
             filteredNotes.map((note) => (
               <motion.div key={note.id} variants={itemVariants}>
                 <Card
-                  className={`border border-zinc-200 dark:border-zinc-800 ${getNoteColorClass(
-                    note.color,
-                  )} hover:shadow-md transition-all duration-300 shadow-sm relative overflow-hidden`}
+                  className="border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition-all duration-300 shadow-sm relative overflow-hidden"
+                  style={{ backgroundColor: getNoteColorClass(note.color).replace("bg-", "") }}
                 >
                   <CardContent className="p-4 relative">
                     <div className="flex justify-between items-start mb-3">
@@ -380,7 +373,10 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                         <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 dark:bg-black/20">
                           <Clock className="h-3.5 w-3.5" />
                         </div>
-                        <span className={`text-sm ${getNoteTextColorClass(note.color)}`}>
+                        <span
+                          className="text-sm"
+                          style={{ color: getNoteTextColorClass(note.color).replace("text-", "") }}
+                        >
                           {formatDate(note.updatedAt)}
                         </span>
 
@@ -413,9 +409,8 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                       </div>
                     </div>
                     <div
-                      className={`prose prose-sm max-w-none prose-headings:text-inherit prose-p:text-inherit prose-a:text-blue-400 prose-strong:text-inherit prose-em:text-inherit/80 overflow-auto ${getNoteTextColorClass(
-                        note.color,
-                      )}`}
+                      className="prose prose-sm max-w-none overflow-auto"
+                      style={{ color: getNoteTextColorClass(note.color).replace("text-", "") }}
                       dangerouslySetInnerHTML={{ __html: note.content }}
                     />
                   </CardContent>

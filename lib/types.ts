@@ -35,6 +35,8 @@ export interface WorkoutNote {
   content: string
   createdAt: string
   updatedAt: string
+  color?: string
+  category?: string
 }
 
 export interface AppData {
