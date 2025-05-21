@@ -1,0 +1,107 @@
+import type { Workout } from "./types"
+
+export const workoutData: Workout[] = [
+  {
+    id: "workout-i",
+    name: "Workout I",
+    days: [
+      {
+        id: "push",
+        name: "PUSH",
+        exercises: [
+          { id: "dead-hang", name: "Dead Hang" },
+          { id: "dumbbell-bench-press", name: "Dumbbell Bench Press" },
+          { id: "deficit-pushups", name: "Deficit Pushups" },
+          { id: "cable-fly", name: "Cable Fly (High→Low)" },
+          { id: "peck-deck-fly", name: "Peck Deck Fly" },
+          { id: "dumbbell-overhead-press", name: "Dumbbell Overhead Press" },
+          { id: "dumbbell-lateral-raise", name: "Dumbbell Lateral Raise" },
+          { id: "triceps-pushdown", name: "Triceps Pushdown (Bar)" },
+          { id: "overhead-triceps-extension", name: "Overhead Triceps Extension (V-Bar)" },
+          { id: "sprints", name: "Sprints" },
+        ],
+      },
+      {
+        id: "pull",
+        name: "PULL",
+        exercises: [
+          { id: "pull-ups", name: "Pull-ups" },
+          { id: "lat-pulldown", name: "Lat Pulldown" },
+          { id: "seated-cable-row", name: "Seated Cable Row" },
+          { id: "dumbbell-row", name: "Single-Arm Dumbbell Row" },
+          { id: "face-pull", name: "Face Pull" },
+          { id: "barbell-curl", name: "Barbell Curl" },
+          { id: "hammer-curl", name: "Hammer Curl" },
+          { id: "reverse-curl", name: "Reverse Curl" },
+          { id: "hanging-leg-raise", name: "Hanging Leg Raise" },
+        ],
+      },
+      {
+        id: "leg",
+        name: "LEG",
+        exercises: [
+          { id: "squat", name: "Barbell Squat" },
+          { id: "leg-press", name: "Leg Press" },
+          { id: "romanian-deadlift", name: "Romanian Deadlift" },
+          { id: "leg-extension", name: "Leg Extension" },
+          { id: "leg-curl", name: "Leg Curl" },
+          { id: "calf-raise", name: "Standing Calf Raise" },
+          { id: "seated-calf-raise", name: "Seated Calf Raise" },
+          { id: "hip-thrust", name: "Hip Thrust" },
+          { id: "plank", name: "Plank" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "workout-ii",
+    name: "Workout II",
+    days: [
+      {
+        id: "push",
+        name: "PUSH",
+        exercises: [
+          { id: "bench-press", name: "Barbell Bench Press" },
+          { id: "incline-dumbbell-press", name: "Incline Dumbbell Press" },
+          { id: "chest-dips", name: "Chest Dips" },
+          { id: "cable-crossover", name: "Cable Crossover" },
+          { id: "military-press", name: "Military Press" },
+          { id: "arnold-press", name: "Arnold Press" },
+          { id: "cable-lateral-raise", name: "Cable Lateral Raise" },
+          { id: "skull-crusher", name: "Skull Crusher" },
+          { id: "rope-pushdown", name: "Rope Pushdown" },
+        ],
+      },
+      {
+        id: "pull",
+        name: "PULL",
+        exercises: [
+          { id: "deadlift", name: "Deadlift" },
+          { id: "barbell-row", name: "Barbell Row" },
+          { id: "chin-ups", name: "Chin-ups" },
+          { id: "t-bar-row", name: "T-Bar Row" },
+          { id: "straight-arm-pulldown", name: "Straight Arm Pulldown" },
+          { id: "shrugs", name: "Barbell Shrugs" },
+          { id: "preacher-curl", name: "Preacher Curl" },
+          { id: "concentration-curl", name: "Concentration Curl" },
+          { id: "cable-curl", name: "Cable Curl" },
+        ],
+      },
+      {
+        id: "leg",
+        name: "LEG",
+        exercises: [
+          { id: "front-squat", name: "Front Squat" },
+          { id: "hack-squat", name: "Hack Squat" },
+          { id: "bulgarian-split-squat", name: "Bulgarian Split Squat" },
+          { id: "sumo-deadlift", name: "Sumo Deadlift" },
+          { id: "good-morning", name: "Good Morning" },
+          { id: "glute-bridge", name: "Glute Bridge" },
+          { id: "walking-lunges", name: "Walking Lunges" },
+          { id: "seated-calf-raise-2", name: "Seated Calf Raise" },
+          { id: "donkey-calf-raise", name: "Donkey Calf Raise" },
+        ],
+      },
+    ],
+  },
+]

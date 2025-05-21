@@ -1,0 +1,1453 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.5rem;
+
+    /* Workout day colors - Light Mode */
+    --push-light: 50 100% 50%; /* Bright Yellow */
+    --push-dark: 45 100% 50%; /* Soft Gold */
+    --push-color: #f9d949; /* Yellow for progress rings */
+
+    --pull-light: 142 72% 50%; /* Bright Green */
+    --pull-dark: 142 50% 45%; /* Darker Green */
+    --pull-color: #4caf50; /* Green for progress rings */
+
+    --leg-light: 0 74% 58%; /* Bright Red (replacing purple) */
+    --leg-dark: 0 65% 52%; /* Darker Red (replacing purple) */
+    --leg-color: #f44336; /* Red for progress rings */
+
+    /* Track color for progress rings */
+    --track-color: #e5e7eb;
+
+    /* Accent colors */
+    --emerald: 160 84% 39%;
+    --emerald-foreground: 0 0% 100%;
+
+    --purple: 270 76% 66%;
+    --purple-foreground: 0 0% 100%;
+
+    --deep-blue: 217 91% 60%;
+    --deep-blue-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 0 0% 9.4%; /* #181818 */
+    --foreground: 0 0% 90%; /* Soft white for primary text */
+
+    --card: 0 0% 9.4%; /* #181818 for cards */
+    --card-foreground: 0 0% 90%; /* Soft white for card text */
+
+    --popover: 0 0% 11%; /* Slightly lighter than background for popovers */
+    --popover-foreground: 0 0% 90%; /* Soft white for popover text */
+
+    --primary: 0 0% 90%; /* Soft white for primary elements */
+    --primary-foreground: 0 0% 9.4%; /* #181818 for text on primary elements */
+
+    --secondary: 0 0% 13%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 90%; /* Soft white for text on secondary elements */
+
+    --muted: 0 0% 13%; /* Dark gray for muted elements */
+    --muted-foreground: 0 0% 67%; /* Muted gray (#AAAAAA) for secondary text */
+
+    --accent: 0 0% 13%; /* Dark gray for accent elements */
+    --accent-foreground: 0 0% 90%; /* Soft white for text on accent elements */
+
+    --destructive: 0 62.8% 30.6%; /* Keep destructive color similar */
+    --destructive-foreground: 0 0% 90%; /* Soft white for text on destructive elements */
+
+    --border: 0 0% 15%; /* Dark gray for borders */
+    --input: 0 0% 15%; /* Dark gray for input borders */
+    --ring: 0 0% 25%; /* Medium gray for focus rings */
+
+    /* Tab navigation colors */
+    --tab-inactive: 0 0% 60%;
+    --tab-active-bg: 0 0% 11%;
+    --tab-hover-bg: 0 0% 15%;
+
+    /* Progress ring colors for dark mode */
+    --track-color: #333333;
+    --push-color: #f9d949; /* Keep yellow for dark mode */
+    --pull-color: #4caf50; /* Keep green for dark mode */
+    --leg-color: #f44336; /* Keep red for dark mode */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Accessibility improvements */
+.min-touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.focus-visible-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
+
+.line-height-readable {
+  line-height: 1.6;
+}
+
+/* Additional dark mode utilities */
+.dark .notion-like {
+  --shadow-opacity: 0.1;
+  --border-opacity: 0.1;
+}
+
+.dark .flat-button {
+  border: none;
+  box-shadow: none;
+}
+
+.dark .outlined-icon {
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* Modern tab and icon styles */
+.modern-icon {
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Enhanced tab navigation styles */
+.tab-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 4px;
+}
+
+.dark .tab-inactive {
+  color: hsl(var(--tab-inactive));
+  opacity: 0.7;
+}
+
+.dark .tab-inactive:hover {
+  opacity: 0.9;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .tab-active {
+  color: hsl(var(--foreground));
+}
+
+.dark .tab-hover:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Enhanced tab icon animations */
+.tab-icon-inactive:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.tab-icon-active {
+  animation: gentle-pulse 3s infinite;
+}
+
+@keyframes gentle-pulse {
+  0% {
+    filter: drop-shadow(0 0 2px var(--tab-color));
+  }
+  50% {
+    filter: drop-shadow(0 0 4px var(--tab-color));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px var(--tab-color));
+  }
+}
+
+/* Workout tab button styles */
+.workout-tabs-container {
+  border-radius: 20px;
+  padding: 4px;
+  background-color: rgba(255, 255, 255, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.workout-tab-button {
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  height: 48px;
+}
+
+.workout-tab-button:hover {
+  transform: translateY(-1px);
+}
+
+.workout-tab-button:active {
+  transform: translateY(1px);
+}
+
+.workout-tab-button[data-state="active"] {
+  font-weight: 600;
+}
+
+/* Remove the underline from active buttons */
+.workout-tab-button[data-state="active"]::after {
+  display: none;
+}
+
+/* Icon animation */
+.workout-tab-button:hover .modern-icon {
+  transform: translateY(-2px);
+}
+
+.workout-tab-button[data-state="active"] .modern-icon {
+  animation: icon-pulse 2s infinite;
+}
+
+@keyframes icon-pulse {
+  0% {
+    filter: drop-shadow(0 0 1px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 3px currentColor);
+  }
+  100% {
+    filter: drop-shadow(0 0 1px currentColor);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 360px) {
+  .workout-tab-button {
+    padding: 0 8px;
+    height: 44px;
+  }
+
+  .workout-tab-button .modern-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Button animations */
+.button-hover-effect {
+  transition: all 0.2s ease;
+}
+
+.button-hover-effect:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.button-hover-effect:active {
+  transform: translateY(0);
+  filter: brightness(0.9);
+}
+
+/* Enhanced Push/Pull/Leg button styles */
+.push-button:hover,
+.push-button:active {
+  background-color: rgba(249, 217, 73, 0.15);
+  color: #f9d949;
+  transform: translateY(-1px);
+}
+
+.pull-button:hover,
+.pull-button:active {
+  background-color: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+  transform: translateY(-1px);
+}
+
+.leg-button:hover,
+.leg-button:active {
+  background-color: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+  transform: translateY(-1px);
+}
+
+.modern-button {
+  @apply rounded-md transition-all duration-200 flex items-center justify-center gap-2;
+}
+
+.dark .modern-button {
+  @apply border-0 shadow-none bg-opacity-30 hover:bg-opacity-50;
+}
+
+.dark .modern-button-ghost {
+  @apply bg-transparent hover:bg-secondary;
+}
+
+.dark .modern-button-outline {
+  @apply border border-border border-opacity-20 bg-transparent hover:bg-secondary;
+}
+
+.dark .modern-button-primary {
+  @apply bg-primary bg-opacity-90 text-primary-foreground hover:bg-opacity-100;
+}
+
+.dark .modern-button-secondary {
+  @apply bg-secondary bg-opacity-70 text-secondary-foreground hover:bg-opacity-90;
+}
+
+.dark .modern-button-destructive {
+  @apply bg-destructive bg-opacity-90 text-destructive-foreground hover:bg-opacity-100;
+}
+
+.dark .modern-tabs-list {
+  @apply bg-transparent border-0 p-0;
+}
+
+.dark .modern-tab-trigger {
+  @apply rounded-md transition-all duration-200 data-[state=active]:bg-secondary data-[state=active]:bg-opacity-30;
+}
+
+/* Checkbox animations */
+@keyframes checkbox-pop {
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-checkbox-subtle {
+  animation: checkbox-pop 0.2s ease-out;
+}
+
+/* Exercise card styles */
+.exercise-card {
+  @apply transition-all duration-200;
+}
+
+.exercise-card:hover {
+  @apply bg-muted/10;
+}
+
+/* Minimalist exercise item styles */
+.exercise-item {
+  @apply flex items-start space-x-3 p-3 rounded-lg transition-colors;
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+
+.exercise-item-unchecked {
+  @apply border-transparent;
+}
+
+.exercise-item-checked {
+  @apply bg-muted/30;
+}
+
+.exercise-label {
+  @apply font-medium line-height-readable transition-all duration-200;
+}
+
+.exercise-label-checked {
+  @apply line-through text-muted-foreground;
+}
+
+.exercise-description {
+  @apply text-sm text-muted-foreground line-height-readable;
+}
+
+.exercise-log-button {
+  @apply ml-auto;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* New minimalistic exercise item styles */
+.exercise-item-minimal {
+  @apply flex items-center space-x-3 py-2 px-3 rounded-md transition-colors;
+  border-left-width: 2px;
+  border-left-style: solid;
+}
+
+.exercise-label-minimal {
+  @apply font-medium text-sm transition-all duration-200;
+}
+
+.exercise-description-minimal {
+  @apply text-xs text-muted-foreground;
+}
+
+.exercise-log-button-minimal {
+  @apply ml-auto h-7 px-2;
+  min-height: 28px;
+}
+
+/* Force dark mode */
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background-color: #181818;
+}
+
+body {
+  background-color: #181818;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Visual feedback for sliders and controls */
+.slider-active .SliderThumb {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--track-active-color, hsl(var(--accent)));
+  transition: all 0.15s ease;
+}
+
+.slider-active .SliderTrack {
+  opacity: 0.9;
+  transition: all 0.15s ease;
+}
+
+@keyframes pulse-subtle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.control-pulse {
+  animation: pulse-subtle 0.15s ease-in-out;
+}
+
+/* Workout header container styles */
+.workout-header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  position: relative;
+}
+
+.workout-select {
+  transition: width 0.2s ease-out;
+}
+
+.reset-button {
+  flex-shrink: 0;
+}
+
+/* Ensure proper spacing on very small screens */
+@media (max-width: 360px) {
+  .workout-header-container {
+    gap: 4px;
+  }
+}
+
+/* Smooth transition for the reset button */
+.reset-button.opacity-0 {
+  width: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.reset-button.opacity-100 {
+  width: auto;
+}
+
+/* Ensure the select component transitions smoothly */
+.workout-select.w-full .select-trigger {
+  width: 100%;
+}
+
+.workout-select.flex-1 {
+  min-width: 0;
+}
+
+/* Add these styles for the empty workout state */
+.workout-icon-container.push-icon-large {
+  background-color: rgba(249, 217, 73, 0.15);
+  box-shadow: 0 0 20px rgba(249, 217, 73, 0.1);
+}
+
+.workout-icon-container.pull-icon-large {
+  background-color: rgba(76, 175, 80, 0.15);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.1);
+}
+
+.workout-icon-container.leg-icon-large {
+  background-color: rgba(244, 67, 54, 0.15);
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.1);
+}
+
+/* Hide scrollbars but keep functionality */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Apple Fitness-inspired styles */
+.fitness-gradient-bg {
+  background: linear-gradient(135deg, rgba(249, 217, 73, 0.1), rgba(76, 175, 80, 0.1), rgba(244, 67, 54, 0.1));
+}
+
+.fitness-card {
+  backdrop-filter: blur(10px);
+  background-color: rgba(30, 30, 30, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fitness-text-gradient {
+  background: linear-gradient(90deg, #f9d949, #4caf50, #f44336);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ensure sticky columns work properly */
+.sticky {
+  position: sticky;
+  z-index: 10;
+}
+
+/* Ensure proper alignment in table cells */
+.table-cell-align {
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Enhance table borders for better visual separation */
+.table-border-enhanced th,
+.table-border-enhanced td {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure proper spacing in table headers */
+.compact-table-header th {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Enhanced sticky positioning for table headers and cells */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: hsl(var(--background));
+}
+
+.sticky-column {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: hsl(var(--background));
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure proper table cell alignment */
+.table-cell-center {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Ensure proper table borders */
+.table-border-enhanced {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-border-enhanced th,
+.table-border-enhanced td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure proper table header styling */
+.table-header-enhanced th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.75rem 1rem;
+}
+
+/* Ensure proper table row styling */
+.table-row-enhanced:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Ensure proper table cell styling */
+.table-cell-enhanced {
+  padding: 0.75rem 1rem;
+  transition: background-color 0.2s ease;
+}
+
+/* iOS-inspired chart styles */
+.ios-chart-container {
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dark .ios-chart-container {
+  background-color: #1c1c1e;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.ios-chart-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ios-chart-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #000;
+}
+
+.dark .ios-chart-title {
+  color: #fff;
+}
+
+.ios-chart-subtitle {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-top: 2px;
+}
+
+/* Enhanced dot styles */
+.chart-dot {
+  transition: all 0.2s ease;
+}
+
+.chart-dot-active {
+  filter: drop-shadow(0 0 4px var(--dot-color));
+}
+
+.chart-dot-highlight {
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% {
+    filter: drop-shadow(0 0 2px var(--dot-color));
+  }
+  100% {
+    filter: drop-shadow(0 0 6px var(--dot-color));
+  }
+}
+
+/* Smooth line animation */
+.recharts-curve.recharts-line-curve {
+  transition: stroke-dashoffset 1s ease;
+}
+
+/* Tooltip enhancements */
+.ios-chart-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  font-size: 13px;
+}
+
+.dark .ios-chart-tooltip {
+  background-color: rgba(30, 30, 30, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ios-chart-tooltip-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ios-chart-tooltip-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ios-chart-tooltip-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Grid line styling */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+/* Axis styling */
+.recharts-cartesian-axis-line {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+.dark .recharts-cartesian-axis-line {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.recharts-cartesian-axis-tick-line {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+.dark .recharts-cartesian-axis-tick-line {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.recharts-text.recharts-cartesian-axis-tick-value {
+  fill: #8e8e93;
+  font-size: 11px;
+}
+
+/* Area gradient enhancement */
+.recharts-area-area {
+  opacity: 0.8;
+}
+
+/* Premium chart container */
+.premium-chart-container {
+  --chart-bg-from: #2a2a2c;
+  --chart-bg-to: #1c1c1e;
+  --chart-border: rgba(255, 255, 255, 0.1);
+  --chart-shadow: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Premium tooltip styling */
+.premium-tooltip {
+  background-color: rgba(28, 28, 30, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 0.75rem 1rem;
+}
+
+/* Enhanced data point styling */
+.data-point {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.data-point-highlight {
+  filter: drop-shadow(0 0 6px var(--point-color));
+  transform: scale(1.2);
+}
+
+/* Smooth line styling */
+.smooth-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Gradient background for chart */
+.chart-gradient-bg {
+  background: linear-gradient(to bottom, var(--chart-bg-from), var(--chart-bg-to));
+}
+
+/* Soft inner shadow for premium look */
+.chart-inner-shadow {
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Improved chart axis styling */
+.chart-axis {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Improved grid line styling */
+.chart-grid {
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-opacity: 0.3;
+}
+
+/* Enhanced reference line styling */
+.chart-reference-line {
+  stroke-dasharray: 3 3;
+  stroke-opacity: 0.6;
+}
+
+/* Improved chart label styling */
+.chart-label {
+  font-size: 10px;
+  font-weight: 600;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Percentage change indicator styling */
+.percentage-change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.percentage-change-positive {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: rgb(74, 222, 128);
+}
+
+.percentage-change-negative {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: rgb(248, 113, 113);
+}
+
+/* Chart timeframe selector styling */
+.timeframe-selector {
+  height: 2.25rem;
+  padding: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timeframe-button {
+  font-size: 0.75rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+}
+
+.timeframe-button-active {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* New artistic styles for Notes and Settings */
+
+/* Vibrant gradient backgrounds */
+.artistic-gradient-bg {
+  background: linear-gradient(135deg, #1e1e24, #2d2d3a);
+}
+
+.artistic-card {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.artistic-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Colorful section headers */
+.section-header-push {
+  background: linear-gradient(90deg, rgba(249, 217, 73, 0.2), transparent);
+  border-left: 4px solid #f9d949;
+}
+
+.section-header-pull {
+  background: linear-gradient(90deg, rgba(76, 175, 80, 0.2), transparent);
+  border-left: 4px solid #4caf50;
+}
+
+.section-header-leg {
+  background: linear-gradient(90deg, rgba(244, 67, 54, 0.2), transparent);
+  border-left: 4px solid #f44336;
+}
+
+/* Artistic buttons */
+.artistic-button {
+  background: linear-gradient(135deg, rgba(60, 60, 70, 0.8), rgba(40, 40, 50, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.artistic-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(70, 70, 80, 0.8), rgba(50, 50, 60, 0.8));
+}
+
+.artistic-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Glowing accents */
+.glow-accent-push {
+  box-shadow: 0 0 15px rgba(249, 217, 73, 0.3);
+}
+
+.glow-accent-pull {
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.glow-accent-leg {
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
+}
+
+/* Artistic note cards */
+.note-card {
+  background: linear-gradient(135deg, rgba(45, 45, 55, 0.8), rgba(35, 35, 45, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.note-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.note-card-header {
+  background: linear-gradient(90deg, rgba(60, 60, 70, 0.8), rgba(40, 40, 50, 0.8));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+}
+
+.note-card-content {
+  padding: 16px;
+}
+
+/* Artistic editor */
+.artistic-editor {
+  background: linear-gradient(135deg, rgba(35, 35, 45, 0.8), rgba(25, 25, 35, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  min-height: 200px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.artistic-editor:focus {
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+/* Artistic toolbar */
+.editor-toolbar {
+  background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.toolbar-button {
+  background: rgba(60, 60, 70, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.toolbar-button:hover {
+  background: rgba(70, 70, 80, 0.7);
+  transform: translateY(-1px);
+}
+
+.toolbar-button:active {
+  transform: translateY(1px);
+}
+
+/* Artistic settings panels */
+.settings-panel {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.settings-panel-header {
+  background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-panel-content {
+  padding: 16px;
+}
+
+/* Artistic form elements */
+.artistic-input {
+  background: rgba(30, 30, 40, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.artistic-input:focus {
+  background: rgba(35, 35, 45, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.artistic-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Artistic dialog */
+.artistic-dialog {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.95), rgba(30, 30, 40, 0.95));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.artistic-dialog-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.artistic-dialog-content {
+  padding: 24px;
+}
+
+.artistic-dialog-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Artistic scrollbar */
+.artistic-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.artistic-scrollbar::-webkit-scrollbar-track {
+  background: rgba(30, 30, 40, 0.3);
+  border-radius: 10px;
+}
+
+.artistic-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(80, 80, 100, 0.5);
+  border-radius: 10px;
+}
+
+.artistic-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 120, 0.7);
+}
+
+/* Artistic animations */
+@keyframes gentle-float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes soft-pulse {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 2s ease-in-out infinite;
+}
+
+/* Artistic empty states */
+.artistic-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  opacity: 0.2;
+}
+
+.empty-state-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+/* Artistic dividers */
+.artistic-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 20px 0;
+}
+
+.artistic-divider-vertical {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Artistic badges */
+.artistic-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-push {
+  background: rgba(249, 217, 73, 0.2);
+  color: #f9d949;
+}
+
+.badge-pull {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.badge-leg {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+/* Artistic tooltips */
+.artistic-tooltip {
+  background: rgba(40, 40, 50, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Artistic search */
+.artistic-search {
+  position: relative;
+}
+
+.artistic-search-input {
+  background: rgba(30, 30, 40, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 10px 16px 10px 40px;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.artistic-search-input:focus {
+  background: rgba(35, 35, 45, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.artistic-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+/* Artistic toggle */
+.artistic-toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: rgba(40, 40, 50, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.artistic-toggle[data-state="checked"] {
+  background: rgba(76, 175, 80, 0.3);
+}
+
+.artistic-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.artistic-toggle[data-state="checked"] .artistic-toggle-thumb {
+  left: 27px;
+  background: #4caf50;
+}
+
+/* Artistic tabs */
+.artistic-tabs {
+  display: flex;
+  background: rgba(30, 30, 40, 0.5);
+  border-radius: 16px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.artistic-tab {
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.artistic-tab[data-state="active"] {
+  background: rgba(50, 50, 60, 0.8);
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Artistic note editor */
+.note-editor-container {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.note-editor-toolbar {
+  background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.note-editor-content {
+  background: rgba(35, 35, 45, 0.5);
+  min-height: 200px;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.note-editor-footer {
+  background: linear-gradient(90deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Artistic settings panels */
+.settings-accordion {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.settings-accordion:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.settings-accordion-header {
+  background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-accordion-content {
+  padding: 16px;
+}
+
+/* Artistic workout day cards */
+.workout-day-card {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.7), rgba(30, 30, 40, 0.7));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.workout-day-card-push {
+  border-left: 3px solid #f9d949;
+}
+
+.workout-day-card-pull {
+  border-left: 3px solid #4caf50;
+}
+
+.workout-day-card-leg {
+  border-left: 3px solid #f44336;
+}
+
+.workout-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.workout-day-header {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.workout-day-content {
+  padding: 0 16px 16px;
+}
+
+/* Artistic exercise items */
+.exercise-item-artistic {
+  background: rgba(35, 35, 45, 0.5);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.exercise-item-artistic:hover {
+  background: rgba(40, 40, 50, 0.7);
+}
+
+/* Artistic empty state */
+.empty-state-artistic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-state-icon-artistic {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.2;
+}
+
+.empty-state-text-artistic {
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 300px;
+  line-height: 1.6;
+}

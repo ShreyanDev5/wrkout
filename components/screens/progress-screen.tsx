@@ -1,0 +1,229 @@
+"use client"
+
+import { useState, useEffect, useMemo } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { ModernProgressChart } from "@/components/modern-progress-chart"
+import { MonthlySummaryTable } from "@/components/monthly-summary-table"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import type { WorkoutSession } from "@/lib/types"
+import { getWorkoutDayColor } from "@/lib/utils"
+import { useTheme } from "@/components/theme-context"
+import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
+import { motion } from "framer-motion"
+
+interface ProgressScreenProps {
+  sessions: WorkoutSession[]
+}
+
+export function ProgressScreen({ sessions }: ProgressScreenProps) {
+  const { colorMode } = useTheme()
+  const [mainFilter, setMainFilter] = useState<string | null>(null)
+  const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
+
+  // Reset secondary filters when main filter changes
+  useEffect(() => {
+    setChartExerciseFilter(null)
+  }, [mainFilter])
+
+  // Filter exercises that have both rep and weight data
+  const exercisesWithCompleteData = useMemo(() => {
+    if (!sessions || sessions.length === 0) return []
+
+    // Group sessions by exercise ID
+    const exerciseGroups: Record<string, WorkoutSession[]> = {}
+
+    sessions.forEach((session) => {
+      if (!exerciseGroups[session.exerciseId]) {
+        exerciseGroups[session.exerciseId] = []
+      }
+      exerciseGroups[session.exerciseId].push(session)
+    })
+
+    // Filter exercises that have both rep and weight data
+    return Object.entries(exerciseGroups)
+      .filter(([_, exerciseSessions]) => {
+        return exerciseSessions.some((session) => session.weight > 0 && session.reps > 0)
+      })
+      .map(([exerciseId, exerciseSessions]) => {
+        if (!exerciseSessions || exerciseSessions.length === 0) {
+          return {
+            id: exerciseId,
+            name: "Unknown Exercise",
+            dayId: "push", // Default value
+          }
+        }
+        return {
+          id: exerciseId,
+          name: exerciseSessions[0]?.exerciseName || "Unknown Exercise",
+          dayId: exerciseSessions[0]?.dayId || "push",
+        }
+      })
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+  }, [sessions])
+
+  // Filter exercises by main filter for chart
+  const filteredExercisesForChart = useMemo(() => {
+    if (!mainFilter) return exercisesWithCompleteData
+    return exercisesWithCompleteData.filter((exercise) => exercise.dayId === mainFilter)
+  }, [exercisesWithCompleteData, mainFilter])
+
+  // Get icon for workout type
+  const getWorkoutIcon = (type: string) => {
+    switch (type) {
+      case "push":
+        return <ArrowUp className="h-4 w-4" />
+      case "pull":
+        return <ArrowDown className="h-4 w-4" />
+      case "leg":
+        return <Footprints className="h-4 w-4" />
+      default:
+        return <BarChart3 className="h-4 w-4" />
+    }
+  }
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  }
+
+  return (
+    <Card className="border-0 shadow-none dark:bg-background">
+      <CardContent className="px-0 pt-0">
+        <motion.div className="space-y-12" initial="hidden" animate="visible" variants={containerVariants}>
+          {/* Unified Filter System */}
+          <motion.div className="mb-8" variants={itemVariants}>
+            <Tabs
+              value={mainFilter || "all"}
+              onValueChange={(value) => setMainFilter(value === "all" ? null : value)}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30">
+                <TabsTrigger
+                  value="all"
+                  className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center gap-2 py-2"
+                >
+                  {getWorkoutIcon("all")}
+                  <span>All</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="push"
+                  className="rounded-full data-[state=active]:text-push-dark flex items-center gap-2 py-2"
+                  style={{
+                    backgroundColor:
+                      mainFilter === "push"
+                        ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
+                        : undefined,
+                  }}
+                >
+                  {getWorkoutIcon("push")}
+                  <span>Push</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="pull"
+                  className="rounded-full data-[state=active]:text-pull-dark flex items-center gap-2 py-2"
+                  style={{
+                    backgroundColor:
+                      mainFilter === "pull"
+                        ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
+                        : undefined,
+                  }}
+                >
+                  {getWorkoutIcon("pull")}
+                  <span>Pull</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="leg"
+                  className="rounded-full data-[state=active]:text-leg-dark flex items-center gap-2 py-2"
+                  style={{
+                    backgroundColor:
+                      mainFilter === "leg"
+                        ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
+                        : undefined,
+                  }}
+                >
+                  {getWorkoutIcon("leg")}
+                  <span>Legs</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </motion.div>
+
+          {/* Monthly Summary Table - Now first */}
+          <motion.div className="space-y-4" variants={itemVariants}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
+                Monthly Summary
+              </h3>
+            </div>
+
+            <MonthlySummaryTable sessions={sessions} mainFilter={mainFilter} />
+          </motion.div>
+
+          {/* Progress Chart - Now second */}
+          <motion.div className="space-y-4 mt-14" variants={itemVariants}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
+                Progress Chart
+              </h3>
+
+              {/* Chart Exercise Filter */}
+              <Select
+                value={chartExerciseFilter || "all"}
+                onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
+              >
+                <SelectTrigger className="w-[200px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30">
+                  <SelectValue placeholder="All exercises" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90">
+                  <SelectItem value="all" className="rounded-lg my-1">
+                    All exercises
+                  </SelectItem>
+                  {filteredExercisesForChart.length > 0 ? (
+                    filteredExercisesForChart.map((exercise) => (
+                      <SelectItem key={exercise.id} value={exercise.id} className="rounded-lg my-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2 w-2 rounded-full"
+                            style={{ backgroundColor: getWorkoutDayColor(exercise.dayId, colorMode) }}
+                          ></span>
+                          {exercise.name}
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled className="rounded-lg my-1">
+                      No exercises available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <ModernProgressChart sessions={sessions} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
+            </div>
+          </motion.div>
+        </motion.div>
+      </CardContent>
+    </Card>
+  )
+}
