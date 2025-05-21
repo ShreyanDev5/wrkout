@@ -7,6 +7,7 @@ export function useIsMobile(breakpoint = 640) {
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait")
 
   useEffect(() => {
+    // Function to check if the device is mobile based on window width
     const checkMobile = () => {
       setIsMobile(window.innerWidth < breakpoint)
       setOrientation(window.innerHeight > window.innerWidth ? "portrait" : "landscape")
