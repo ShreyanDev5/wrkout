@@ -34,7 +34,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
   const { toast } = useToast()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
+  const { isMobile } = useIsMobile()
 
   // Ensure editor is only mounted client-side
   useEffect(() => {
