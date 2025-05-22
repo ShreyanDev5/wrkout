@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { cn } from "@/lib/utils"
 import { Dumbbell, LineChart, Settings } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface ModernTabNavigationProps {
   activeTab: string
@@ -57,16 +57,18 @@ export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigat
             aria-controls={`${tab.id}-tab`}
           >
             <div className="tab-container">
-              <tab.icon
-                className={cn(
-                  "h-5 w-5 modern-icon transition-all duration-200",
-                  isActive ? "tab-icon-active" : "tab-icon-inactive",
-                )}
-                aria-hidden="true"
-                style={{
-                  stroke: isActive ? tab.color : "currentColor",
-                }}
-              />
+              {tab.icon && (
+                <tab.icon
+                  className={cn(
+                    "h-5 w-5 modern-icon transition-all duration-200",
+                    isActive ? "tab-icon-active" : "tab-icon-inactive",
+                  )}
+                  aria-hidden="true"
+                  style={{
+                    stroke: isActive ? tab.color : "currentColor",
+                  }}
+                />
+              )}
               <span
                 className={cn(
                   "text-xs font-medium transition-all duration-200",
