@@ -36,7 +36,7 @@ export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigat
   ]
 
   return (
-    <div className="grid grid-cols-4 w-full h-16 border-t dark:border-opacity-10 bg-background">
+    <div className="grid grid-cols-3 w-full h-16 border-t dark:border-opacity-10 bg-background">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
         return (
