@@ -30,7 +30,7 @@ export function WorkoutScreen({
   onAddWorkoutSession,
 }: WorkoutScreenProps) {
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
-  const [selectedDay, setSelectedDay] = useState("push") // Default value, will be updated from localStorage
+  const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const [isResetModalOpen, setIsResetModalOpen] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const { colorMode } = useTheme()
@@ -40,7 +40,9 @@ export function WorkoutScreen({
     const loadSavedSection = async () => {
       try {
         const savedSection = await loadLastWorkoutSection()
-        setSelectedDay(savedSection)
+        if (savedSection === "push" || savedSection === "pull" || savedSection === "leg") {
+          setSelectedDay(savedSection)
+        }
         setIsInitialized(true)
       } catch (error) {
         console.error("Error loading last workout section:", error)
@@ -63,7 +65,9 @@ export function WorkoutScreen({
 
   // Handle workout day selection
   const handleDayChange = (day: string) => {
-    setSelectedDay(day)
+    if (day === "push" || day === "pull" || day === "leg") {
+      setSelectedDay(day)
+    }
   }
 
   // Handle exercise completion toggle
@@ -137,7 +141,7 @@ export function WorkoutScreen({
   const totalExercises = currentDay?.exercises.length || 0
 
   // Check if the current day has any exercises
-  const hasExercises = currentDay?.exercises.length > 0
+  const hasExercises = (currentDay?.exercises?.length ?? 0) > 0
 
   // Check if any exercises have been completed for the current day
   const hasCompletedAnyExercise = completedCount > 0

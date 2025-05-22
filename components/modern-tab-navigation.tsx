@@ -31,7 +31,7 @@ export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigat
       label: "Settings",
       icon: Settings,
       ariaLabel: "Settings tab",
-      color: "#64b5f6", // Blue for settings
+      color: "#EA4335", // Red for settings
     },
   ]
 
