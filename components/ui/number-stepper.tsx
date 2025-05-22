@@ -11,11 +11,11 @@ interface NumberStepperProps {
   min: number
   max: number
   step?: number
-  label?: string
   accentColor?: string
+  className?: string
 }
 
-export function NumberStepper({ value, onChange, min, max, step = 1, label = "", accentColor }: NumberStepperProps) {
+export function NumberStepper({ value, onChange, min, max, step = 1, accentColor, className }: NumberStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -51,22 +51,27 @@ export function NumberStepper({ value, onChange, min, max, step = 1, label = "",
   }
 
   return (
-    <div className="space-y-2">
-      {label && <label className="text-sm font-medium text-muted-foreground">{label}</label>}
-      <div className="flex items-center justify-between">
+    <div className={cn("space-y-2 w-full", className)}>
+      <div className="flex items-center justify-center gap-2">
         <Button
           type="button"
           variant="outline"
           size="icon"
           onClick={decrement}
           disabled={value <= min}
-          className={cn("h-8 w-8 rounded-md transition-all", isPlaying && "bg-accent/10")}
-          aria-label={`Decrease ${label}`}
+          className={cn(
+            "h-8 w-8 rounded-full bg-[#1a1a1a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
+            isPlaying && "bg-accent/10"
+          )}
+          aria-label="Decrease value"
         >
           <Minus className="h-3 w-3" />
         </Button>
         <span
-          className={cn("text-center font-medium w-12 transition-all", isPlaying && "scale-110 text-accent")}
+          className={cn(
+            "text-center font-medium w-12 transition-all text-white",
+            isPlaying && "scale-110 text-accent"
+          )}
           style={isPlaying ? { color: accentColor } : undefined}
         >
           {value}
@@ -77,8 +82,11 @@ export function NumberStepper({ value, onChange, min, max, step = 1, label = "",
           size="icon"
           onClick={increment}
           disabled={value >= max}
-          className={cn("h-8 w-8 rounded-md transition-all", isPlaying && "bg-accent/10")}
-          aria-label={`Increase ${label}`}
+          className={cn(
+            "h-8 w-8 rounded-full bg-[#1a1a1a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
+            isPlaying && "bg-accent/10"
+          )}
+          aria-label="Increase value"
         >
           <Plus className="h-3 w-3" />
         </Button>

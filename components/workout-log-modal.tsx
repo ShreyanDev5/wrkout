@@ -77,9 +77,9 @@ export function WorkoutLogModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] dark:bg-background dark:border-opacity-10 rounded-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-[425px] bg-[#0f0f0f] border-[#1a1a1a] rounded-xl shadow-2xl px-4 sm:px-6 text-white">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="flex items-center gap-2 text-white">
             <span
               className="inline-block w-3 h-3 rounded-full"
               style={{ backgroundColor: dayColor }}
@@ -89,7 +89,7 @@ export function WorkoutLogModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-8 py-4">
           <WeightSlider
             value={weight}
             onChange={setWeight}
@@ -97,22 +97,42 @@ export function WorkoutLogModal({
             max={500}
             step={2.5}
             label="Weight"
-            className="mb-6"
+            className="mb-8 text-white"
             accentColor={dayColor}
           />
 
           <div className="grid grid-cols-2 gap-8">
-            <NumberStepper value={reps} onChange={setReps} min={0} max={30} label="Reps" accentColor={dayColor} />
-            <NumberStepper value={sets} onChange={setSets} min={0} max={10} label="Sets" accentColor={dayColor} />
+            <div className="flex flex-col items-center">
+              <h3 className="text-sm font-medium text-white mb-3">Reps</h3>
+              <NumberStepper 
+                value={reps} 
+                onChange={setReps} 
+                min={0} 
+                max={30} 
+                accentColor={dayColor}
+                className="hover:scale-[1.02] transition-transform duration-200 text-white"
+              />
+            </div>
+            <div className="flex flex-col items-center">
+              <h3 className="text-sm font-medium text-white mb-3">Sets</h3>
+              <NumberStepper 
+                value={sets} 
+                onChange={setSets} 
+                min={0} 
+                max={10} 
+                accentColor={dayColor}
+                className="hover:scale-[1.02] transition-transform duration-200 text-white"
+              />
+            </div>
           </div>
         </div>
 
-        <DialogFooter className="mt-6 flex justify-end gap-3">
+        <DialogFooter className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-[#1a1a1a]">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="h-10 focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary"
+            className="w-full h-11 px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 transition-colors duration-200 sm:justify-self-start"
             aria-label="Cancel logging session"
             disabled={isSaving}
           >
@@ -121,8 +141,8 @@ export function WorkoutLogModal({
           <Button
             type="button"
             onClick={handleSave}
-            style={{ backgroundColor: dayColor }}
-            className="h-10 focus-visible-ring dark:border-none dark:shadow-none"
+            style={{ backgroundColor: dayColor, color: '#fff' }}
+            className="w-full h-11 px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-none shadow-none hover:brightness-110 transition-all duration-200 sm:justify-self-end"
             aria-label="Save workout session"
             disabled={isSaving}
           >

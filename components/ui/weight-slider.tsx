@@ -46,11 +46,11 @@ export function WeightSlider({
   }, [value])
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-2 w-full px-2 ${className}`}>
       <div className="flex justify-between items-center">
-        <label className="text-sm font-medium text-muted-foreground">{label}</label>
+        <label className="text-sm font-medium text-white">{label}</label>
         <span
-          className={cn("text-sm font-medium transition-all", isPlaying && "scale-110 text-accent")}
+          className={cn("text-sm font-medium transition-all text-white", isPlaying && "scale-110 text-accent")}
           style={isPlaying ? { color: accentColor } : undefined}
         >
           {value} <span className="text-muted-foreground">kg</span>
@@ -62,9 +62,15 @@ export function WeightSlider({
         max={max}
         step={step}
         onValueChange={handleChange}
-        className={cn("cursor-pointer", isPlaying && "slider-active")}
-        trackClassName="bg-muted"
-        thumbClassName={cn("border-2 focus-visible:ring-offset-2 transition-all", isPlaying && "scale-110")}
+        className={cn(
+          "cursor-pointer rounded-full",
+          isPlaying && "slider-active"
+        )}
+        trackClassName="h-2 rounded-full bg-[#1a1a1a]"
+        thumbClassName={cn(
+          "h-4 w-4 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
+          isPlaying && "scale-110"
+        )}
         style={{
           "--track-active-color": accentColor || "hsl(var(--accent))",
         }}
