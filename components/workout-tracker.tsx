@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { WorkoutScreen } from "@/components/screens/workout-screen"
 import { ProgressScreen } from "@/components/screens/progress-screen"
-import { NotesScreen } from "@/components/screens/notes-screen"
 import { SettingsScreen } from "@/components/screens/settings-screen"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
@@ -17,11 +16,9 @@ import {
   saveWorkoutData,
   loadWorkoutSessions,
   saveWorkoutSessions,
-  loadWorkoutNotes,
-  saveWorkoutNotes,
 } from "@/lib/storage"
 import { initAudioSystem } from "@/lib/audio-utils"
-import type { Workout, WorkoutSession, WorkoutNote, AppData } from "@/lib/types"
+import type { Workout, WorkoutSession, AppData } from "@/lib/types"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -31,7 +28,6 @@ export function WorkoutTracker() {
     lastSyncTime: null,
   })
   const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([])
-  const [notes, setNotes] = useState<WorkoutNote[]>([])
   const { toast } = useToast()
   const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
 
@@ -49,30 +45,9 @@ export function WorkoutTracker() {
       // Load data from storage
       const data = await loadWorkoutData()
       const sessions = await loadWorkoutSessions()
-      const savedNotes = await loadWorkoutNotes()
 
       setAppData(data)
       setWorkoutSessions(sessions)
-      setNotes(
-        savedNotes.length > 0
-          ? savedNotes
-          : [
-              {
-                id: "default-guidelines",
-                content: `
-            <h3>Workout Guidelines</h3>
-            <ul>
-              <li><strong>Weight Progression:</strong> Aim to increase by +2 kg/week when possible</li>
-              <li><strong>Rep Progression:</strong> Add +1-2 reps if weight is stalled</li>
-              <li><strong>Set & Rep Ranges:</strong> 2-3 sets of 5-8 reps for strength, 3-4 sets of 8-12 reps for hypertrophy</li>
-              <li><strong>Rest Periods:</strong> 1-2 minutes between sets for smaller muscles, 2-3 minutes for compound movements</li>
-            </ul>
-          `,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              },
-            ],
-      )
     }
 
     initializeApp()
@@ -91,12 +66,6 @@ export function WorkoutTracker() {
     }
   }, [workoutSessions])
 
-  useEffect(() => {
-    if (notes.length > 0) {
-      saveWorkoutNotes(notes)
-    }
-  }, [notes])
-
   // Update completed exercises
   const updateCompletedExercises = (completedExercises: Record<string, Record<string, boolean>>) => {
     setAppData((prev) => ({
@@ -108,11 +77,6 @@ export function WorkoutTracker() {
   // Add workout session
   const addWorkoutSession = (session: WorkoutSession) => {
     setWorkoutSessions((prev) => [...prev, session])
-  }
-
-  // Update notes
-  const updateNotes = (updatedNotes: WorkoutNote[]) => {
-    setNotes(updatedNotes)
   }
 
   // Update workouts
@@ -149,10 +113,6 @@ export function WorkoutTracker() {
 
           <TabsContent value="progress" className="mt-0 p-0" id="progress-tab">
             <ProgressScreen sessions={workoutSessions} />
-          </TabsContent>
-
-          <TabsContent value="notes" className="mt-0 p-0" id="notes-tab">
-            <NotesScreen notes={notes} onUpdateNotes={updateNotes} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-0 p-0" id="settings-tab">

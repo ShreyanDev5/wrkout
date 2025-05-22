@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { cn } from "@/lib/utils"
-import { Dumbbell, LineChart, StickyNote, Settings } from "lucide-react"
+import { Dumbbell, LineChart, Settings } from "lucide-react"
 
 interface ModernTabNavigationProps {
   activeTab: string
@@ -25,13 +25,6 @@ export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigat
       icon: LineChart,
       ariaLabel: "Progress tab",
       color: "#4caf50", // Green for progress
-    },
-    {
-      id: "notes",
-      label: "Notes",
-      icon: StickyNote,
-      ariaLabel: "Notes tab",
-      color: "#f44336", // Red for notes
     },
     {
       id: "settings",

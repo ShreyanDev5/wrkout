@@ -30,15 +30,6 @@ export interface WorkoutSession {
   sets: number
 }
 
-export interface WorkoutNote {
-  id: string
-  content: string
-  createdAt: string
-  updatedAt: string
-  color?: string
-  category?: string
-}
-
 export interface AppData {
   workouts: Workout[]
   completedExercises: Record<string, Record<string, boolean>>

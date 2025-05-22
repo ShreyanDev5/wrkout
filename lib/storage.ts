@@ -1,5 +1,5 @@
 import { workoutData as initialWorkoutData } from "./workout-data"
-import type { WorkoutSession, WorkoutNote, AppData } from "./types"
+import type { WorkoutSession, AppData } from "./types"
 
 // Initialize workout data in localStorage if it doesn't exist
 export async function initializeWorkoutData(): Promise<void> {
@@ -52,22 +52,6 @@ export async function saveWorkoutSessions(sessions: WorkoutSession[]): Promise<v
   localStorage.setItem("workoutSessions", JSON.stringify(sessions))
 }
 
-// Load workout notes from localStorage
-export async function loadWorkoutNotes(): Promise<WorkoutNote[]> {
-  const notes = localStorage.getItem("workoutNotes")
-
-  if (notes) {
-    return JSON.parse(notes)
-  }
-
-  return []
-}
-
-// Save workout notes to localStorage
-export async function saveWorkoutNotes(notes: WorkoutNote[]): Promise<void> {
-  localStorage.setItem("workoutNotes", JSON.stringify(notes))
-}
-
 // Save last selected workout section
 export async function saveLastWorkoutSection(section: string): Promise<void> {
   localStorage.setItem("lastWorkoutSection", section)
@@ -83,6 +67,5 @@ export async function loadLastWorkoutSection(): Promise<string> {
 export async function clearAllData(): Promise<void> {
   localStorage.removeItem("workoutData")
   localStorage.removeItem("workoutSessions")
-  localStorage.removeItem("workoutNotes")
   localStorage.removeItem("lastWorkoutSection")
 }
