@@ -327,7 +327,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                       ? "rgb(244, 244, 245)"
                       : getNoteTextColorClass(selectedColor).replace("text-", ""),
                 }}
-                contentEditable
+                contentEditable={true}
                 dangerouslySetInnerHTML={{ __html: editContent }}
                 onInput={(e) => setEditContent(e.currentTarget.innerHTML)}
                 onBlur={(e) => setEditContent(e.currentTarget.innerHTML)}
@@ -367,7 +367,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                   style={{
                     backgroundColor:
                       note.color === "default" ? "rgb(39, 39, 42)" : getNoteColorClass(note.color).replace("bg-", ""),
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                   }}
                 >
                   <CardContent className="p-4 relative">
@@ -376,12 +375,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                         <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 dark:bg-black/20">
                           <Clock className="h-3.5 w-3.5" />
                         </div>
-                        <span
-                          className="text-sm"
-                          style={{ color: getNoteTextColorClass(note.color).replace("text-", "") }}
-                        >
-                          {formatDate(note.updatedAt)}
-                        </span>
+                        <span className="text-sm text-white">{formatDate(note.updatedAt)}</span>
                       </div>
                       <div className="flex gap-1">
                         <Button
@@ -405,8 +399,7 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                       </div>
                     </div>
                     <div
-                      className="prose prose-sm max-w-none overflow-auto"
-                      style={{ color: getNoteTextColorClass(note.color).replace("text-", "") }}
+                      className="prose prose-sm max-w-none overflow-auto text-white"
                       dangerouslySetInnerHTML={{ __html: note.content }}
                     ></div>
                   </CardContent>
