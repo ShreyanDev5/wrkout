@@ -1,13 +1,16 @@
+/**
+ * @file components/notes-section.tsx
+ * React component for managing workout notes
+ */
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, Bold, Italic, Link, List, Clock, Sparkles, Tag, Palette, Save, X } from "lucide-react"
+import { PlusCircle, Trash2, Bold, Italic, Link, List, Clock, Save, X, Palette } from "lucide-react"
 import type { WorkoutNote } from "@/lib/types"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent } from "@/components/ui/card"
-import { useTheme } from "@/components/theme-context"
 import { useToast } from "@/components/ui/use-toast"
 import { formatDate } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -28,9 +31,7 @@ interface NotesSectionProps {
 export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState("")
-  const [filteredNotes, setFilteredNotes] = useState<WorkoutNote[]>(notes)
   const [selectedColor, setSelectedColor] = useState("default")
-  const { colorMode } = useTheme()
   const { toast } = useToast()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<HTMLDivElement>(null)
@@ -40,11 +41,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
   useEffect(() => {
     setEditorMounted(true)
   }, [])
-
-  // Update filtered notes when notes change
-  useEffect(() => {
-    setFilteredNotes(notes)
-  }, [notes])
 
   // Set up editor when editing a note
   useEffect(() => {
@@ -233,138 +229,146 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
         <Button
           onClick={handleAddNote}
           size="sm"
-          className="transition-all hover:scale-105 active:scale-95 bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm rounded-full"
+          className="bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm rounded-full"
         >
           <PlusCircle className="h-4 w-4 mr-1" />
           <span>New Note</span>
         </Button>
       </div>
 
-      <AnimatePresence>
-        {editingNoteId && editorMounted && (
-          <motion.div initial="hidden" animate="visible" exit="hidden" variants={editorVariants}>
-            <Card className="mb-6 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex flex-wrap items-center gap-2 mb-3 bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleFormatText("bold")}
-                    className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                    title="Bold"
-                  >
-                    <Bold className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleFormatText("italic")}
-                    className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                    title="Italic"
-                  >
-                    <Italic className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleFormatText("link")}
-                    className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                    title="Add Link"
-                  >
-                    <Link className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleFormatText("list")}
-                    className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                    title="Add List"
-                  >
-                    <List className="h-3.5 w-3.5" />
-                  </Button>
+      {editingNoteId && editorMounted && (
+        <motion.div initial="hidden" animate="visible" variants={editorVariants}>
+          <Card className="mb-6 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap items-center gap-2 mb-3 bg-zinc-100 dark:bg-zinc-800 p-2 rounded-lg">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleFormatText("bold")}
+                  className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                  title="Bold"
+                >
+                  <Bold className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleFormatText("italic")}
+                  className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                  title="Italic"
+                >
+                  <Italic className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleFormatText("link")}
+                  className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                  title="Add Link"
+                >
+                  <Link className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleFormatText("list")}
+                  className="h-8 px-3 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                  title="Add List"
+                >
+                  <List className="h-3.5 w-3.5" />
+                </Button>
 
-                  <div className="h-5 w-px bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
+                <div className="h-5 w-px bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
 
-                  <div className="flex items-center gap-1">
-                    <Palette className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 mr-1" />
-                    <div className="flex gap-1">
-                      {NOTE_COLORS.map((color) => (
-                        <button
-                          key={color.name}
-                          onClick={() => setSelectedColor(color.name)}
-                          className={`w-5 h-5 rounded-full transition-all ${
-                            selectedColor === color.name
-                              ? "ring-2 ring-zinc-300 dark:ring-zinc-500 scale-110"
-                              : "hover:scale-110"
-                          } ${color.value}`}
-                          title={`${color.name.charAt(0).toUpperCase() + color.name.slice(1)} theme`}
-                        ></button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="ml-auto flex flex-wrap gap-1">
-                    {["💪", "🏋️", "🏃", "✅", "⚠️", "🔥"].map((emoji) => (
-                      <Button
-                        key={emoji}
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:scale-110"
-                        onClick={() => addEmoji(emoji)}
-                        title={`Add ${emoji} emoji`}
-                      >
-                        {emoji}
-                      </Button>
+                <div className="flex items-center gap-1">
+                  <Palette className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 mr-1" />
+                  <div className="flex gap-1">
+                    {NOTE_COLORS.map((color) => (
+                      <button
+                        key={color.name}
+                        onClick={() => setSelectedColor(color.name)}
+                        className={`w-5 h-5 rounded-full transition-all ${
+                          selectedColor === color.name
+                            ? "ring-2 ring-zinc-300 dark:ring-zinc-500 scale-110"
+                            : "hover:scale-110"
+                        } ${color.value}`}
+                        title={`${color.name.charAt(0).toUpperCase() + color.name.slice(1)} theme`}
+                      ></button>
                     ))}
                   </div>
                 </div>
 
-                <div
-                  ref={editorRef}
-                  className="min-h-[180px] border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-[#34A853]"
-                  style={{
-                    backgroundColor: getNoteColorClass(selectedColor).replace("bg-", ""),
-                    color: getNoteTextColorClass(selectedColor).replace("text-", ""),
-                  }}
-                  contentEditable
-                  dangerouslySetInnerHTML={{ __html: editContent }}
-                  onInput={(e) => setEditContent(e.currentTarget.innerHTML)}
-                  onBlur={(e) => setEditContent(e.currentTarget.innerHTML)}
-                ></div>
-
-                <div className="flex justify-end mt-3 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditingNoteId(null)}
-                    className="rounded-md border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleSaveNote}
-                    className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none"
-                  >
-                    <Save className="h-4 w-4 mr-1" />
-                    Save
-                  </Button>
+                <div className="ml-auto flex flex-wrap gap-1">
+                  {["💪", "🏋️", "🏃", "✅", "⚠️", "🔥"].map((emoji) => (
+                    <Button
+                      key={emoji}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 rounded-md transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:scale-110"
+                      onClick={() => addEmoji(emoji)}
+                      title={`Add ${emoji} emoji`}
+                    >
+                      {emoji}
+                    </Button>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+
+              <div
+                ref={editorRef}
+                className="min-h-[180px] border border-zinc-300 dark:border-zinc-600 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#34A853] shadow-sm"
+                style={{
+                  backgroundColor:
+                    selectedColor === "default"
+                      ? "rgb(39, 39, 42)"
+                      : getNoteColorClass(selectedColor).replace("bg-", ""),
+                  color:
+                    selectedColor === "default"
+                      ? "rgb(244, 244, 245)"
+                      : getNoteTextColorClass(selectedColor).replace("text-", ""),
+                }}
+                contentEditable
+                dangerouslySetInnerHTML={{ __html: editContent }}
+                onInput={(e) => setEditContent(e.currentTarget.innerHTML)}
+                onBlur={(e) => setEditContent(e.currentTarget.innerHTML)}
+              ></div>
+
+              <div className="flex justify-end mt-3 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingNoteId(null)}
+                  className="rounded-md border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveNote}
+                  className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none"
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  Save
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       <ScrollArea className="h-[calc(100vh-280px)] sm:h-[500px] pr-4">
         <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
-          {filteredNotes.length > 0 ? (
-            filteredNotes.map((note) => (
+          {notes.length > 0 ? (
+            notes.map((note) => (
               <motion.div key={note.id} variants={itemVariants}>
                 <Card
-                  className="border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition-all duration-300 shadow-sm relative overflow-hidden"
-                  style={{ backgroundColor: getNoteColorClass(note.color).replace("bg-", "") }}
+                  className="border border-zinc-300 dark:border-zinc-600 hover:shadow-lg transition-all duration-300 shadow-md relative overflow-hidden"
+                  style={{
+                    backgroundColor:
+                      note.color === "default" ? "rgb(39, 39, 42)" : getNoteColorClass(note.color).replace("bg-", ""),
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  }}
                 >
                   <CardContent className="p-4 relative">
                     <div className="flex justify-between items-start mb-3">
@@ -378,13 +382,6 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
                         >
                           {formatDate(note.updatedAt)}
                         </span>
-
-                        {note.category && (
-                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 dark:bg-black/20 text-xs">
-                            <Tag className="h-3 w-3" />
-                            <span>{note.category}</span>
-                          </div>
-                        )}
                       </div>
                       <div className="flex gap-1">
                         <Button
@@ -418,13 +415,10 @@ export function NotesSection({ notes, onUpdateNotes }: NotesSectionProps) {
             ))
           ) : (
             <motion.div
-              className="flex flex-col items-center justify-center py-12 text-zinc-500 dark:text-zinc-400"
+              className="flex flex-col items-center justify-center py-12 text-zinc-400 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700"
               variants={itemVariants}
             >
-              <div className="relative w-16 h-16 mb-4">
-                <Sparkles className="w-16 h-16 opacity-20" />
-              </div>
-              <p className="text-center">No notes yet. Create your first note!</p>
+              <p className="text-center font-medium">No notes yet. Create your first note!</p>
             </motion.div>
           )}
         </motion.div>
