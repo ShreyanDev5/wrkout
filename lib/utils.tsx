@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ArrowUp, ArrowDown, Dumbbell, Footprints } from "lucide-react"
+import { ReactNode } from "react"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -28,7 +29,7 @@ export function getWorkoutDayColor(dayId: string, colorMode?: string): string {
   }
 }
 
-export function getWorkoutDayIcon(dayId: string, modern = false) {
+export function getWorkoutDayIcon(dayId: string, modern = false): ReactNode {
   const iconClass = modern ? "modern-icon" : ""
 
   switch (dayId.toLowerCase()) {
@@ -41,4 +42,4 @@ export function getWorkoutDayIcon(dayId: string, modern = false) {
     default:
       return <Dumbbell className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
   }
-}
+} 
