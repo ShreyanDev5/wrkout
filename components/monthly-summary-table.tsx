@@ -46,20 +46,19 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
         {weeklyData.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">No data available for the selected filters</div>
         ) : (
-          <div className="min-w-full">
+          <div className="min-w-full inline-block">
             <Table className="w-full">
               <TableHeader>
                 <TableRow>
                   <TableHead
-                    className="w-[160px] sm:w-[220px] sticky left-0 z-20 border-r border-border/20"
-                    style={{ backgroundColor: "hsl(var(--background))" }}
+                    className="w-[160px] sm:w-[220px] border-r border-border/20 bg-background"
                   >
                     Exercise
                   </TableHead>
-                  {/* Increased spacing between week indicators */}
+                  {/* Reduced font size for week indicators */}
                   {weekLabels.map((label) => (
                     <TableHead key={label} className="text-center min-w-[90px] px-3 sm:px-4">
-                      <div className="text-base font-medium">{label}</div>
+                      <div className="text-sm font-medium">{label}</div>
                     </TableHead>
                   ))}
                 </TableRow>
@@ -68,19 +67,23 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                 {weeklyData.map((exercise) => {
                   const dayColor = getWorkoutDayColor(exercise.dayId, colorMode)
                   return (
-                    <TableRow key={exercise.exerciseId} className="hover:bg-muted/5 transition-colors">
+                    <TableRow key={exercise.exerciseId} className="hover:bg-muted/5 transition-colors group">
                       <TableCell
-                        className="font-medium break-words whitespace-normal py-3 sticky left-0 z-10 border-r border-border/20"
+                        className="font-medium break-words whitespace-normal py-3 border-r border-border/20 bg-background"
                         style={{
-                          borderLeft: `4px solid ${dayColor}`,
+                          position: 'relative',
                           color: dayColor,
-                          backgroundColor: "hsl(var(--background))",
                         }}
                       >
-                        {/* Increased font size for workout names */}
-                        <span className="block text-sm sm:text-base font-medium" title={exercise.exerciseName}>
-                          {exercise.exerciseName}
-                        </span>
+                        <div className="flex items-center">
+                          <div 
+                            className="absolute left-0 top-0 bottom-0 w-1"
+                            style={{ backgroundColor: dayColor }}
+                          />
+                          <span className="block text-sm sm:text-base font-medium pl-3" title={exercise.exerciseName}>
+                            {exercise.exerciseName}
+                          </span>
+                        </div>
                       </TableCell>
 
                       {weekLabels.map((weekLabel) => {
