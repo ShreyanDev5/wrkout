@@ -92,7 +92,7 @@ export function WorkoutTracker() {
       <header className="sticky top-0 z-10 bg-background border-b dark:border-opacity-10">
         <div className="container flex items-center justify-between h-16 px-4">
           <h1 
-            className="text-xl font-bold line-height-readable bg-[linear-gradient(to_right,#FFD700_0%,#FFD700_25%,#00FF00_45%,#00FF00_55%,#FF0000_75%,#FF0000_100%)] bg-clip-text text-transparent"
+            className="text-xl font-bold line-height-readable bg-[linear-gradient(to_right,#FFD700_0%,#FFD700_25%,#00FF00_45%,#00FF00_55%,#FF0000_75%,#FF0000_100%)] bg-clip-text text-transparent opacity-90"
           >
             wrkout
           </h1>
