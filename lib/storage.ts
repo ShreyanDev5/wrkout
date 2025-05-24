@@ -63,9 +63,24 @@ export async function loadLastWorkoutSection(): Promise<string> {
   return section || "push" // Default to "push" if no section is saved
 }
 
+// Save last progress page state
+export async function saveLastProgressState(state: { mainFilter: string | null, chartExerciseFilter: string | null }): Promise<void> {
+  localStorage.setItem("lastProgressState", JSON.stringify(state))
+}
+
+// Load last progress page state
+export async function loadLastProgressState(): Promise<{ mainFilter: string | null, chartExerciseFilter: string | null }> {
+  const state = localStorage.getItem("lastProgressState")
+  if (state) {
+    return JSON.parse(state)
+  }
+  return { mainFilter: null, chartExerciseFilter: null } // Default state
+}
+
 // Clear all data from localStorage
 export async function clearAllData(): Promise<void> {
   localStorage.removeItem("workoutData")
   localStorage.removeItem("workoutSessions")
   localStorage.removeItem("lastWorkoutSection")
+  localStorage.removeItem("lastProgressState")
 }

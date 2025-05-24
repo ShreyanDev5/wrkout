@@ -11,6 +11,7 @@ import { getWorkoutDayColor } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
 import { motion } from "framer-motion"
+import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
 
 interface ProgressScreenProps {
   sessions: WorkoutSession[]
@@ -20,6 +21,34 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
   const { colorMode } = useTheme()
   const [mainFilter, setMainFilter] = useState<string | null>(null)
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Load the last progress state from localStorage on component mount
+  useEffect(() => {
+    const loadSavedState = async () => {
+      try {
+        const savedState = await loadLastProgressState()
+        setMainFilter(savedState.mainFilter)
+        setChartExerciseFilter(savedState.chartExerciseFilter)
+        setIsInitialized(true)
+      } catch (error) {
+        console.error("Error loading last progress state:", error)
+        setIsInitialized(true)
+      }
+    }
+
+    loadSavedState()
+  }, [])
+
+  // Save the progress state to localStorage whenever it changes
+  useEffect(() => {
+    // Only save after initial load to prevent overwriting with default values
+    if (isInitialized) {
+      saveLastProgressState({ mainFilter, chartExerciseFilter }).catch((error) => {
+        console.error("Error saving progress state:", error)
+      })
+    }
+  }, [mainFilter, chartExerciseFilter, isInitialized])
 
   // Reset secondary filters when main filter changes
   useEffect(() => {
