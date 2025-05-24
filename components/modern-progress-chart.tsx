@@ -198,9 +198,8 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     if (!cx || !cy || !payload) return null
 
     const isLatest = payload.isLatest || false
-    const isPR = payload.isPR || false
     const isHovered = hoveredPoint === index
-    const shouldHighlight = isPR || isLatest || isHovered
+    const shouldHighlight = isLatest || isHovered
     const dotSize = shouldHighlight ? 6 : 4
 
     return (
@@ -251,23 +250,6 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
             {payload.weight}kg
           </text>
         )}
-
-        {/* PR indicator */}
-        {isPR && (
-          <text
-            x={cx}
-            y={cy - 24}
-            textAnchor="middle"
-            fill="#FFD700"
-            fontSize="10"
-            fontWeight="bold"
-            style={{
-              filter: `drop-shadow(0 1px 2px rgba(0,0,0,0.7))`,
-            }}
-          >
-            PR
-          </text>
-        )}
       </g>
     )
   }
@@ -292,9 +274,9 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
       variants={containerVariants}
       className="rounded-xl overflow-hidden border border-zinc-700/30 shadow-xl"
     >
-      <div className="bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-xl overflow-hidden">
+      <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
-        <div className="p-6 bg-gradient-to-b from-zinc-800/50 to-transparent border-b border-zinc-700/20">
+        <div className="p-6 bg-gradient-to-b from-zinc-800/80 to-transparent border-b border-zinc-700/20">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-lg font-semibold text-zinc-100 mb-1">{exerciseName}</h3>
@@ -401,15 +383,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
                         tickLine={false}
                         dy={10}
-                      />
-
-                      {/* Y-Axis (weights) */}
-                      <YAxis
-                        tick={{ fontSize: 11, fill: "#9ca3af" }}
-                        axisLine={false}
-                        tickLine={false}
-                        domain={[minWeight, Math.ceil(personalRecord * 1.1)]}
-                        dx={-10}
+                        padding={{ left: 20, right: 20 }}
                       />
 
                       {/* Tooltip */}

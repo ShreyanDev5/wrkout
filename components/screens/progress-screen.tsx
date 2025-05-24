@@ -179,8 +179,8 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
 
           {/* Progress Chart - Now second */}
           <motion.div className="space-y-4 mt-14" variants={itemVariants}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+              <h3 className="text-lg font-medium flex items-center gap-2 whitespace-nowrap">
                 <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
                 Progress Chart
               </h3>
@@ -190,7 +190,7 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
                 value={chartExerciseFilter || "all"}
                 onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
               >
-                <SelectTrigger className="w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
+                <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
                   <SelectValue placeholder="All exercises" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
