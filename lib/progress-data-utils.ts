@@ -10,32 +10,32 @@ export const PROGRESS_WEEKS = 4
 export function processWorkoutData(sessions: WorkoutSession[]) {
   if (!sessions.length) return { weeklyData: [], weekLabels: [] }
 
-  // Sort sessions by date (newest first)
+  // Sort sessions by date (oldest first)
   const sortedSessions = [...sessions].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
+    return new Date(a.date).getTime() - new Date(b.date).getTime()
   })
 
-  // Find the most recent session date to use as reference
-  const mostRecentDate = new Date(sortedSessions[0].date)
+  // Get the most recent session date to use as reference
+  const lastSessionDate = new Date(sortedSessions[sortedSessions.length - 1].date)
 
   // Generate week labels and date ranges
   const weekLabels: string[] = []
   const weekRanges: { start: Date; end: Date }[] = []
 
-  // Create 4 weekly buckets, starting from the most recent week
+  // Always create PROGRESS_WEEKS number of weeks, starting from the most recent week
   for (let i = 0; i < PROGRESS_WEEKS; i++) {
-    const weekEnd = new Date(mostRecentDate)
-    weekEnd.setDate(mostRecentDate.getDate() - i * 7)
+    const weekNumber = i + 1
+    const weekLabel = `W${weekNumber}`
+    weekLabels.push(weekLabel)
+
+    // Calculate date range for this week, working backwards from the most recent session
+    const weekEnd = new Date(lastSessionDate)
+    weekEnd.setDate(lastSessionDate.getDate() - (PROGRESS_WEEKS - weekNumber) * 7)
 
     const weekStart = new Date(weekEnd)
     weekStart.setDate(weekEnd.getDate() - 6)
 
-    // Format as W1, W2, etc. (most recent is W4, oldest is W1)
-    const weekNumber = PROGRESS_WEEKS - i
-    weekLabels.unshift(`W${weekNumber}`)
-
-    // Store the date range for this week
-    weekRanges.unshift({ start: weekStart, end: weekEnd })
+    weekRanges.push({ start: weekStart, end: weekEnd })
   }
 
   // Group sessions by exercise
@@ -71,6 +71,9 @@ export function processWorkoutData(sessions: WorkoutSession[]) {
       weeks[label] = null
     })
 
+    // Track the last week we assigned data to for this exercise
+    let lastAssignedWeekIndex = -1
+
     // Fill in data for weeks that have sessions
     exerciseSessions.forEach((session) => {
       const sessionDate = new Date(session.date)
@@ -80,18 +83,18 @@ export function processWorkoutData(sessions: WorkoutSession[]) {
         const { start, end } = weekRanges[i]
 
         if (sessionDate >= start && sessionDate <= end) {
-          const weekLabel = weekLabels[i]
-
-          // If we already have data for this week, use the one with higher weight
-          if (!weeks[weekLabel] || session.weight > weeks[weekLabel]!.weight) {
+          // Only assign to this week if it's after the last assigned week
+          // This ensures chronological progression
+          if (i > lastAssignedWeekIndex) {
+            const weekLabel = weekLabels[i]
             weeks[weekLabel] = {
               sets: session.sets,
               reps: session.reps,
               weight: session.weight,
               date: session.date,
             }
+            lastAssignedWeekIndex = i
           }
-
           break
         }
       }

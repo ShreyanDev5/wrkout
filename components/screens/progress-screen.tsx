@@ -190,27 +190,31 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
                 value={chartExerciseFilter || "all"}
                 onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
               >
-                <SelectTrigger className="w-[200px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30">
+                <SelectTrigger className="w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
                   <SelectValue placeholder="All exercises" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90">
-                  <SelectItem value="all" className="rounded-lg my-1">
+                <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
+                  <SelectItem value="all" className="rounded-lg my-1 px-4">
                     All exercises
                   </SelectItem>
                   {filteredExercisesForChart.length > 0 ? (
                     filteredExercisesForChart.map((exercise) => (
-                      <SelectItem key={exercise.id} value={exercise.id} className="rounded-lg my-1">
-                        <div className="flex items-center gap-2">
+                      <SelectItem 
+                        key={exercise.id} 
+                        value={exercise.id} 
+                        className="rounded-lg my-1 px-4"
+                      >
+                        <div className="flex items-center gap-2.5 whitespace-nowrap">
                           <span
-                            className="h-2 w-2 rounded-full"
+                            className="h-2 w-2 rounded-full flex-shrink-0"
                             style={{ backgroundColor: getWorkoutDayColor(exercise.dayId, colorMode) }}
                           ></span>
-                          {exercise.name}
+                          <span className="truncate">{exercise.name}</span>
                         </div>
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="none" disabled className="rounded-lg my-1">
+                    <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
                       No exercises available
                     </SelectItem>
                   )}
