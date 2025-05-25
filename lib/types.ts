@@ -18,16 +18,18 @@ export interface Workout {
 
 export interface WorkoutSession {
   id: string
-  date: string
   workoutId: string
   workoutName: string
   dayId: string
   dayName: string
-  exerciseId: string
-  exerciseName: string
-  weight: number
-  reps: number
-  sets: number
+  completedExercises: Record<string, Record<string, boolean>>
+  duration: number
+  notes?: string
+  timestamp: string
+  date: string
+  exercises: string[]
+  totalExercises: number
+  completedCount: number
 }
 
 export interface AppData {
