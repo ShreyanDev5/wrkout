@@ -37,29 +37,28 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
 
   return (
     <div className="relative">
-      <div className="w-full">
+      <div className="w-full overflow-x-auto rounded-lg border border-border/60 bg-background shadow">
         {weeklyData.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">No data available for the selected filters</div>
+          <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-lg">
+            No data available for the selected filters
+          </div>
         ) : (
           <Table className="w-full">
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent border-b border-border/60 bg-muted/20">
                 <TableHead
-                  className="w-[140px] sm:w-[180px] border-r border-border/20 bg-background"
+                  className="w-[160px] sm:w-[200px] border-r border-border/60 bg-muted/20 sticky left-0 z-10"
                 >
-                  Exercise
+                  <div className="font-medium text-sm sm:text-base pl-1">Exercise</div>
                 </TableHead>
-                {/* Week indicators with improved spacing */}
+                {/* Single week indicator with improved spacing */}
                 {weekLabels.map((label) => (
                   <TableHead 
                     key={label} 
-                    className="text-center w-[120px] sm:w-[140px] px-2 sm:px-3 bg-background/95"
+                    className="text-center w-[140px] sm:w-[160px] px-3 sm:px-4 bg-muted/20"
                   >
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="text-sm font-medium">{label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {label === 'W1' ? 'Previous' : 'Current'}
-                      </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="text-sm sm:text-base font-medium">{label}</div>
                     </div>
                   </TableHead>
                 ))}
@@ -69,9 +68,12 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
               {weeklyData.map((exercise) => {
                 const dayColor = getWorkoutDayColor(exercise.dayId, colorMode)
                 return (
-                  <TableRow key={exercise.exerciseId} className="hover:bg-muted/5 transition-colors group">
+                  <TableRow 
+                    key={exercise.exerciseId} 
+                    className="hover:bg-muted/20 transition-colors group border-b border-border/40"
+                  >
                     <TableCell
-                      className="font-medium break-words whitespace-normal py-3 border-r border-border/20 bg-background"
+                      className="font-medium break-words whitespace-normal py-2.5 border-r border-border/60 bg-background sticky left-0 z-10"
                       style={{
                         position: 'relative',
                         color: dayColor,
@@ -79,11 +81,11 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                     >
                       <div className="flex items-center">
                         <div 
-                          className="absolute left-0 top-0 bottom-0 w-1"
+                          className="absolute left-0 top-0 bottom-0 w-2 rounded-r-sm"
                           style={{ backgroundColor: dayColor }}
                         />
                         <span 
-                          className="block text-sm sm:text-base font-medium pl-3 pr-2" 
+                          className="block text-sm sm:text-base font-medium pl-5 pr-4" 
                           title={exercise.exerciseName}
                         >
                           {exercise.exerciseName}
@@ -96,25 +98,25 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                       return (
                         <TableCell 
                           key={weekLabel} 
-                          className="text-center p-2 px-2 sm:px-3"
+                          className="text-center py-2.5 px-3 sm:px-4 bg-background/95"
                         >
                           {weekData ? (
-                            <div className="flex flex-col items-center justify-center gap-0.5">
+                            <div className="flex flex-col items-center justify-center gap-1">
                               {/* Reps with improved spacing and adjusted font */}
-                              <div className="font-medium text-sm sm:text-base">
+                              <div className="font-medium text-sm sm:text-base leading-tight">
                                 {isMobile ? (
-                                  <>{weekData.reps}<span className="text-base sm:text-lg mx-0.5">×</span></>
+                                  <>{weekData.reps}<span className="text-base sm:text-lg mx-1">×</span></>
                                 ) : (
                                   <>
-                                    {weekData.sets} <span className="text-base sm:text-lg mx-0.5">×</span> {weekData.reps}
+                                    {weekData.sets} <span className="text-base sm:text-lg mx-1">×</span> {weekData.reps}
                                   </>
                                 )}
                               </div>
-                              {/* Weight with slightly smaller font */}
+                              {/* Weight with improved styling */}
                               <div
-                                className="text-sm sm:text-base font-semibold rounded-full px-2.5 py-0.5"
+                                className="text-sm sm:text-base font-semibold rounded-full px-2.5 py-0.5 min-w-[80px] sm:min-w-[90px] leading-tight shadow-sm"
                                 style={{
-                                  backgroundColor: `${dayColor}15`,
+                                  backgroundColor: `${dayColor}25`,
                                   color: dayColor,
                                 }}
                               >
@@ -122,7 +124,7 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                               </div>
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-muted-foreground/80">-</span>
                           )}
                         </TableCell>
                       )

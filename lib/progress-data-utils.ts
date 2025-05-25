@@ -1,7 +1,7 @@
 import type { WorkoutSession } from "@/lib/types"
 
 // Number of weeks to display in the progress view
-export const PROGRESS_WEEKS = 2
+export const PROGRESS_WEEKS = 1
 
 /**
  * Helper function to check if two dates are the same day
@@ -74,7 +74,7 @@ export function processWorkoutData(sessions: WorkoutSession[]) {
   }[] = []
 
   // Generate week labels (W1 to W4)
-  const weekLabels = Array.from({ length: PROGRESS_WEEKS }, (_, i) => `W${i + 1}`)
+  const weekLabels = ['Current Week']
 
   Object.entries(exerciseGroups).forEach(([exerciseId, exerciseSessions]) => {
     // Sort exercise sessions by date (oldest first)
