@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Area } from "recharts"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -8,8 +8,9 @@ import { ChevronUp } from "lucide-react"
 import { getWorkoutDayColor } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import type { WorkoutSession } from "@/lib/types"
+import type { Variants } from "framer-motion"
 
-type TimeframeType = "week" | "month" | "all"
+type TimeframeType = "month" | "threeMonths" | "sixMonths" | "year"
 
 interface ModernProgressChartProps {
   sessions: WorkoutSession[]
@@ -17,10 +18,30 @@ interface ModernProgressChartProps {
   exerciseFilter: string | null
 }
 
+// Define animation variants outside the component
+const containerVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1]
+    }
+  }
+}
+
+const chartVariants: Variants = {
+  initial: { opacity: 0.5 },
+  hover: { opacity: 1 },
+  exit: { opacity: 0 }
+}
+
 export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: ModernProgressChartProps) {
   const { colorMode } = useTheme()
   const [timeframe, setTimeframe] = useState<TimeframeType>("month")
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null)
+  const [isHoveringChart, setIsHoveringChart] = useState(false)
 
   // Filter sessions by exercise and day
   const filteredSessions = useMemo(() => {
@@ -40,15 +61,22 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
 
   // Apply timeframe filter
   const timeframeFilteredSessions = useMemo(() => {
-    if (timeframe === "all") return filteredSessions
-
     const now = new Date()
     const cutoffDate = new Date()
 
-    if (timeframe === "week") {
-      cutoffDate.setDate(now.getDate() - 7)
-    } else if (timeframe === "month") {
-      cutoffDate.setMonth(now.getMonth() - 1)
+    switch (timeframe) {
+      case "month":
+        cutoffDate.setMonth(now.getMonth() - 1)
+        break
+      case "threeMonths":
+        cutoffDate.setMonth(now.getMonth() - 3)
+        break
+      case "sixMonths":
+        cutoffDate.setMonth(now.getMonth() - 6)
+        break
+      case "year":
+        cutoffDate.setFullYear(now.getFullYear() - 1)
+        break
     }
 
     return filteredSessions.filter((session) => {
@@ -123,18 +151,46 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
   const minWeight = chartData.length ? Math.max(0, Math.min(...chartData.map((item) => item.weight)) - 5) : 0
   const currentWeight = chartData.length ? chartData[chartData.length - 1].weight : 0
 
-  // Calculate percentage change
+  // Calculate percentage change based on timeframe
   const percentChange = useMemo(() => {
     if (chartData.length < 2) return null
 
-    const firstWeight = chartData[0].weight
+    const now = new Date()
+    const comparisonDate = new Date()
+
+    // Calculate the comparison date based on timeframe
+    switch (timeframe) {
+      case "month":
+        comparisonDate.setMonth(now.getMonth() - 2) // Previous month
+        break
+      case "threeMonths":
+        comparisonDate.setMonth(now.getMonth() - 6) // Previous three months
+        break
+      case "sixMonths":
+        comparisonDate.setMonth(now.getMonth() - 12) // Previous six months
+        break
+      case "year":
+        comparisonDate.setFullYear(now.getFullYear() - 2) // Previous year
+        break
+    }
+
+    // Find the closest data point to the comparison date
+    const comparisonPoint = chartData.reduce((closest, current) => {
+      const currentDate = new Date(current.date)
+      const closestDate = new Date(closest.date)
+      const currentDiff = Math.abs(currentDate.getTime() - comparisonDate.getTime())
+      const closestDiff = Math.abs(closestDate.getTime() - comparisonDate.getTime())
+      return currentDiff < closestDiff ? current : closest
+    })
+
     const lastWeight = chartData[chartData.length - 1].weight
+    const comparisonWeight = comparisonPoint.weight
 
-    if (firstWeight === 0) return null
+    if (comparisonWeight === 0) return null
 
-    const change = ((lastWeight - firstWeight) / firstWeight) * 100
+    const change = ((lastWeight - comparisonWeight) / comparisonWeight) * 100
     return change.toFixed(1)
-  }, [chartData])
+  }, [chartData, timeframe])
 
   // Get color based on day type
   const chartColor = useMemo(() => {
@@ -174,98 +230,175 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     })
   }
 
-  // Custom tooltip component
+  // Enhanced Custom Tooltip component with iOS-like styling
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null
 
+    const data = payload[0].payload
+    const isPR = data.isPR
+    const isLatest = data.isLatest
+
     return (
-      <div className="bg-zinc-800/95 backdrop-blur-md rounded-lg p-3 shadow-xl border border-zinc-700/50 text-sm">
-        <p className="font-medium text-zinc-200 mb-1">{formatFullDate(label)}</p>
-        <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: chartColor }}></div>
-          <span className="font-medium" style={{ color: chartColor }}>
-            {payload[0].value}
-          </span>
-          <span className="text-zinc-400">kg</span>
+      <motion.div
+        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="bg-zinc-800/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-zinc-700/30 text-sm"
+        style={{
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <div className="space-y-2">
+          <p className="font-medium text-zinc-200">{formatFullDate(label)}</p>
+          <div className="flex items-center gap-2.5">
+            <div 
+              className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
+              style={{ 
+                backgroundColor: chartColor,
+                boxShadow: `0 0 8px ${chartColor}40`
+              }}
+            />
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-semibold text-lg" style={{ color: chartColor }}>
+                {payload[0].value}
+              </span>
+              <span className="text-zinc-400 text-sm">kg</span>
+            </div>
+          </div>
+          {data.reps > 0 && (
+            <div className="text-zinc-400 text-sm">
+              {data.reps} reps
+            </div>
+          )}
+          {(isPR || isLatest) && (
+            <div className="flex items-center gap-2 pt-1">
+              {isPR && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                  PR
+                </span>
+              )}
+              {isLatest && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
+                  Latest
+                </span>
+              )}
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
     )
   }
 
-  // Custom dot component
+  // Enhanced Custom Dot component with improved hover states
   const CustomDot = (props: any) => {
     const { cx, cy, payload, index } = props
     if (!cx || !cy || !payload) return null
 
     const isLatest = payload.isLatest || false
+    const isPR = payload.isPR || false
     const isHovered = hoveredPoint === index
-    const shouldHighlight = isLatest || isHovered
+    const shouldHighlight = isLatest || isHovered || isPR
     const dotSize = shouldHighlight ? 6 : 4
 
     return (
       <g
-        onMouseEnter={() => setHoveredPoint(index)}
-        onMouseLeave={() => setHoveredPoint(null)}
+        onMouseEnter={() => {
+          setHoveredPoint(index)
+          setIsHoveringChart(true)
+        }}
+        onMouseLeave={() => {
+          setHoveredPoint(null)
+          setIsHoveringChart(false)
+        }}
         style={{ cursor: "pointer" }}
       >
-        {/* Glow effect */}
+        {/* Enhanced glow effect */}
         {shouldHighlight && (
-          <circle
+          <motion.circle
+            initial={{ r: dotSize + 2, opacity: 0 }}
+            animate={{ 
+              r: dotSize + 4, 
+              opacity: 0.4,
+              transition: { duration: 0.2 }
+            }}
             cx={cx}
             cy={cy}
-            r={dotSize + 4}
             fill="none"
-            opacity={0.4}
             style={{
-              filter: `drop-shadow(0 0 4px ${chartColor})`,
+              filter: `drop-shadow(0 0 8px ${chartColor})`,
             }}
           />
         )}
 
-        {/* Main dot */}
-        <circle
+        {/* Main dot with enhanced animation */}
+        <motion.circle
           cx={cx}
           cy={cy}
           r={dotSize}
           fill={chartColor}
+          initial={{ scale: 1 }}
+          animate={{ 
+            scale: shouldHighlight ? 1.2 : 1,
+            transition: { duration: 0.2, ease: "easeOut" }
+          }}
           style={{
-            transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            filter: shouldHighlight ? `drop-shadow(0 0 3px ${chartColor})` : "none",
+            filter: shouldHighlight ? `drop-shadow(0 0 6px ${chartColor})` : "none",
           }}
         />
 
-        {/* Weight label */}
+        {/* Enhanced weight label */}
         {shouldHighlight && (
-          <text
+          <motion.text
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ 
+              opacity: 1, 
+              y: -12,
+              transition: { duration: 0.2, ease: "easeOut" }
+            }}
             x={cx}
-            y={cy - 12}
+            y={cy}
             textAnchor="middle"
             fill={chartColor}
             fontSize="11"
             fontWeight="600"
             style={{
-              filter: `drop-shadow(0 1px 2px rgba(0,0,0,0.5))`,
+              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+              textShadow: "0 1px 2px rgba(0,0,0,0.2)",
             }}
           >
             {payload.weight}kg
-          </text>
+          </motion.text>
         )}
       </g>
     )
   }
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
+  // Helper function to get the comparison text based on timeframe
+  const getComparisonText = (timeframe: TimeframeType): string => {
+    switch (timeframe) {
+      case "month":
+        return "since last month"
+      case "threeMonths":
+        return "since last 3 months"
+      case "sixMonths":
+        return "since last 6 months"
+      case "year":
+        return "since last year"
+      default:
+        return "since first record"
+    }
   }
+
+  // Verify filtering logic with console logs for debugging
+  useEffect(() => {
+    console.log("Timeframe:", timeframe)
+    console.log("Filtered Sessions Count:", timeframeFilteredSessions.length)
+    console.log("Date Range:", {
+      start: timeframeFilteredSessions[0]?.date,
+      end: timeframeFilteredSessions[timeframeFilteredSessions.length - 1]?.date
+    })
+  }, [timeframe, timeframeFilteredSessions])
 
   return (
     <motion.div
@@ -273,6 +406,8 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
       animate="visible"
       variants={containerVariants}
       className="rounded-xl overflow-hidden border border-zinc-700/30 shadow-xl"
+      onMouseEnter={() => setIsHoveringChart(true)}
+      onMouseLeave={() => setIsHoveringChart(false)}
     >
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
@@ -281,7 +416,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
             <div>
               <h3 className="text-lg font-semibold text-zinc-100 mb-1">{exerciseName}</h3>
 
-              {/* Weight change indicator */}
+              {/* Updated Weight change indicator with dynamic text */}
               {percentChange && (
                 <div className="flex items-center gap-1 text-xs">
                   <div
@@ -292,7 +427,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                     <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
                     <span>{Math.abs(Number(percentChange))}%</span>
                   </div>
-                  <span className="text-zinc-500">since first record</span>
+                  <span className="text-zinc-500">{getComparisonText(timeframe)}</span>
                 </div>
               )}
             </div>
@@ -302,16 +437,10 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
             </div>
           </div>
 
-          {/* Timeframe Selector */}
+          {/* Updated Timeframe Selector */}
           <div className="mt-5">
             <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)} className="w-full">
               <TabsList className="h-9 p-1 bg-zinc-800/70 rounded-full border border-zinc-700/30">
-                <TabsTrigger
-                  value="week"
-                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
-                >
-                  Week
-                </TabsTrigger>
                 <TabsTrigger
                   value="month"
                   className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
@@ -319,26 +448,39 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                   Month
                 </TabsTrigger>
                 <TabsTrigger
-                  value="all"
+                  value="threeMonths"
                   className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
                 >
-                  All Time
+                  Three Months
+                </TabsTrigger>
+                <TabsTrigger
+                  value="sixMonths"
+                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                >
+                  Six Months
+                </TabsTrigger>
+                <TabsTrigger
+                  value="year"
+                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                >
+                  One Year
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </div>
 
-        {/* Chart Content */}
+        {/* Enhanced Chart Content */}
         <div className="p-0 pt-6">
           <div className="h-[240px] w-full px-4 pb-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                initial="initial"
+                animate="hover"
+                exit="exit"
+                variants={chartVariants}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="h-full w-full"
               >
                 {chartData.length > 0 ? (
@@ -346,50 +488,69 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                     <LineChart
                       data={chartData}
                       margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
-                      onMouseLeave={() => setHoveredPoint(null)}
+                      onMouseLeave={() => {
+                        setHoveredPoint(null)
+                        setIsHoveringChart(false)
+                      }}
                     >
                       <defs>
-                        {/* Gradient for area under the line */}
+                        {/* Enhanced gradient for area under the line */}
                         <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.3} />
+                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.4} />
                           <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
                         </linearGradient>
 
-                        {/* Filter for anti-aliasing */}
+                        {/* Enhanced anti-aliasing filter */}
                         <filter id="anti-aliasing" x="-50%" y="-50%" width="200%" height="200%">
-                          <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+                          <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
                         </filter>
 
-                        {/* Drop shadow for the line */}
+                        {/* Enhanced drop shadow for the line */}
                         <filter id="lineShadow" height="200%">
-                          <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor={chartColor} floodOpacity="0.3" />
+                          <feDropShadow 
+                            dx="0" 
+                            dy="2" 
+                            stdDeviation="3" 
+                            floodColor={chartColor} 
+                            floodOpacity="0.2" 
+                          />
                         </filter>
                       </defs>
 
-                      {/* Grid lines */}
+                      {/* Enhanced grid lines */}
                       <CartesianGrid
                         strokeDasharray="3 3"
                         horizontal={true}
                         vertical={false}
                         stroke="rgba(255,255,255,0.05)"
-                        strokeOpacity={0.3}
+                        strokeOpacity={0.2}
                       />
 
-                      {/* X-Axis (dates) */}
+                      {/* Enhanced X-Axis */}
                       <XAxis
                         dataKey="date"
                         tickFormatter={formatXAxis}
-                        tick={{ fontSize: 11, fill: "#9ca3af" }}
-                        axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                        tick={{ 
+                          fontSize: 11, 
+                          fill: "#9ca3af"
+                        }}
+                        axisLine={{ 
+                          stroke: "rgba(255,255,255,0.1)"
+                        }}
                         tickLine={false}
                         dy={10}
                         padding={{ left: 20, right: 20 }}
                       />
 
-                      {/* Tooltip */}
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
+                      {/* Enhanced Tooltip */}
+                      <Tooltip 
+                        content={<CustomTooltip />} 
+                        cursor={false}
+                        isAnimationActive={true}
+                        animationDuration={200}
+                      />
 
-                      {/* Area under the line */}
+                      {/* Enhanced Area under the line */}
                       <Area
                         type="monotone"
                         dataKey="weight"
@@ -400,7 +561,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         animationEasing="ease-out"
                       />
 
-                      {/* Main trend line */}
+                      {/* Enhanced Main trend line */}
                       <Line
                         type="monotone"
                         dataKey="weight"
@@ -413,17 +574,23 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         style={{
                           filter: "url(#anti-aliasing) url(#lineShadow)",
                           strokeLinecap: "round",
-                          strokeLinejoin: "round",
+                          strokeLinejoin: "round"
                         }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-zinc-400 text-sm">
-                    <div className="bg-zinc-800/50 px-4 py-3 rounded-lg border border-zinc-700/30">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center justify-center h-full text-zinc-400 text-sm"
+                  >
+                    <div className="bg-zinc-800/50 px-4 py-3 rounded-lg border border-zinc-700/30 backdrop-blur-sm">
                       No data available
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </motion.div>
             </AnimatePresence>
