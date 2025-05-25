@@ -290,7 +290,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     )
   }
 
-  // Enhanced Custom Dot component with improved hover states
+  // Custom Dot component with verified implementation
   const CustomDot = (props: any) => {
     const { cx, cy, payload, index } = props
     if (!cx || !cy || !payload) return null
@@ -299,7 +299,29 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     const isPR = payload.isPR || false
     const isHovered = hoveredPoint === index
     const shouldHighlight = isLatest || isHovered || isPR
-    const dotSize = shouldHighlight ? 6 : 4
+    const dotSize = shouldHighlight ? 5.5 : 4
+
+    // Add responsive label positioning
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768)
+      }
+      
+      // Initial check
+      checkMobile()
+      
+      // Add resize listener
+      window.addEventListener('resize', checkMobile)
+      
+      // Cleanup
+      return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
+    // Calculate label position based on device
+    const labelYOffset = isMobile ? -14 : -16 // Increased spacing for both views
+    const labelFontSize = isMobile ? 11 : 15 // Increased desktop font size from 13 to 15
 
     return (
       <g
@@ -313,62 +335,70 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
         }}
         style={{ cursor: "pointer" }}
       >
-        {/* Enhanced glow effect */}
-        {shouldHighlight && (
-          <motion.circle
-            initial={{ r: dotSize + 2, opacity: 0 }}
-            animate={{ 
-              r: dotSize + 4, 
-              opacity: 0.4,
-              transition: { duration: 0.2 }
-            }}
-            cx={cx}
-            cy={cy}
-            fill="none"
-            style={{
-              filter: `drop-shadow(0 0 8px ${chartColor})`,
-            }}
-          />
-        )}
-
-        {/* Main dot with enhanced animation */}
-        <motion.circle
+        {/* Base dot with enhanced visibility */}
+        <circle
           cx={cx}
           cy={cy}
           r={dotSize}
           fill={chartColor}
-          initial={{ scale: 1 }}
-          animate={{ 
-            scale: shouldHighlight ? 1.2 : 1,
-            transition: { duration: 0.2, ease: "easeOut" }
-          }}
           style={{
-            filter: shouldHighlight ? `drop-shadow(0 0 6px ${chartColor})` : "none",
+            opacity: 1, // Increased from 0.95 for better visibility
+            stroke: "rgba(255, 255, 255, 0.12)", // Slightly increased stroke opacity
+            strokeWidth: shouldHighlight ? 1 : 0.5, // Adjusted stroke width
           }}
         />
 
-        {/* Enhanced weight label */}
+        {/* Enhanced highlight effect for better mobile visibility */}
         {shouldHighlight && (
-          <motion.text
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ 
-              opacity: 1, 
-              y: -12,
-              transition: { duration: 0.2, ease: "easeOut" }
+          <circle
+            cx={cx}
+            cy={cy}
+            r={dotSize + 2} // Increased from +1.5 to +2 for more visible glow
+            fill="none"
+            style={{
+              stroke: chartColor,
+              strokeWidth: 1.2, // Increased from 0.8
+              opacity: 0.25, // Increased from 0.15 for better visibility
             }}
+          />
+        )}
+
+        {/* Inner highlight for PR and Latest with enhanced visibility */}
+        {(isPR || isLatest) && (
+          <circle
+            cx={cx}
+            cy={cy}
+            r={dotSize * 0.5} // Slightly increased inner dot size
+            fill="rgba(255, 255, 255, 0.6)" // Increased opacity for better visibility
+            style={{
+              mixBlendMode: "soft-light",
+            }}
+          />
+        )}
+
+        {/* Updated weight label with responsive styling */}
+        {shouldHighlight && (
+          <text
             x={cx}
-            y={cy}
+            y={cy + labelYOffset}
             textAnchor="middle"
             fill={chartColor}
-            fontSize="11"
+            fontSize={labelFontSize}
             fontWeight="600"
             style={{
-              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-              textShadow: "0 1px 2px rgba(0,0,0,0.2)",
+              paintOrder: "stroke",
+              stroke: "rgba(0,0,0,0.2)", // Slightly increased stroke opacity for better contrast
+              strokeWidth: 2, // Increased stroke width for better readability
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              // Add subtle shadow for better visibility
+              filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.2))",
+              // Ensure text is always on top
+              zIndex: 1000,
             }}
           >
             {payload.weight}kg
-          </motion.text>
+          </text>
         )}
       </g>
     )
@@ -494,30 +524,14 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                       }}
                     >
                       <defs>
-                        {/* Enhanced gradient for area under the line */}
+                        {/* Simple gradient for area */}
                         <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.4} />
+                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.15} />
                           <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
                         </linearGradient>
-
-                        {/* Enhanced anti-aliasing filter */}
-                        <filter id="anti-aliasing" x="-50%" y="-50%" width="200%" height="200%">
-                          <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
-                        </filter>
-
-                        {/* Enhanced drop shadow for the line */}
-                        <filter id="lineShadow" height="200%">
-                          <feDropShadow 
-                            dx="0" 
-                            dy="2" 
-                            stdDeviation="3" 
-                            floodColor={chartColor} 
-                            floodOpacity="0.2" 
-                          />
-                        </filter>
                       </defs>
 
-                      {/* Enhanced grid lines */}
+                      {/* Grid lines */}
                       <CartesianGrid
                         strokeDasharray="3 3"
                         horizontal={true}
@@ -526,7 +540,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         strokeOpacity={0.2}
                       />
 
-                      {/* Enhanced X-Axis */}
+                      {/* X-Axis */}
                       <XAxis
                         dataKey="date"
                         tickFormatter={formatXAxis}
@@ -542,15 +556,30 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         padding={{ left: 20, right: 20 }}
                       />
 
-                      {/* Enhanced Tooltip */}
+                      {/* Tooltip */}
                       <Tooltip 
                         content={<CustomTooltip />} 
                         cursor={false}
-                        isAnimationActive={true}
-                        animationDuration={200}
                       />
 
-                      {/* Enhanced Area under the line */}
+                      {/* Main trend line with enhanced visibility */}
+                      <Line
+                        type="monotone"
+                        dataKey="weight"
+                        stroke={chartColor}
+                        strokeWidth={2} // Increased from 1.2 for better mobile visibility
+                        dot={<CustomDot />}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
+                        connectNulls={true}
+                        style={{
+                          strokeLinecap: "round",
+                          strokeLinejoin: "round",
+                          opacity: 1, // Increased from 0.9 for better visibility
+                        }}
+                      />
+
+                      {/* Area under the line with adjusted opacity */}
                       <Area
                         type="monotone"
                         dataKey="weight"
@@ -559,22 +588,8 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         fill="url(#colorWeight)"
                         animationDuration={1000}
                         animationEasing="ease-out"
-                      />
-
-                      {/* Enhanced Main trend line */}
-                      <Line
-                        type="monotone"
-                        dataKey="weight"
-                        stroke={chartColor}
-                        strokeWidth={2.5}
-                        dot={<CustomDot />}
-                        animationDuration={1000}
-                        animationEasing="ease-out"
-                        connectNulls={true}
                         style={{
-                          filter: "url(#anti-aliasing) url(#lineShadow)",
-                          strokeLinecap: "round",
-                          strokeLinejoin: "round"
+                          opacity: 0.8 // Slightly reduced opacity for subtlety
                         }}
                       />
                     </LineChart>
