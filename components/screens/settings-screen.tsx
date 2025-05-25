@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,6 +44,11 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   const [expandedWorkouts, setExpandedWorkouts] = useState<Record<string, boolean>>({})
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
+
+  // Reset scroll position when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const toggleWorkoutExpanded = (workoutId: string) => {
     setExpandedWorkouts((prev) => ({
@@ -274,8 +279,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background">
-      <CardHeader className="px-0 pb-4">
+    <Card className="border-0 shadow-none dark:bg-background max-w-[100vw] overflow-hidden">
+      <CardHeader className="px-4 sm:px-6 pb-4 sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -286,7 +291,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
             <Settings2 className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Settings</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Settings</h2>
             <p className="text-xs text-muted-foreground mt-0.5">Customize your workout experience</p>
           </div>
         </motion.div>
@@ -304,20 +309,20 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
           </motion.div>
         )}
       </CardHeader>
-      <CardContent className="px-0 space-y-8">
+      <CardContent className="px-4 sm:px-6 space-y-8">
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6">
-          <motion.div variants={itemVariants} className="mt-8">
-            <div className="flex items-center justify-between mb-4 px-4">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800">
+          <motion.div variants={itemVariants} className="mt-4 sm:mt-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800">
                   <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                 </div>
-                <h3 className="text-lg font-medium text-foreground">Workout Routines</h3>
+                <h3 className="text-lg font-medium text-foreground truncate">Workout Routines</h3>
               </div>
               <Button
                 onClick={() => setIsAddWorkoutOpen(true)}
                 size="sm"
-                className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm"
+                className="w-full sm:w-auto rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm"
                 aria-label="Add new workout"
               >
                 <PlusCircle className="h-4 w-4 mr-1" aria-hidden="true" />
@@ -325,15 +330,15 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
               </Button>
             </div>
 
-            <div className="px-4">
-              <ScrollArea className="h-[calc(100vh-280px)] min-h-[400px] max-h-[600px]">
+            <div className="relative">
+              <ScrollArea className="h-[calc(100vh-280px)] min-h-[400px] max-h-[600px] pr-4 -mr-4">
                 {workouts.length > 0 ? (
                   <div className="space-y-4">
                     {workouts.map((workout) => (
                       <motion.div
                         key={workout.id}
                         variants={itemVariants}
-                        className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm"
+                        className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div
                           className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
@@ -589,7 +594,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
       {/* Add Workout Dialog */}
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-        <DialogContent className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
           <DialogHeader>
             <DialogTitle>Add New Workout</DialogTitle>
           </DialogHeader>
@@ -616,7 +621,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
       {/* Add Day Dialog */}
       <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
-        <DialogContent className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
           <DialogHeader>
             <DialogTitle>Add Workout Day</DialogTitle>
           </DialogHeader>
@@ -658,7 +663,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
       {/* Add Exercise Dialog */}
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
-        <DialogContent className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
           <DialogHeader>
             <DialogTitle>Add Exercise</DialogTitle>
           </DialogHeader>
