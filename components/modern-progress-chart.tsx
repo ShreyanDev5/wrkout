@@ -31,10 +31,28 @@ const containerVariants: Variants = {
   }
 }
 
+// Update chart variants for smoother revealing animation
 const chartVariants: Variants = {
-  initial: { opacity: 0.5 },
-  hover: { opacity: 1 },
-  exit: { opacity: 0 }
+  initial: { 
+    opacity: 0.4,
+    clipPath: "inset(0 100% 0 0)"
+  },
+  hover: { 
+    opacity: 1,
+    clipPath: "inset(0 0% 0 0)",
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1]
+    }
+  },
+  exit: { 
+    opacity: 0,
+    clipPath: "inset(0 0% 0 100%)",
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1]
+    }
+  }
 }
 
 export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: ModernProgressChartProps) {
@@ -240,13 +258,20 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+        initial={{ opacity: 0, y: 8, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 5, scale: 0.95 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+        transition={{ 
+          type: "spring",
+          stiffness: 500,
+          damping: 30,
+          mass: 0.8
+        }}
         className="bg-zinc-800/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-zinc-700/30 text-sm"
         style={{
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1)",
+          transformOrigin: "center bottom",
+          willChange: "transform, opacity"
         }}
       >
         <div className="space-y-2">
@@ -438,6 +463,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
       className="rounded-xl overflow-hidden border border-zinc-700/30 shadow-xl"
       onMouseEnter={() => setIsHoveringChart(true)}
       onMouseLeave={() => setIsHoveringChart(false)}
+      style={{ willChange: "transform" }}
     >
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
@@ -445,64 +471,71 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-lg font-semibold text-zinc-100 mb-1">{exerciseName}</h3>
+            </div>
 
-              {/* Updated Weight change indicator with dynamic text */}
-              {percentChange && (
-                <div className="flex items-center gap-1 text-xs">
-                  <div
-                    className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full ${
-                      Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                    }`}
-                  >
-                    <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
-                    <span>{Math.abs(Number(percentChange))}%</span>
-                  </div>
-                  <span className="text-zinc-500">{getComparisonText(timeframe)}</span>
+            {/* Updated Weight change indicator with dynamic text */}
+            {percentChange && (
+              <div className="flex flex-col items-end gap-1">
+                <div
+                  className={`flex items-center gap-0.5 px-2.5 py-1 rounded-full text-sm ${
+                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}
+                >
+                  <ChevronUp className={`h-3.5 w-3.5 ${Number(percentChange) <= 0 && "rotate-180"}`} />
+                  <span className="font-semibold">{Math.abs(Number(percentChange))}%</span>
                 </div>
-              )}
-            </div>
-
-            <div className="text-2xl font-bold" style={{ color: chartColor }}>
-              {currentWeight} <span className="text-sm font-normal text-zinc-400">kg</span>
-            </div>
+                <span className="text-xs text-zinc-500">{getComparisonText(timeframe)}</span>
+              </div>
+            )}
           </div>
 
           {/* Updated Timeframe Selector */}
-          <div className="mt-5">
+          <div className="mt-5 -ml-1">
             <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)} className="w-full">
-              <TabsList className="h-9 p-1 bg-zinc-800/70 rounded-full border border-zinc-700/30">
+              <TabsList className="h-8 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30 overflow-x-auto flex-nowrap scrollbar-none">
                 <TabsTrigger
                   value="month"
-                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
                 >
-                  Month
+                  1M
                 </TabsTrigger>
                 <TabsTrigger
                   value="threeMonths"
-                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
                 >
-                  Three Months
+                  3M
                 </TabsTrigger>
                 <TabsTrigger
                   value="sixMonths"
-                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
                 >
-                  Six Months
+                  6M
                 </TabsTrigger>
                 <TabsTrigger
                   value="year"
-                  className="text-xs px-4 rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner"
+                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
                 >
-                  One Year
+                  1Y
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
+
+          {/* Add custom scrollbar styles */}
+          <style jsx global>{`
+            .scrollbar-none {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-none::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
         </div>
 
         {/* Enhanced Chart Content */}
-        <div className="p-0 pt-6">
-          <div className="h-[240px] w-full px-4 pb-6">
+        <div className="p-0 pt-10 sm:pt-12 pb-6">
+          <div className="h-[240px] w-full px-4 mt-4 sm:mt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
@@ -517,7 +550,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={chartData}
-                      margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
+                      margin={{ top: 35, right: 10, left: 10, bottom: 12 }}
                       onMouseLeave={() => {
                         setHoveredPoint(null)
                         setIsHoveringChart(false)
@@ -562,34 +595,34 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                         cursor={false}
                       />
 
-                      {/* Main trend line with enhanced visibility */}
+                      {/* Main trend line with smoother revealing animation */}
                       <Line
                         type="monotone"
                         dataKey="weight"
                         stroke={chartColor}
-                        strokeWidth={2} // Increased from 1.2 for better mobile visibility
+                        strokeWidth={2}
                         dot={<CustomDot />}
-                        animationDuration={1000}
+                        animationDuration={1200}
                         animationEasing="ease-out"
                         connectNulls={true}
                         style={{
                           strokeLinecap: "round",
                           strokeLinejoin: "round",
-                          opacity: 1, // Increased from 0.9 for better visibility
+                          opacity: 1
                         }}
                       />
 
-                      {/* Area under the line with adjusted opacity */}
+                      {/* Area under the line with smoother revealing animation */}
                       <Area
                         type="monotone"
                         dataKey="weight"
                         stroke="none"
                         fillOpacity={1}
                         fill="url(#colorWeight)"
-                        animationDuration={1000}
+                        animationDuration={1200}
                         animationEasing="ease-out"
                         style={{
-                          opacity: 0.8 // Slightly reduced opacity for subtlety
+                          opacity: 0.8
                         }}
                       />
                     </LineChart>
