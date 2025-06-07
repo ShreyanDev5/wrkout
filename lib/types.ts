@@ -22,6 +22,11 @@ export interface WorkoutSession {
   workoutName: string
   dayId: string
   dayName: string
+  exerciseId: string
+  exerciseName: string
+  weight: number
+  reps: number
+  sets: number
   completedExercises: Record<string, Record<string, boolean>>
   duration: number
   notes?: string

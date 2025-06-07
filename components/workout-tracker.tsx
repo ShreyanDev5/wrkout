@@ -8,7 +8,6 @@ import { SettingsScreen } from "@/components/screens/settings-screen"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
-import { StickFigureIcon } from "@/components/stick-figure-icon"
 import { useTheme } from "@/components/theme-context"
 import {
   initializeWorkoutData,
@@ -19,6 +18,7 @@ import {
 } from "@/lib/storage"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutSession, AppData } from "@/lib/types"
+import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -102,7 +102,7 @@ export function WorkoutTracker() {
           </h1>
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center">
-              <StickFigureIcon className="h-5 w-5 text-white" />
+              <WorkoutProgressIcon className="h-5 w-5 text-white" />
             </div>
           </div>
         </div>

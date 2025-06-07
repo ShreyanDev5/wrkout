@@ -1,9 +1,9 @@
-interface StickFigureIconProps {
+interface WorkoutProgressIconProps {
   className?: string
   size?: number
 }
 
-export function StickFigureIcon({ className = "", size = 32 }: StickFigureIconProps) {
+export function WorkoutProgressIcon({ className = "", size = 32 }: WorkoutProgressIconProps) {
   return (
     <svg
       width={size}
@@ -59,4 +59,4 @@ export function StickFigureIcon({ className = "", size = 32 }: StickFigureIconPr
       <circle cx="12" cy="12" r="3" fill="#1C1C1E" />
     </svg>
   )
-}
+} 

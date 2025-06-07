@@ -279,8 +279,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-[100vw] overflow-hidden">
-      <CardHeader className="px-4 sm:px-6 pb-4 sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Card className="border-0 shadow-none dark:bg-background h-[calc(100vh-4rem)] overflow-hidden">
+      <CardHeader className="px-4 sm:px-6 pb-4 sticky top-0 z-10 bg-background border-b dark:border-zinc-800">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -309,7 +309,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
           </motion.div>
         )}
       </CardHeader>
-      <CardContent className="px-4 sm:px-6 space-y-8">
+      <CardContent className="h-[calc(100%-5rem)] overflow-y-auto px-4 sm:px-6 space-y-8">
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6">
           <motion.div variants={itemVariants} className="mt-4 sm:mt-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">

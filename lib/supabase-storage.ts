@@ -78,6 +78,11 @@ export async function saveWorkoutData(appData: AppData): Promise<void> {
 const convertSessionToDatabaseFormat = (session: WorkoutSession) => ({
   user_id: TEMP_USER_ID,
   workout_id: session.workoutId,
+  exercise_id: session.exerciseId,
+  exercise_name: session.exerciseName,
+  weight: session.weight,
+  reps: session.reps,
+  sets: session.sets,
   completed_exercises: JSON.stringify(session.completedExercises),
   duration: session.duration,
   notes: session.notes || null
@@ -95,6 +100,11 @@ const convertSessionFromDatabaseFormat = (
   workoutName,
   dayId,
   dayName,
+  exerciseId: data.exercise_id,
+  exerciseName: data.exercise_name,
+  weight: data.weight,
+  reps: data.reps,
+  sets: data.sets,
   completedExercises: JSON.parse(data.completed_exercises as string) as Record<string, Record<string, boolean>>,
   duration: data.duration,
   notes: data.notes || undefined,

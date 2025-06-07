@@ -44,6 +44,11 @@ export interface Database {
           created_at: string
           user_id: string
           workout_id: string
+          exercise_id: string
+          exercise_name: string
+          weight: number
+          reps: number
+          sets: number
           completed_exercises: Json
           duration: number
           notes: string | null
@@ -53,6 +58,11 @@ export interface Database {
           created_at?: string
           user_id: string
           workout_id: string
+          exercise_id: string
+          exercise_name: string
+          weight: number
+          reps: number
+          sets: number
           completed_exercises: Json
           duration: number
           notes?: string | null
@@ -62,6 +72,11 @@ export interface Database {
           created_at?: string
           user_id?: string
           workout_id?: string
+          exercise_id?: string
+          exercise_name?: string
+          weight?: number
+          reps?: number
+          sets?: number
           completed_exercises?: Json
           duration?: number
           notes?: string | null

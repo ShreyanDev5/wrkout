@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-context"
+import { AuthProvider } from '@/lib/auth-context'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,8 +12,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Workout Tracker",
-  description: "Track your workouts and progress",
+  title: "Wrkout - Progressive Overload Tracker",
+  description: "Track your workouts and progressive overload journey",
     generator: 'v0.dev'
 }
 
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} dark`}>
       <body className="font-sans antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )

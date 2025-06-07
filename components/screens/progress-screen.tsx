@@ -133,8 +133,8 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background">
-      <CardContent className="px-0 pt-0">
+    <Card className="border-0 shadow-none dark:bg-background h-[calc(100vh-4rem)] overflow-hidden">
+      <CardContent className="h-full overflow-y-auto px-4 sm:px-6 pt-4">
         <motion.div className="space-y-12" initial="hidden" animate="visible" variants={containerVariants}>
           {/* Unified Filter System */}
           <motion.div className="mb-8" variants={itemVariants}>
