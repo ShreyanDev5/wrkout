@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
