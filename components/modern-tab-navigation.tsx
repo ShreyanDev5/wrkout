@@ -43,6 +43,7 @@ export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigat
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
+            role="tab"
             className={cn(
               "flex flex-col items-center justify-center relative transition-all duration-200",
               isActive ? "tab-active" : "tab-inactive hover:tab-hover",

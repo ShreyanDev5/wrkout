@@ -55,7 +55,7 @@ export function EmptyWorkoutState({ dayId, onStart }: EmptyWorkoutStateProps) {
       <h3 className="text-xl font-bold mb-2 line-height-readable">Start your first {getDayName(dayId)} workout!</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md line-height-readable">
-        Track your exercises, log your progress, and achieve your fitness goals. Let's get started with your workout
+        Track your exercises, log your progress, and achieve your fitness goals. Let&apos;s get started with your workout
         routine.
       </p>
 

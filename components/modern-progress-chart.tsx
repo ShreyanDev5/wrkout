@@ -318,15 +318,6 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
   // Custom Dot component with verified implementation
   const CustomDot = (props: any) => {
     const { cx, cy, payload, index } = props
-    if (!cx || !cy || !payload) return null
-
-    const isLatest = payload.isLatest || false
-    const isPR = payload.isPR || false
-    const isHovered = hoveredPoint === index
-    const shouldHighlight = isLatest || isHovered || isPR
-    const dotSize = shouldHighlight ? 5.5 : 4
-
-    // Add responsive label positioning
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
@@ -343,6 +334,14 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
       // Cleanup
       return () => window.removeEventListener('resize', checkMobile)
     }, [])
+
+    if (!cx || !cy || !payload) return null
+
+    const isLatest = payload.isLatest || false
+    const isPR = payload.isPR || false
+    const isHovered = hoveredPoint === index
+    const shouldHighlight = isLatest || isHovered || isPR
+    const dotSize = shouldHighlight ? 5.5 : 4
 
     // Calculate label position based on device
     const labelYOffset = isMobile ? -14 : -16 // Increased spacing for both views

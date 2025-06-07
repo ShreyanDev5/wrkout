@@ -642,11 +642,11 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
                 id="day-id"
                 value={newDayId}
                 onChange={(e) => setNewDayId(e.target.value)}
-                placeholder="Enter day ID (e.g. push, pull, leg)"
+                placeholder="Enter day ID (e.g. &quot;push&quot;, &quot;pull&quot;, &quot;leg&quot;)"
                 className="mt-2"
               />
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                Use "push", "pull", or "leg" for special styling
+                Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling
               </p>
             </div>
           </div>
