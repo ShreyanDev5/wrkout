@@ -4,21 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  isLoading: boolean;
-  signUp: (email: string, password: string) => Promise<{
-    error: Error | null;
-    data: { user: User | null; session: Session | null } | null;
-  }>;
-  signIn: (email: string, password: string) => Promise<{
-    error: Error | null;
-    data: { user: User | null; session: Session | null } | null;
-  }>;
-  signOut: () => Promise<void>;
-};
+import type { AuthContextType } from './auth-types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

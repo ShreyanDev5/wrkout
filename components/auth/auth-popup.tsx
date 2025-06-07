@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/auth';
 
 export function AuthPopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,10 +26,12 @@ export function AuthPopup() {
   const handleClose = () => {
     console.log('Closing popup');
     setIsOpen(false);
-    try {
-      localStorage.setItem('hasSeenAuthPopup', 'true');
-    } catch (error) {
-      console.error('Error setting localStorage:', error);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem('hasSeenAuthPopup', 'true');
+      } catch (error) {
+        console.error('Error setting localStorage:', error);
+      }
     }
   };
 

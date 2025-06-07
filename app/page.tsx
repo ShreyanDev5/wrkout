@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/auth';
 import { WorkoutTracker } from '@/components/workout-tracker';
 import { AuthPopup } from '@/components/auth/auth-popup';
 
