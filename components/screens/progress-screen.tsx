@@ -12,6 +12,7 @@ import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
 import { motion } from "framer-motion"
 import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
+import { CollapsibleHeaderLayout } from "@/components/layouts/collapsible-header-layout"
 
 interface ProgressScreenProps {
   sessions: WorkoutSession[]
@@ -132,131 +133,151 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
     },
   }
 
-  return (
-    <Card className="border-0 shadow-none dark:bg-background h-[calc(100vh-4rem)] overflow-hidden">
-      <CardContent className="h-full overflow-y-auto px-4 sm:px-6 pt-4">
-        <motion.div className="space-y-12" initial="hidden" animate="visible" variants={containerVariants}>
-          {/* Unified Filter System */}
-          <motion.div className="mb-8" variants={itemVariants}>
-            <Tabs
-              value={mainFilter || "all"}
-              onValueChange={(value) => setMainFilter(value === "all" ? null : value)}
-              className="w-full"
+  const header = (
+    <>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#34A853] shadow-sm">
+          <BarChart3 className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Progress</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Track your workout performance</p>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <Tabs
+          value={mainFilter || "all"}
+          onValueChange={(value) => setMainFilter(value === "all" ? null : value)}
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30">
+            <TabsTrigger
+              value="all"
+              className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center gap-2 py-2"
             >
-              <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30">
-                <TabsTrigger
-                  value="all"
-                  className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center gap-2 py-2"
-                >
-                  {getWorkoutIcon("all")}
-                  <span>All</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="push"
-                  className="rounded-full data-[state=active]:text-push-dark flex items-center gap-2 py-2"
-                  style={{
-                    backgroundColor:
-                      mainFilter === "push"
-                        ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
-                        : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("push")}
-                  <span>Push</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pull"
-                  className="rounded-full data-[state=active]:text-pull-dark flex items-center gap-2 py-2"
-                  style={{
-                    backgroundColor:
-                      mainFilter === "pull"
-                        ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
-                        : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("pull")}
-                  <span>Pull</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="leg"
-                  className="rounded-full data-[state=active]:text-leg-dark flex items-center gap-2 py-2"
-                  style={{
-                    backgroundColor:
-                      mainFilter === "leg"
-                        ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
-                        : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("leg")}
-                  <span>Legs</span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </motion.div>
+              {getWorkoutIcon("all")}
+              <span>All</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="push"
+              className="rounded-full data-[state=active]:text-push-dark flex items-center gap-2 py-2"
+              style={{
+                backgroundColor:
+                  mainFilter === "push"
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
+                    : undefined,
+              }}
+            >
+              {getWorkoutIcon("push")}
+              <span>Push</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="pull"
+              className="rounded-full data-[state=active]:text-pull-dark flex items-center gap-2 py-2"
+              style={{
+                backgroundColor:
+                  mainFilter === "pull"
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
+                    : undefined,
+              }}
+            >
+              {getWorkoutIcon("pull")}
+              <span>Pull</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="leg"
+              className="rounded-full data-[state=active]:text-leg-dark flex items-center gap-2 py-2"
+              style={{
+                backgroundColor:
+                  mainFilter === "leg"
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
+                    : undefined,
+              }}
+            >
+              {getWorkoutIcon("leg")}
+              <span>Legs</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+    </>
+  )
 
-          {/* Monthly Summary Table - Now first */}
-          <motion.div className="space-y-4" variants={itemVariants}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium flex items-center gap-2">
-                <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
-                Monthly Summary
-              </h3>
-            </div>
+  return (
+    <CollapsibleHeaderLayout
+      header={header}
+      initialHeaderHeight={160}
+      collapseThreshold={60}
+    >
+      <motion.div 
+        className="space-y-12" 
+        initial="hidden" 
+        animate="visible" 
+        variants={containerVariants}
+      >
+        {/* Monthly Summary Table */}
+        <motion.div className="space-y-4" variants={itemVariants}>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
+              Monthly Summary
+            </h3>
+          </div>
 
-            <MonthlySummaryTable sessions={sessions} mainFilter={mainFilter} />
-          </motion.div>
-
-          {/* Progress Chart - Now second */}
-          <motion.div className="space-y-4 mt-14" variants={itemVariants}>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-              <h3 className="text-lg font-medium flex items-center gap-2 whitespace-nowrap">
-                <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
-                Progress Chart
-              </h3>
-
-              {/* Chart Exercise Filter */}
-              <Select
-                value={chartExerciseFilter || "all"}
-                onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
-              >
-                <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
-                  <SelectValue placeholder="All exercises" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
-                  <SelectItem value="all" className="rounded-lg my-1 px-4">
-                    All exercises
-                  </SelectItem>
-                  {filteredExercisesForChart.length > 0 ? (
-                    filteredExercisesForChart.map((exercise) => (
-                      <SelectItem 
-                        key={exercise.id} 
-                        value={exercise.id} 
-                        className="rounded-lg my-1 px-4"
-                      >
-                        <div className="flex items-center gap-2.5 whitespace-nowrap">
-                          <span
-                            className="h-2 w-2 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: getWorkoutDayColor(exercise.dayId, colorMode) }}
-                          ></span>
-                          <span className="truncate">{exercise.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
-                      No exercises available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <ModernProgressChart sessions={sessions} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
-            </div>
-          </motion.div>
+          <MonthlySummaryTable sessions={sessions} mainFilter={mainFilter} />
         </motion.div>
-      </CardContent>
-    </Card>
+
+        {/* Progress Chart */}
+        <motion.div className="space-y-4" variants={itemVariants}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+            <h3 className="text-lg font-medium flex items-center gap-2 whitespace-nowrap">
+              <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
+              Progress Chart
+            </h3>
+
+            {/* Chart Exercise Filter */}
+            <Select
+              value={chartExerciseFilter || "all"}
+              onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
+            >
+              <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
+                <SelectValue placeholder="All exercises" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
+                <SelectItem value="all" className="rounded-lg my-1 px-4">
+                  All exercises
+                </SelectItem>
+                {filteredExercisesForChart.length > 0 ? (
+                  filteredExercisesForChart.map((exercise) => (
+                    <SelectItem 
+                      key={exercise.id} 
+                      value={exercise.id} 
+                      className="rounded-lg my-1 px-4"
+                    >
+                      <div className="flex items-center gap-2.5 whitespace-nowrap">
+                        <span
+                          className="h-2 w-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: getWorkoutDayColor(exercise.dayId, colorMode) }}
+                        ></span>
+                        <span className="truncate">{exercise.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
+                    No exercises available
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <ModernProgressChart sessions={sessions} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
+          </div>
+        </motion.div>
+      </motion.div>
+    </CollapsibleHeaderLayout>
   )
 }
