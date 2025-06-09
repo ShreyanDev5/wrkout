@@ -428,22 +428,6 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     )
   }
 
-  // Helper function to get the comparison text based on timeframe
-  const getComparisonText = (timeframe: TimeframeType): string => {
-    switch (timeframe) {
-      case "month":
-        return "since last month"
-      case "threeMonths":
-        return "since last 3 months"
-      case "sixMonths":
-        return "since last 6 months"
-      case "year":
-        return "since last year"
-      default:
-        return "since first record"
-    }
-  }
-
   // Verify filtering logic with console logs for debugging
   useEffect(() => {
     console.log("Timeframe:", timeframe)
@@ -474,7 +458,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
 
             {/* Updated Weight change indicator with dynamic text */}
             {percentChange && (
-              <div className="flex flex-col items-end gap-1">
+              <div className="flex flex-col items-end gap-0.5">
                 <div
                   className={`flex items-center gap-0.5 px-2.5 py-1 rounded-full text-sm ${
                     Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
@@ -483,7 +467,6 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
                   <ChevronUp className={`h-3.5 w-3.5 ${Number(percentChange) <= 0 && "rotate-180"}`} />
                   <span className="font-semibold">{Math.abs(Number(percentChange))}%</span>
                 </div>
-                <span className="text-xs text-zinc-500">{getComparisonText(timeframe)}</span>
               </div>
             )}
           </div>
@@ -533,8 +516,8 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
         </div>
 
         {/* Enhanced Chart Content */}
-        <div className="p-0 pt-10 sm:pt-12 pb-6">
-          <div className="h-[240px] w-full px-4 mt-4 sm:mt-0">
+        <div className="p-0 pt-6 sm:pt-8 pb-4 sm:pb-6">
+          <div className="h-[220px] sm:h-[240px] w-full px-4 mt-2 sm:mt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}

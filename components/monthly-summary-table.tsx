@@ -47,7 +47,8 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-border/60 bg-muted/20">
                 <TableHead
-                  className="w-[160px] sm:w-[200px] border-r border-border/60 bg-muted/20 sticky left-0 z-10"
+                  className="w-[160px] sm:w-[200px] border-r border-border/60 bg-muted/30 sticky left-0 z-10"
+                  style={{ backgroundColor: 'var(--muted)' }}
                 >
                   <div className="font-medium text-sm sm:text-base pl-1">Exercise</div>
                 </TableHead>
@@ -81,7 +82,7 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                     >
                       <div className="flex items-center">
                         <div 
-                          className="absolute left-0 top-0 bottom-0 w-2 rounded-r-sm"
+                          className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-sm"
                           style={{ backgroundColor: dayColor }}
                         />
                         <span 
