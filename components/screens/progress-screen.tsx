@@ -102,13 +102,13 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
   const getWorkoutIcon = (type: string) => {
     switch (type) {
       case "push":
-        return <ArrowUp className="h-4 w-4" />
+        return <ArrowUp className="h-4 w-4 md:h-5 md:w-5" />
       case "pull":
-        return <ArrowDown className="h-4 w-4" />
+        return <ArrowDown className="h-4 w-4 md:h-5 md:w-5" />
       case "leg":
-        return <Footprints className="h-4 w-4" />
+        return <Footprints className="h-4 w-4 md:h-5 md:w-5" />
       default:
-        return <BarChart3 className="h-4 w-4" />
+        return <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
     }
   }
 
@@ -134,34 +134,36 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
   }
 
   const header = (
-    <>
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#34A853] shadow-sm">
-          <BarChart3 className="h-5 w-5 text-white" />
+    <div className="space-y-4 md:space-y-6 px-1">
+      {/* Title Section */}
+      <div className="flex items-start md:items-center gap-2.5 md:gap-4">
+        <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#34A853] shadow-md md:shadow-lg mt-0.5 md:mt-0">
+          <BarChart3 className="h-4 w-4 md:h-6 md:w-6 text-white" />
         </div>
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Progress</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Track your workout performance</p>
+        <div className="space-y-0.5 md:space-y-1">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">Progress</h2>
+          <p className="text-xs md:text-sm text-muted-foreground">Track your workout.</p>
         </div>
       </div>
 
-      <div className="mt-4">
+      {/* Tabs Section */}
+      <div className="w-full max-w-3xl mx-auto">
         <Tabs
           value={mainFilter || "all"}
           onValueChange={(value) => setMainFilter(value === "all" ? null : value)}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30">
+          <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
             <TabsTrigger
               value="all"
-              className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center gap-2 py-2"
+              className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all -ml-1 md:-ml-1.5"
             >
               {getWorkoutIcon("all")}
               <span>All</span>
             </TabsTrigger>
             <TabsTrigger
               value="push"
-              className="rounded-full data-[state=active]:text-push-dark flex items-center gap-2 py-2"
+              className="rounded-full data-[state=active]:text-push-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all"
               style={{
                 backgroundColor:
                   mainFilter === "push"
@@ -174,7 +176,7 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
             </TabsTrigger>
             <TabsTrigger
               value="pull"
-              className="rounded-full data-[state=active]:text-pull-dark flex items-center gap-2 py-2"
+              className="rounded-full data-[state=active]:text-pull-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5"
               style={{
                 backgroundColor:
                   mainFilter === "pull"
@@ -187,7 +189,7 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
             </TabsTrigger>
             <TabsTrigger
               value="leg"
-              className="rounded-full data-[state=active]:text-leg-dark flex items-center gap-2 py-2"
+              className="rounded-full data-[state=active]:text-leg-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2"
               style={{
                 backgroundColor:
                   mainFilter === "leg"
@@ -201,13 +203,13 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
           </TabsList>
         </Tabs>
       </div>
-    </>
+    </div>
   )
 
   return (
     <CollapsibleHeaderLayout
       header={header}
-      initialHeaderHeight={160}
+      initialHeaderHeight={140}
       collapseThreshold={60}
     >
       <motion.div 
