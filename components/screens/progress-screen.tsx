@@ -134,15 +134,14 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
   }
 
   const header = (
-    <div className="space-y-4 md:space-y-6 px-1">
-      {/* Title Section */}
-      <div className="flex items-start md:items-center gap-2.5 md:gap-4">
-        <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#34A853] shadow-md md:shadow-lg mt-0.5 md:mt-0">
-          <BarChart3 className="h-4 w-4 md:h-6 md:w-6 text-white" />
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#34A853] shadow-sm">
+          <BarChart3 className="h-5 w-5 text-white" />
         </div>
-        <div className="space-y-0.5 md:space-y-1">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">Progress</h2>
-          <p className="text-xs md:text-sm text-muted-foreground">Track your workout.</p>
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Progress</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Track your workout.</p>
         </div>
       </div>
 

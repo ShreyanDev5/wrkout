@@ -287,7 +287,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
         </div>
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-foreground">Settings</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Customize your workout experience</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Customize your workout.</p>
         </div>
       </div>
       {lastSyncTime && (
