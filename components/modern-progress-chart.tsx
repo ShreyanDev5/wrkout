@@ -55,11 +55,42 @@ const chartVariants: Variants = {
   }
 }
 
+// Move all styles to a single constant at the top level of the component
+const chartStyles = `
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .touch-tooltip {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: calc(100% - 32px);
+    max-width: 320px;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+
+  @media (hover: none) {
+    .recharts-wrapper {
+      touch-action: pan-x pan-y;
+    }
+  }
+`
+
 export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: ModernProgressChartProps) {
   const { colorMode } = useTheme()
   const [timeframe, setTimeframe] = useState<TimeframeType>("month")
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null)
   const [isHoveringChart, setIsHoveringChart] = useState(false)
+  const [touchedPoint, setTouchedPoint] = useState<number | null>(null)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
 
   // Filter sessions by exercise and day
   const filteredSessions = useMemo(() => {
@@ -248,9 +279,41 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     })
   }
 
+  // Add useEffect to detect touch device
+  useEffect(() => {
+    const checkTouchDevice = () => {
+      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
+    }
+    
+    // Initial check
+    checkTouchDevice()
+    
+    // Add resize listener
+    window.addEventListener('resize', checkTouchDevice)
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkTouchDevice)
+  }, [])
+
+  // Add touch event handlers
+  const handleTouchStart = (index: number) => {
+    setTouchedPoint(index)
+    setHoveredPoint(index)
+    setIsHoveringChart(true)
+  }
+
+  const handleTouchEnd = () => {
+    // Small delay to allow for tap interactions
+    setTimeout(() => {
+      setTouchedPoint(null)
+      setHoveredPoint(null)
+      setIsHoveringChart(false)
+    }, 2000) // Dismiss after 2 seconds
+  }
+
   // Enhanced Custom Tooltip component with iOS-like styling
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload || !payload.length) return null
+    if ((!active && !touchedPoint) || !payload || !payload.length) return null
 
     const data = payload[0].payload
     const isPR = data.isPR
@@ -267,11 +330,14 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
           damping: 30,
           mass: 0.8
         }}
-        className="bg-zinc-800/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-zinc-700/30 text-sm"
+        className={`bg-zinc-800/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-zinc-700/30 text-sm ${
+          isTouchDevice ? 'touch-tooltip' : ''
+        }`}
         style={{
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1)",
           transformOrigin: "center bottom",
-          willChange: "transform, opacity"
+          willChange: "transform, opacity",
+          touchAction: 'none', // Prevent default touch actions
         }}
       >
         <div className="space-y-2">
@@ -325,13 +391,8 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
         setIsMobile(window.innerWidth < 768)
       }
       
-      // Initial check
       checkMobile()
-      
-      // Add resize listener
       window.addEventListener('resize', checkMobile)
-      
-      // Cleanup
       return () => window.removeEventListener('resize', checkMobile)
     }, [])
 
@@ -340,67 +401,82 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     const isLatest = payload.isLatest || false
     const isPR = payload.isPR || false
     const isHovered = hoveredPoint === index
-    const shouldHighlight = isLatest || isHovered || isPR
+    const isTouched = touchedPoint === index
+    const shouldHighlight = isLatest || isHovered || isPR || isTouched
     const dotSize = shouldHighlight ? 5.5 : 4
 
-    // Calculate label position based on device
-    const labelYOffset = isMobile ? -14 : -16 // Increased spacing for both views
-    const labelFontSize = isMobile ? 11 : 15 // Increased desktop font size from 13 to 15
+    const labelYOffset = isMobile ? -14 : -16
+    const labelFontSize = isMobile ? 11 : 15
 
     return (
       <g
         onMouseEnter={() => {
-          setHoveredPoint(index)
-          setIsHoveringChart(true)
+          if (!isTouchDevice) {
+            setHoveredPoint(index)
+            setIsHoveringChart(true)
+          }
         }}
         onMouseLeave={() => {
-          setHoveredPoint(null)
-          setIsHoveringChart(false)
+          if (!isTouchDevice) {
+            setHoveredPoint(null)
+            setIsHoveringChart(false)
+          }
         }}
-        style={{ cursor: "pointer" }}
+        onTouchStart={(e) => {
+          e.preventDefault() // Prevent default touch behavior
+          handleTouchStart(index)
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault() // Prevent default touch behavior
+          handleTouchEnd()
+        }}
+        style={{ 
+          cursor: isTouchDevice ? 'pointer' : 'default',
+          touchAction: 'none' // Prevent default touch actions
+        }}
       >
-        {/* Base dot with enhanced visibility */}
+        {/* Base dot */}
         <circle
           cx={cx}
           cy={cy}
           r={dotSize}
           fill={chartColor}
           style={{
-            opacity: 1, // Increased from 0.95 for better visibility
-            stroke: "rgba(255, 255, 255, 0.12)", // Slightly increased stroke opacity
-            strokeWidth: shouldHighlight ? 1 : 0.5, // Adjusted stroke width
+            opacity: 1,
+            stroke: "rgba(255, 255, 255, 0.12)",
+            strokeWidth: shouldHighlight ? 1 : 0.5,
           }}
         />
 
-        {/* Enhanced highlight effect for better mobile visibility */}
+        {/* Highlight effect */}
         {shouldHighlight && (
           <circle
             cx={cx}
             cy={cy}
-            r={dotSize + 2} // Increased from +1.5 to +2 for more visible glow
+            r={dotSize + 2}
             fill="none"
             style={{
               stroke: chartColor,
-              strokeWidth: 1.2, // Increased from 0.8
-              opacity: 0.25, // Increased from 0.15 for better visibility
+              strokeWidth: 1.2,
+              opacity: 0.25,
             }}
           />
         )}
 
-        {/* Inner highlight for PR and Latest with enhanced visibility */}
+        {/* Inner highlight */}
         {(isPR || isLatest) && (
           <circle
             cx={cx}
             cy={cy}
-            r={dotSize * 0.5} // Slightly increased inner dot size
-            fill="rgba(255, 255, 255, 0.6)" // Increased opacity for better visibility
+            r={dotSize * 0.5}
+            fill="rgba(255, 255, 255, 0.6)"
             style={{
               mixBlendMode: "soft-light",
             }}
           />
         )}
 
-        {/* Updated weight label with responsive styling */}
+        {/* Weight label */}
         {shouldHighlight && (
           <text
             x={cx}
@@ -411,14 +487,13 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
             fontWeight="600"
             style={{
               paintOrder: "stroke",
-              stroke: "rgba(0,0,0,0.2)", // Slightly increased stroke opacity for better contrast
-              strokeWidth: 2, // Increased stroke width for better readability
+              stroke: "rgba(0,0,0,0.2)",
+              strokeWidth: 2,
               strokeLinecap: "round",
               strokeLinejoin: "round",
-              // Add subtle shadow for better visibility
               filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.2))",
-              // Ensure text is always on top
               zIndex: 1000,
+              pointerEvents: 'none', // Prevent text from interfering with touch events
             }}
           >
             {payload.weight}kg
@@ -444,10 +519,11 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
       animate="visible"
       variants={containerVariants}
       className="rounded-xl overflow-hidden border border-zinc-700/30 shadow-xl"
-      onMouseEnter={() => setIsHoveringChart(true)}
-      onMouseLeave={() => setIsHoveringChart(false)}
+      onMouseEnter={() => !isTouchDevice && setIsHoveringChart(true)}
+      onMouseLeave={() => !isTouchDevice && setIsHoveringChart(false)}
       style={{ willChange: "transform" }}
     >
+      <style jsx global>{chartStyles}</style>
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
         <div className="p-6 bg-gradient-to-b from-zinc-800/80 to-transparent border-b border-zinc-700/20">
@@ -502,17 +578,6 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
               </TabsList>
             </Tabs>
           </div>
-
-          {/* Add custom scrollbar styles */}
-          <style jsx global>{`
-            .scrollbar-none {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-            .scrollbar-none::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
         </div>
 
         {/* Enhanced Chart Content */}
