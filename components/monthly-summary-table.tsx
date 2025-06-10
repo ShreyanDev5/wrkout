@@ -47,10 +47,10 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-border/60 bg-muted/20">
                 <TableHead
-                  className="w-[160px] sm:w-[200px] border-r border-border/60 bg-muted/30 sticky left-0 z-10"
+                  className="w-[160px] sm:w-[200px] border-r border-border/60 text-center bg-muted/20 sticky left-0 z-10"
                   style={{ backgroundColor: 'var(--muted)' }}
                 >
-                  <div className="font-medium text-sm sm:text-base pl-1">Exercise</div>
+                  <div className="font-medium text-sm sm:text-base">Exercise</div>
                 </TableHead>
                 {/* Single week indicator with improved spacing */}
                 {weekLabels.map((label) => (
