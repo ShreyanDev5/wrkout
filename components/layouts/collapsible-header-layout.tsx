@@ -54,11 +54,11 @@ export function CollapsibleHeaderLayout({
       <div className="fixed inset-0 bg-background/95 backdrop-blur-sm" />
       
       {/* Content container */}
-      <Card className={cn("relative border-0 shadow-none h-full", className)}>
+      <Card className={cn("relative border-0 shadow-none h-full flex flex-col", className)}>
         {/* Main scrollable container */}
         <div 
           ref={containerRef}
-          className="h-full overflow-y-auto overflow-x-hidden ios-scroll"
+          className="h-full overflow-y-auto overflow-x-hidden ios-scroll flex-1"
         >
           {/* Header section that collapses on scroll */}
           <motion.div
@@ -82,7 +82,7 @@ export function CollapsibleHeaderLayout({
           {/* Scrollable content */}
           <CardContent 
             className={cn(
-              "px-4 sm:px-6 pt-4",
+              "px-4 sm:px-6 pt-6 pb-24",
               contentClassName
             )}
           >
@@ -90,7 +90,7 @@ export function CollapsibleHeaderLayout({
               style={{
                 y: contentY,
               }}
-              className="relative"
+              className="relative min-h-[calc(100vh-12rem)]"
             >
               {children}
             </motion.div>
@@ -98,19 +98,27 @@ export function CollapsibleHeaderLayout({
         </div>
       </Card>
 
-      {/* Add global scrollbar styles */}
       <style jsx global>{`
         /* iOS-like momentum scrolling */
         .ios-scroll {
           -webkit-overflow-scrolling: touch;
           scroll-behavior: smooth;
           overscroll-behavior-y: contain;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+          scrollbar-width: thin;
+          scrollbar-color: hsl(var(--border)) transparent;
         }
 
         .ios-scroll::-webkit-scrollbar {
-          display: none;
+          width: 6px;
+        }
+
+        .ios-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .ios-scroll::-webkit-scrollbar-thumb {
+          background-color: hsl(var(--border));
+          border-radius: 3px;
         }
 
         /* Enable momentum scrolling on iOS */
@@ -138,25 +146,6 @@ export function CollapsibleHeaderLayout({
           overscroll-behavior-y: contain;
         }
 
-        /* Ensure proper table layout */
-        .ios-scroll table {
-          width: 100%;
-          table-layout: fixed;
-        }
-
-        /* Ensure proper sticky positioning */
-        .ios-scroll .sticky {
-          position: sticky;
-          z-index: 10;
-          background-color: hsl(var(--background));
-        }
-
-        /* Ensure proper header transitions */
-        .ios-scroll .motion-div {
-          will-change: transform, opacity;
-          transform-origin: top center;
-        }
-
         /* Ensure proper content spacing */
         .ios-scroll .space-y-12 > * + * {
           margin-top: 3rem;
@@ -168,15 +157,9 @@ export function CollapsibleHeaderLayout({
           -webkit-backdrop-filter: blur(8px);
         }
 
-        /* Ensure proper motion transitions */
-        .ios-scroll .motion-div {
-          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                     opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         /* Ensure proper content transitions */
-        .ios-scroll .motion-div[style*="y"] {
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .ios-scroll .motion-div {
+          will-change: transform, opacity;
         }
       `}</style>
     </div>
