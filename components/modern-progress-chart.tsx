@@ -68,8 +68,10 @@ const chartStyles = `
   .touch-tooltip {
     position: fixed;
     bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    transform: none;
+    box-sizing: border-box;
     z-index: 1000;
     width: calc(100% - 32px);
     max-width: 320px;
