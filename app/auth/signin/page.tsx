@@ -23,6 +23,9 @@ export default function SignInPage() {
         </Alert>
       )}
       <SignInForm />
+      <div className="mt-4 text-center">
+        <a href="/auth/forgot-password" className="text-sm text-primary underline hover:text-primary/80">Forgot password?</a>
+      </div>
     </AuthLayout>
   );
 } 
