@@ -4,36 +4,29 @@ import { useMemo } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTheme } from "@/components/theme-context"
 import { getWorkoutDayColor } from "@/lib/utils"
-import type { WorkoutSession } from "@/lib/types"
+import type { WorkoutLog } from "@/lib/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { processWorkoutData } from "@/lib/progress-data-utils"
 
 interface MonthlySummaryTableProps {
-  sessions: WorkoutSession[]
+  logs: WorkoutLog[]
   mainFilter: string | null
 }
 
-export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTableProps) {
+export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTableProps) {
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
 
-  // Filter sessions by main filter
-  const filteredSessions = useMemo(() => {
-    return sessions.filter((session) => {
-      // Apply main filter
-      if (mainFilter && session.dayId !== mainFilter) return false
-
-      // Only include sessions with both weight and reps data
-      if (session.weight <= 0 || session.reps <= 0) return false
-
-      return true
-    })
-  }, [sessions, mainFilter])
+  // Filter logs by main filter (if you have a way to associate logs with dayId, add it here)
+  const filteredLogs = useMemo(() => {
+    // For now, just return all logs (since dayId is not in WorkoutLog)
+    return logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
+  }, [logs, mainFilter])
 
   // Process workout data using our utility
   const { weeklyData, weekLabels } = useMemo(() => {
-    return processWorkoutData(filteredSessions)
-  }, [filteredSessions])
+    return processWorkoutData(filteredLogs)
+  }, [filteredLogs])
 
   return (
     <div className="relative">
@@ -67,10 +60,11 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
             </TableHeader>
             <TableBody>
               {weeklyData.map((exercise) => {
-                const dayColor = getWorkoutDayColor(exercise.dayId, colorMode)
+                // Use a default color for now, or add color logic if you have day info
+                const dayColor = getWorkoutDayColor("push", colorMode)
                 return (
                   <TableRow 
-                    key={exercise.exerciseId} 
+                    key={exercise.exerciseName} 
                     className="hover:bg-muted/20 transition-colors group border-b border-border/40"
                   >
                     <TableCell
@@ -105,13 +99,7 @@ export function MonthlySummaryTable({ sessions, mainFilter }: MonthlySummaryTabl
                             <div className="flex flex-col items-center justify-center gap-1">
                               {/* Reps with improved spacing and adjusted font */}
                               <div className="font-medium text-sm sm:text-base leading-tight">
-                                {isMobile ? (
-                                  <>{weekData.reps}<span className="text-base sm:text-lg mx-1">×</span></>
-                                ) : (
-                                  <>
-                                    {weekData.sets} <span className="text-base sm:text-lg mx-1">×</span> {weekData.reps}
-                                  </>
-                                )}
+                                {weekData.reps}<span className="text-base sm:text-lg mx-1">×</span>
                               </div>
                               {/* Weight with improved styling */}
                               <div

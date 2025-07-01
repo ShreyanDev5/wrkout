@@ -6,7 +6,7 @@ import { ModernProgressChart } from "@/components/modern-progress-chart"
 import { MonthlySummaryTable } from "@/components/monthly-summary-table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { WorkoutSession } from "@/lib/types"
+import type { WorkoutLog } from "@/lib/types"
 import { getWorkoutDayColor } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
@@ -15,10 +15,10 @@ import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
 import { CollapsibleHeaderLayout } from "@/components/layouts/collapsible-header-layout"
 
 interface ProgressScreenProps {
-  sessions: WorkoutSession[]
+  logs: WorkoutLog[]
 }
 
-export function ProgressScreen({ sessions }: ProgressScreenProps) {
+export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
   const [mainFilter, setMainFilter] = useState<string | null>(null)
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
@@ -56,47 +56,39 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
     setChartExerciseFilter(null)
   }, [mainFilter])
 
-  // Filter exercises that have both rep and weight data
+  // Group logs by exercise_name
   const exercisesWithCompleteData = useMemo(() => {
-    if (!sessions || sessions.length === 0) return []
+    if (!logs || logs.length === 0) return []
 
-    // Group sessions by exercise ID
-    const exerciseGroups: Record<string, WorkoutSession[]> = {}
+    // Group logs by exercise_name
+    const exerciseGroups: Record<string, WorkoutLog[]> = {}
 
-    sessions.forEach((session) => {
-      if (!exerciseGroups[session.exerciseId]) {
-        exerciseGroups[session.exerciseId] = []
+    logs.forEach((log) => {
+      if (!exerciseGroups[log.exercise_name]) {
+        exerciseGroups[log.exercise_name] = []
       }
-      exerciseGroups[session.exerciseId].push(session)
+      exerciseGroups[log.exercise_name].push(log)
     })
 
     // Filter exercises that have both rep and weight data
     return Object.entries(exerciseGroups)
-      .filter(([_, exerciseSessions]) => {
-        return exerciseSessions.some((session) => session.weight > 0 && session.reps > 0)
+      .filter(([_, exerciseLogs]) => {
+        return exerciseLogs.some((log) => log.weight > 0 && log.avg_reps > 0)
       })
-      .map(([exerciseId, exerciseSessions]) => {
-        if (!exerciseSessions || exerciseSessions.length === 0) {
-          return {
-            id: exerciseId,
-            name: "Unknown Exercise",
-            dayId: "push", // Default value
-          }
-        }
+      .map(([exerciseName, exerciseLogs]) => {
         return {
-          id: exerciseId,
-          name: exerciseSessions[0]?.exerciseName || "Unknown Exercise",
-          dayId: exerciseSessions[0]?.dayId || "push",
+          name: exerciseName,
+          // You may want to add more info here if available (e.g., workout_id)
         }
       })
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-  }, [sessions])
+  }, [logs])
 
-  // Filter exercises by main filter for chart
+  // Filter exercises by main filter for chart (if you have a way to associate logs with dayId, add it here)
   const filteredExercisesForChart = useMemo(() => {
-    if (!mainFilter) return exercisesWithCompleteData
-    return exercisesWithCompleteData.filter((exercise) => exercise.dayId === mainFilter)
-  }, [exercisesWithCompleteData, mainFilter])
+    // For now, just return all exercises (since dayId is not in WorkoutLog)
+    return exercisesWithCompleteData
+  }, [exercisesWithCompleteData])
 
   // Get icon for workout type
   const getWorkoutIcon = (type: string) => {
@@ -226,7 +218,7 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
             </h3>
           </div>
 
-          <MonthlySummaryTable sessions={sessions} mainFilter={mainFilter} />
+          <MonthlySummaryTable logs={logs} mainFilter={mainFilter} />
         </motion.div>
 
         {/* Progress Chart */}
@@ -252,14 +244,14 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
                 {filteredExercisesForChart.length > 0 ? (
                   filteredExercisesForChart.map((exercise) => (
                     <SelectItem 
-                      key={exercise.id} 
-                      value={exercise.id} 
+                      key={exercise.name} 
+                      value={exercise.name} 
                       className="rounded-lg my-1 px-4"
                     >
                       <div className="flex items-center gap-2.5 whitespace-nowrap">
                         <span
                           className="h-2 w-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: getWorkoutDayColor(exercise.dayId, colorMode) }}
+                          style={{ backgroundColor: getWorkoutDayColor(mainFilter || "push", colorMode) }}
                         ></span>
                         <span className="truncate">{exercise.name}</span>
                       </div>
@@ -275,7 +267,7 @@ export function ProgressScreen({ sessions }: ProgressScreenProps) {
           </div>
 
           <div>
-            <ModernProgressChart sessions={sessions} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
+            <ModernProgressChart logs={logs} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
           </div>
         </motion.div>
       </motion.div>

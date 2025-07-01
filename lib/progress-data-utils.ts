@@ -1,4 +1,4 @@
-import type { WorkoutSession } from "@/lib/types"
+import type { WorkoutLog } from "@/lib/types"
 
 // Number of weeks to display in the progress view
 export const PROGRESS_WEEKS = 1
@@ -15,57 +15,48 @@ function isSameDay(date1: Date, date2: Date): boolean {
 }
 
 /**
- * Processes workout sessions into a progression-based weekly data structure
+ * Processes workout logs into a progression-based weekly data structure
  * where entries for the same exercise progress from W1 (oldest) to W4 (newest)
  * and same-day entries update existing data instead of creating new entries
  */
-export function processWorkoutData(sessions: WorkoutSession[]) {
-  if (!sessions.length) return { weeklyData: [], weekLabels: [] }
+export function processWorkoutData(logs: WorkoutLog[]) {
+  if (!logs.length) return { weeklyData: [], weekLabels: [] }
 
   // First, handle same-day duplicates by keeping only the most recent entry for each exercise per day
-  const deduplicatedSessions = sessions.reduce((acc: WorkoutSession[], current) => {
-    const currentDate = new Date(current.date)
-    
+  const deduplicatedLogs = logs.reduce((acc: WorkoutLog[], current) => {
+    const currentDate = new Date(current.performed_at)
     // Find if there's an existing entry for the same exercise on the same day
-    const existingIndex = acc.findIndex(session => {
-      const sessionDate = new Date(session.date)
-      return session.exerciseId === current.exerciseId && isSameDay(sessionDate, currentDate)
+    const existingIndex = acc.findIndex(log => {
+      const logDate = new Date(log.performed_at)
+      return log.exercise_name === current.exercise_name && isSameDay(logDate, currentDate)
     })
-
     if (existingIndex === -1) {
-      // No existing entry for this exercise on this day, add it
       acc.push(current)
     } else {
-      // Replace the existing entry with the current one (which is more recent)
       acc[existingIndex] = current
     }
-
     return acc
   }, [])
 
-  // Sort all sessions by date (oldest first)
-  const sortedSessions = [...deduplicatedSessions].sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime()
+  // Sort all logs by date (oldest first)
+  const sortedLogs = [...deduplicatedLogs].sort((a, b) => {
+    return new Date(a.performed_at).getTime() - new Date(b.performed_at).getTime()
   })
 
-  // Group sessions by exercise
-  const exerciseGroups: Record<string, WorkoutSession[]> = {}
-
-  sortedSessions.forEach((session) => {
-    if (!exerciseGroups[session.exerciseId]) {
-      exerciseGroups[session.exerciseId] = []
+  // Group logs by exercise_name
+  const exerciseGroups: Record<string, WorkoutLog[]> = {}
+  sortedLogs.forEach((log) => {
+    if (!exerciseGroups[log.exercise_name]) {
+      exerciseGroups[log.exercise_name] = []
     }
-    exerciseGroups[session.exerciseId].push(session)
+    exerciseGroups[log.exercise_name].push(log)
   })
 
   // Process each exercise's data
   const weeklyData: {
-    exerciseId: string
     exerciseName: string
-    dayId: string
     weeks: {
       [weekKey: string]: {
-        sets: number
         reps: number
         weight: number
         date: string
@@ -76,55 +67,48 @@ export function processWorkoutData(sessions: WorkoutSession[]) {
   // Generate week labels (W1 to W4)
   const weekLabels = ['Current Week']
 
-  Object.entries(exerciseGroups).forEach(([exerciseId, exerciseSessions]) => {
-    // Sort exercise sessions by date (oldest first)
-    const sortedExerciseSessions = [...exerciseSessions].sort((a, b) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime()
+  Object.entries(exerciseGroups).forEach(([exerciseName, exerciseLogs]) => {
+    // Sort exercise logs by date (oldest first)
+    const sortedExerciseLogs = [...exerciseLogs].sort((a, b) => {
+      return new Date(a.performed_at).getTime() - new Date(b.performed_at).getTime()
     })
 
     // Initialize weeks object with null values
-    const weeks: Record<string, { sets: number; reps: number; weight: number; date: string } | null> = {}
+    const weeks: Record<string, { reps: number; weight: number; date: string } | null> = {}
     weekLabels.forEach(label => {
       weeks[label] = null
     })
 
     // For each exercise, we need to determine if we're in progression mode or shift mode
-    const totalSessions = sortedExerciseSessions.length
-    const isInProgressionMode = totalSessions <= PROGRESS_WEEKS
+    const totalLogs = sortedExerciseLogs.length
+    const isInProgressionMode = totalLogs <= PROGRESS_WEEKS
 
     if (isInProgressionMode) {
-      // In progression mode: oldest session goes to W1, second oldest to W2, etc.
-      sortedExerciseSessions.forEach((session, index) => {
+      // In progression mode: oldest log goes to W1, second oldest to W2, etc.
+      sortedExerciseLogs.forEach((log, index) => {
         const weekLabel = weekLabels[index]
         weeks[weekLabel] = {
-          sets: session.sets,
-          reps: session.reps,
-          weight: session.weight,
-          date: session.date,
+          reps: log.avg_reps,
+          weight: log.weight,
+          date: log.performed_at,
         }
       })
     } else {
-      // In shift mode: maintain a rolling window of the most recent sessions
-      // but ensure the oldest session is always in W1
-      const recentSessions = sortedExerciseSessions.slice(-PROGRESS_WEEKS)
-      
-      // Assign sessions in order (oldest to newest)
-      // W1 = oldest, W2 = second oldest, etc.
-      recentSessions.forEach((session, index) => {
+      // In shift mode: maintain a rolling window of the most recent logs
+      // but ensure the oldest log is always in W1
+      const recentLogs = sortedExerciseLogs.slice(-PROGRESS_WEEKS)
+      recentLogs.forEach((log, index) => {
         const weekLabel = weekLabels[index]
         weeks[weekLabel] = {
-          sets: session.sets,
-          reps: session.reps,
-          weight: session.weight,
-          date: session.date,
+          reps: log.avg_reps,
+          weight: log.weight,
+          date: log.performed_at,
         }
       })
     }
 
     weeklyData.push({
-      exerciseId,
-      exerciseName: exerciseSessions[0].exerciseName,
-      dayId: exerciseSessions[0].dayId,
+      exerciseName,
       weeks,
     })
   })

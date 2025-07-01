@@ -7,13 +7,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronUp } from "lucide-react"
 import { getWorkoutDayColor } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
-import type { WorkoutSession } from "@/lib/types"
+import type { WorkoutLog } from "@/lib/types"
 import type { Variants } from "framer-motion"
 
 type TimeframeType = "month" | "threeMonths" | "sixMonths" | "year"
 
 interface ModernProgressChartProps {
-  sessions: WorkoutSession[]
+  logs: WorkoutLog[]
   mainFilter: string | null
   exerciseFilter: string | null
 }
@@ -86,7 +86,7 @@ const chartStyles = `
   }
 `
 
-export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: ModernProgressChartProps) {
+export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: ModernProgressChartProps) {
   const { colorMode } = useTheme()
   const [timeframe, setTimeframe] = useState<TimeframeType>("month")
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null)
@@ -94,24 +94,24 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
   const [touchedPoint, setTouchedPoint] = useState<number | null>(null)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
 
-  // Filter sessions by exercise and day
-  const filteredSessions = useMemo(() => {
-    return sessions.filter((session) => {
-      // Apply main filter (day type)
-      if (mainFilter && session.dayId !== mainFilter) return false
+  // Filter logs by exercise and (optionally) day (if you add day info to logs)
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      // Apply main filter (day type) if you have it in logs (not present in current schema)
+      // if (mainFilter && log.dayId !== mainFilter) return false
 
       // Apply exercise filter
-      if (exerciseFilter && session.exerciseId !== exerciseFilter) return false
+      if (exerciseFilter && log.exercise_name !== exerciseFilter) return false
 
-      // Only include sessions with both weight and reps data
-      if (session.weight <= 0 || session.reps <= 0) return false
+      // Only include logs with both weight and avg_reps data
+      if (log.weight <= 0 || log.avg_reps <= 0) return false
 
       return true
     })
-  }, [sessions, mainFilter, exerciseFilter])
+  }, [logs, mainFilter, exerciseFilter])
 
   // Apply timeframe filter
-  const timeframeFilteredSessions = useMemo(() => {
+  const timeframeFilteredLogs = useMemo(() => {
     const now = new Date()
     const cutoffDate = new Date()
 
@@ -130,11 +130,11 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
         break
     }
 
-    return filteredSessions.filter((session) => {
-      const sessionDate = new Date(session.date)
-      return sessionDate >= cutoffDate
+    return filteredLogs.filter((log) => {
+      const logDate = new Date(log.performed_at)
+      return logDate >= cutoffDate
     })
-  }, [filteredSessions, timeframe])
+  }, [filteredLogs, timeframe])
 
   // Process data for the chart
   const chartData = useMemo(() => {
@@ -144,23 +144,21 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
         date: string
         weight: number
         exerciseName: string
-        dayId: string
-        reps: number
+        avgReps: number
         isLatest: boolean
         isPR: boolean
         index: number
       }
     > = {}
 
-    timeframeFilteredSessions.forEach((session) => {
-      const dateKey = session.date.split("T")[0]
-      if (!groupedData[dateKey] || session.weight > groupedData[dateKey].weight) {
+    timeframeFilteredLogs.forEach((log) => {
+      const dateKey = log.performed_at
+      if (!groupedData[dateKey] || log.weight > groupedData[dateKey].weight) {
         groupedData[dateKey] = {
           date: dateKey,
-          weight: session.weight,
-          exerciseName: session.exerciseName,
-          dayId: session.dayId,
-          reps: session.reps,
+          weight: log.weight,
+          exerciseName: log.exercise_name,
+          avgReps: log.avg_reps,
           isLatest: false,
           isPR: false,
           index: 0,
@@ -195,7 +193,7 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     }
 
     return sortedData
-  }, [timeframeFilteredSessions])
+  }, [timeframeFilteredLogs])
 
   // Calculate stats
   const personalRecord = chartData.length ? Math.max(...chartData.map((item) => item.weight)) : 0
@@ -248,22 +246,25 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
     if (mainFilter) {
       return getWorkoutDayColor(mainFilter, colorMode)
     } else if (exerciseFilter) {
-      const exercise = filteredSessions.find((s) => s.exerciseId === exerciseFilter)
-      if (exercise) {
-        return getWorkoutDayColor(exercise.dayId, colorMode)
-      }
+      // 'dayId' does not exist on WorkoutLog, so fallback to default color or handle gracefully
+      // Optionally, if you have a way to infer the day type from exercise name, implement here
+      // For now, just return the default color
+      // const exercise = filteredLogs.find((s) => s.exercise_name === exerciseFilter)
+      // if (exercise) {
+      //   return getWorkoutDayColor(exercise.dayId, colorMode)
+      // }
     }
     return "#FF5733" // Default color
-  }, [mainFilter, exerciseFilter, filteredSessions, colorMode])
+  }, [mainFilter, exerciseFilter, filteredLogs, colorMode])
 
   // Get exercise name for display
   const exerciseName = useMemo(() => {
     if (exerciseFilter) {
-      const exercise = filteredSessions.find((s) => s.exerciseId === exerciseFilter)
-      return exercise?.exerciseName || ""
+      const exercise = filteredLogs.find((s) => s.exercise_name === exerciseFilter)
+      return exercise?.exercise_name || ""
     }
     return mainFilter ? `${mainFilter.charAt(0).toUpperCase() + mainFilter.slice(1)}` : ""
-  }, [exerciseFilter, mainFilter, filteredSessions])
+  }, [exerciseFilter, mainFilter, filteredLogs])
 
   // Format date for display
   const formatXAxis = (dateStr: string) => {
@@ -508,12 +509,12 @@ export function ModernProgressChart({ sessions, mainFilter, exerciseFilter }: Mo
   // Verify filtering logic with console logs for debugging
   useEffect(() => {
     console.log("Timeframe:", timeframe)
-    console.log("Filtered Sessions Count:", timeframeFilteredSessions.length)
+    console.log("Filtered Sessions Count:", timeframeFilteredLogs.length)
     console.log("Date Range:", {
-      start: timeframeFilteredSessions[0]?.date,
-      end: timeframeFilteredSessions[timeframeFilteredSessions.length - 1]?.date
+      start: timeframeFilteredLogs[0]?.performed_at,
+      end: timeframeFilteredLogs[timeframeFilteredLogs.length - 1]?.performed_at
     })
-  }, [timeframe, timeframeFilteredSessions])
+  }, [timeframe, timeframeFilteredLogs])
 
   return (
     <motion.div

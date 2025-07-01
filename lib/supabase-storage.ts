@@ -1,6 +1,5 @@
 import { supabase, handleSupabaseError } from './supabase'
-import type { Database } from './database.types'
-import type { Workout, WorkoutSession, AppData } from './types'
+import type { Workout, WorkoutLog, AppData } from './types'
 
 // Temporary user ID until authentication is implemented
 const TEMP_USER_ID = 'temp-user'
@@ -9,16 +8,16 @@ const TEMP_USER_ID = 'temp-user'
 const convertToDatabaseFormat = (appData: AppData) => ({
   user_id: TEMP_USER_ID,
   name: 'My Workouts',
-  exercises: JSON.stringify(appData.workouts),
-  completed_exercises: JSON.stringify(appData.completedExercises),
+  // No exercises/completed_exercises JSON columns in new schema
+  created_at: new Date().toISOString(),
   last_sync_time: appData.lastSyncTime
 })
 
 // Convert database format to AppData
-const convertFromDatabaseFormat = (data: Database['public']['Tables']['workouts']['Row']): AppData => ({
-  workouts: JSON.parse(data.exercises as string) as Workout[],
-  completedExercises: JSON.parse(data.completed_exercises as string) as Record<string, Record<string, boolean>>,
-  lastSyncTime: data.last_sync_time
+const convertFromDatabaseFormat = (data: any): AppData => ({
+  // The new schema does not store exercises in the workouts table
+  workouts: [], // You may want to load workouts differently if you want to support multiple routines
+  lastSyncTime: data.last_sync_time || null
 })
 
 // Initialize workout data in Supabase
@@ -52,7 +51,6 @@ export async function loadWorkoutData(): Promise<AppData> {
     // Return empty data if there's an error
     return {
       workouts: [],
-      completedExercises: {},
       lastSyncTime: null
     }
   }
@@ -74,53 +72,12 @@ export async function saveWorkoutData(appData: AppData): Promise<void> {
   }
 }
 
-// Convert WorkoutSession to database format
-const convertSessionToDatabaseFormat = (session: WorkoutSession) => ({
-  user_id: TEMP_USER_ID,
-  workout_id: session.workoutId,
-  exercise_id: session.exerciseId,
-  exercise_name: session.exerciseName,
-  weight: session.weight,
-  reps: session.reps,
-  sets: session.sets,
-  completed_exercises: JSON.stringify(session.completedExercises),
-  duration: session.duration,
-  notes: session.notes || null
-})
-
-// Convert database format to WorkoutSession
-const convertSessionFromDatabaseFormat = (
-  data: Database['public']['Tables']['workout_sessions']['Row'],
-  workoutName: string,
-  dayId: string,
-  dayName: string
-): WorkoutSession => ({
-  id: data.id,
-  workoutId: data.workout_id,
-  workoutName,
-  dayId,
-  dayName,
-  exerciseId: data.exercise_id,
-  exerciseName: data.exercise_name,
-  weight: data.weight,
-  reps: data.reps,
-  sets: data.sets,
-  completedExercises: JSON.parse(data.completed_exercises as string) as Record<string, Record<string, boolean>>,
-  duration: data.duration,
-  notes: data.notes || undefined,
-  timestamp: data.created_at,
-  date: new Date(data.created_at).toISOString().split('T')[0],
-  exercises: [], // This will need to be populated from the workout data
-  totalExercises: 0, // This will need to be calculated
-  completedCount: 0 // This will need to be calculated
-})
-
-// Save workout session to Supabase
-export async function saveWorkoutSession(session: WorkoutSession): Promise<void> {
+// Save a workout log to Supabase
+export async function saveWorkoutLog(log: WorkoutLog): Promise<void> {
   try {
     const { error } = await supabase
-      .from('workout_sessions')
-      .insert(convertSessionToDatabaseFormat(session))
+      .from('workout_logs')
+      .insert(log)
 
     if (error) throw error
   } catch (error) {
@@ -128,56 +85,17 @@ export async function saveWorkoutSession(session: WorkoutSession): Promise<void>
   }
 }
 
-// Load workout sessions from Supabase
-export async function loadWorkoutSessions(): Promise<WorkoutSession[]> {
+// Load workout logs from Supabase
+export async function loadWorkoutLogs(): Promise<WorkoutLog[]> {
   try {
-    // First, get the workout data to map workout names and day information
-    const { data: workoutData, error: workoutError } = await supabase
-      .from('workouts')
+    const { data, error } = await supabase
+      .from('workout_logs')
       .select('*')
       .eq('user_id', TEMP_USER_ID)
-      .single()
+      .order('performed_at', { ascending: false })
 
-    if (workoutError) throw workoutError
-    if (!workoutData) throw new Error('No workout data found')
-
-    const workouts = JSON.parse(workoutData.exercises as string) as Workout[]
-    const workoutMap = new Map(workouts.map(w => [w.id, w]))
-
-    // Then get the sessions
-    const { data: sessions, error: sessionsError } = await supabase
-      .from('workout_sessions')
-      .select('*')
-      .eq('user_id', TEMP_USER_ID)
-      .order('created_at', { ascending: false })
-
-    if (sessionsError) throw sessionsError
-
-    return (sessions || []).map(session => {
-      const workout = workoutMap.get(session.workout_id)
-      if (!workout) {
-        throw new Error(`Workout not found for session ${session.id}`)
-      }
-
-      const day = workout.days.find(d => d.id === session.workout_id)
-      if (!day) {
-        throw new Error(`Day not found for session ${session.id}`)
-      }
-
-      const completedExercises = JSON.parse(session.completed_exercises as string) as Record<string, Record<string, boolean>>
-      const exercises = day.exercises.map(e => e.id)
-      const completedCount = Object.values(completedExercises).reduce(
-        (count, dayExercises) => count + Object.values(dayExercises).filter(Boolean).length,
-        0
-      )
-
-      return {
-        ...convertSessionFromDatabaseFormat(session, workout.name, day.id, day.name),
-        exercises,
-        totalExercises: exercises.length,
-        completedCount
-      }
-    })
+    if (error) throw error
+    return data || []
   } catch (error) {
     handleSupabaseError(error)
     return []

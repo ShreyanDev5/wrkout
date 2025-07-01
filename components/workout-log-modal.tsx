@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { WeightSlider } from "@/components/ui/weight-slider"
-import type { Exercise, WorkoutSession } from "@/lib/types"
+import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 
@@ -18,7 +18,7 @@ interface WorkoutLogModalProps {
   workoutName: string
   dayName: string
   dayColor: string
-  onSave: (session: WorkoutSession) => void
+  onSave: (log: WorkoutLog) => void
 }
 
 export function WorkoutLogModal({
@@ -54,22 +54,18 @@ export function WorkoutLogModal({
     // Save the current values for this exercise
     setLastUsedValues(exercise.id, { weight, reps, sets })
 
-    const session: WorkoutSession = {
-      id: `session-${Date.now()}`,
-      date: new Date().toISOString(),
-      workoutId,
-      workoutName,
-      dayId,
-      dayName,
-      exerciseId: exercise.id,
-      exerciseName: exercise.name,
+    const log: WorkoutLog = {
+      id: `log-${Date.now()}`,
+      user_id: "temp-user", // Replace with real user id in production
+      workout_id: workoutId,
+      exercise_name: exercise.name,
       weight,
-      reps,
-      sets,
+      avg_reps: reps,
+      performed_at: new Date().toISOString().split("T")[0],
     }
 
-    // Save the session
-    onSave(session)
+    // Save the log
+    onSave(log)
 
     // Reset saving state
     setIsSaving(false)
@@ -113,17 +109,6 @@ export function WorkoutLogModal({
                 className="hover:scale-[1.02] transition-transform duration-200 text-white"
               />
             </div>
-            <div className="flex flex-col items-center">
-              <h3 className="text-sm font-medium text-white mb-3">Sets</h3>
-              <NumberStepper 
-                value={sets} 
-                onChange={setSets} 
-                min={0} 
-                max={10} 
-                accentColor={dayColor}
-                className="hover:scale-[1.02] transition-transform duration-200 text-white"
-              />
-            </div>
           </div>
         </div>
 
@@ -143,7 +128,7 @@ export function WorkoutLogModal({
             onClick={handleSave}
             style={{ backgroundColor: dayColor, color: '#fff' }}
             className="w-full h-11 px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-none shadow-none hover:brightness-110 transition-all duration-200 sm:justify-self-end"
-            aria-label="Save workout session"
+            aria-label="Save workout log"
             disabled={isSaving}
           >
             {isSaving ? "Saving..." : "Save"}

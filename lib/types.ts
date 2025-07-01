@@ -16,29 +16,18 @@ export interface Workout {
   days: WorkoutDay[]
 }
 
-export interface WorkoutSession {
+// New type matching the workout_logs table
+export interface WorkoutLog {
   id: string
-  workoutId: string
-  workoutName: string
-  dayId: string
-  dayName: string
-  exerciseId: string
-  exerciseName: string
+  user_id: string
+  workout_id: string
+  exercise_name: string
   weight: number
-  reps: number
-  sets: number
-  completedExercises: Record<string, Record<string, boolean>>
-  duration: number
-  notes?: string
-  timestamp: string
-  date: string
-  exercises: string[]
-  totalExercises: number
-  completedCount: number
+  avg_reps: number
+  performed_at: string // ISO date string
 }
 
 export interface AppData {
   workouts: Workout[]
-  completedExercises: Record<string, Record<string, boolean>>
   lastSyncTime: string | null
 }

@@ -11,23 +11,19 @@ import { EmptyWorkoutState } from "@/components/empty-workout-state"
 import { ResetConfirmationModal } from "@/components/reset-confirmation-modal"
 import { RotateCcw } from "lucide-react"
 import { useTheme } from "@/components/theme-context"
-import type { Workout, WorkoutSession } from "@/lib/types"
+import type { Workout, WorkoutLog } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection } from "@/lib/storage"
 
 interface WorkoutScreenProps {
   workouts: Workout[]
-  completedExercises: Record<string, Record<string, boolean>>
-  onUpdateCompletedExercises: (completedExercises: Record<string, Record<string, boolean>>) => void
-  onAddWorkoutSession: (session: WorkoutSession) => void
+  onAddWorkoutLog: (log: WorkoutLog) => void | Promise<void>
 }
 
 export function WorkoutScreen({
   workouts,
-  completedExercises,
-  onUpdateCompletedExercises,
-  onAddWorkoutSession,
+  onAddWorkoutLog,
 }: WorkoutScreenProps) {
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
@@ -70,62 +66,6 @@ export function WorkoutScreen({
     }
   }
 
-  // Handle exercise completion toggle
-  const toggleExercise = (dayId: string, exerciseId: string) => {
-    onUpdateCompletedExercises({
-      ...completedExercises,
-      [selectedWorkout]: {
-        ...(completedExercises[selectedWorkout] || {}),
-        [`${dayId}-${exerciseId}`]: !(completedExercises[selectedWorkout]?.[`${dayId}-${exerciseId}`] || false),
-      },
-    })
-  }
-
-  // Reset all exercises for the current workout and day
-  const resetDay = () => {
-    setIsResetModalOpen(true)
-  }
-
-  const confirmReset = () => {
-    const updated = { ...completedExercises }
-    const currentDay = workouts.find((w) => w.id === selectedWorkout)?.days.find((d) => d.id === selectedDay)
-
-    if (currentDay) {
-      currentDay.exercises.forEach((exercise) => {
-        const key = `${selectedDay}-${exercise.id}`
-        if (updated[selectedWorkout]) {
-          updated[selectedWorkout][key] = false
-        }
-      })
-    }
-
-    onUpdateCompletedExercises(updated)
-  }
-
-  // Calculate progress for the current day
-  const calculateProgress = () => {
-    const currentDay = workouts.find((w) => w.id === selectedWorkout)?.days.find((d) => d.id === selectedDay)
-    if (!currentDay) return 0
-
-    const totalExercises = currentDay.exercises.length
-    if (totalExercises === 0) return 0
-
-    let completed = 0
-    currentDay.exercises.forEach((exercise) => {
-      const key = `${selectedDay}-${exercise.id}`
-      if (completedExercises[selectedWorkout]?.[key]) {
-        completed++
-      }
-    })
-
-    return (completed / totalExercises) * 100
-  }
-
-  // Add a new workout session
-  const handleAddWorkoutSession = (session: WorkoutSession) => {
-    onAddWorkoutSession(session)
-  }
-
   // Start a workout (for empty state)
   const startWorkout = () => {
     // This function is just a placeholder for now
@@ -135,16 +75,7 @@ export function WorkoutScreen({
   // Get the current workout and day data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
   const currentDay = currentWorkout?.days.find((d) => d.id === selectedDay)
-  const progress = calculateProgress()
-  const completedCount =
-    currentDay?.exercises.filter((ex) => completedExercises[selectedWorkout]?.[`${selectedDay}-${ex.id}`]).length || 0
-  const totalExercises = currentDay?.exercises.length || 0
-
-  // Check if the current day has any exercises
   const hasExercises = (currentDay?.exercises?.length ?? 0) > 0
-
-  // Check if any exercises have been completed for the current day
-  const hasCompletedAnyExercise = completedCount > 0
 
   if (workouts.length === 0) {
     return (
@@ -161,7 +92,7 @@ export function WorkoutScreen({
           <div
             className={cn(
               "workout-select transition-all duration-200",
-              hasExercises && hasCompletedAnyExercise ? "flex-1" : "w-full",
+              "w-full",
             )}
           >
             <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
@@ -177,35 +108,8 @@ export function WorkoutScreen({
               </SelectContent>
             </Select>
           </div>
-
-          {hasExercises && hasCompletedAnyExercise ? (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={resetDay}
-              title="Reset current day"
-              className="min-touch-target focus-visible-ring reset-button transition-opacity duration-200 opacity-100"
-              disabled={workouts.length === 0}
-              aria-label="Reset current day"
-            >
-              <RotateCcw className="h-4 w-4 modern-icon" aria-hidden="true" />
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={resetDay}
-              title="Reset current day"
-              className="min-touch-target focus-visible-ring reset-button transition-opacity duration-200 opacity-0 invisible absolute"
-              disabled={true}
-              aria-label="Reset current day"
-            >
-              <RotateCcw className="h-4 w-4 modern-icon" aria-hidden="true" />
-            </Button>
-          )}
         </div>
       </CardHeader>
-
       <CardContent className="px-0">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
           <TabsList className="grid grid-cols-3 mb-4 modern-tabs-list workout-tabs-container">
@@ -255,49 +159,22 @@ export function WorkoutScreen({
               <span className="font-medium">LEG</span>
             </TabsTrigger>
           </TabsList>
-
-          {hasExercises && (
-            <div className="mb-6 flex justify-center">
-              <CircularProgress
-                value={progress}
-                category={selectedDay}
-                showLabel={true}
-                labelText="Progress"
-                aria-label={`Progress: ${Math.round(progress)}%`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(progress)}
-              />
-            </div>
-          )}
-
-          {workouts
-            .find((w) => w.id === selectedWorkout)
-            ?.days.map((day) => (
-              <TabsContent key={day.id} value={day.id} className="mt-0">
-                {day.exercises.length > 0 ? (
-                  <DayExercises
-                    exercises={day.exercises}
-                    dayId={day.id}
-                    completed={completedExercises[selectedWorkout] || {}}
-                    onToggle={toggleExercise}
-                    onLogSession={handleAddWorkoutSession}
-                    dayColor={getWorkoutDayColor(day.id, colorMode)}
-                  />
-                ) : (
-                  <EmptyWorkoutState dayId={day.id} onStart={startWorkout} />
-                )}
-              </TabsContent>
-            ))}
+          {currentWorkout?.days.map((day) => (
+            <TabsContent key={day.id} value={day.id} className="mt-0">
+              {day.exercises.length > 0 ? (
+                <DayExercises
+                  exercises={day.exercises}
+                  dayId={day.id}
+                  onLogWorkout={onAddWorkoutLog}
+                  dayColor={getWorkoutDayColor(day.id, colorMode)}
+                />
+              ) : (
+                <EmptyWorkoutState dayId={day.id} onStart={startWorkout} />
+              )}
+            </TabsContent>
+          ))}
         </Tabs>
       </CardContent>
-
-      <ResetConfirmationModal
-        isOpen={isResetModalOpen}
-        onClose={() => setIsResetModalOpen(false)}
-        onConfirm={confirmReset}
-        dayColor={getWorkoutDayColor(selectedDay, colorMode)}
-      />
     </Card>
   )
 }

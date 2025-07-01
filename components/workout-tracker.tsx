@@ -13,21 +13,19 @@ import {
   initializeWorkoutData,
   loadWorkoutData,
   saveWorkoutData,
-  loadWorkoutSessions,
-  saveWorkoutSessions,
 } from "@/lib/storage"
 import { initAudioSystem } from "@/lib/audio-utils"
-import type { Workout, WorkoutSession, AppData } from "@/lib/types"
+import type { Workout, WorkoutLog, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
+import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/supabase-storage"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
   const [appData, setAppData] = useState<AppData>({
     workouts: [],
-    completedExercises: {},
     lastSyncTime: null,
   })
-  const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([])
+  const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
   const { toast } = useToast()
   const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
 
@@ -36,7 +34,7 @@ export function WorkoutTracker() {
     initAudioSystem()
   }, [])
 
-  // Initialize app data from storage
+  // Initialize app data and logs from storage/Supabase
   useEffect(() => {
     const initializeApp = async () => {
       // Initialize workout data if needed
@@ -44,10 +42,11 @@ export function WorkoutTracker() {
 
       // Load data from storage
       const data = await loadWorkoutData()
-      const sessions = await loadWorkoutSessions()
-
       setAppData(data)
-      setWorkoutSessions(sessions)
+
+      // Load logs from Supabase
+      const logs = await loadWorkoutLogs()
+      setWorkoutLogs(logs)
     }
 
     initializeApp()
@@ -60,23 +59,15 @@ export function WorkoutTracker() {
     }
   }, [appData])
 
-  useEffect(() => {
-    if (workoutSessions.length > 0) {
-      saveWorkoutSessions(workoutSessions)
+  // Add workout log
+  const addWorkoutLog = async (log: WorkoutLog) => {
+    try {
+      await saveWorkoutLog(log)
+      setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top
+      toast({ title: "Workout logged!" })
+    } catch (error) {
+      toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
     }
-  }, [workoutSessions])
-
-  // Update completed exercises
-  const updateCompletedExercises = (completedExercises: Record<string, Record<string, boolean>>) => {
-    setAppData((prev) => ({
-      ...prev,
-      completedExercises,
-    }))
-  }
-
-  // Add workout session
-  const addWorkoutSession = (session: WorkoutSession) => {
-    setWorkoutSessions((prev) => [...prev, session])
   }
 
   // Update workouts
@@ -113,14 +104,12 @@ export function WorkoutTracker() {
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
             <WorkoutScreen
               workouts={appData.workouts}
-              completedExercises={appData.completedExercises}
-              onUpdateCompletedExercises={updateCompletedExercises}
-              onAddWorkoutSession={addWorkoutSession}
+              onAddWorkoutLog={addWorkoutLog}
             />
           </TabsContent>
 
           <TabsContent value="progress" className="mt-0 p-0" id="progress-tab">
-            <ProgressScreen sessions={workoutSessions} />
+            <ProgressScreen logs={workoutLogs} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-0 p-0" id="settings-tab">
