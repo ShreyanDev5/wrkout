@@ -25,6 +25,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CollapsibleHeaderLayout } from "@/components/layouts/collapsible-header-layout"
+import { useAuth } from '@/lib/auth/auth-context'
+import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 
 interface SettingsScreenProps {
   workouts: Workout[]
@@ -45,6 +47,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   const [expandedWorkouts, setExpandedWorkouts] = useState<Record<string, boolean>>({})
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
+  const { signOut } = useAuth()
+  const [isSignOutOpen, setIsSignOutOpen] = useState(false)
 
   // Reset scroll position when component mounts
   useEffect(() => {
@@ -305,6 +309,18 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
       )}
     </div>
   )
+
+  const handleSignOut = async () => {
+    toast({
+      title: 'Goodbye!',
+      description: 'You have been signed out.',
+      className: 'bg-[#EA4335] border-none text-white',
+      duration: 1500,
+    })
+    setTimeout(() => {
+      signOut()
+    }, 1200)
+  }
 
   return (
     <CollapsibleHeaderLayout
@@ -693,6 +709,22 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <div className="flex justify-end mt-8">
+        <Button
+          variant="destructive"
+          className="rounded-md bg-[#EA4335] hover:bg-[#c62828] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
+          onClick={() => setIsSignOutOpen(true)}
+        >
+          Sign Out
+        </Button>
+      </div>
+      <ResetConfirmationModal
+        isOpen={isSignOutOpen}
+        onClose={() => setIsSignOutOpen(false)}
+        onConfirm={handleSignOut}
+        dayColor="#EA4335"
+      />
     </CollapsibleHeaderLayout>
   )
 }
