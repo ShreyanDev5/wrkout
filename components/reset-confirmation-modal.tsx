@@ -34,7 +34,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
             type="button"
             variant="outline"
             onClick={onClose}
-            className="min-w-[110px] min-touch-target focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary font-semibold"
+            className="min-w-[140px] min-touch-target focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary font-semibold"
             aria-label={message ? 'Cancel sign out' : 'Cancel reset'}
           >
             Cancel
@@ -46,7 +46,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
               onConfirm()
               onClose()
             }}
-            className="min-w-[110px] min-touch-target focus-visible-ring dark:border-none dark:shadow-none font-semibold"
+            className="min-w-[140px] min-touch-target focus-visible-ring dark:border-none dark:shadow-none font-semibold"
             aria-label={message ? 'Confirm sign out' : 'Confirm reset'}
           >
             {message ? 'Sign Out' : 'Reset'}
