@@ -15,43 +15,42 @@ interface ResetConfirmationModalProps {
 export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, message }: ResetConfirmationModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[90%] max-w-[425px] dark:bg-background dark:border-opacity-10 rounded-lg">
+      <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
         <DialogHeader>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-col items-center gap-2 mb-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" aria-hidden="true" />
-            <DialogTitle className="line-height-readable">{message ? 'Sign Out' : 'Reset Workout Session'}</DialogTitle>
+            <DialogTitle className="line-height-readable text-center">{message ? 'Sign Out' : 'Reset Workout Session'}</DialogTitle>
           </div>
         </DialogHeader>
 
         <div className="py-4">
-          <p className="line-height-readable">
+          <p className="line-height-readable text-center">
             {message || 'Are you sure you want to restart this session? All checked exercises will be marked as incomplete.'}
           </p>
         </div>
 
-        <DialogFooter className="flex flex-row justify-center gap-4 mt-2">
-          <Button
+        {/* Button Row: Use plain div for full control */}
+        <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+          <button
             type="button"
-            variant="outline"
             onClick={onClose}
-            className="min-w-[140px] min-touch-target focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary font-semibold"
+            className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
             aria-label={message ? 'Cancel sign out' : 'Cancel reset'}
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="destructive"
             onClick={() => {
               onConfirm()
               onClose()
             }}
-            className="min-w-[140px] min-touch-target focus-visible-ring dark:border-none dark:shadow-none font-semibold"
+            className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
             aria-label={message ? 'Confirm sign out' : 'Confirm reset'}
           >
             {message ? 'Sign Out' : 'Reset'}
-          </Button>
-        </DialogFooter>
+          </button>
+        </div>
       </DialogContent>
     </Dialog>
   )
