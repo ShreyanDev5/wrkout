@@ -29,13 +29,13 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
           </p>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="flex flex-row justify-center gap-4 mt-2">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="min-touch-target focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary"
-            aria-label="Cancel reset"
+            className="min-w-[110px] min-touch-target focus-visible-ring dark:border-opacity-10 dark:hover:bg-secondary font-semibold"
+            aria-label={message ? 'Cancel sign out' : 'Cancel reset'}
           >
             Cancel
           </Button>
@@ -46,10 +46,10 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
               onConfirm()
               onClose()
             }}
-            className="min-touch-target focus-visible-ring dark:border-none dark:shadow-none"
-            aria-label="Confirm reset"
+            className="min-w-[110px] min-touch-target focus-visible-ring dark:border-none dark:shadow-none font-semibold"
+            aria-label={message ? 'Confirm sign out' : 'Confirm reset'}
           >
-            Reset
+            {message ? 'Sign Out' : 'Reset'}
           </Button>
         </DialogFooter>
       </DialogContent>
