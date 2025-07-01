@@ -13,6 +13,9 @@ export default function SignUpPage() {
       footerLinkText="Sign in"
     >
       <SignUpForm />
+      <div className="mt-4 text-center">
+        <a href="/privacy" className="text-xs text-muted-foreground underline hover:text-primary/80">Privacy Policy</a>
+      </div>
     </AuthLayout>
   );
 } 
