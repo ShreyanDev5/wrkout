@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { AuthLayout } from '@/components/auth/auth-layout';
@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
-export default function VerifyPage() {
+function VerifyEmailHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -52,6 +52,37 @@ export default function VerifyPage() {
   };
 
   return (
+    <div className="space-y-4">
+      {status === 'loading' && (
+        <div className="flex items-center justify-center space-x-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Verifying your email...</span>
+        </div>
+      )}
+
+      {status === 'success' && (
+        <Alert>
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      )}
+
+      {status === 'error' && (
+        <Alert variant="destructive">
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      )}
+
+      {status !== 'loading' && (
+        <Button onClick={handleSignIn} className="w-full">
+          Go to Sign In
+        </Button>
+      )}
+    </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
     <AuthLayout
       title="Email Verification"
       subtitle="Verifying your email address"
@@ -59,32 +90,9 @@ export default function VerifyPage() {
       footerLink=""
       footerLinkText=""
     >
-      <div className="space-y-4">
-        {status === 'loading' && (
-          <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Verifying your email...</span>
-          </div>
-        )}
-
-        {status === 'success' && (
-          <Alert>
-            <AlertDescription>{message}</AlertDescription>
-          </Alert>
-        )}
-
-        {status === 'error' && (
-          <Alert variant="destructive">
-            <AlertDescription>{message}</AlertDescription>
-          </Alert>
-        )}
-
-        {status !== 'loading' && (
-          <Button onClick={handleSignIn} className="w-full">
-            Go to Sign In
-          </Button>
-        )}
-      </div>
+      <Suspense fallback={<div className="flex items-center justify-center space-x-2"><Loader2 className="h-4 w-4 animate-spin" /><span>Verifying your email...</span></div>}>
+        <VerifyEmailHandler />
+      </Suspense>
     </AuthLayout>
   );
 } 
