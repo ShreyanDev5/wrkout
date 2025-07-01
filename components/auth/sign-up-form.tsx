@@ -11,7 +11,7 @@ import { Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function SignUpForm() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +39,16 @@ export function SignUpForm() {
     e.preventDefault();
     setError(null);
 
+    // Validate username
+    if (!username || username.length < 3) {
+      setError('Username must be at least 3 characters long');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setError('Username can only contain letters, numbers, and underscores');
+      return;
+    }
+
     // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -55,18 +65,18 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(email, password);
+      // Use username to construct a pseudo-email
+      const pseudoEmail = `${username}@wrkout.app`;
+      const { error } = await signUp(pseudoEmail, password);
       if (error) {
         setError(error.message);
         return;
       }
-      // Immediately sign in the user after successful sign up
-      const { error: signInError } = await signIn(email, password);
+      const { error: signInError } = await signIn(pseudoEmail, password);
       if (signInError) {
         setError(signInError.message);
         return;
       }
-      // Redirect to main app interface
       router.push('/');
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -92,33 +102,21 @@ export function SignUpForm() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            Email address
-          </Label>
-          <div className="relative w-full">
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={cn(
-                "w-full rounded-lg border border-border/50 bg-background/50 pl-8",
-                "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/50",
-                "transition-all duration-200",
-                "placeholder:text-muted-foreground/50",
-                email && "pl-3" // Standard padding when icon is hidden
-              )}
-              disabled={isLoading}
-            />
-            <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+          <Label htmlFor="username">Username</Label>
+          <Input
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className={cn(
+              "w-full rounded-lg border border-border/50 bg-background/50 pl-8",
+              "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/50",
               "transition-all duration-200",
-              email && "opacity-0 -translate-x-2" // Hide and slide left when there's input
-            )}>
-              <Mail className="h-4 w-4 ml-3 text-muted-foreground/60" />
-            </div>
-          </div>
+              "placeholder:text-muted-foreground/50",
+              username && "pl-3" // Standard padding when icon is hidden
+            )}
+            disabled={isLoading}
+          />
         </div>
 
         <div className="space-y-2">

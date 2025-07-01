@@ -11,7 +11,7 @@ import { Loader2, Mail, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function SignInForm() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +24,25 @@ export function SignInForm() {
     setIsLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      if (!username || username.length < 3) {
+        setError('Username must be at least 3 characters long');
+        setIsLoading(false);
+        return;
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        setError('Username can only contain letters, numbers, and underscores');
+        setIsLoading(false);
+        return;
+      }
+      const pseudoEmail = `${username}@wrkout.app`;
+      const { error } = await signIn(pseudoEmail, password);
       
       if (error) {
         setError(error.message);
         return;
       }
 
-      router.push('/dashboard');
+      router.push('/');
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     } finally {
@@ -49,35 +60,34 @@ export function SignInForm() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            Email address
+          <Label htmlFor="username" className="text-sm font-medium">
+            Username
           </Label>
           <div className="relative w-full">
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className={cn(
                 "w-full rounded-lg border border-border/50 bg-background/50 pl-8",
                 "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/50",
                 "transition-all duration-200",
                 "placeholder:text-muted-foreground/50",
-                email && "pl-3" // Standard padding when icon is hidden
+                username && "pl-3" // Standard padding when icon is hidden
               )}
               disabled={isLoading}
             />
             <div className={cn(
               "absolute left-0 top-0 h-full flex items-center",
               "transition-all duration-200",
-              email && "opacity-0 -translate-x-2" // Hide and slide left when there's input
+              username && "opacity-0 -translate-x-2" // Hide and slide left when there's input
             )}>
               <Mail className="h-4 w-4 ml-3 text-muted-foreground/60" />
             </div>
           </div>
         </div>
-
         <div className="space-y-2">
           <Label htmlFor="password" className="text-sm font-medium">
             Password
