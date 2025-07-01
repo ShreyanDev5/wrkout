@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -67,10 +68,18 @@ export function SignUpForm() {
     try {
       // Use username to construct a pseudo-email (case-sensitive)
       const pseudoEmail = `${username}@wrkout.app`;
-      const { error } = await signUp(pseudoEmail, password);
+      const { error, data } = await signUp(pseudoEmail, password);
       if (error) {
         setError(error.message);
         return;
+      }
+      // Store the original username in user_metadata
+      if (data && data.user) {
+        const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
+        if (metaError) {
+          setError(metaError.message);
+          return;
+        }
       }
       const { error: signInError } = await signIn(pseudoEmail, password);
       if (signInError) {

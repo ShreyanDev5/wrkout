@@ -47,7 +47,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   const [expandedWorkouts, setExpandedWorkouts] = useState<Record<string, boolean>>({})
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
-  const { signOut, user } = useAuth()
+  const { signOut, user, username } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
 
   // Reset scroll position when component mounts
@@ -283,8 +283,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
     },
   }
 
-  // Extract username from pseudo-email
-  const username = user?.email ? user.email.replace(/@wrkout\.app$/, '') : '';
+  // Use username from context (case-sensitive)
+  const displayUsername = username || (user?.email ? user.email.replace(/@wrkout\.app$/, '') : '');
 
   const header = (
     <div className="space-y-2">
@@ -336,8 +336,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
                 <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
               </div>
               <h3 className="text-lg font-medium text-foreground truncate">
-                {username && (
-                  <span className="fitness-text-gradient font-bold mr-1">{username}&apos;s</span>
+                {displayUsername && (
+                  <span className="fitness-text-gradient font-bold mr-1">{displayUsername}&apos;s</span>
                 )}
                 Workout Routines
               </h3>

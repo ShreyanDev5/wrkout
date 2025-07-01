@@ -11,7 +11,7 @@ import { Settings2 } from 'lucide-react';
 import { CollapsibleHeaderLayout } from '@/components/layouts/collapsible-header-layout';
 
 export default function SettingsPage() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, username } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,6 +32,8 @@ export default function SettingsPage() {
     console.log('Sign out clicked');
     await signOut();
   };
+
+  const displayUsername = username || (user?.email ? user.email.replace(/@wrkout\.app$/, '') : '');
 
   const header = (
     <div className="flex items-center gap-3">
@@ -71,7 +73,7 @@ export default function SettingsPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">{user.email}</p>
+                      <p className="text-sm font-medium">{displayUsername || user.email}</p>
                       <p className="text-sm text-muted-foreground">Signed in</p>
                     </div>
                   </div>
