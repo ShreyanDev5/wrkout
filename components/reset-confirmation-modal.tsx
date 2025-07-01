@@ -9,22 +9,23 @@ interface ResetConfirmationModalProps {
   onClose: () => void
   onConfirm: () => void
   dayColor: string
+  message?: string
 }
 
-export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor }: ResetConfirmationModalProps) {
+export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, message }: ResetConfirmationModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[90%] max-w-[425px] dark:bg-background dark:border-opacity-10 rounded-lg">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" aria-hidden="true" />
-            <DialogTitle className="line-height-readable">Reset Workout Session</DialogTitle>
+            <DialogTitle className="line-height-readable">{message ? 'Sign Out' : 'Reset Workout Session'}</DialogTitle>
           </div>
         </DialogHeader>
 
         <div className="py-4">
           <p className="line-height-readable">
-            Are you sure you want to restart this session? All checked exercises will be marked as incomplete.
+            {message || 'Are you sure you want to restart this session? All checked exercises will be marked as incomplete.'}
           </p>
         </div>
 

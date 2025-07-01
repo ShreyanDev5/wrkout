@@ -47,7 +47,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   const [expandedWorkouts, setExpandedWorkouts] = useState<Record<string, boolean>>({})
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
-  const { signOut } = useAuth()
+  const { signOut, user } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
 
   // Reset scroll position when component mounts
@@ -283,6 +283,9 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
     },
   }
 
+  // Extract username from pseudo-email
+  const username = user?.email ? user.email.replace(/@wrkout\.app$/, '') : '';
+
   const header = (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -311,15 +314,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   )
 
   const handleSignOut = async () => {
-    toast({
-      title: 'Goodbye!',
-      description: 'You have been signed out.',
-      className: 'bg-[#EA4335] border-none text-white',
-      duration: 1500,
-    })
-    setTimeout(() => {
-      signOut()
-    }, 1200)
+    signOut();
   }
 
   return (
@@ -340,7 +335,12 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
               <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800">
                 <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
               </div>
-              <h3 className="text-lg font-medium text-foreground truncate">Workout Routines</h3>
+              <h3 className="text-lg font-medium text-foreground truncate">
+                {username && (
+                  <span className="fitness-text-gradient font-bold mr-1">{username}&apos;s</span>
+                )}
+                Workout Routines
+              </h3>
             </div>
             <Button
               onClick={() => setIsAddWorkoutOpen(true)}
@@ -710,7 +710,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
         </DialogContent>
       </Dialog>
 
-      <div className="flex justify-end mt-8">
+      <div className="flex justify-center mt-8">
         <Button
           variant="destructive"
           className="rounded-md bg-[#EA4335] hover:bg-[#c62828] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
@@ -724,6 +724,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
         onClose={() => setIsSignOutOpen(false)}
         onConfirm={handleSignOut}
         dayColor="#EA4335"
+        message={"Are you sure you want to sign out? You'll need to log in again to access your workouts and progress."}
       />
     </CollapsibleHeaderLayout>
   )

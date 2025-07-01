@@ -65,7 +65,7 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      // Use username to construct a pseudo-email
+      // Use username to construct a pseudo-email (case-sensitive)
       const pseudoEmail = `${username}@wrkout.app`;
       const { error } = await signUp(pseudoEmail, password);
       if (error) {
