@@ -17,7 +17,7 @@ export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { signUp } = useAuth();
+  const { signUp, signIn } = useAuth();
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -56,14 +56,18 @@ export function SignUpForm() {
 
     try {
       const { error } = await signUp(email, password);
-      
       if (error) {
         setError(error.message);
         return;
       }
-
-      // Show success message and redirect to sign in
-      router.push('/auth/signin?message=Check your email to confirm your account');
+      // Immediately sign in the user after successful sign up
+      const { error: signInError } = await signIn(email, password);
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+      // Redirect to main app interface
+      router.push('/');
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     } finally {
