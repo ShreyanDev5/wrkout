@@ -73,14 +73,7 @@ export function SignUpForm() {
         setError(error.message);
         return;
       }
-      // Store the original username in user_metadata
-      if (data && data.user) {
-        const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
-        if (metaError) {
-          setError(metaError.message);
-          return;
-        }
-      }
+      // Do NOT set user_metadata here; will be set after first sign-in
       const { error: signInError } = await signIn(pseudoEmail, password);
       if (signInError) {
         setError(signInError.message);

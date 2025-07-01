@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export function SignInForm() {
   const [username, setUsername] = useState('');
@@ -35,11 +36,20 @@ export function SignInForm() {
         return;
       }
       const pseudoEmail = `${username}@wrkout.app`;
-      const { error } = await signIn(pseudoEmail, password);
+      const { error, data } = await signIn(pseudoEmail, password);
       
       if (error) {
         setError(error.message);
         return;
+      }
+
+      // After successful sign-in, set user_metadata.username if missing
+      if (data && data.user && !data.user.user_metadata?.username) {
+        const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
+        if (metaError) {
+          setError(metaError.message);
+          return;
+        }
       }
 
       router.push('/');
