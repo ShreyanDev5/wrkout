@@ -49,6 +49,11 @@ export function WorkoutLogModal({
 
   const handleSave = () => {
     if (isSaving) return
+    if (weight <= 0 || reps <= 0) {
+      // Optionally, show a toast or alert here
+      setIsSaving(false)
+      return
+    }
     setIsSaving(true)
 
     // Save the current values for this exercise
@@ -56,7 +61,6 @@ export function WorkoutLogModal({
 
     const log: WorkoutLog = {
       id: `log-${Date.now()}`,
-      user_id: "temp-user", // Replace with real user id in production
       workout_id: workoutId,
       exercise_name: exercise.name,
       weight,

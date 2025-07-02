@@ -28,6 +28,35 @@ export interface Database {
           user_id?: string
           name?: string
         }
+      },
+      workout_logs: {
+        Row: {
+          id: string
+          user_id: string
+          workout_id: string
+          exercise_name: string
+          weight: number
+          avg_reps: number
+          performed_at: string // ISO date string (YYYY-MM-DD)
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          workout_id: string
+          exercise_name: string
+          weight: number
+          avg_reps: number
+          performed_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          workout_id?: string
+          exercise_name?: string
+          weight?: number
+          avg_reps?: number
+          performed_at?: string
+        }
       }
     }
     Views: {

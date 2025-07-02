@@ -19,7 +19,7 @@ export interface Workout {
 // New type matching the workout_logs table
 export interface WorkoutLog {
   id: string
-  user_id: string
+  user_id?: string
   workout_id: string
   exercise_name: string
   weight: number

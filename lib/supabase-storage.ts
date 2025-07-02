@@ -1,14 +1,10 @@
 import { supabase, handleSupabaseError } from './supabase'
 import type { Workout, WorkoutLog, AppData } from './types'
 
-// Temporary user ID until authentication is implemented
-const TEMP_USER_ID = 'temp-user'
-
 // Convert AppData to database format
-const convertToDatabaseFormat = (appData: AppData) => ({
-  user_id: TEMP_USER_ID,
+const convertToDatabaseFormat = (appData: AppData, userId: string) => ({
+  user_id: userId,
   name: 'My Workouts',
-  // No exercises/completed_exercises JSON columns in new schema
   created_at: new Date().toISOString(),
   last_sync_time: appData.lastSyncTime
 })
@@ -21,11 +17,11 @@ const convertFromDatabaseFormat = (data: any): AppData => ({
 })
 
 // Initialize workout data in Supabase
-export async function initializeWorkoutData(initialData: AppData): Promise<void> {
+export async function initializeWorkoutData(initialData: AppData, userId: string): Promise<void> {
   try {
     const { error } = await supabase
       .from('workouts')
-      .upsert(convertToDatabaseFormat(initialData))
+      .upsert(convertToDatabaseFormat(initialData, userId))
     
     if (error) throw error
   } catch (error) {
@@ -34,12 +30,12 @@ export async function initializeWorkoutData(initialData: AppData): Promise<void>
 }
 
 // Load workout data from Supabase
-export async function loadWorkoutData(): Promise<AppData> {
+export async function loadWorkoutData(userId: string): Promise<AppData> {
   try {
     const { data, error } = await supabase
       .from('workouts')
       .select('*')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .single()
 
     if (error) throw error
@@ -57,12 +53,12 @@ export async function loadWorkoutData(): Promise<AppData> {
 }
 
 // Save workout data to Supabase
-export async function saveWorkoutData(appData: AppData): Promise<void> {
+export async function saveWorkoutData(appData: AppData, userId: string): Promise<void> {
   try {
     const { error } = await supabase
       .from('workouts')
       .upsert({
-        ...convertToDatabaseFormat(appData),
+        ...convertToDatabaseFormat(appData, userId),
         last_sync_time: new Date().toISOString()
       })
 
@@ -73,11 +69,11 @@ export async function saveWorkoutData(appData: AppData): Promise<void> {
 }
 
 // Save a workout log to Supabase
-export async function saveWorkoutLog(log: WorkoutLog): Promise<void> {
+export async function saveWorkoutLog(log: WorkoutLog, userId: string): Promise<void> {
   try {
     const { error } = await supabase
       .from('workout_logs')
-      .insert(log)
+      .insert({ ...log, user_id: userId })
 
     if (error) throw error
   } catch (error) {
@@ -86,12 +82,12 @@ export async function saveWorkoutLog(log: WorkoutLog): Promise<void> {
 }
 
 // Load workout logs from Supabase
-export async function loadWorkoutLogs(): Promise<WorkoutLog[]> {
+export async function loadWorkoutLogs(userId: string): Promise<WorkoutLog[]> {
   try {
     const { data, error } = await supabase
       .from('workout_logs')
       .select('*')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .order('performed_at', { ascending: false })
 
     if (error) throw error

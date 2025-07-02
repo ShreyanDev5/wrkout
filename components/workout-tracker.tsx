@@ -18,6 +18,7 @@ import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
 import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/supabase-storage"
+import { useAuth } from '@/lib/auth'
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -28,6 +29,7 @@ export function WorkoutTracker() {
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
   const { toast } = useToast()
   const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
+  const { user } = useAuth()
 
   // Initialize audio system on mount
   useEffect(() => {
@@ -37,46 +39,46 @@ export function WorkoutTracker() {
   // Initialize app data and logs from storage/Supabase
   useEffect(() => {
     const initializeApp = async () => {
-      // Initialize workout data if needed
-      await initializeWorkoutData()
-
-      // Load data from storage
-      const data = await loadWorkoutData()
-      setAppData(data)
-
-      // Load logs from Supabase
-      const logs = await loadWorkoutLogs()
-      setWorkoutLogs(logs)
+      if (!user?.id) return;
+      await initializeWorkoutData();
+      const data = await loadWorkoutData();
+      setAppData(data);
+      const logs = await loadWorkoutLogs(user.id);
+      setWorkoutLogs(logs);
     }
-
-    initializeApp()
-  }, [isFirstVisit])
+    initializeApp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFirstVisit, user?.id]);
 
   // Save data when it changes
   useEffect(() => {
-    if (appData.workouts.length > 0) {
-      saveWorkoutData(appData)
+    if (appData.workouts.length > 0 && user?.id) {
+      saveWorkoutData(appData);
     }
-  }, [appData])
+  }, [appData, user?.id]);
 
   // Add workout log
   const addWorkoutLog = async (log: WorkoutLog) => {
+    if (!user?.id) return;
     try {
-      await saveWorkoutLog(log)
-      setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top
-      toast({ title: "Workout logged!" })
+      await saveWorkoutLog(log, user.id);
+      setWorkoutLogs((prev) => [log, ...prev]); // Add new log to the top
+      toast({ title: "Workout logged!" });
     } catch (error) {
-      toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
+      toast({ title: "Failed to log workout", description: String(error), variant: "destructive" });
     }
-  }
+  };
 
   // Update workouts
   const updateWorkouts = (workouts: Workout[]) => {
     setAppData((prev) => ({
       ...prev,
       workouts,
-    }))
-  }
+    }));
+    if (user?.id) {
+      saveWorkoutData({ ...appData, workouts });
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
