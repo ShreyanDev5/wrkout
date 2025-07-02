@@ -89,7 +89,7 @@ export function WorkoutLogModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-8 py-4">
+        <div className="flex flex-col items-center space-y-10 py-6">
           <WeightSlider
             value={weight}
             onChange={setWeight}
@@ -97,22 +97,20 @@ export function WorkoutLogModal({
             max={500}
             step={2.5}
             label="Weight"
-            className="mb-8 text-white"
+            className="w-full max-w-xs text-white"
             accentColor={dayColor}
           />
 
-          <div className="grid grid-cols-2 gap-8">
-            <div className="flex flex-col items-center">
-              <h3 className="text-sm font-medium text-white mb-3">Reps</h3>
-              <NumberStepper 
-                value={reps} 
-                onChange={setReps} 
-                min={0} 
-                max={30} 
-                accentColor={dayColor}
-                className="hover:scale-[1.02] transition-transform duration-200 text-white"
-              />
-            </div>
+          <div className="flex flex-col items-center w-full max-w-xs">
+            <h3 className="text-sm font-medium text-white mb-3">Reps</h3>
+            <NumberStepper 
+              value={reps} 
+              onChange={setReps} 
+              min={0} 
+              max={30} 
+              accentColor={dayColor}
+              className="hover:scale-[1.02] transition-transform duration-200 text-white w-full"
+            />
           </div>
         </div>
 

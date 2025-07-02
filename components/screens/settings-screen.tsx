@@ -616,12 +616,18 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
       {/* Add Workout Dialog */}
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
           <DialogHeader>
-            <DialogTitle>Add New Workout</DialogTitle>
+            <div className="flex flex-col items-center gap-2 mb-2">
+              <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
+              <DialogTitle className="line-height-readable text-center">Add New Workout</DialogTitle>
+            </div>
           </DialogHeader>
           <div className="py-4">
-            <Label htmlFor="workout-name">Workout Name</Label>
+            <p className="line-height-readable text-center mb-4 text-sm text-muted-foreground">
+              Create a new workout routine. Workouts contain days and exercises.
+            </p>
+            <Label htmlFor="workout-name" className="block text-center mb-2">Workout Name</Label>
             <Input
               id="workout-name"
               value={newWorkoutName}
@@ -630,26 +636,42 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
               className="mt-2"
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddWorkoutOpen(false)}>
+          <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+            <button
+              type="button"
+              onClick={() => setIsAddWorkoutOpen(false)}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
+              aria-label="Cancel add workout"
+            >
               Cancel
-            </Button>
-            <Button onClick={handleAddWorkout} className="bg-[#34A853] hover:bg-[#2D9249] text-white">
+            </button>
+            <button
+              type="button"
+              onClick={handleAddWorkout}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
+              aria-label="Confirm add workout"
+            >
               Add Workout
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Add Day Dialog */}
       <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
           <DialogHeader>
-            <DialogTitle>Add Workout Day</DialogTitle>
+            <div className="flex flex-col items-center gap-2 mb-2">
+              <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
+              <DialogTitle className="line-height-readable text-center">Add Workout Day</DialogTitle>
+            </div>
           </DialogHeader>
           <div className="py-4 space-y-4">
+            <p className="line-height-readable text-center mb-2 text-sm text-muted-foreground">
+              Define a day's routine (e.g., push, pull, leg, or custom).
+            </p>
             <div>
-              <Label htmlFor="day-name">Day Name</Label>
+              <Label htmlFor="day-name" className="block text-center mb-2">Day Name</Label>
               <Input
                 id="day-name"
                 value={newDayName}
@@ -659,38 +681,54 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
               />
             </div>
             <div>
-              <Label htmlFor="day-id">Day ID</Label>
+              <Label htmlFor="day-id" className="block text-center mb-2">Day ID</Label>
               <Input
                 id="day-id"
                 value={newDayId}
                 onChange={(e) => setNewDayId(e.target.value)}
-                placeholder="Enter day ID (e.g. &quot;push&quot;, &quot;pull&quot;, &quot;leg&quot;)"
+                placeholder="Enter day ID (e.g. 'push', 'pull', 'leg')"
                 className="mt-2"
               />
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 text-center">
+                Use "push", "pull", or "leg" for special styling
               </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDayOpen(false)}>
+          <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+            <button
+              type="button"
+              onClick={() => setIsAddDayOpen(false)}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
+              aria-label="Cancel add day"
+            >
               Cancel
-            </Button>
-            <Button onClick={handleAddDay} className="bg-[#34A853] hover:bg-[#2D9249] text-white">
+            </button>
+            <button
+              type="button"
+              onClick={handleAddDay}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
+              aria-label="Confirm add day"
+            >
               Add Day
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Add Exercise Dialog */}
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+        <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
           <DialogHeader>
-            <DialogTitle>Add Exercise</DialogTitle>
+            <div className="flex flex-col items-center gap-2 mb-2">
+              <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
+              <DialogTitle className="line-height-readable text-center">Add Exercise</DialogTitle>
+            </div>
           </DialogHeader>
           <div className="py-4">
-            <Label htmlFor="exercise-name">Exercise Name</Label>
+            <p className="line-height-readable text-center mb-4 text-sm text-muted-foreground">
+              Add an exercise you'll perform in your routine.
+            </p>
+            <Label htmlFor="exercise-name" className="block text-center mb-2">Exercise Name</Label>
             <Input
               id="exercise-name"
               value={newExerciseName}
@@ -699,14 +737,24 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
               className="mt-2"
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddExerciseOpen(false)}>
+          <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+            <button
+              type="button"
+              onClick={() => setIsAddExerciseOpen(false)}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
+              aria-label="Cancel add exercise"
+            >
               Cancel
-            </Button>
-            <Button onClick={handleAddExercise} className="bg-[#34A853] hover:bg-[#2D9249] text-white">
+            </button>
+            <button
+              type="button"
+              onClick={handleAddExercise}
+              className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
+              aria-label="Confirm add exercise"
+            >
               Add Exercise
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
