@@ -9,16 +9,12 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
-import {
-  initializeWorkoutData,
-  loadWorkoutData,
-  saveWorkoutData,
-} from "@/lib/storage"
+import { loadWorkoutData, saveWorkoutData, saveWorkoutLog, loadWorkoutLogs } from "@/lib/supabase-storage"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
-import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/supabase-storage"
 import { useAuth } from '@/lib/auth'
+import { workoutData as demoWorkoutData } from "@/lib/workout-data"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -36,49 +32,54 @@ export function WorkoutTracker() {
     initAudioSystem()
   }, [])
 
-  // Initialize app data and logs from storage/Supabase
+  // Main effect: load demo data for pre-login, user data for logged-in
   useEffect(() => {
     const initializeApp = async () => {
-      if (!user?.id) return;
-      await initializeWorkoutData();
-      const data = await loadWorkoutData();
-      setAppData(data);
-      const logs = await loadWorkoutLogs(user.id);
-      setWorkoutLogs(logs);
+      if (!user) {
+        // Not logged in: show demo data only
+        setAppData({ workouts: demoWorkoutData, lastSyncTime: null })
+        setWorkoutLogs([])
+        return
+      }
+      // Logged in: load from Supabase
+      const data = await loadWorkoutData(user.id)
+      setAppData(data)
+      const logs = await loadWorkoutLogs(user.id)
+      setWorkoutLogs(logs)
     }
-    initializeApp();
+    initializeApp()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFirstVisit, user?.id]);
+  }, [user])
 
-  // Save data when it changes
+  // Save data when it changes (only for logged-in users)
   useEffect(() => {
     if (appData.workouts.length > 0 && user?.id) {
-      saveWorkoutData(appData);
+      saveWorkoutData(appData, user.id)
     }
-  }, [appData, user?.id]);
+  }, [appData, user?.id])
 
-  // Add workout log
+  // Add workout log (only for logged-in users)
   const addWorkoutLog = async (log: WorkoutLog) => {
-    if (!user?.id) return;
+    if (!user?.id) return
     try {
-      await saveWorkoutLog(log, user.id);
-      setWorkoutLogs((prev) => [log, ...prev]); // Add new log to the top
-      toast({ title: "Workout logged!" });
+      await saveWorkoutLog(log, user.id)
+      setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top
+      toast({ title: "Workout logged!" })
     } catch (error) {
-      toast({ title: "Failed to log workout", description: String(error), variant: "destructive" });
+      toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
     }
-  };
+  }
 
-  // Update workouts
+  // Update workouts (only for logged-in users)
   const updateWorkouts = (workouts: Workout[]) => {
     setAppData((prev) => ({
       ...prev,
       workouts,
-    }));
+    }))
     if (user?.id) {
-      saveWorkoutData({ ...appData, workouts });
+      saveWorkoutData({ ...appData, workouts }, user.id)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
