@@ -13,6 +13,7 @@ interface DayExercisesProps {
   exercises: Exercise[]
   dayId: string
   onLogWorkout: (log: WorkoutLog) => void | Promise<void>
+  onExerciseToggled?: () => void
   dayColor: string
 }
 
@@ -20,7 +21,7 @@ function getTickStorageKey(dayId: string) {
   return `tickedExercises-${dayId}`
 }
 
-export function DayExercises({ exercises, dayId, onLogWorkout, dayColor }: DayExercisesProps) {
+export function DayExercises({ exercises, dayId, onLogWorkout, onExerciseToggled, dayColor }: DayExercisesProps) {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [ticked, setTicked] = useState<string[]>(() => {
@@ -39,11 +40,16 @@ export function DayExercises({ exercises, dayId, onLogWorkout, dayColor }: DayEx
 
   const handleTick = (exerciseId: string, checked: boolean) => {
     setTicked((prev) => {
-      if (checked) {
-        return [...prev, exerciseId]
-      } else {
-        return prev.filter((id) => id !== exerciseId)
-      }
+      const newTicked = checked 
+        ? [...prev, exerciseId]
+        : prev.filter((id) => id !== exerciseId)
+      
+      // Notify parent component after state update
+      setTimeout(() => {
+        onExerciseToggled?.()
+      }, 0)
+      
+      return newTicked
     })
   }
 

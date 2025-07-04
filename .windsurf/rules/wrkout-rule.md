@@ -1,0 +1,65 @@
+---
+trigger: always_on
+---
+
+# 🏋️‍♂️ wrkout – Personalized Workout Tracker
+
+**`wrkout`** is a **minimalist workout tracker** built using [v0 by Vercel](https://v0.dev), crafted to make gym progress tracking effortless and visually appealing. Originally developed for personal use, it will soon be open-sourced on **GitHub** for others to explore, use, and contribute.
+
+Inspired by the **premium design standards** of companies like **Apple** and **Google**, `wrkout` blends a sleek user interface with focused strength training features—especially for routines like the **Push-Pull-Legs (PPL)** split.
+
+---
+
+## 🎯 Purpose & Goals
+
+* ✅ Track **workout progress** through a clean, intuitive interface
+* 🔁 Emphasize **progressive overload** in **strength training**
+* 🧠 Organize routines using the proven **Push-Pull-Legs (PPL)** split
+* 🌟 Deliver a **premium, distraction-free design experience**
+* 🚀 Deploy with **Vercel**, and release on **GitHub** soon
+
+---
+
+## 🧩 Features
+
+### ✅ Core Tracking
+
+* Log workouts by type: **Push**, **Pull**, **Legs**
+* Record reps, weights with ease
+* View detailed history for each workout category
+
+### 🎨 UI & Design Aesthetic
+
+* Minimal, modern design inspired by Apple & Google
+* Clean typography, soft shadows, and grid-based layout
+* Balanced white space for a calm, focused user experience
+
+### 📊 Progress & Visualization
+
+* **Monthly Summaries**: Key stats like workout count, top lifts, and streaks
+* **Interactive Charts**: Smooth animations, tooltips, and timeline filters
+* Data that’s not just informative—but *motivating*
+
+### 🚀 Deployment & Sharing
+
+* Built with [v0 by Vercel](https://v0.dev)
+* Deployed on **Vercel** for performance & simplicity
+* Open-source release coming soon via **GitHub**
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend**: v0 by Vercel (Next.js/React-based)
+* **Deployment**: Vercel
+* **Version Control**: GitHub
+
+---
+
+## 📈 Vision
+
+To build a **beautiful, intuitive, and effective** companion for strength training—something that both beginners and advanced lifters can use to **track**, **analyze**, and **improve** their performance with minimal effort and maximum clarity.
+
+---
+
+> Built with 💪 and minimalism in mind.

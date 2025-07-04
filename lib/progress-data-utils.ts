@@ -1,7 +1,7 @@
 import type { WorkoutLog } from "@/lib/types"
 
 // Number of weeks to display in the progress view
-export const PROGRESS_WEEKS = 1
+export const PROGRESS_WEEKS = 4
 
 /**
  * Helper function to check if two dates are the same day
@@ -15,9 +15,49 @@ function isSameDay(date1: Date, date2: Date): boolean {
 }
 
 /**
+ * Groups logs by week starting from the most recent Monday
+ */
+function groupLogsByWeek(logs: WorkoutLog[]) {
+  if (!logs.length) return { weeklyGroups: new Map<string, WorkoutLog[]>() }
+
+  // Sort logs by date (newest first)
+  const sortedLogs = [...logs].sort((a, b) => 
+    new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime()
+  )
+
+  // Get the most recent Monday
+  const now = new Date()
+  const mostRecentMonday = new Date(now)
+  const day = now.getDay()
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
+  mostRecentMonday.setDate(diff)
+  mostRecentMonday.setHours(0, 0, 0, 0)
+
+  // Group logs by week
+  const weeklyGroups = new Map<string, WorkoutLog[]>()
+  
+  sortedLogs.forEach(log => {
+    const logDate = new Date(log.performed_at)
+    const weekStart = new Date(logDate)
+    const dayOfWeek = logDate.getDay()
+    const diff = logDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1) // Get Monday of the log's week
+    weekStart.setDate(diff)
+    weekStart.setHours(0, 0, 0, 0)
+    
+    const weekKey = weekStart.toISOString().split('T')[0]
+    
+    if (!weeklyGroups.has(weekKey)) {
+      weeklyGroups.set(weekKey, [])
+    }
+    weeklyGroups.get(weekKey)?.push(log)
+  })
+
+  return { weeklyGroups }
+}
+
+/**
  * Processes workout logs into a progression-based weekly data structure
- * where entries for the same exercise progress from W1 (oldest) to W4 (newest)
- * and same-day entries update existing data instead of creating new entries
+ * where entries for the same exercise show progress over weeks
  */
 export function processWorkoutData(logs: WorkoutLog[]) {
   if (!logs.length) return { weeklyData: [], weekLabels: [] }
@@ -30,48 +70,76 @@ export function processWorkoutData(logs: WorkoutLog[]) {
       const logDate = new Date(log.performed_at)
       return log.exercise_name === current.exercise_name && isSameDay(logDate, currentDate)
     })
+    
     if (existingIndex === -1) {
       acc.push(current)
     } else {
-      acc[existingIndex] = current
+      // Keep the one with the highest volume (weight * reps)
+      const existingLog = acc[existingIndex]
+      const currentVolume = current.weight * current.avg_reps
+      const existingVolume = existingLog.weight * existingLog.avg_reps
+      
+      if (currentVolume > existingVolume) {
+        acc[existingIndex] = current
+      }
     }
     return acc
   }, [])
 
-  // Sort all logs by date (oldest first)
-  const sortedLogs = [...deduplicatedLogs].sort((a, b) => {
-    return new Date(a.performed_at).getTime() - new Date(b.performed_at).getTime()
-  })
-
   // Group logs by exercise_name
   const exerciseGroups: Record<string, WorkoutLog[]> = {}
-  sortedLogs.forEach((log) => {
+  deduplicatedLogs.forEach((log) => {
     if (!exerciseGroups[log.exercise_name]) {
       exerciseGroups[log.exercise_name] = []
     }
     exerciseGroups[log.exercise_name].push(log)
   })
 
+  // Group logs by week
+  const { weeklyGroups } = groupLogsByWeek(deduplicatedLogs)
+  
+  // Generate week labels (most recent week first)
+  const weekLabels = Array.from(weeklyGroups.keys())
+    .sort()
+    .reverse()
+    .slice(0, PROGRESS_WEEKS)
+    .map((_, index) => `Week ${index + 1}`)
+
+  // If no weeks found, default to current week
+  if (weekLabels.length === 0) {
+    weekLabels.push('Current Week')
+  }
+
   // Process each exercise's data
-  const weeklyData: {
-    exerciseName: string
-    weeks: {
-      [weekKey: string]: {
-        reps: number
-        weight: number
-        date: string
-      } | null
-    }
-  }[] = []
+  const weeklyData = Object.entries(exerciseGroups).map(([exerciseName, exerciseLogs]) => {
+    // Sort exercise logs by date (newest first)
+    const sortedExerciseLogs = [...exerciseLogs].sort((a, b) => 
+      new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime()
+    )
 
-  // Generate week labels (W1 to W4)
-  const weekLabels = ['Current Week']
-
-  Object.entries(exerciseGroups).forEach(([exerciseName, exerciseLogs]) => {
-    // Sort exercise logs by date (oldest first)
-    const sortedExerciseLogs = [...exerciseLogs].sort((a, b) => {
-      return new Date(a.performed_at).getTime() - new Date(b.performed_at).getTime()
+    // Group logs by week
+    const logsByWeek = new Map<string, WorkoutLog[]>()
+    
+    sortedExerciseLogs.forEach(log => {
+      const logDate = new Date(log.performed_at)
+      const weekStart = new Date(logDate)
+      const dayOfWeek = logDate.getDay()
+      const diff = logDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1) // Get Monday of the log's week
+      weekStart.setDate(diff)
+      weekStart.setHours(0, 0, 0, 0)
+      
+      const weekKey = weekStart.toISOString().split('T')[0]
+      
+      if (!logsByWeek.has(weekKey)) {
+        logsByWeek.set(weekKey, [])
+      }
+      logsByWeek.get(weekKey)?.push(log)
     })
+
+    // Get the most recent weeks
+    const recentWeeks = Array.from(logsByWeek.entries())
+      .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+      .slice(0, PROGRESS_WEEKS)
 
     // Initialize weeks object with null values
     const weeks: Record<string, { reps: number; weight: number; date: string } | null> = {}
@@ -79,73 +147,57 @@ export function processWorkoutData(logs: WorkoutLog[]) {
       weeks[label] = null
     })
 
-    // For each exercise, we need to determine if we're in progression mode or shift mode
-    const totalLogs = sortedExerciseLogs.length
-    const isInProgressionMode = totalLogs <= PROGRESS_WEEKS
+    // Fill in the weeks with data
+    recentWeeks.forEach(([_, weekLogs], index) => {
+      if (index < weekLabels.length) {
+        // Find the best set for this week (highest volume)
+        const bestSet = weekLogs.reduce((best, current) => {
+          const currentVolume = current.weight * current.avg_reps
+          const bestVolume = best ? best.weight * best.avg_reps : 0
+          return currentVolume > bestVolume ? current : best
+        }, weekLogs[0])
 
-    if (isInProgressionMode) {
-      // In progression mode: oldest log goes to W1, second oldest to W2, etc.
-      sortedExerciseLogs.forEach((log, index) => {
-        const weekLabel = weekLabels[index]
-        weeks[weekLabel] = {
-          reps: log.avg_reps,
-          weight: log.weight,
-          date: log.performed_at,
+        weeks[weekLabels[index]] = {
+          reps: bestSet.avg_reps,
+          weight: bestSet.weight,
+          date: bestSet.performed_at,
         }
-      })
-    } else {
-      // In shift mode: maintain a rolling window of the most recent logs
-      // but ensure the oldest log is always in W1
-      const recentLogs = sortedExerciseLogs.slice(-PROGRESS_WEEKS)
-      recentLogs.forEach((log, index) => {
-        const weekLabel = weekLabels[index]
-        weeks[weekLabel] = {
-          reps: log.avg_reps,
-          weight: log.weight,
-          date: log.performed_at,
-        }
-      })
-    }
+      }
+    })
 
-    weeklyData.push({
+    return {
       exerciseName,
       weeks,
-    })
+    }
   })
 
-  // Sort by exercise name
-  return {
-    weeklyData: weeklyData.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
-    weekLabels,
-  }
+  // Sort exercises by name
+  weeklyData.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
+
+  return { weeklyData, weekLabels }
 }
 
 /**
  * Formats a date range for display
  */
 export function formatWeekRange(weekIndex: number, mostRecentDate: Date): string {
-  const weekEnd = new Date(mostRecentDate)
-  weekEnd.setDate(mostRecentDate.getDate() - weekIndex * 7)
+  const startDate = new Date(mostRecentDate)
+  startDate.setDate(mostRecentDate.getDate() - (6 - weekIndex) * 7)
+  const endDate = new Date(startDate)
+  endDate.setDate(startDate.getDate() + 6)
 
-  const weekStart = new Date(weekEnd)
-  weekStart.setDate(weekEnd.getDate() - 6)
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-  }
-
-  return `${formatDate(weekStart)} - ${formatDate(weekEnd)}`
+  return `${startDate.getDate()}/${startDate.getMonth() + 1} - ${endDate.getDate()}/${endDate.getMonth() + 1}`
 }
 
 /**
  * Gets the date range for a specific week label
  */
 export function getWeekDateRange(weekLabel: string, mostRecentDate: Date): string {
-  // Extract week number from label (e.g., "W3" -> 3)
-  const weekNumber = Number.parseInt(weekLabel.replace("W", ""))
+  const weekIndex = parseInt(weekLabel.substring(1)) - 1
+  const startDate = new Date(mostRecentDate)
+  startDate.setDate(mostRecentDate.getDate() - (6 - weekIndex) * 7)
+  const endDate = new Date(startDate)
+  endDate.setDate(startDate.getDate() + 6)
 
-  // Calculate week index (0-based, where 0 is the oldest week)
-  const weekIndex = PROGRESS_WEEKS - weekNumber
-
-  return formatWeekRange(weekIndex, mostRecentDate)
+  return `${startDate.getDate()}/${startDate.getMonth() + 1} - ${endDate.getDate()}/${endDate.getMonth() + 1}`
 }

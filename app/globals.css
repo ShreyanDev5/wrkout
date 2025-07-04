@@ -525,7 +525,64 @@ body {
 }
 
 .workout-select {
-  transition: width 0.2s ease-out;
+  transition: width 0.2s ease-out, height 0.2s ease-out;
+}
+
+.workout-select .min-touch-target {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+.workout-select .min-touch-target [data-slot='value'] {
+  line-height: 1.25 !important;
+}
+
+/* Workout Selector Animation */
+.workout-selector {
+  transition: transform 0.15s ease-out;
+}
+
+.workout-selector:active {
+  transform: scale(0.98);
+}
+
+/* Dropdown arrow rotation */
+.workout-selector [data-state="open"] .lucide-chevron-down {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+.workout-selector .lucide-chevron-down {
+  transition: transform 0.2s ease;
+}
+
+/* Target Radix UI Select/* Workout Selector Specific Styles */
+[role='combobox'] {
+  @apply h-9 !important;
+  @apply text-sm !important;
+  @apply px-3 !important;
+  @apply py-1.5 !important;
+}
+
+[role='listbox'] {
+  width: 100% !important;
+  min-width: unset !important;
+  max-width: calc(100vw - 2rem) !important; /* Account for padding */
+}
+
+[role='option'] {
+  @apply h-8 !important;
+  @apply text-sm !important;
+  @apply px-3 !important;
+  @apply py-1.5 !important;
+}
+
+/* Ensure dropdown portal matches the width of the trigger */
+.SelectContent {
+  width: var(--radix-select-trigger-width) !important;
+  min-width: var(--radix-select-trigger-width) !important;
 }
 
 .reset-button {

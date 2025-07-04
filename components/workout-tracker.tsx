@@ -36,9 +36,50 @@ export function WorkoutTracker() {
   useEffect(() => {
     const initializeApp = async () => {
       if (!user) {
-        // Not logged in: show demo data only
+        // Not logged in: show demo data with sample logs
         setAppData({ workouts: demoWorkoutData, lastSyncTime: null })
-        setWorkoutLogs([])
+        
+        // Generate sample workout logs for demo
+        const demoLogs: WorkoutLog[] = []
+        const demoExercises = demoWorkoutData.flatMap(workout => 
+          workout.days.flatMap(day => 
+            day.exercises.map(exercise => ({
+              ...exercise,
+              dayId: day.id,
+              dayName: day.name
+            }))
+          )
+        )
+
+        // Generate logs for the past 4 weeks
+        const now = new Date()
+        for (let i = 0; i < 4; i++) {
+          const logDate = new Date(now)
+          logDate.setDate(now.getDate() - (i * 7)) // One log per week
+          
+          // Pick 3-5 random exercises for this week
+          const exerciseCount = Math.floor(Math.random() * 3) + 3
+          const shuffled = [...demoExercises].sort(() => 0.5 - Math.random())
+          const selectedExercises = shuffled.slice(0, exerciseCount)
+          
+          // Create logs for selected exercises
+          selectedExercises.forEach((exercise, index) => {
+            const logDateForExercise = new Date(logDate)
+            logDateForExercise.setDate(logDate.getDate() + index) // Spread exercises across the week
+            
+            demoLogs.push({
+              id: `demo-log-${i}-${index}`,
+              exercise_name: exercise.name,
+              workout_id: 'demo-workout',
+              weight: Math.floor(Math.random() * 40) + 10, // 10-50kg
+              avg_reps: Math.floor(Math.random() * 10) + 5, // 5-15 avg reps
+              performed_at: logDateForExercise.toISOString(),
+              user_id: 'demo-user'
+            })
+          })
+        }
+        
+        setWorkoutLogs(demoLogs)
         return
       }
       // Logged in: load from Supabase

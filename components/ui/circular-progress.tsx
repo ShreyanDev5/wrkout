@@ -152,7 +152,10 @@ export function CircularProgress({
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className={cn("text-2xl font-medium tabular-nums", size === "sm" && "text-xl", size === "lg" && "text-3xl")}
+          className={cn(
+            "font-medium tabular-nums",
+            size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl"
+          )}
           style={{ color: isComplete ? progressColor : "inherit" }}
         >
           {Math.round(animatedPercentage)}%

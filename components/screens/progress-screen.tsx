@@ -23,6 +23,14 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   const [mainFilter, setMainFilter] = useState<string | null>(null)
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Set loading state based on logs
+  useEffect(() => {
+    if (logs.length > 0) {
+      setIsLoading(false)
+    }
+  }, [logs])
 
   // Load the last progress state from localStorage on component mount
   useEffect(() => {
@@ -70,25 +78,67 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
       exerciseGroups[log.exercise_name].push(log)
     })
 
-    // Filter exercises that have both rep and weight data
-    return Object.entries(exerciseGroups)
+    // Get exercises with valid data (both weight and reps)
+    const validExercises = Object.entries(exerciseGroups)
       .filter(([_, exerciseLogs]) => {
         return exerciseLogs.some((log) => log.weight > 0 && log.avg_reps > 0)
       })
-      .map(([exerciseName, exerciseLogs]) => {
+      .map(([name, exerciseLogs]) => {
+        // Get the most recent log for this exercise
+        const mostRecentLog = [...exerciseLogs]
+          .sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime())[0]
+        
         return {
-          name: exerciseName,
-          // You may want to add more info here if available (e.g., workout_id)
+          name,
+          lastPerformed: mostRecentLog?.performed_at,
+          maxWeight: Math.max(...exerciseLogs.map(log => log.weight)),
+          maxReps: Math.max(...exerciseLogs.map(log => log.avg_reps)),
         }
       })
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+    
+    return validExercises
   }, [logs])
 
-  // Filter exercises by main filter for chart (if you have a way to associate logs with dayId, add it here)
+  // Enhanced exercise classification by workout type
+  const getExerciseWorkoutType = (exerciseName: string): string | null => {
+    const name = exerciseName.toLowerCase()
+    
+    // Push exercises (chest, shoulders, triceps)
+    const pushKeywords = [
+      'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
+      'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise'
+    ]
+    
+    // Pull exercises (back, biceps, rear delts)
+    const pullKeywords = [
+      'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
+      'face pull', 'rear delt', 'shrug', 'deadlift', 'rack pull', 't-bar', 't bar'
+    ]
+    
+    // Leg exercises
+    const legKeywords = [
+      'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge', 'extension',
+      'leg press', 'hack squat', 'bulgarian', 'romanian', 'rdl', 'hip thrust', 'leg curl',
+      'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up'
+    ]
+    
+    if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
+    if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
+    if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
+    
+    return null
+  }
+
+  // Filter exercises by main filter for chart
   const filteredExercisesForChart = useMemo(() => {
-    // For now, just return all exercises (since dayId is not in WorkoutLog)
-    return exercisesWithCompleteData
-  }, [exercisesWithCompleteData])
+    if (!mainFilter) return exercisesWithCompleteData
+    
+    return exercisesWithCompleteData.filter(exercise => {
+      const exerciseType = getExerciseWorkoutType(exercise.name)
+      return exerciseType === mainFilter.toLowerCase()
+    })
+  }, [exercisesWithCompleteData, mainFilter])
 
   // Get icon for workout type
   const getWorkoutIcon = (type: string) => {
@@ -147,49 +197,77 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
           <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
             <TabsTrigger
               value="all"
-              className="rounded-full data-[state=active]:bg-zinc-700 data-[state=active]:shadow-inner flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all -ml-1 md:-ml-1.5"
+              className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all -ml-1 md:-ml-1.5 ${
+                !mainFilter 
+                  ? 'bg-zinc-700 text-white shadow-inner' 
+                  : 'text-muted-foreground hover:text-foreground/80'
+              }`}
             >
               {getWorkoutIcon("all")}
               <span>All</span>
             </TabsTrigger>
             <TabsTrigger
               value="push"
-              className="rounded-full data-[state=active]:text-push-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all"
+              className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ${
+                mainFilter === "push" 
+                  ? 'text-push-dark' 
+                  : 'text-muted-foreground hover:text-foreground/80'
+              }`}
               style={{
-                backgroundColor:
-                  mainFilter === "push"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
-                    : undefined,
+                backgroundColor: mainFilter === "push"
+                  ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
+                  : undefined,
               }}
             >
               {getWorkoutIcon("push")}
               <span>Push</span>
+              {mainFilter === "push" && (
+                <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-push-dark/10 text-push-dark">
+                  {filteredExercisesForChart.length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger
               value="pull"
-              className="rounded-full data-[state=active]:text-pull-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5"
+              className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5 ${
+                mainFilter === "pull" 
+                  ? 'text-pull-dark' 
+                  : 'text-muted-foreground hover:text-foreground/80'
+              }`}
               style={{
-                backgroundColor:
-                  mainFilter === "pull"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
-                    : undefined,
+                backgroundColor: mainFilter === "pull"
+                  ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
+                  : undefined,
               }}
             >
               {getWorkoutIcon("pull")}
               <span>Pull</span>
+              {mainFilter === "pull" && (
+                <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-pull-dark/10 text-pull-dark">
+                  {filteredExercisesForChart.length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger
               value="leg"
-              className="rounded-full data-[state=active]:text-leg-dark flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2"
+              className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2 ${
+                mainFilter === "leg" 
+                  ? 'text-leg-dark' 
+                  : 'text-muted-foreground hover:text-foreground/80'
+              }`}
               style={{
-                backgroundColor:
-                  mainFilter === "leg"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
-                    : undefined,
+                backgroundColor: mainFilter === "leg"
+                  ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
+                  : undefined,
               }}
             >
               {getWorkoutIcon("leg")}
               <span>Legs</span>
+              {mainFilter === "leg" && (
+                <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-leg-dark/10 text-leg-dark">
+                  {filteredExercisesForChart.length}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
         </Tabs>

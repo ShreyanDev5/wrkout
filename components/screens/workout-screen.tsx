@@ -1,20 +1,29 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { CircularProgress } from "@/components/ui/circular-progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/day-exercises"
-import { CircularProgress } from "@/components/ui/circular-progress"
 import { EmptyWorkoutState } from "@/components/empty-workout-state"
-import { ResetConfirmationModal } from "@/components/reset-confirmation-modal"
-import { RotateCcw } from "lucide-react"
 import { useTheme } from "@/components/theme-context"
 import type { Workout, WorkoutLog } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection } from "@/lib/storage"
+import { Button } from "@/components/ui/button"
+import { RotateCcw } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -27,17 +36,50 @@ export function WorkoutScreen({
 }: WorkoutScreenProps) {
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
-  const [isResetModalOpen, setIsResetModalOpen] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [tickCounter, setTickCounter] = useState(0) // Force re-render when exercises are toggled
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
+  const [hasTickedExercises, setHasTickedExercises] = useState(false)
   const { colorMode } = useTheme()
+  
+  // Check if there are any ticked exercises for the current day
+  const checkTickedExercises = useCallback(() => {
+    if (typeof window !== 'undefined' && selectedDay) {
+      const ticked = localStorage.getItem(`tickedExercises-${selectedDay}`)
+      setHasTickedExercises(!!ticked && JSON.parse(ticked).length > 0)
+    } else {
+      setHasTickedExercises(false)
+    }
+  }, [selectedDay])
 
-  // Load the last selected workout section from localStorage on component mount
+  // Clear all ticked exercises for the current day
+  const resetTickedExercises = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(`tickedExercises-${selectedDay}`)
+      setTickCounter(prev => prev + 1)
+      setIsResetDialogOpen(false)
+      setHasTickedExercises(false)
+    }
+  }, [selectedDay])
+
+  // Check for ticked exercises when selectedDay changes
+  useEffect(() => {
+    checkTickedExercises()
+  }, [checkTickedExercises, tickCounter])
+
+  // Force a re-render when exercises are toggled
+  const handleExerciseToggled = useCallback(() => {
+    setTickCounter(prev => prev + 1)
+  }, [])
+
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Load the last selected day from localStorage on component mount
   useEffect(() => {
     const loadSavedSection = async () => {
       try {
-        const savedSection = await loadLastWorkoutSection()
-        if (savedSection === "push" || savedSection === "pull" || savedSection === "leg") {
-          setSelectedDay(savedSection)
+        const savedDay = await loadLastWorkoutSection()
+        if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
+          setSelectedDay(savedDay as "push" | "pull" | "leg")
         }
         setIsInitialized(true)
       } catch (error) {
@@ -45,8 +87,20 @@ export function WorkoutScreen({
         setIsInitialized(true)
       }
     }
-
+    
     loadSavedSection()
+  }, [])
+  
+  // Load ticked exercises when selectedDay changes
+  const loadTickedExercises = useCallback((day: string) => {
+    try {
+      if (typeof window === 'undefined') return []
+      const stored = localStorage.getItem(`tickedExercises-${day}`)
+      return stored ? JSON.parse(stored) as string[] : []
+    } catch (error) {
+      console.error('Error loading ticked exercises:', error)
+      return []
+    }
   }, [])
 
   // Save the selected workout section to localStorage whenever it changes
@@ -67,15 +121,31 @@ export function WorkoutScreen({
   }
 
   // Start a workout (for empty state)
-  const startWorkout = () => {
-    // This function is just a placeholder for now
+  const startWorkout = useCallback(() => {
+    // This function is used by EmptyWorkoutState component
     // In a real app, you might want to do something specific when starting a workout
-  }
+  }, [])
 
-  // Get the current workout and day data
+  // Get the current workout data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
-  const currentDay = currentWorkout?.days.find((d) => d.id === selectedDay)
-  const hasExercises = (currentDay?.exercises?.length ?? 0) > 0
+
+  // Calculate progress for the current day
+  const calculateProgress = useCallback((dayType: string) => {
+    const day = currentWorkout?.days.find(d => d.id === dayType)
+    if (!day || !day.exercises?.length) return 0
+    
+    // Force dependency on tickCounter to recalculate when exercises are toggled
+    const ticked = loadTickedExercises(dayType)
+    const totalExercises = day.exercises.length
+    const completedExercises = day.exercises.filter(ex => ticked.includes(ex.id)).length
+    
+    return totalExercises > 0 
+      ? Math.min(Math.round((completedExercises / totalExercises) * 100), 100)
+      : 0
+  }, [currentWorkout, tickCounter, loadTickedExercises])
+  
+  // Calculate progress for the current day
+  const activeProgress = useMemo(() => calculateProgress(selectedDay), [calculateProgress, selectedDay])
 
   if (workouts.length === 0) {
     return (
@@ -86,18 +156,13 @@ export function WorkoutScreen({
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background">
-      <CardHeader className="px-0">
-        <div className="workout-header-container">
-          <div
-            className={cn(
-              "workout-select transition-all duration-200",
-              "w-full",
-            )}
-          >
+    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector">
+      <CardHeader className="px-4">
+        <div className="flex items-center w-full">
+          <div className={`transition-all duration-200 ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
             <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
-              <SelectTrigger className="min-touch-target w-full">
-                <SelectValue placeholder="Select Workout" />
+              <SelectTrigger className="w-full h-9 text-sm">
+                <SelectValue placeholder="Select Workout" className="truncate" />
               </SelectTrigger>
               <SelectContent>
                 {workouts.map((workout) => (
@@ -108,9 +173,20 @@ export function WorkoutScreen({
               </SelectContent>
             </Select>
           </div>
+          {selectedWorkout && hasTickedExercises && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="h-9 w-9 flex-shrink-0 ml-1.5"
+              onClick={() => setIsResetDialogOpen(true)}
+              aria-label="Reset workout progress"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent className="px-4">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
           <TabsList className="grid grid-cols-3 mb-4 modern-tabs-list workout-tabs-container">
             <TabsTrigger
@@ -159,13 +235,26 @@ export function WorkoutScreen({
               <span className="font-medium">LEG</span>
             </TabsTrigger>
           </TabsList>
+          
+          <div className="flex justify-center my-4">
+            <CircularProgress 
+              value={activeProgress}
+              category={selectedDay}
+              size="md"
+              showLabel={false}
+            />
+          </div>
           {currentWorkout?.days.map((day) => (
             <TabsContent key={day.id} value={day.id} className="mt-0">
               {day.exercises.length > 0 ? (
                 <DayExercises
+                  key={`${day.id}-${tickCounter}`}
                   exercises={day.exercises}
                   dayId={day.id}
-                  onLogWorkout={onAddWorkoutLog}
+                  onLogWorkout={(log) => {
+                    onAddWorkoutLog(log)
+                  }}
+                  onExerciseToggled={handleExerciseToggled}
                   dayColor={getWorkoutDayColor(day.id, colorMode)}
                 />
               ) : (
@@ -175,6 +264,25 @@ export function WorkoutScreen({
           ))}
         </Tabs>
       </CardContent>
+
+      {/* Reset Confirmation Dialog */}
+      <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset Workout Progress</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reset all completed exercises for {selectedDay.toUpperCase()} day? 
+              This will clear your checkmarks but will not affect your workout history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={resetTickedExercises} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

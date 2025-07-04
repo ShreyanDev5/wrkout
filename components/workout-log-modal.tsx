@@ -77,7 +77,7 @@ export function WorkoutLogModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-[95vw] sm:max-w-[425px] bg-[#0f0f0f] border-[#1a1a1a] rounded-xl shadow-2xl px-4 sm:px-6 text-white">
+      <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto [background:hsl(var(--background))] [border:1px_solid_hsl(var(--border))] [box-shadow:none] [backdrop-filter:none]">
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center gap-2 text-white">
             <span
@@ -89,37 +89,42 @@ export function WorkoutLogModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col items-center space-y-10 py-6">
-          <WeightSlider
-            value={weight}
-            onChange={setWeight}
-            min={0}
-            max={500}
-            step={2.5}
-            label="Weight"
-            className="w-full max-w-xs text-white"
-            accentColor={dayColor}
-          />
+        <div className="flex flex-col items-center space-y-6 py-4 sm:py-6">
+          <div className="w-full space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium text-white text-center">Weight (kg)</h3>
+              <WeightSlider
+                value={weight}
+                onChange={setWeight}
+                min={0}
+                max={500}
+                step={2.5}
+                className="w-full text-white"
+                accentColor={dayColor}
+              />
+            </div>
 
-          <div className="flex flex-col items-center w-full max-w-xs">
-            <h3 className="text-sm font-medium text-white mb-3">Reps</h3>
-            <NumberStepper 
-              value={reps} 
-              onChange={setReps} 
-              min={0} 
-              max={30} 
-              accentColor={dayColor}
-              className="hover:scale-[1.02] transition-transform duration-200 text-white w-full"
-            />
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium text-white text-center">Reps</h3>
+              <NumberStepper 
+                value={reps} 
+                onChange={setReps} 
+                min={0} 
+                max={30} 
+                accentColor={dayColor}
+                className="hover:scale-[1.02] transition-transform duration-200 text-white w-full"
+              />
+            </div>
           </div>
+
         </div>
 
-        <DialogFooter className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-[#1a1a1a]">
+        <DialogFooter className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 pt-3 border-t border-[#1a1a1a]">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="w-full h-11 px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 transition-colors duration-200 sm:justify-self-start"
+            className="w-full h-10 sm:h-11 px-4 sm:px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 transition-colors duration-200 text-sm sm:text-base"
             aria-label="Cancel logging session"
             disabled={isSaving}
           >
@@ -129,7 +134,7 @@ export function WorkoutLogModal({
             type="button"
             onClick={handleSave}
             style={{ backgroundColor: dayColor, color: '#fff' }}
-            className="w-full h-11 px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-none shadow-none hover:brightness-110 transition-all duration-200 sm:justify-self-end"
+            className="w-full h-10 sm:h-11 px-4 sm:px-8 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 border-none shadow-none hover:brightness-110 transition-all duration-200 text-sm sm:text-base"
             aria-label="Save workout log"
             disabled={isSaving}
           >

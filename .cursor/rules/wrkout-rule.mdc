@@ -1,79 +1,66 @@
 ---
-description: 
-globs: 
-alwaysApply: true
+description: If the agent requires additional information about my app to carry out a requested task.
+alwaysApply: false
 ---
+
 # 🏋️‍♂️ wrkout – Personalized Workout Tracker
 
-`wrkout` is a **minimalist workout tracker** built using [v0 by Vercel](https://v0.dev), designed to make gym progress tracking effortless and visually appealing. Initially crafted for personal use, this project will soon be available on **GitHub** for others to explore, use, and contribute.
+**`wrkout`** is a **minimalist workout tracker** built using [v0 by Vercel](https://v0.dev), crafted to make gym progress tracking effortless and visually appealing. Originally developed for personal use, it will soon be open-sourced on **GitHub** for others to explore, use, and contribute.
 
-Inspired by the premium design standards of companies like **Apple** and **Google**, `wrkout` combines sleek UI with powerful tracking capabilities—especially for strength training routines like the **Push-Pull-Legs (PPL)** split.
+Inspired by the **premium design standards** of companies like **Apple** and **Google**, `wrkout` blends a sleek user interface with focused strength training features—especially for routines like the **Push-Pull-Legs (PPL)** split.
 
 ---
 
 ## 🎯 Purpose & Goals
 
-- Track **workout progress** in a clean and intuitive interface  
-- Emphasize **progressive overload** in **strength training**  
-- Organize workouts around the popular **Push-Pull-Legs (PPL)** split  
-- Maintain a **distraction-free**, premium design  
-- Deploy via **Vercel** and later open-source on **GitHub**
+- ✅ Track **workout progress** through a clean, intuitive interface
+- 🔁 Emphasize **progressive overload** in **strength training**
+- 🧠 Organize routines using the proven **Push-Pull-Legs (PPL)** split
+- 🌟 Deliver a **premium, distraction-free design experience**
+- 🚀 Deploy with **Vercel**, and release on **GitHub** soon
 
 ---
 
-## 🧩 Key Features (Planned / Implemented)
+## 🧩 Features
 
-### ✅ Core Workout Tracking
-- Log exercises by category: **Push**, **Pull**, **Legs**
-- Add sets, reps, weights with ease
-- Track history per workout type
+### ✅ Core Tracking
 
-### 🎨 Design Aesthetic
-- Minimal and premium UI design inspired by **Apple** and **Google**
-- Clean typography, soft shadows, and grid-based layouts
+- Log workouts by type: **Push**, **Pull**, **Legs**
+- Record reps, weights with ease
+- View detailed history for each workout category
 
-### 📊 Progress Enhancements
-- **Monthly Summary**: Redesigned to highlight key metrics like total workouts, top performing lifts, and consistency streaks
-- **Progress Charts**: Upgraded to be interactive and visually compelling using smooth transitions, tooltips, and filterable timelines
-- Functional *and* aesthetic: Balanced data presentation with motivational visual cues
+### 🎨 UI & Design Aesthetic
+
+- Minimal, modern design inspired by Apple & Google
+- Clean typography, soft shadows, and grid-based layout
+- Balanced white space for a calm, focused user experience
+
+### 📊 Progress & Visualization
+
+- **Monthly Summaries**: Key stats like workout count, top lifts, and streaks
+- **Interactive Charts**: Smooth animations, tooltips, and timeline filters
+- Data that’s not just informative—but _motivating_
 
 ### 🚀 Deployment & Sharing
+
 - Built with [v0 by Vercel](https://v0.dev)
-- Will be deployed using **Vercel** for seamless performance
-- Open-source release on **GitHub** planned for public use and collaboration
+- Deployed on **Vercel** for performance & simplicity
+- Open-source release coming soon via **GitHub**
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: v0 by Vercel (React/Next.js-based UI generation)
-- **Deployment**: Vercel platform
-- **Version Control**: GitHub (future)
+- **Frontend**: v0 by Vercel (Next.js/React-based)
+- **Deployment**: Vercel
+- **Version Control**: GitHub
 
 ---
 
 ## 📈 Vision
 
-To create a **beautiful, intuitive, and effective** strength training companion that anyone—from beginners to gym veterans—can rely on to **track**, **analyze**, and **improve** their workouts with minimal friction and maximum clarity.
-
----
-
-## 📂 License & Contributions
-
-This project will be made available under an open-source license upon GitHub release. Contributions, forks, and suggestions are welcome!
-
----
-
-## 📍 Status
-
-🚧 **Active Development**  
-🔜 Next Milestones:
-- [ ] Finalize Progress Summary & Chart UI
-- [ ] Test across devices for responsiveness
-- [ ] Deploy on Vercel
-- [ ] Upload to GitHub
+To build a **beautiful, intuitive, and effective** companion for strength training—something that both beginners and advanced lifters can use to **track**, **analyze**, and **improve** their performance with minimal effort and maximum clarity.
 
 ---
 
 > Built with 💪 and minimalism in mind.
-
