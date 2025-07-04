@@ -15,13 +15,16 @@ export function AuthPopup() {
     console.log('AuthPopup mounted, user:', user);
     // Show popup after a short delay if not signed in
     if (!user) {
+      // Prefetch auth pages for faster navigation
+      router.prefetch('/auth/signin');
+      router.prefetch('/auth/signup');
       const timer = setTimeout(() => {
         console.log('Setting popup to open');
         setIsOpen(true);
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [user]);
+  }, [user, router]);
 
   const handleClose = () => {
     console.log('Closing popup');
