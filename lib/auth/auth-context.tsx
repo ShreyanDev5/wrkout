@@ -20,17 +20,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setUsername(session?.user?.user_metadata?.username ?? null);
-      setIsLoading(false);
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+      try {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setUsername(session?.user?.user_metadata?.username ?? null);
+        setIsLoading(false);
+
+        // Handle session loss by checking for SIGNED_OUT event and null session
+        if (
+          event === 'SIGNED_OUT' && !session
+        ) {
+          // Optionally, you can show a toast or set a message in localStorage
+          router.push('/auth/signin?message=Session expired, please sign in again.');
+        }
+      } catch (error) {
+        console.error('Error in onAuthStateChange:', error);
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+    // Only depend on router, supabase is stable
+  }, [router]);
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -57,7 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    }
     router.push('/auth/signin');
   };
 

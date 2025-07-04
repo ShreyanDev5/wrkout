@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { workoutData } from '@/lib/workout-data';
+import { initializeWorkoutData, loadWorkoutData } from '@/lib/supabase-storage';
 
 export function SignInForm() {
   const [username, setUsername] = useState('');
@@ -44,11 +46,19 @@ export function SignInForm() {
       }
 
       // After successful sign-in, set user_metadata.username if missing
-      if (data && data.user && !data.user.user_metadata?.username) {
-        const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
-        if (metaError) {
-          setError(metaError.message);
-          return;
+      if (data && data.user) {
+        if (!data.user.user_metadata?.username) {
+          const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
+          if (metaError) {
+            setError(metaError.message);
+            return;
+          }
+        }
+        // Initialize workout data for new user if not present
+        try {
+          await loadWorkoutData(data.user.id); // Will throw if not present
+        } catch {
+          await initializeWorkoutData({ workouts: workoutData, lastSyncTime: null }, data.user.id);
         }
       }
 

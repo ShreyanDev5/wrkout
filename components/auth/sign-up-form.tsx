@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { workoutData } from '@/lib/workout-data';
+import { initializeWorkoutData } from '@/lib/supabase-storage';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -74,10 +76,14 @@ export function SignUpForm() {
         return;
       }
       // Do NOT set user_metadata here; will be set after first sign-in
-      const { error: signInError } = await signIn(pseudoEmail, password);
+      const { error: signInError, data: signInData } = await signIn(pseudoEmail, password);
       if (signInError) {
         setError(signInError.message);
         return;
+      }
+      // Initialize workout data for new user using demo data
+      if (signInData && signInData.user) {
+        await initializeWorkoutData({ workouts: workoutData, lastSyncTime: null }, signInData.user.id);
       }
       router.push('/');
     } catch (err) {

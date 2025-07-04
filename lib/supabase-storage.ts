@@ -1,5 +1,6 @@
 import { supabase, handleSupabaseError } from './supabase'
 import type { Workout, WorkoutLog, AppData } from './types'
+import { workoutData } from './workout-data'
 
 // Convert AppData to database format
 const convertToDatabaseFormat = (appData: AppData, userId: string) => ({
@@ -39,14 +40,20 @@ export async function loadWorkoutData(userId: string): Promise<AppData> {
       .single()
 
     if (error) throw error
-    if (!data) throw new Error('No workout data found')
+    if (!data) {
+      // New user: return demo data
+      return {
+        workouts: workoutData,
+        lastSyncTime: null
+      }
+    }
 
     return convertFromDatabaseFormat(data)
   } catch (error) {
     handleSupabaseError(error)
-    // Return empty data if there's an error
+    // On error, return demo data as fallback
     return {
-      workouts: [],
+      workouts: workoutData,
       lastSyncTime: null
     }
   }
