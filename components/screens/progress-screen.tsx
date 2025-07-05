@@ -27,7 +27,8 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   
   // Set loading state based on logs
   useEffect(() => {
-    if (logs.length > 0) {
+    // Only set loading to false if we have logs or if logs is an empty array (meaning data has been loaded)
+    if (logs !== undefined) {
       setIsLoading(false)
     }
   }, [logs])
@@ -311,7 +312,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       <div className="flex items-center gap-2.5 whitespace-nowrap">
                         <span
                           className="h-2 w-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: getWorkoutDayColor(mainFilter || "push", colorMode) }}
+                          style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
                         ></span>
                         <span className="truncate">{exercise.name}</span>
                       </div>

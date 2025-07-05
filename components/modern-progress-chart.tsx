@@ -143,62 +143,107 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
   // Process data for the chart
   const chartData = useMemo(() => {
-    const groupedData: Record<
-      string,
-      {
-        date: string
-        weight: number
-        exerciseName: string
-        avgReps: number
-        isLatest: boolean
-        isPR: boolean
-        index: number
-      }
-    > = {}
+    try {
+      // If we have an exercise filter, only show that exercise
+      // If we have a main filter but no exercise filter, group by exercise and show the best progression
+      let processedLogs = timeframeFilteredLogs
 
-    timeframeFilteredLogs.forEach((log) => {
-      const dateKey = log.performed_at
-      if (!groupedData[dateKey] || log.weight > groupedData[dateKey].weight) {
-        groupedData[dateKey] = {
-          date: dateKey,
-          weight: log.weight,
-          exerciseName: log.exercise_name,
-          avgReps: log.avg_reps,
-          isLatest: false,
-          isPR: false,
-          index: 0,
+      if (exerciseFilter) {
+        // Show only the selected exercise
+        processedLogs = timeframeFilteredLogs.filter(log => log.exercise_name === exerciseFilter)
+      } else if (mainFilter) {
+        // For main filter only, group by exercise and find the best progression
+        const exerciseGroups: Record<string, WorkoutLog[]> = {}
+        
+        timeframeFilteredLogs.forEach(log => {
+          if (!exerciseGroups[log.exercise_name]) {
+            exerciseGroups[log.exercise_name] = []
+          }
+          exerciseGroups[log.exercise_name].push(log)
+        })
+        
+        // Find the exercise with the most data points or best progression
+        let bestExercise = ""
+        let maxDataPoints = 0
+        
+        Object.entries(exerciseGroups).forEach(([exerciseName, logs]) => {
+          if (logs.length > maxDataPoints) {
+            maxDataPoints = logs.length
+            bestExercise = exerciseName
+          }
+        })
+        
+        if (bestExercise) {
+          processedLogs = exerciseGroups[bestExercise]
         }
       }
-    })
 
-    // Convert to array and sort by date
-    const sortedData = Object.values(groupedData).sort((a, b) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime()
-    })
+      // If no data after filtering, return empty array
+      if (processedLogs.length === 0) {
+        return []
+      }
 
-    // Add index to each data point
-    sortedData.forEach((item, index) => {
-      item.index = index
-    })
+      // Group by date and keep the best weight for each date
+      const groupedData: Record<
+        string,
+        {
+          date: string
+          weight: number
+          exerciseName: string
+          avgReps: number
+          isLatest: boolean
+          isPR: boolean
+          index: number
+        }
+      > = {}
 
-    // Find the max weight (PR)
-    const maxWeight = sortedData.length > 0 ? Math.max(...sortedData.map((item) => item.weight)) : 0
-
-    // Mark the latest entry and PR
-    if (sortedData.length > 0) {
-      // Mark the latest entry
-      sortedData[sortedData.length - 1].isLatest = true
-
-      // Mark all PR entries
-      sortedData.forEach((item) => {
-        if (item.weight === maxWeight) {
-          item.isPR = true
+      processedLogs.forEach((log) => {
+        const dateKey = log.performed_at
+        if (!groupedData[dateKey] || log.weight > groupedData[dateKey].weight) {
+          groupedData[dateKey] = {
+            date: dateKey,
+            weight: log.weight,
+            exerciseName: log.exercise_name,
+            avgReps: log.avg_reps,
+            isLatest: false,
+            isPR: false,
+            index: 0,
+          }
         }
       })
-    }
 
-    return sortedData
-  }, [timeframeFilteredLogs])
+      // Convert to array and sort by date
+      const sortedData = Object.values(groupedData).sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime()
+      })
+
+      // Add index to each data point
+      sortedData.forEach((item, index) => {
+        item.index = index
+      })
+
+      // Find the max weight (PR)
+      const maxWeight = sortedData.length > 0 ? Math.max(...sortedData.map((item) => item.weight)) : 0
+
+      // Mark the latest entry and PR
+      if (sortedData.length > 0) {
+        // Mark the latest entry
+        sortedData[sortedData.length - 1].isLatest = true
+
+        // Mark all PR entries
+        sortedData.forEach((item) => {
+          if (item.weight === maxWeight) {
+            item.isPR = true
+          }
+        })
+      }
+
+      return sortedData
+    } catch (error) {
+      console.error("Error processing chart data:", error)
+      return []
+    }
+  }, [timeframeFilteredLogs, exerciseFilter, mainFilter])
 
   // Calculate stats
   const personalRecord = chartData.length ? Math.max(...chartData.map((item) => item.weight)) : 0
@@ -240,7 +285,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     const lastWeight = chartData[chartData.length - 1].weight
     const comparisonWeight = comparisonPoint.weight
 
-    if (comparisonWeight === 0) return null
+    if (comparisonWeight === 0 || comparisonWeight === lastWeight) return null
 
     const change = ((lastWeight - comparisonWeight) / comparisonWeight) * 100
     return change.toFixed(1)
@@ -251,25 +296,34 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     if (mainFilter) {
       return getWorkoutDayColor(mainFilter, colorMode)
     } else if (exerciseFilter) {
-      // 'dayId' does not exist on WorkoutLog, so fallback to default color or handle gracefully
-      // Optionally, if you have a way to infer the day type from exercise name, implement here
-      // For now, just return the default color
-      // const exercise = filteredLogs.find((s) => s.exercise_name === exerciseFilter)
-      // if (exercise) {
-      //   return getWorkoutDayColor(exercise.dayId, colorMode)
-      // }
+      // Get the workout type from the exercise name
+      const exerciseType = getExerciseWorkoutType(exerciseFilter)
+      if (exerciseType) {
+        return getWorkoutDayColor(exerciseType, colorMode)
+      }
+    } else if (chartData.length > 0) {
+      // Get the workout type from the first exercise in the chart
+      const exerciseType = getExerciseWorkoutType(chartData[0].exerciseName)
+      if (exerciseType) {
+        return getWorkoutDayColor(exerciseType, colorMode)
+      }
     }
     return "#FF5733" // Default color
-  }, [mainFilter, exerciseFilter, filteredLogs, colorMode])
+  }, [mainFilter, exerciseFilter, chartData, colorMode])
 
   // Get exercise name for display
   const exerciseName = useMemo(() => {
     if (exerciseFilter) {
-      const exercise = filteredLogs.find((s) => s.exercise_name === exerciseFilter)
-      return exercise?.exercise_name || ""
+      return exerciseFilter
     }
-    return mainFilter ? `${mainFilter.charAt(0).toUpperCase() + mainFilter.slice(1)}` : ""
-  }, [exerciseFilter, mainFilter, filteredLogs])
+    if (mainFilter) {
+      return `${mainFilter.charAt(0).toUpperCase() + mainFilter.slice(1)}`
+    }
+    if (chartData.length > 0) {
+      return chartData[0].exerciseName
+    }
+    return "Progress"
+  }, [exerciseFilter, mainFilter, chartData])
 
   // Format date for display
   const formatXAxis = (dateStr: string) => {
@@ -365,9 +419,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
               <span className="text-zinc-400 text-sm">kg</span>
             </div>
           </div>
-          {data.reps > 0 && (
+          {data.avgReps > 0 && (
             <div className="text-zinc-400 text-sm">
-              {data.reps} reps
+              {data.avgReps} reps
             </div>
           )}
           {(isPR || isLatest) && (
@@ -511,15 +565,12 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     )
   }
 
-  // Verify filtering logic with console logs for debugging
+  // Debug logging for development
   useEffect(() => {
-    console.log("Timeframe:", timeframe)
-    console.log("Filtered Sessions Count:", timeframeFilteredLogs.length)
-    console.log("Date Range:", {
-      start: timeframeFilteredLogs[0]?.performed_at,
-      end: timeframeFilteredLogs[timeframeFilteredLogs.length - 1]?.performed_at
-    })
-  }, [timeframe, timeframeFilteredLogs])
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Progress Chart - Data Points:", chartData.length)
+    }
+  }, [chartData])
 
   return (
     <motion.div
