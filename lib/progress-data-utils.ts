@@ -1,7 +1,7 @@
-import type { WorkoutLog } from "@/lib/types"
+import type { WorkoutLog, WeeklyWorkoutData } from "@/lib/types"
 
 // Number of weeks to display in the progress view
-export const PROGRESS_WEEKS = 4
+export const PROGRESS_WEEKS = 1
 
 /**
  * Helper function to check if two dates are the same day
@@ -103,11 +103,11 @@ export function processWorkoutData(logs: WorkoutLog[]) {
     .sort()
     .reverse()
     .slice(0, PROGRESS_WEEKS)
-    .map((_, index) => `Week ${index + 1}`)
+    .map((_, index) => PROGRESS_WEEKS === 1 ? 'Current' : `Week ${index + 1}`)
 
   // If no weeks found, default to current week
   if (weekLabels.length === 0) {
-    weekLabels.push('Current Week')
+    weekLabels.push('Current')
   }
 
   // Process each exercise's data
@@ -165,16 +165,31 @@ export function processWorkoutData(logs: WorkoutLog[]) {
       }
     })
 
+    // Get previous workout data for comparison
+    const previousWorkout = sortedExerciseLogs.find(log => {
+      const logDate = new Date(log.performed_at)
+      const currentWeekData = weeks[weekLabels[0]]
+      if (!currentWeekData) return false
+      
+      const currentWeekDate = new Date(currentWeekData.date)
+      return logDate < currentWeekDate
+    })
+
     return {
       exerciseName,
       weeks,
+      previousWorkout: previousWorkout ? {
+        reps: previousWorkout.avg_reps,
+        weight: previousWorkout.weight,
+        date: previousWorkout.performed_at,
+      } : null,
     }
   })
 
   // Sort exercises by name
   weeklyData.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
 
-  return { weeklyData, weekLabels }
+  return { weeklyData: weeklyData as WeeklyWorkoutData[], weekLabels }
 }
 
 /**

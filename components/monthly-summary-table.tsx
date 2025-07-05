@@ -4,11 +4,11 @@ import { useMemo } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTheme } from "@/components/theme-context"
 import { getWorkoutDayColor } from "@/lib/utils"
-import type { WorkoutLog } from "@/lib/types"
+import type { WorkoutLog, WeeklyWorkoutData } from "@/lib/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { processWorkoutData } from "@/lib/progress-data-utils"
 import { format } from "date-fns"
-import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 
 interface MonthlySummaryTableProps {
   logs: WorkoutLog[]
@@ -28,27 +28,27 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
   // Process workout data using our utility
   const { weeklyData, weekLabels } = useMemo(() => {
     return processWorkoutData(filteredLogs)
-  }, [filteredLogs])
+  }, [filteredLogs]) as { weeklyData: WeeklyWorkoutData[], weekLabels: string[] }
 
   // Function to render trend indicator
   const renderTrend = (current: number | null, previous: number | null) => {
     if (!current || !previous) return null
     const diff = ((current - previous) / previous) * 100
     
-    if (Math.abs(diff) < 1) return <Minus className="h-4 w-4 text-muted-foreground mx-auto" />
+    if (Math.abs(diff) < 1) return <Minus className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground mx-auto" />
     
     if (diff > 0) {
       return (
         <div className="flex items-center justify-center text-green-500">
-          <TrendingUp className="h-4 w-4 mr-1" />
-          <span className="text-xs font-medium">{Math.round(diff)}%</span>
+          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
+          <span className="text-[10px] sm:text-xs font-medium">{Math.round(diff)}%</span>
         </div>
       )
     } else {
       return (
         <div className="flex items-center justify-center text-red-500">
-          <TrendingDown className="h-4 w-4 mr-1" />
-          <span className="text-xs font-medium">{Math.abs(Math.round(diff))}%</span>
+          <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
+          <span className="text-[10px] sm:text-xs font-medium">{Math.abs(Math.round(diff))}%</span>
         </div>
       )
     }
@@ -68,7 +68,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
 
   return (
     <div className="relative">
-      <div className="w-full overflow-x-auto rounded-lg border border-border/60 bg-background shadow">
+      <div className="w-full overflow-x-auto rounded-lg border border-border/60 bg-background shadow min-w-0">
         {isLoading ? (
           <div className="text-center py-16 px-4">
             <div className="animate-pulse flex flex-col items-center space-y-4">
@@ -96,27 +96,22 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
             </div>
           </div>
         ) : (
-          <Table className="w-full">
+          <Table className="w-full min-w-[280px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-border/60 bg-muted/20">
                 <TableHead
-                  className="w-[160px] sm:w-[220px] border-r border-border/60 text-center bg-muted/20 sticky left-0 z-10"
+                  className="w-[120px] sm:w-[180px] border-r border-border/60 text-center bg-muted/20 sticky left-0 z-10"
                   style={{ backgroundColor: 'var(--muted)' }}
                 >
-                  <div className="font-medium text-sm sm:text-base">Exercise</div>
+                  <div className="font-medium text-xs sm:text-sm">Exercise</div>
                 </TableHead>
                 {weekLabels.map((label, index) => (
                   <TableHead 
                     key={label} 
-                    className="text-center w-[140px] sm:w-[180px] px-2 sm:px-3 bg-muted/20"
+                    className="text-center w-[100px] sm:w-[140px] px-1 sm:px-3 bg-muted/20"
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <div className="text-sm sm:text-base font-medium">{label}</div>
-                      {index > 0 && (
-                        <div className="text-xs text-muted-foreground">
-                          vs W{index}
-                        </div>
-                      )}
+                      <div className="text-xs sm:text-sm font-medium">Current</div>
                     </div>
                   </TableHead>
                 ))}
@@ -133,7 +128,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                     className="hover:bg-muted/10 transition-colors group border-b border-border/40"
                   >
                     <TableCell
-                      className="font-medium break-words whitespace-normal py-3 border-r border-border/60 bg-background sticky left-0 z-10"
+                      className="font-medium break-words whitespace-normal py-2 sm:py-3 border-r border-border/60 bg-background sticky left-0 z-10"
                       style={{
                         position: 'relative',
                         color: dayColor,
@@ -145,7 +140,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                           style={{ backgroundColor: dayColor }}
                         />
                         <span 
-                          className="block text-sm sm:text-base font-medium pl-5 pr-4 truncate" 
+                          className="block text-xs sm:text-sm font-medium pl-4 sm:pl-5 pr-2 sm:pr-4 leading-tight" 
                           title={exercise.exerciseName}
                         >
                           {exercise.exerciseName}
@@ -155,53 +150,53 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
 
                     {weekLabels.map((weekLabel, weekIndex) => {
                       const weekData = exercise.weeks[weekLabel]
-                      const previousWeekData = weekIndex > 0 ? exercise.weeks[weekLabels[weekIndex - 1]] : null
+                      const previousWorkout = exercise.previousWorkout
                       
                       return (
                         <TableCell 
                           key={weekLabel} 
-                          className="text-center py-3 px-2 sm:px-3 bg-background/95"
+                          className="text-center py-2 sm:py-3 px-1 sm:px-3 bg-background/95"
                         >
                           {weekData ? (
-                            <div className="flex flex-col items-center justify-center space-y-1.5 w-full">
+                            <div className="flex flex-col items-center justify-center space-y-1 sm:space-y-1.5 w-full">
                               {/* Main weight display with trend */}
                               <div className="flex flex-col items-center w-full">
-                                <div className="flex items-center justify-center space-x-1.5">
-                                  <span className="text-base font-bold text-foreground">
+                                <div className="flex items-center justify-center space-x-1">
+                                  <span className="text-sm sm:text-base font-bold text-foreground">
                                     {weekData.weight}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">kg</span>
+                                  <span className="text-[10px] sm:text-xs text-muted-foreground">kg</span>
                                 </div>
                                 
                                 {/* Trend indicator for weight */}
-                                {previousWeekData && (
+                                {previousWorkout && (
                                   <div className="mt-0.5">
-                                    {renderTrend(weekData.weight, previousWeekData.weight)}
+                                    {renderTrend(weekData.weight, previousWorkout.weight)}
                                   </div>
                                 )}
                               </div>
                               
-                              <div className="w-3/4 h-px bg-border/40 my-1" />
+                              <div className="w-3/4 h-px bg-border/40 my-0.5 sm:my-1" />
                               
                               {/* Reps display with trend */}
                               <div className="flex flex-col items-center w-full">
-                                <div className="flex items-center justify-center space-x-1.5">
-                                  <span className="text-sm font-medium text-foreground">
+                                <div className="flex items-center justify-center space-x-1">
+                                  <span className="text-xs sm:text-sm font-medium text-foreground">
                                     {weekData.reps}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">reps</span>
+                                  <span className="text-[10px] sm:text-xs text-muted-foreground">reps</span>
                                 </div>
                                 
                                 {/* Trend indicator for reps */}
-                                {previousWeekData && (
+                                {previousWorkout && (
                                   <div className="mt-0.5">
-                                    {renderTrend(weekData.reps, previousWeekData.reps)}
+                                    {renderTrend(weekData.reps, previousWorkout.reps)}
                                   </div>
                                 )}
                               </div>
                               
                               {/* Date indicator */}
-                              <div className="text-[10px] text-muted-foreground opacity-70 mt-1">
+                              <div className="text-[8px] sm:text-[10px] text-muted-foreground opacity-70 mt-0.5 sm:mt-1">
                                 {format(new Date(weekData.date), 'MMM d')}
                               </div>
                             </div>
