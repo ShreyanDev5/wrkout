@@ -15,6 +15,7 @@ import {
   Footprints,
   Sparkles,
   Zap,
+  RotateCcw,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
@@ -27,6 +28,7 @@ import { Label } from "@/components/ui/label"
 import { CollapsibleHeaderLayout } from "@/components/layouts/collapsible-header-layout"
 import { useAuth } from '@/lib/auth/auth-context'
 import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
+import { OnboardingGuide } from '@/components/onboarding-guide'
 
 interface SettingsScreenProps {
   workouts: Workout[]
@@ -46,6 +48,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
   const [expandedWorkouts, setExpandedWorkouts] = useState<Record<string, boolean>>({})
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const { toast } = useToast()
   const { signOut, user, username } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
@@ -315,6 +318,17 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
   const handleSignOut = async () => {
     signOut();
+  }
+
+  const handleResetOnboarding = () => {
+    if (user?.id) {
+      localStorage.removeItem(`onboarding-completed-${user.id}`)
+      toast({
+        title: "Onboarding Reset",
+        description: "The onboarding guide will show again on your next visit.",
+        className: "bg-[#34A853] border-none text-white",
+      })
+    }
   }
 
   return (
@@ -758,7 +772,23 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
         </DialogContent>
       </Dialog>
 
-      <div className="flex justify-center mt-8">
+      <div className="flex flex-col items-center gap-4 mt-8">
+        <Button
+          variant="outline"
+          className="rounded-md border-blue-500/20 text-blue-500 hover:bg-blue-500/10 px-6 py-2 text-base font-semibold"
+          onClick={() => setShowOnboarding(true)}
+        >
+          <Sparkles className="h-4 w-4 mr-2" />
+          View Onboarding Guide
+        </Button>
+        <Button
+          variant="outline"
+          className="rounded-md border-orange-500/20 text-orange-500 hover:bg-orange-500/10 px-6 py-2 text-base font-semibold"
+          onClick={handleResetOnboarding}
+        >
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Reset Onboarding
+        </Button>
         <Button
           variant="destructive"
           className="rounded-md bg-[#EA4335] hover:bg-[#c62828] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
@@ -767,12 +797,19 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
           Sign Out
         </Button>
       </div>
+      
       <ResetConfirmationModal
         isOpen={isSignOutOpen}
         onClose={() => setIsSignOutOpen(false)}
         onConfirm={handleSignOut}
         dayColor="#EA4335"
         message={"Are you sure you want to sign out? You'll need to log in again to access your workouts and progress."}
+      />
+      
+      {/* Onboarding Guide */}
+      <OnboardingGuide 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
       />
     </CollapsibleHeaderLayout>
   )

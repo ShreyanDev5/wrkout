@@ -70,23 +70,34 @@ export function SignUpForm() {
     try {
       // Use username to construct a pseudo-email (case-sensitive)
       const pseudoEmail = `${username}@wrkout.app`;
+      
+      console.log('Attempting to sign up user:', username)
       const { error, data } = await signUp(pseudoEmail, password);
       if (error) {
+        console.error('Sign up error:', error)
         setError(error.message);
         return;
       }
+      
+      console.log('Sign up successful, attempting sign in')
       // Do NOT set user_metadata here; will be set after first sign-in
       const { error: signInError, data: signInData } = await signIn(pseudoEmail, password);
       if (signInError) {
+        console.error('Sign in error:', signInError)
         setError(signInError.message);
         return;
       }
+      
+      console.log('Sign in successful, initializing workout data')
       // Initialize workout data for new user using demo data
       if (signInData && signInData.user) {
         await initializeWorkoutData({ workouts: workoutData, lastSyncTime: null }, signInData.user.id);
       }
+      
+      console.log('Account creation complete, redirecting')
       router.push('/');
     } catch (err) {
+      console.error('Unexpected error during sign up:', err)
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);

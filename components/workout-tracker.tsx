@@ -9,13 +9,14 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
-import { loadWorkoutData, saveWorkoutData, saveWorkoutLog, loadWorkoutLogs } from "@/lib/supabase-storage"
+import { loadWorkoutData, saveWorkoutData, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs } from "@/lib/supabase-storage"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
 import { useAuth } from '@/lib/auth'
 import { workoutData as demoWorkoutData } from "@/lib/workout-data"
 import { getDemoWorkoutLogs } from "@/lib/demo-data"
+import { OnboardingGuide } from "@/components/onboarding-guide"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -24,6 +25,7 @@ export function WorkoutTracker() {
     lastSyncTime: null,
   })
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const { toast } = useToast()
   const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
   const { user } = useAuth()
@@ -40,9 +42,15 @@ export function WorkoutTracker() {
         // Not logged in: show demo data with sample logs
         setAppData({ workouts: demoWorkoutData, lastSyncTime: null })
         
-        // Use deterministic demo data
-        const demoLogs = getDemoWorkoutLogs()
-        setWorkoutLogs(demoLogs)
+        // Load demo data from Supabase (with fallback to client-side data)
+        try {
+          const demoLogs = await loadDemoWorkoutLogs()
+          setWorkoutLogs(demoLogs)
+        } catch (error) {
+          console.error('Error loading demo logs, using fallback:', error)
+          const demoLogs = getDemoWorkoutLogs()
+          setWorkoutLogs(demoLogs)
+        }
         return
       }
       // Logged in: load from Supabase
@@ -50,6 +58,15 @@ export function WorkoutTracker() {
       setAppData(data)
       const logs = await loadWorkoutLogs(user.id)
       setWorkoutLogs(logs)
+      
+      // Check if this is the user's first time (onboarding not completed)
+      const onboardingCompleted = localStorage.getItem(`onboarding-completed-${user.id}`)
+      if (!onboardingCompleted) {
+        // Show onboarding after a short delay to ensure the app is loaded
+        setTimeout(() => {
+          setShowOnboarding(true)
+        }, 1000)
+      }
     }
     initializeApp()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,6 +151,12 @@ export function WorkoutTracker() {
       </Tabs>
 
       <Toaster />
+      
+      {/* Onboarding Guide */}
+      <OnboardingGuide 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
+      />
     </div>
   )
 }

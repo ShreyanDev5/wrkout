@@ -1,6 +1,7 @@
 import { supabase, handleSupabaseError } from './supabase'
 import type { Workout, WorkoutLog, AppData } from './types'
 import { workoutData } from './workout-data'
+import { getDemoWorkoutLogs } from './demo-data'
 
 // Convert AppData to database format
 const convertToDatabaseFormat = (appData: AppData, userId: string) => ({
@@ -20,12 +21,20 @@ const convertFromDatabaseFormat = (data: any): AppData => ({
 // Initialize workout data in Supabase
 export async function initializeWorkoutData(initialData: AppData, userId: string): Promise<void> {
   try {
+    console.log('Initializing workout data for user:', userId)
+    
     const { error } = await supabase
       .from('workouts')
       .upsert(convertToDatabaseFormat(initialData, userId))
     
-    if (error) throw error
+    if (error) {
+      console.error('Supabase error during initialization:', error)
+      throw error
+    }
+    
+    console.log('Workout data initialized successfully')
   } catch (error) {
+    console.error('Error initializing workout data:', error)
     handleSupabaseError(error)
   }
 }
@@ -41,9 +50,9 @@ export async function loadWorkoutData(userId: string): Promise<AppData> {
 
     if (error) throw error
     if (!data) {
-      // New user: return demo data
+      // New user: return demo data from Supabase
       return {
-        workouts: workoutData,
+        workouts: workoutData, // Fallback to client-side demo data
         lastSyncTime: null
       }
     }
@@ -56,6 +65,24 @@ export async function loadWorkoutData(userId: string): Promise<AppData> {
       workouts: workoutData,
       lastSyncTime: null
     }
+  }
+}
+
+// Load demo workout logs from Supabase (for non-authenticated users)
+export async function loadDemoWorkoutLogs(): Promise<WorkoutLog[]> {
+  try {
+    const { data, error } = await supabase
+      .from('workout_logs')
+      .select('*')
+      .is('user_id', null) // Demo data has NULL user_id
+      .order('performed_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('Error loading demo workout logs:', error)
+    // Fallback to client-side demo data
+    return getDemoWorkoutLogs()
   }
 }
 
