@@ -42,4 +42,33 @@ export function getWorkoutDayIcon(dayId: string, modern = false): ReactNode {
     default:
       return <Dumbbell className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
   }
+}
+
+export function getExerciseWorkoutType(exerciseName: string): string | null {
+  const name = exerciseName.toLowerCase()
+  
+  // Leg exercises (check first to avoid conflicts with generic terms)
+  const legKeywords = [
+    'leg press', 'hack squat', 'bulgarian', 'romanian', 'rdl', 'hip thrust', 'leg curl',
+    'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up',
+    'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge', 'extension'
+  ]
+  
+  // Push exercises (chest, shoulders, triceps)
+  const pushKeywords = [
+    'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
+    'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise'
+  ]
+  
+  // Pull exercises (back, biceps, rear delts)
+  const pullKeywords = [
+    'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
+    'face pull', 'rear delt', 'shrug', 'rack pull', 't-bar', 't bar'
+  ]
+  
+  if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
+  if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
+  if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
+  
+  return null
 } 

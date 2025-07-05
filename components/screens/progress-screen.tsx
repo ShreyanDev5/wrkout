@@ -7,7 +7,7 @@ import { MonthlySummaryTable } from "@/components/monthly-summary-table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { WorkoutLog } from "@/lib/types"
-import { getWorkoutDayColor } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
 import { motion } from "framer-motion"
@@ -100,35 +100,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
     return validExercises
   }, [logs])
 
-  // Enhanced exercise classification by workout type
-  const getExerciseWorkoutType = (exerciseName: string): string | null => {
-    const name = exerciseName.toLowerCase()
-    
-    // Push exercises (chest, shoulders, triceps)
-    const pushKeywords = [
-      'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
-      'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise'
-    ]
-    
-    // Pull exercises (back, biceps, rear delts)
-    const pullKeywords = [
-      'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
-      'face pull', 'rear delt', 'shrug', 'deadlift', 'rack pull', 't-bar', 't bar'
-    ]
-    
-    // Leg exercises
-    const legKeywords = [
-      'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge', 'extension',
-      'leg press', 'hack squat', 'bulgarian', 'romanian', 'rdl', 'hip thrust', 'leg curl',
-      'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up'
-    ]
-    
-    if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
-    if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
-    if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
-    
-    return null
-  }
+
 
   // Filter exercises by main filter for chart
   const filteredExercisesForChart = useMemo(() => {
@@ -199,12 +171,22 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               value="all"
               className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all -ml-1 md:-ml-1.5 ${
                 !mainFilter 
-                  ? 'bg-zinc-700 text-white shadow-inner' 
+                  ? 'text-white' 
                   : 'text-muted-foreground hover:text-foreground/80'
               }`}
+              style={{
+                backgroundColor: !mainFilter
+                  ? 'color-mix(in srgb, #6b7280 15%, transparent)'
+                  : undefined,
+              }}
             >
               {getWorkoutIcon("all")}
               <span>All</span>
+              {!mainFilter && (
+                <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-zinc-500/10 text-zinc-300">
+                  {filteredExercisesForChart.length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger
               value="push"

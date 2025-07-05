@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Area } from "recharts"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronUp } from "lucide-react"
-import { getWorkoutDayColor } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import type { WorkoutLog } from "@/lib/types"
 import type { Variants } from "framer-motion"
@@ -94,11 +94,16 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
   const [touchedPoint, setTouchedPoint] = useState<number | null>(null)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
 
-  // Filter logs by exercise and (optionally) day (if you add day info to logs)
+
+
+  // Filter logs by exercise and main filter
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
-      // Apply main filter (day type) if you have it in logs (not present in current schema)
-      // if (mainFilter && log.dayId !== mainFilter) return false
+      // Apply main filter (workout type)
+      if (mainFilter) {
+        const exerciseType = getExerciseWorkoutType(log.exercise_name)
+        if (exerciseType !== mainFilter.toLowerCase()) return false
+      }
 
       // Apply exercise filter
       if (exerciseFilter && log.exercise_name !== exerciseFilter) return false

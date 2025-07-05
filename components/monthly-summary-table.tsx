@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTheme } from "@/components/theme-context"
-import { getWorkoutDayColor } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import type { WorkoutLog, WeeklyWorkoutData } from "@/lib/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { processWorkoutData } from "@/lib/progress-data-utils"
@@ -19,10 +19,18 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
 
-  // Filter logs by main filter (if you have a way to associate logs with dayId, add it here)
+
+
+  // Filter logs by main filter
   const filteredLogs = useMemo(() => {
-    // For now, just return all logs (since dayId is not in WorkoutLog)
-    return logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
+    const validLogs = logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
+    
+    if (!mainFilter) return validLogs
+    
+    return validLogs.filter((log) => {
+      const exerciseType = getExerciseWorkoutType(log.exercise_name)
+      return exerciseType === mainFilter.toLowerCase()
+    })
   }, [logs, mainFilter])
 
   // Process workout data using our utility
@@ -52,15 +60,6 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
         </div>
       )
     }
-  }
-
-  // Function to get workout type from exercise name (simple heuristic)
-  const getWorkoutType = (exerciseName: string): string => {
-    const lowerName = exerciseName.toLowerCase()
-    if (lowerName.includes('bench') || lowerName.includes('press') || lowerName.includes('push')) return 'push'
-    if (lowerName.includes('row') || lowerName.includes('pull') || lowerName.includes('curl')) return 'pull'
-    if (lowerName.includes('squat') || lowerName.includes('leg') || lowerName.includes('calf')) return 'leg'
-    return 'push' // default
   }
 
   // Check if we're in a loading state (no logs yet but might be loading)
@@ -119,7 +118,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
             </TableHeader>
             <TableBody>
               {weeklyData.map((exercise) => {
-                const workoutType = getWorkoutType(exercise.exerciseName)
+                const workoutType = getExerciseWorkoutType(exercise.exerciseName) || 'push';
                 const dayColor = getWorkoutDayColor(workoutType, colorMode)
                 
                 return (
