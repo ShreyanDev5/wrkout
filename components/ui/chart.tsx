@@ -12,6 +12,7 @@ interface ChartConfig {
   [key: string]: {
     label: string
     color: string
+    icon?: React.ComponentType<{ className?: string }>
   }
 }
 

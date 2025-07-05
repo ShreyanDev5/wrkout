@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useTheme } from "@/components/theme-context"
 import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import type { WorkoutLog, WeeklyWorkoutData } from "@/lib/types"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/components/ui/use-mobile"
 import { processWorkoutData } from "@/lib/progress-data-utils"
 import { format } from "date-fns"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
