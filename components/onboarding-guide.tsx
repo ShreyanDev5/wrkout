@@ -342,7 +342,7 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="space-y-3 mb-4">
         <motion.div 
-          className="relative h-32 bg-gradient-to-b from-white via-zinc-50 to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-900 rounded-xl flex flex-col justify-start overflow-visible shadow-sm pt-1"
+          className="relative h-32 bg-gradient-to-b from-white via-zinc-50 to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-900 rounded-xl flex flex-col justify-start overflow-visible shadow-sm"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -363,7 +363,7 @@ const onboardingSteps: OnboardingStep[] = [
             ))}
           </div>
           {/* Single, smooth, thin gradient line */}
-          <svg className="relative z-10 w-full h-32 -mt-1" viewBox="0 0 180 70" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <svg className="relative z-10 w-full h-32" viewBox="0 0 180 70" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
               <linearGradient id="chart-gradient" x1="0" y1="0" x2="180" y2="0" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#2e90fa" />
@@ -372,7 +372,7 @@ const onboardingSteps: OnboardingStep[] = [
               </linearGradient>
             </defs>
             <motion.path
-              d="M0,50 C30,30 50,45 75,55 C100,65 120,20 155,40 C165,45 175,35 180,30"
+              d="M0,55 C15,48 30,52 45,40 C60,45 75,35 90,42 C105,30 120,38 135,25 C150,32 165,20 180,15"
               stroke="url(#chart-gradient)"
               strokeWidth="1.75"
               fill="none"
@@ -448,21 +448,7 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
         </motion.div>
 
-        <motion.div 
-          className="mt-2 text-center"
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <p className="text-[10px] text-muted-foreground mb-1.5">
-            Track progress with detailed analytics
-          </p>
-          <div className="inline-flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-lg text-[10px]">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-            <span>View summary</span>
-            <ArrowRight className="h-3 w-3 text-muted-foreground" />
-          </div>
-        </motion.div>
+
       </div>
     )
   },

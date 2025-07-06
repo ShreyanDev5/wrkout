@@ -610,11 +610,11 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
           <motion.div variants={itemVariants} className="flex flex-col items-center gap-4">
             <Button
               variant="outline"
-              className="rounded-md border-blue-500/20 text-blue-500 hover:bg-blue-500/10 px-6 py-2 text-base font-semibold"
+              className="rounded-md border-blue-500/20 text-blue-500 hover:bg-blue-500/10 px-4 py-2 text-base font-semibold"
               onClick={() => setShowOnboarding(true)}
             >
-              <Sparkles className="h-4 w-4 mr-2" />
-              View Onboarding Guide
+              <Sparkles className="h-4 w-4 mr-1" />
+              Guide Me
             </Button>
             <Button
               variant="destructive"
