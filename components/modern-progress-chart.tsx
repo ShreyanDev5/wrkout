@@ -252,44 +252,17 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
   // Calculate percentage change based on timeframe
   const percentChange = useMemo(() => {
-    if (chartData.length < 2) return null
+    if (chartData.length < 2) return null;
 
-    const now = new Date()
-    const comparisonDate = new Date()
+    // Compare the latest value to the earliest value within the filtered timeframe
+    const earliestWeight = chartData[0].weight;
+    const latestWeight = chartData[chartData.length - 1].weight;
 
-    // Calculate the comparison date based on timeframe
-    switch (timeframe) {
-      case "month":
-        comparisonDate.setMonth(now.getMonth() - 2) // Previous month
-        break
-      case "threeMonths":
-        comparisonDate.setMonth(now.getMonth() - 6) // Previous three months
-        break
-      case "sixMonths":
-        comparisonDate.setMonth(now.getMonth() - 12) // Previous six months
-        break
-      case "year":
-        comparisonDate.setFullYear(now.getFullYear() - 2) // Previous year
-        break
-    }
+    if (earliestWeight === 0 || earliestWeight === latestWeight) return null;
 
-    // Find the closest data point to the comparison date
-    const comparisonPoint = chartData.reduce((closest, current) => {
-      const currentDate = new Date(current.date)
-      const closestDate = new Date(closest.date)
-      const currentDiff = Math.abs(currentDate.getTime() - comparisonDate.getTime())
-      const closestDiff = Math.abs(closestDate.getTime() - comparisonDate.getTime())
-      return currentDiff < closestDiff ? current : closest
-    })
-
-    const lastWeight = chartData[chartData.length - 1].weight
-    const comparisonWeight = comparisonPoint.weight
-
-    if (comparisonWeight === 0 || comparisonWeight === lastWeight) return null
-
-    const change = ((lastWeight - comparisonWeight) / comparisonWeight) * 100
-    return change.toFixed(1)
-  }, [chartData, timeframe])
+    const change = ((latestWeight - earliestWeight) / earliestWeight) * 100;
+    return change.toFixed(1);
+  }, [chartData]);
 
   // Get color based on day type
   const chartColor = useMemo(() => {
