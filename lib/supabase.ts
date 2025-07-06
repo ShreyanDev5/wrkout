@@ -29,7 +29,11 @@ export class AuthenticationError extends Error {
 
 // Enhanced error handling function
 export const handleSupabaseError = (error: unknown) => {
-  console.error('Supabase error:', error)
+  try {
+    console.error('Supabase error:', error, typeof error === 'object' ? JSON.stringify(error) : error)
+  } catch (e) {
+    console.error('Supabase error (stringify failed):', error)
+  }
 
   if (error instanceof PostgrestError) {
     switch (error.code) {

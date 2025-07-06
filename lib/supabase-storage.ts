@@ -20,13 +20,17 @@ const convertFromDatabaseFormat = (data: any): AppData => ({
 
 // Initialize workout data in Supabase
 export async function initializeWorkoutData(initialData: AppData, userId: string): Promise<void> {
+  if (!userId) {
+    throw new Error("initializeWorkoutData called without a valid userId");
+  }
   try {
     console.log('Initializing workout data for user:', userId)
     
-    const { error } = await supabase
+    const { data, error, status, statusText } = await supabase
       .from('workouts')
       .upsert(convertToDatabaseFormat(initialData, userId))
     
+    console.log('Supabase upsert response:', { data, error, status, statusText });
     if (error) {
       console.error('Supabase error during initialization:', error)
       throw error
@@ -34,7 +38,11 @@ export async function initializeWorkoutData(initialData: AppData, userId: string
     
     console.log('Workout data initialized successfully')
   } catch (error) {
-    console.error('Error initializing workout data:', error)
+    try {
+      console.error('Error initializing workout data:', error, typeof error === 'object' ? JSON.stringify(error) : error)
+    } catch (e) {
+      console.error('Error initializing workout data (stringify failed):', error)
+    }
     handleSupabaseError(error)
   }
 }
@@ -46,25 +54,34 @@ export async function loadWorkoutData(userId: string): Promise<AppData> {
       .from('workouts')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .single();
 
-    if (error) throw error
-    if (!data) {
-      // New user: return demo data from Supabase
+    // Handle the "no rows" error gracefully
+    if (error && error.code === 'PGRST116') {
+      // No workout data for this user yet
       return {
         workouts: workoutData, // Fallback to client-side demo data
         lastSyncTime: null
-      }
+      };
     }
 
-    return convertFromDatabaseFormat(data)
+    if (error) throw error;
+    if (!data) {
+      // Defensive: should not happen, but fallback just in case
+      return {
+        workouts: workoutData,
+        lastSyncTime: null
+      };
+    }
+
+    return convertFromDatabaseFormat(data);
   } catch (error) {
-    handleSupabaseError(error)
+    handleSupabaseError(error);
     // On error, return demo data as fallback
     return {
       workouts: workoutData,
       lastSyncTime: null
-    }
+    };
   }
 }
 
@@ -88,7 +105,11 @@ export async function loadDemoWorkoutLogs(): Promise<WorkoutLog[]> {
 
 // Save workout data to Supabase
 export async function saveWorkoutData(appData: AppData, userId: string): Promise<void> {
+  if (!userId) {
+    throw new Error("saveWorkoutData called without a valid userId");
+  }
   try {
+    console.log('Saving workout data for user:', userId)
     const { error } = await supabase
       .from('workouts')
       .upsert({
