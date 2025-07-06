@@ -19,8 +19,6 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
 
-
-
   // Filter logs by main filter
   const filteredLogs = useMemo(() => {
     const validLogs = logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
@@ -99,7 +97,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-border/60 bg-muted/20">
                 <TableHead
-                  className="w-[120px] sm:w-[180px] border-r border-border/60 text-center bg-muted/20 sticky left-0 z-10"
+                  className="w-[120px] sm:w-[180px] border-r border-border/60 text-center bg-muted/20"
                   style={{ backgroundColor: 'var(--muted)' }}
                 >
                   <div className="font-medium text-xs sm:text-sm">Exercise</div>
@@ -127,7 +125,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                     className="hover:bg-muted/10 transition-colors group border-b border-border/40"
                   >
                     <TableCell
-                      className="font-medium break-words whitespace-normal py-2 sm:py-3 border-r border-border/60 bg-background sticky left-0 z-10"
+                      className="font-medium break-words whitespace-normal py-2 sm:py-3 border-r border-border/60 bg-background"
                       style={{
                         position: 'relative',
                         color: dayColor,
