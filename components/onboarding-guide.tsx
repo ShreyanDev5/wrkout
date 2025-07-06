@@ -372,7 +372,7 @@ const onboardingSteps: OnboardingStep[] = [
               </linearGradient>
             </defs>
             <motion.path
-              d="M0,55 C15,48 30,52 45,40 C60,45 75,35 90,42 C105,30 120,38 135,25 C150,32 165,20 180,15"
+              d="M0,40 C40,15 60,65 90,30 S160,10 180,10"
               stroke="url(#chart-gradient)"
               strokeWidth="1.75"
               fill="none"
@@ -383,19 +383,24 @@ const onboardingSteps: OnboardingStep[] = [
             />
           </svg>
           {/* Weekday labels */}
-          <div className="absolute left-0 right-0 bottom-1 flex justify-between px-3 text-[10px] text-zinc-400 font-medium tracking-wide select-none">
-            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-              <span
-                key={i}
-                className={
-                  i === 4
-                    ? "text-zinc-700 dark:text-zinc-50 font-semibold"
-                    : ""
-                }
-              >
-                {d}
-              </span>
-            ))}
+          <div className="absolute left-0 right-0 bottom-1 h-4 pointer-events-none select-none" style={{ width: '100%' }}>
+            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => {
+              const lefts = [20, 70, 115, 165, 215, 260, 307];
+              return (
+                <span
+                  key={i}
+                  className={
+                    (i === 4 ? "text-zinc-700 dark:text-zinc-50 font-semibold " : "") + "absolute text-[10px] text-zinc-400 font-medium tracking-wide"
+                  }
+                  style={{
+                    left: `${lefts[i]}px`,
+                    textAlign: 'center'
+                  }}
+                >
+                  {d}
+                </span>
+              );
+            })}
           </div>
         </motion.div>
 
