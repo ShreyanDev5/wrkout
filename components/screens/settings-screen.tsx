@@ -320,17 +320,6 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
     signOut();
   }
 
-  const handleResetOnboarding = () => {
-    if (user?.id) {
-      localStorage.removeItem(`onboarding-completed-${user.id}`)
-      toast({
-        title: "Onboarding Reset",
-        description: "The onboarding guide will show again on your next visit.",
-        className: "bg-[#34A853] border-none text-white",
-      })
-    }
-  }
-
   return (
     <CollapsibleHeaderLayout
       header={header}
@@ -780,14 +769,6 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
         >
           <Sparkles className="h-4 w-4 mr-2" />
           View Onboarding Guide
-        </Button>
-        <Button
-          variant="outline"
-          className="rounded-md border-orange-500/20 text-orange-500 hover:bg-orange-500/10 px-6 py-2 text-base font-semibold"
-          onClick={handleResetOnboarding}
-        >
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Reset Onboarding
         </Button>
         <Button
           variant="destructive"
