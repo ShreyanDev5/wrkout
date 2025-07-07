@@ -11,7 +11,8 @@ import { Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { workoutData } from '@/lib/workout-data';
-import { initializeWorkoutData } from '@/lib/supabase-storage';
+import { saveUserWorkouts } from '@/lib/supabase-storage';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -91,7 +92,9 @@ export function SignUpForm() {
       console.log('Sign in successful, initializing workout data')
       // Initialize workout data for new user using demo data
       if (signInData && signInData.user) {
-        await initializeWorkoutData({ workouts: workoutData, lastSyncTime: null }, signInData.user.id);
+        const supabase = createClientComponentClient();
+        // Create a single blank 'My Workouts' routine
+        await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], signInData.user.id);
       }
       
       console.log('Account creation complete, redirecting')

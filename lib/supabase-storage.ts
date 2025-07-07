@@ -3,93 +3,83 @@ import type { Workout, WorkoutLog, AppData } from './types'
 import { workoutData } from './workout-data'
 import { getDemoWorkoutLogs } from './demo-data'
 import { v4 as uuidv4 } from 'uuid'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-// Convert AppData to database format
-const convertToDatabaseFormat = (appData: AppData, userId: string) => ({
-  user_id: userId,
-  name: 'My Workouts',
-  created_at: new Date().toISOString(),
-  last_sync_time: appData.lastSyncTime
-})
-
-// Convert database format to AppData
-const convertFromDatabaseFormat = (data: any): AppData => ({
-  // The new schema does not store exercises in the workouts table
-  workouts: [], // You may want to load workouts differently if you want to support multiple routines
-  lastSyncTime: data.last_sync_time || null
-})
-
-// Initialize workout data in Supabase
-export async function initializeWorkoutData(initialData: AppData, userId: string): Promise<void> {
-  if (!userId) {
-    throw new Error("initializeWorkoutData called without a valid userId");
-  }
-  try {
-    console.log('Initializing workout data for user:', userId)
-    
-    const { data, error, status, statusText } = await supabase
+// Save all user workouts as separate rows in the workouts table
+export async function saveUserWorkouts(supabaseClient: SupabaseClient, workouts: Workout[], userId: string): Promise<void> {
+  if (!userId) throw new Error('saveUserWorkouts called without a valid userId');
+  // Filter out blank/empty workouts
+  const validWorkouts = workouts.filter(w => w.name && w.name.trim() && w.days && w.days.length > 0);
+  // If there are no valid workouts, keep only one blank routine (if any)
+  if (validWorkouts.length === 0) {
+    // Check if a blank routine already exists
+    const { data } = await supabaseClient
       .from('workouts')
-      .upsert(convertToDatabaseFormat(initialData, userId))
-    
-    console.log('Supabase upsert response:', { data, error, status, statusText });
-    if (error) {
-      console.error('Supabase error during initialization:', error)
-      throw error
+      .select('id')
+      .eq('user_id', userId)
+      .or('name.is.null,name.eq.My Workouts,name.eq.,name.eq. ""')
+      .limit(2);
+    if (data && data.length > 1) {
+      // Remove all but one blank
+      const blankIdsToRemove = data.slice(1).map((w: any) => w.id);
+      await supabaseClient.from('workouts').delete().in('id', blankIdsToRemove);
     }
-    
-    console.log('Workout data initialized successfully')
-  } catch (error) {
-    try {
-      console.error('Error initializing workout data:', error, typeof error === 'object' ? JSON.stringify(error) : error)
-    } catch (e) {
-      console.error('Error initializing workout data (stringify failed):', error)
+    // If no blank exists, insert one
+    if (!data || data.length === 0) {
+      const blankWorkout = {
+        id: workouts[0]?.id || crypto.randomUUID(),
+        user_id: userId,
+        name: 'My Workouts',
+        created_at: new Date().toISOString(),
+      };
+      await supabaseClient.from('workouts').upsert([blankWorkout], { onConflict: 'id' });
     }
-    handleSupabaseError(error)
+    return;
   }
+  // Prepare rows for upsert
+  const rows = validWorkouts.map(w => ({
+    id: w.id,
+    user_id: userId,
+    name: w.name,
+    created_at: new Date().toISOString(),
+  }));
+  // Upsert all workouts
+  const { error } = await supabaseClient
+    .from('workouts')
+    .upsert(rows, { onConflict: 'id' });
+  if (error) throw error;
 }
 
-// Load workout data from Supabase
-export async function loadWorkoutData(userId: string): Promise<AppData> {
-  try {
-    const { data, error } = await supabase
-      .from('workouts')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    // Handle the "no rows" error gracefully
-    if (error && error.code === 'PGRST116') {
-      // No workout data for this user yet
-      return {
-        workouts: workoutData, // Fallback to client-side demo data
-        lastSyncTime: null
-      };
-    }
-
-    if (error) throw error;
-    if (!data) {
-      // Defensive: should not happen, but fallback just in case
-      return {
-        workouts: workoutData,
-        lastSyncTime: null
-      };
-    }
-
-    return convertFromDatabaseFormat(data);
-  } catch (error) {
-    handleSupabaseError(error);
-    // On error, return demo data as fallback
-    return {
-      workouts: workoutData,
-      lastSyncTime: null
-    };
+// Load all workouts for a user
+export async function loadUserWorkouts(supabaseClient: SupabaseClient, userId: string): Promise<Workout[]> {
+  const { data, error } = await supabaseClient
+    .from('workouts')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  let workouts = (data || []).map((row: any) => ({
+    id: row.id,
+    name: row.name,
+    days: [],
+  }));
+  // Deduplicate blank routines: keep only one blank (name empty or 'My Workouts', no days)
+  const blanks = workouts.filter(w => (!w.name || w.name.trim() === '' || w.name.trim().toLowerCase() === 'my workouts') && (!w.days || w.days.length === 0));
+  if (blanks.length > 1) {
+    // Keep the first, remove the rest
+    const blankIdsToRemove = blanks.slice(1).map(w => w.id);
+    // Remove from workouts array
+    workouts = workouts.filter(w => !blankIdsToRemove.includes(w.id));
+    // Remove from DB
+    await supabaseClient.from('workouts').delete().in('id', blankIdsToRemove);
   }
+  return workouts;
 }
 
 // Load demo workout logs from Supabase (for non-authenticated users)
-export async function loadDemoWorkoutLogs(): Promise<WorkoutLog[]> {
+export async function loadDemoWorkoutLogs(supabaseClient: SupabaseClient): Promise<WorkoutLog[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('workout_logs')
       .select('*')
       .is('user_id', null) // Demo data has NULL user_id
@@ -105,31 +95,23 @@ export async function loadDemoWorkoutLogs(): Promise<WorkoutLog[]> {
 }
 
 // Save workout data to Supabase
-export async function saveWorkoutData(appData: AppData, userId: string): Promise<void> {
+export async function saveWorkoutData(supabaseClient: SupabaseClient, appData: AppData, userId: string): Promise<void> {
   if (!userId) {
     throw new Error("saveWorkoutData called without a valid userId");
   }
   try {
     console.log('Saving workout data for user:', userId)
-    const { error } = await supabase
-      .from('workouts')
-      .upsert({
-        ...convertToDatabaseFormat(appData, userId),
-        last_sync_time: new Date().toISOString()
-      })
-
-    if (error) throw error
   } catch (error) {
     handleSupabaseError(error)
   }
 }
 
 // Save a workout log to Supabase
-export async function saveWorkoutLog(log: WorkoutLog, userId: string): Promise<void> {
+export async function saveWorkoutLog(supabaseClient: SupabaseClient, log: WorkoutLog, userId: string): Promise<void> {
   try {
     // Ensure log.id is a UUID
     const logToSave = { ...log, id: log.id || uuidv4(), user_id: userId }
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('workout_logs')
       .insert(logToSave)
 
@@ -140,9 +122,9 @@ export async function saveWorkoutLog(log: WorkoutLog, userId: string): Promise<v
 }
 
 // Load workout logs from Supabase
-export async function loadWorkoutLogs(userId: string): Promise<WorkoutLog[]> {
+export async function loadWorkoutLogs(supabaseClient: SupabaseClient, userId: string): Promise<WorkoutLog[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('workout_logs')
       .select('*')
       .eq('user_id', userId)

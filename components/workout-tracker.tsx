@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
-import { loadWorkoutData, saveWorkoutData, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs } from "@/lib/supabase-storage"
+import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs } from "@/lib/supabase-storage"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
@@ -18,6 +18,7 @@ import { workoutData as demoWorkoutData } from "@/lib/workout-data"
 import { getDemoWorkoutLogs } from "@/lib/demo-data"
 import { OnboardingGuide } from "@/components/onboarding-guide"
 import { v4 as uuidv4 } from 'uuid'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -30,6 +31,7 @@ export function WorkoutTracker() {
   const { toast } = useToast()
   const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
   const { user } = useAuth()
+  const supabase = createClientComponentClient()
 
   // Initialize audio system on mount
   useEffect(() => {
@@ -45,7 +47,7 @@ export function WorkoutTracker() {
         
         // Load demo data from Supabase (with fallback to client-side data)
         try {
-          const demoLogs = await loadDemoWorkoutLogs()
+          const demoLogs = await loadDemoWorkoutLogs(supabase)
           setWorkoutLogs(demoLogs)
         } catch (error) {
           console.error('Error loading demo logs, using fallback:', error)
@@ -54,10 +56,15 @@ export function WorkoutTracker() {
         }
         return
       }
-      // Logged in: load from Supabase
-      const data = await loadWorkoutData(user.id)
-      setAppData(data)
-      const logs = await loadWorkoutLogs(user.id)
+      // Logged in: load workouts from Supabase
+      let workouts = await loadUserWorkouts(supabase, user.id)
+      // If no workouts, create a single blank 'My Workouts' routine
+      if (!workouts || workouts.length === 0) {
+        await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], user.id)
+        workouts = await loadUserWorkouts(supabase, user.id)
+      }
+      setAppData({ workouts, lastSyncTime: null })
+      const logs = await loadWorkoutLogs(supabase, user.id)
       setWorkoutLogs(logs)
       
       // Check if this is the user's first time (onboarding not completed)
@@ -76,7 +83,7 @@ export function WorkoutTracker() {
   // Save data when it changes (only for logged-in users)
   useEffect(() => {
     if (appData.workouts.length > 0 && user?.id) {
-      saveWorkoutData(appData, user.id)
+      saveUserWorkouts(supabase, appData.workouts, user.id)
     }
   }, [appData, user?.id])
 
@@ -86,7 +93,7 @@ export function WorkoutTracker() {
     // Ensure log.id is a UUID
     if (!log.id) log.id = uuidv4()
     try {
-      await saveWorkoutLog(log, user.id)
+      await saveWorkoutLog(supabase, log, user.id)
       setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top
       toast({ title: "Workout logged!" })
     } catch (error) {
@@ -101,7 +108,7 @@ export function WorkoutTracker() {
       workouts,
     }))
     if (user?.id) {
-      saveWorkoutData({ ...appData, workouts }, user.id)
+      saveUserWorkouts(supabase, workouts, user.id)
     }
   }
 
