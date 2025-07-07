@@ -20,7 +20,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { formatDate } from "@/lib/utils"
-import type { Workout } from "@/lib/types"
+import type { Workout, WorkoutDay } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,11 +31,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 interface SettingsScreenProps {
   workouts: Workout[]
-  onUpdateWorkouts: (workouts: Workout[]) => void
+  workoutDays: WorkoutDay[]
+  onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void
   lastSyncTime: string | null
 }
 
-export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: SettingsScreenProps) {
+export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays, lastSyncTime }: SettingsScreenProps) {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [isAddDayOpen, setIsAddDayOpen] = useState(false)
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
@@ -81,7 +82,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
       days: [],
     }
 
-    onUpdateWorkouts([...workouts, newWorkout])
+    onUpdateWorkoutsAndDays(workouts, workoutDays)
     setNewWorkoutName("")
     setIsAddWorkoutOpen(false)
 
@@ -99,7 +100,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   }
 
   const handleDeleteWorkout = (workoutId: string) => {
-    onUpdateWorkouts(workouts.filter((w) => w.id !== workoutId))
+    onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== workoutId), workoutDays)
 
     toast({
       title: "Workout Deleted",
@@ -110,35 +111,22 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
   const handleAddDay = () => {
     if (!newDayName.trim() || !newDayId.trim() || !selectedWorkoutId) return
-
-    const updatedWorkouts = workouts.map((workout) => {
-      if (workout.id === selectedWorkoutId) {
-        return {
-          ...workout,
-          days: [
-            ...workout.days,
-            {
-              id: newDayId.toLowerCase(),
-              name: newDayName,
-              exercises: [],
-            },
-          ],
-        }
-      }
-      return workout
-    })
-
-    onUpdateWorkouts(updatedWorkouts)
+    const newDay: WorkoutDay = {
+      id: uuidv4(),
+      workout_id: selectedWorkoutId,
+      day_id: newDayId.toLowerCase(),
+      name: newDayName,
+      exercises: [],
+    }
+    const updatedWorkoutDays = [...workoutDays, newDay]
+    onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays)
     setNewDayName("")
     setNewDayId("")
     setIsAddDayOpen(false)
-
-    // Auto-expand the new day
     setExpandedDays((prev) => ({
       ...prev,
       [`${selectedWorkoutId}-${newDayId.toLowerCase()}`]: true,
     }))
-
     toast({
       title: "Day Added",
       description: `${newDayName} has been added to your workout.`,
@@ -147,18 +135,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
   }
 
   const handleDeleteDay = (workoutId: string, dayId: string) => {
-    const updatedWorkouts = workouts.map((workout) => {
-      if (workout.id === workoutId) {
-        return {
-          ...workout,
-          days: workout.days.filter((day) => day.id !== dayId),
-        }
-      }
-      return workout
-    })
-
-    onUpdateWorkouts(updatedWorkouts)
-
+    const updatedWorkoutDays = workoutDays.filter((day) => !(day.workout_id === workoutId && day.id === dayId))
+    onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays)
     toast({
       title: "Day Deleted",
       description: "The day has been removed from your workout.",
@@ -193,7 +171,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
       return workout
     })
 
-    onUpdateWorkouts(updatedWorkouts)
+    onUpdateWorkoutsAndDays(updatedWorkouts, workoutDays)
     setNewExerciseName("")
     setIsAddExerciseOpen(false)
 
@@ -223,7 +201,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
       return workout
     })
 
-    onUpdateWorkouts(updatedWorkouts)
+    onUpdateWorkoutsAndDays(updatedWorkouts, workoutDays)
 
     toast({
       title: "Exercise Deleted",
@@ -355,256 +333,222 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
 
             <div className="space-y-4">
               {workouts.length > 0 ? (
-                workouts.map((workout) => (
-                  <motion.div
-                    key={workout.id}
-                    variants={itemVariants}
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div
-                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-                      onClick={() => toggleWorkoutExpanded(workout.id)}
+                workouts.map((workout) => {
+                  const daysForWorkout = workoutDays.filter((day) => day.workout_id === workout.id)
+                  return (
+                    <motion.div
+                      key={workout.id}
+                      variants={itemVariants}
+                      className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-                          <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
+                      <div
+                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                        onClick={() => toggleWorkoutExpanded(workout.id)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                            <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
+                          </div>
+                          <span className="font-medium text-foreground">{workout.name}</span>
                         </div>
-                        <span className="font-medium text-foreground">{workout.name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDeleteWorkout(workout.id)
-                          }}
-                          className="h-8 w-8 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-                          aria-label={`Delete ${workout.name} workout`}
-                        >
-                          <Trash2 className="h-4 w-4" aria-hidden="true" />
-                        </Button>
-                        <div className="h-5 w-5 flex items-center justify-center">
-                          <svg
-                            width="10"
-                            height="6"
-                            viewBox="0 0 10 6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className={`transform transition-transform ${expandedWorkouts[workout.id] ? "rotate-180" : ""}`}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteWorkout(workout.id)
+                            }}
+                            className="h-8 w-8 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+                            aria-label={`Delete ${workout.name} workout`}
                           >
-                            <path
-                              d="M1 1L5 5L9 1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                          </Button>
+                          <div className="h-5 w-5 flex items-center justify-center">
+                            <svg
+                              width="10"
+                              height="6"
+                              viewBox="0 0 10 6"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className={`transform transition-transform ${expandedWorkouts[workout.id] ? "rotate-180" : ""}`}
+                            >
+                              <path
+                                d="M1 1L5 5L9 1"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
                         </div>
                       </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {expandedWorkouts[workout.id] && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-4 pb-4">
-                            <div className="flex items-center justify-between mb-3 mt-2">
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-                                  <Calendar className="h-3.5 w-3.5 text-zinc-700 dark:text-zinc-300" />
+                      <AnimatePresence>
+                        {expandedWorkouts[workout.id] && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-4 pb-4">
+                              <div className="flex items-center justify-between mb-3 mt-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                                    <Calendar className="h-3.5 w-3.5 text-zinc-700 dark:text-zinc-300" />
+                                  </div>
+                                  <h4 className="text-sm font-medium text-foreground">Workout Days</h4>
                                 </div>
-                                <h4 className="text-sm font-medium text-foreground">Workout Days</h4>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedWorkoutId(workout.id)
-                                  setIsAddDayOpen(true)
-                                }}
-                                className="h-8 rounded-md border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                                aria-label={`Add day to ${workout.name}`}
-                              >
-                                <Plus className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
-                                Add Day
-                              </Button>
-                            </div>
-
-                            {workout.days.length > 0 ? (
-                              <div className="space-y-3">
-                                {workout.days.map((day) => {
-                                  const dayKey = `${workout.id}-${day.id}`
-                                  const { icon, color, textColor, borderColor } = getDayIconAndColor(day.id)
-
-                                  return (
-                                    <div
-                                      key={dayKey}
-                                      className={`border ${borderColor} rounded-lg overflow-hidden bg-white dark:bg-zinc-900`}
-                                    >
-                                      <div
-                                        className="flex items-center justify-between p-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-                                        onClick={() => toggleDayExpanded(dayKey)}
-                                      >
-                                        <div className="flex items-center gap-2">
-                                          <div
-                                            className={`flex items-center justify-center w-6 h-6 rounded-lg ${color}`}
-                                          >
-                                            {icon}
-                                          </div>
-                                          <span className={`font-medium text-foreground`}>{day.name}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              handleDeleteDay(workout.id, day.id)
-                                            }}
-                                            className="h-7 w-7 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-                                            aria-label={`Delete ${day.name} day`}
-                                          >
-                                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                                          </Button>
-                                          <div className="h-5 w-5 flex items-center justify-center">
-                                            <svg
-                                              width="8"
-                                              height="5"
-                                              viewBox="0 0 10 6"
-                                              fill="none"
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              className={`transform transition-transform ${expandedDays[dayKey] ? "rotate-180" : ""}`}
-                                            >
-                                              <path
-                                                d="M1 1L5 5L9 1"
-                                                stroke="currentColor"
-                                                strokeWidth="1.5"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                              />
-                                            </svg>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <AnimatePresence>
-                                        {expandedDays[dayKey] && (
-                                          <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="overflow-hidden"
-                                          >
-                                            <div className="px-3 pb-3">
-                                              <div className="flex items-center justify-between mb-2 mt-2">
-                                                <h6
-                                                  className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}
-                                                >
-                                                  Exercises
-                                                </h6>
-                                                <Button
-                                                  variant="outline"
-                                                  size="sm"
-                                                  onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    setSelectedWorkoutId(workout.id)
-                                                    setSelectedDayId(day.id)
-                                                    setIsAddExerciseOpen(true)
-                                                  }}
-                                                  className={`h-7 text-xs rounded-md border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300`}
-                                                  aria-label={`Add exercise to ${day.name}`}
-                                                >
-                                                  <Plus className="h-3 w-3 mr-1" aria-hidden="true" />
-                                                  Add Exercise
-                                                </Button>
-                                              </div>
-
-                                              {day.exercises.length > 0 ? (
-                                                <ul className="space-y-1.5 mt-2">
-                                                  {day.exercises.map((exercise) => (
-                                                    <li
-                                                      key={exercise.id}
-                                                      className={`flex items-center justify-between p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
-                                                    >
-                                                      <span className={`text-sm text-foreground`}>
-                                                        {exercise.name}
-                                                      </span>
-                                                      <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                          handleDeleteExercise(workout.id, day.id, exercise.id)
-                                                        }
-                                                        className="h-6 w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-                                                        aria-label={`Delete ${exercise.name} exercise`}
-                                                      >
-                                                        <Trash2 className="h-3 w-3" aria-hidden="true" />
-                                                      </Button>
-                                                    </li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p
-                                                  className={`text-xs text-zinc-500 dark:text-zinc-400 py-2 text-center`}
-                                                >
-                                                  No exercises added yet
-                                                </p>
-                                              )}
-                                            </div>
-                                          </motion.div>
-                                        )}
-                                      </AnimatePresence>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            ) : (
-                              <div className="text-center py-6 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                                <p className="text-sm">No workout days added yet</p>
                                 <Button
-                                  variant="link"
+                                  variant="outline"
+                                  size="sm"
                                   onClick={() => {
                                     setSelectedWorkoutId(workout.id)
                                     setIsAddDayOpen(true)
                                   }}
-                                  className="mt-2 text-[#34A853] hover:text-[#2D9249]"
+                                  className="h-8 rounded-md border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                  aria-label={`Add day to ${workout.name}`}
                                 >
-                                  Add your first day
+                                  <Plus className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                                  Add Day
                                 </Button>
                               </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))
+                              {daysForWorkout.length > 0 ? (
+                                <div className="space-y-3">
+                                  {daysForWorkout.map((day) => {
+                                    const dayKey = `${workout.id}-${day.id}`
+                                    const { icon, color, textColor, borderColor } = getDayIconAndColor(day.day_id)
+                                    return (
+                                      <div
+                                        key={dayKey}
+                                        className={`border ${borderColor} rounded-lg overflow-hidden bg-white dark:bg-zinc-900`}
+                                      >
+                                        <div
+                                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                                          onClick={() => toggleDayExpanded(dayKey)}
+                                        >
+                                          <div className="flex items-center gap-2">
+                                            <div
+                                              className={`flex items-center justify-center w-6 h-6 rounded-lg ${color}`}
+                                            >
+                                              {icon}
+                                            </div>
+                                            <span className={`font-medium text-foreground`}>{day.name}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleDeleteDay(workout.id, day.id)
+                                              }}
+                                              className="h-7 w-7 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+                                              aria-label={`Delete ${day.name} day`}
+                                            >
+                                              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                            </Button>
+                                            <div className="h-5 w-5 flex items-center justify-center">
+                                              <svg
+                                                width="8"
+                                                height="5"
+                                                viewBox="0 0 10 6"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`transform transition-transform ${expandedDays[dayKey] ? "rotate-180" : ""}`}
+                                              >
+                                                <path
+                                                  d="M1 1L5 5L9 1"
+                                                  stroke="currentColor"
+                                                  strokeWidth="1.5"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                />
+                                              </svg>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <AnimatePresence>
+                                          {expandedDays[dayKey] && (
+                                            <motion.div
+                                              initial={{ height: 0, opacity: 0 }}
+                                              animate={{ height: "auto", opacity: 1 }}
+                                              exit={{ height: 0, opacity: 0 }}
+                                              transition={{ duration: 0.2 }}
+                                              className="overflow-hidden"
+                                            >
+                                              <div className="px-3 pb-3">
+                                                <div className="flex items-center justify-between mb-2 mt-2">
+                                                  <h6
+                                                    className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}
+                                                  >
+                                                    Exercises
+                                                  </h6>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation()
+                                                      setSelectedWorkoutId(workout.id)
+                                                      setSelectedDayId(day.id)
+                                                      setIsAddExerciseOpen(true)
+                                                    }}
+                                                    className={`h-7 text-xs rounded-md border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300`}
+                                                    aria-label={`Add exercise to ${day.name}`}
+                                                  >
+                                                    <Plus className="h-3 w-3 mr-1" aria-hidden="true" />
+                                                    Add Exercise
+                                                  </Button>
+                                                </div>
+                                                {day.exercises.length > 0 ? (
+                                                  <ul className="space-y-1.5 mt-2">
+                                                    {day.exercises.map((exercise) => (
+                                                      <li
+                                                        key={exercise.id}
+                                                        className={`flex items-center justify-between p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
+                                                      >
+                                                        <span className={`text-sm text-foreground`}>
+                                                          {exercise.name}
+                                                        </span>
+                                                        <Button
+                                                          variant="ghost"
+                                                          size="sm"
+                                                          onClick={() =>
+                                                            handleDeleteExercise(workout.id, day.id, exercise.id)
+                                                          }
+                                                          className="h-6 w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+                                                          aria-label={`Delete ${exercise.name} exercise`}
+                                                        >
+                                                          <Trash2 className="h-3 w-3" aria-hidden="true" />
+                                                        </Button>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <div className="text-center py-8 text-muted-foreground">No exercises added for this day yet.</div>
+                                                )}
+                                              </div>
+                                            </motion.div>
+                                          )}
+                                        </AnimatePresence>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              ) : (
+                                <div className="text-center py-8 text-muted-foreground">No days added for this workout yet.</div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )
+                })
               ) : (
-                <motion.div
-                  variants={itemVariants}
-                  className="flex flex-col items-center justify-center py-12 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700"
-                >
-                  <div className="relative">
-                    <Dumbbell className="h-12 w-12 mb-4 opacity-20" />
-                    <Sparkles className="absolute top-0 right-0 h-4 w-4 text-[#FBBC04] animate-pulse" />
-                  </div>
-                  <p className="text-center relative">No workout routines added yet</p>
-                  <Button
-                    variant="link"
-                    onClick={() => setIsAddWorkoutOpen(true)}
-                    className="mt-2 text-[#34A853] hover:text-[#2D9249] relative"
-                  >
-                    Add your first workout
-                  </Button>
-                </motion.div>
+                <div className="text-center py-8 text-muted-foreground">No workouts found.</div>
               )}
             </div>
           </motion.div>

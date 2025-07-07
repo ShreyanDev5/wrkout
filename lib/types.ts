@@ -5,8 +5,12 @@ export interface Exercise {
 }
 
 export interface WorkoutDay {
-  id: string
-  name: string
+  id: string // UUID
+  workout_id: string // UUID, references parent workout
+  day_id: string // e.g., 'push', 'pull', 'leg', or custom
+  name: string // Human-friendly name
+  created_at?: string
+  updated_at?: string
   exercises: Exercise[]
 }
 
@@ -22,6 +26,7 @@ export interface WorkoutLog {
   id: string // UUID
   user_id?: string
   workout_id: string
+  workout_day_id?: string // UUID, references workout_days(id)
   exercise_name: string
   weight: number
   avg_reps: number

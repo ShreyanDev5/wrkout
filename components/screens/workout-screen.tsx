@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DayExercises } from "@/components/day-exercises"
 import { EmptyWorkoutState } from "@/components/empty-workout-state"
 import { useTheme } from "@/components/theme-context"
-import type { Workout, WorkoutLog } from "@/lib/types"
+import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection } from "@/lib/storage"
@@ -27,11 +27,13 @@ import {
 
 interface WorkoutScreenProps {
   workouts: Workout[]
+  workoutDays: WorkoutDay[]
   onAddWorkoutLog: (log: WorkoutLog) => void | Promise<void>
 }
 
 export function WorkoutScreen({
   workouts,
+  workoutDays,
   onAddWorkoutLog,
 }: WorkoutScreenProps) {
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
@@ -128,21 +130,21 @@ export function WorkoutScreen({
 
   // Get the current workout data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
+  // Get the days for the current workout
+  const currentWorkoutDays = workoutDays.filter((d) => d.workout_id === selectedWorkout)
 
   // Calculate progress for the current day
   const calculateProgress = useCallback((dayType: string) => {
-    const day = currentWorkout?.days.find(d => d.id === dayType)
+    const day = currentWorkoutDays.find(d => d.day_id === dayType)
     if (!day || !day.exercises?.length) return 0
-    
     // Force dependency on tickCounter to recalculate when exercises are toggled
     const ticked = loadTickedExercises(dayType)
     const totalExercises = day.exercises.length
     const completedExercises = day.exercises.filter(ex => ticked.includes(ex.id)).length
-    
     return totalExercises > 0 
       ? Math.min(Math.round((completedExercises / totalExercises) * 100), 100)
       : 0
-  }, [currentWorkout, tickCounter, loadTickedExercises])
+  }, [currentWorkoutDays, tickCounter, loadTickedExercises])
   
   // Calculate progress for the current day
   const activeProgress = useMemo(() => calculateProgress(selectedDay), [calculateProgress, selectedDay])
@@ -244,22 +246,22 @@ export function WorkoutScreen({
               showLabel={false}
             />
           </div>
-          {currentWorkout?.days.map((day) => (
-            <TabsContent key={day.id} value={day.id} className="mt-0">
+          {currentWorkoutDays.map((day) => (
+            <TabsContent key={day.id} value={day.day_id} className="mt-0">
               {day.exercises.length > 0 ? (
                 <DayExercises
                   key={`${day.id}-${tickCounter}`}
                   exercises={day.exercises}
-                  dayId={day.id}
-                  workoutId={currentWorkout.id}
+                  dayId={day.day_id}
+                  workoutId={day.workout_id}
                   onLogWorkout={(log) => {
-                    onAddWorkoutLog(log)
+                    onAddWorkoutLog({ ...log, workout_day_id: day.id })
                   }}
                   onExerciseToggled={handleExerciseToggled}
-                  dayColor={getWorkoutDayColor(day.id, colorMode)}
+                  dayColor={getWorkoutDayColor(day.day_id, colorMode)}
                 />
               ) : (
-                <EmptyWorkoutState dayId={day.id} onStart={startWorkout} />
+                <EmptyWorkoutState dayId={day.day_id} onStart={startWorkout} />
               )}
             </TabsContent>
           ))}

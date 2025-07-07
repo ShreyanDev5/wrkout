@@ -1,5 +1,5 @@
 import { supabase, handleSupabaseError } from './supabase'
-import type { Workout, WorkoutLog, AppData } from './types'
+import type { Workout, WorkoutLog, WorkoutDay } from './types'
 import { workoutData } from './workout-data'
 import { getDemoWorkoutLogs } from './demo-data'
 import { v4 as uuidv4 } from 'uuid'
@@ -50,7 +50,43 @@ export async function saveUserWorkouts(supabaseClient: SupabaseClient, workouts:
   if (error) throw error;
 }
 
-// Load all workouts for a user
+// Save all user workout days as separate rows in the workout_days table
+export async function saveUserWorkoutDays(supabaseClient: SupabaseClient, workoutDays: WorkoutDay[], userId: string): Promise<void> {
+  if (!userId) throw new Error('saveUserWorkoutDays called without a valid userId');
+  // Only upsert days that have a valid workout_id and name
+  const validDays = workoutDays.filter(d => d.workout_id && d.name && d.day_id);
+  if (validDays.length === 0) return;
+  // Prepare rows for upsert
+  const rows = validDays.map(d => ({
+    id: d.id,
+    workout_id: d.workout_id,
+    day_id: d.day_id,
+    name: d.name,
+    created_at: d.created_at || new Date().toISOString(),
+    updated_at: d.updated_at || new Date().toISOString(),
+  }));
+  // Upsert all workout days
+  const { error } = await supabaseClient
+    .from('workout_days')
+    .upsert(rows, { onConflict: 'id' });
+  if (error) throw error;
+}
+
+// Load all workout days for a user
+export async function loadUserWorkoutDays(supabaseClient: SupabaseClient, userId: string): Promise<WorkoutDay[]> {
+  const { data, error } = await supabaseClient
+    .from('workout_days')
+    .select('*')
+    .in('workout_id',
+      (await supabaseClient.from('workouts').select('id').eq('user_id', userId)).data?.map((w: any) => w.id) || []
+    )
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  // Add exercises: [] for now (exercises normalization is a future step)
+  return (data || []).map((row: any) => ({ ...row, exercises: [] }));
+}
+
+// Load all workouts for a user (with empty days, days loaded separately)
 export async function loadUserWorkouts(supabaseClient: SupabaseClient, userId: string): Promise<Workout[]> {
   const { data, error } = await supabaseClient
     .from('workouts')
@@ -61,7 +97,7 @@ export async function loadUserWorkouts(supabaseClient: SupabaseClient, userId: s
   let workouts = (data || []).map((row: any) => ({
     id: row.id,
     name: row.name,
-    days: [],
+    days: [], // days loaded separately
   }));
   // Deduplicate blank routines: keep only one blank (name empty or 'My Workouts', no days)
   const blanks = workouts.filter(w => (!w.name || w.name.trim() === '' || w.name.trim().toLowerCase() === 'my workouts') && (!w.days || w.days.length === 0));
@@ -95,20 +131,27 @@ export async function loadDemoWorkoutLogs(supabaseClient: SupabaseClient): Promi
 }
 
 // Save workout data to Supabase
-export async function saveWorkoutData(supabaseClient: SupabaseClient, appData: AppData, userId: string): Promise<void> {
+export async function saveWorkoutData(supabaseClient: SupabaseClient, appData: any, userId: string): Promise<void> {
   if (!userId) {
     throw new Error("saveWorkoutData called without a valid userId");
   }
   try {
-    console.log('Saving workout data for user:', userId)
+    // Save workouts
+    await saveUserWorkouts(supabaseClient, appData.workouts, userId)
+    // Save workout days
+    if (appData.workoutDays) {
+      await saveUserWorkoutDays(supabaseClient, appData.workoutDays, userId)
+    }
+    // (Optionally: save logs, etc.)
   } catch (error) {
     handleSupabaseError(error)
   }
 }
 
-// Save a workout log to Supabase
+// Save a workout log to Supabase (requires workout_day_id)
 export async function saveWorkoutLog(supabaseClient: SupabaseClient, log: WorkoutLog, userId: string): Promise<void> {
   try {
+    if (!log.workout_day_id) throw new Error('workout_day_id is required for logs');
     // Ensure log.id is a UUID
     const logToSave = { ...log, id: log.id || uuidv4(), user_id: userId }
     const { error } = await supabaseClient
@@ -119,6 +162,17 @@ export async function saveWorkoutLog(supabaseClient: SupabaseClient, log: Workou
   } catch (error) {
     handleSupabaseError(error)
   }
+}
+
+// Load workout days for a user (helper for UI)
+export async function getUserWorkoutDaysForWorkout(supabaseClient: SupabaseClient, workoutId: string): Promise<WorkoutDay[]> {
+  const { data, error } = await supabaseClient
+    .from('workout_days')
+    .select('*')
+    .eq('workout_id', workoutId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data || []).map((row: any) => ({ ...row, exercises: [] }));
 }
 
 // Load workout logs from Supabase

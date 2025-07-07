@@ -11,19 +11,21 @@ import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
 import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs } from "@/lib/supabase-storage"
 import { initAudioSystem } from "@/lib/audio-utils"
-import type { Workout, WorkoutLog, AppData } from "@/lib/types"
+import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
 import { useAuth } from '@/lib/auth'
 import { workoutData as demoWorkoutData } from "@/lib/workout-data"
-import { getDemoWorkoutLogs } from "@/lib/demo-data"
+import { getDemoWorkoutLogs, demoWorkoutDays } from "@/lib/demo-data"
 import { OnboardingGuide } from "@/components/onboarding-guide"
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { saveWorkoutData } from "@/lib/storage"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
-  const [appData, setAppData] = useState<AppData>({
+  const [appData, setAppData] = useState<any>({
     workouts: [],
+    workoutDays: [],
     lastSyncTime: null,
   })
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
@@ -43,7 +45,7 @@ export function WorkoutTracker() {
     const initializeApp = async () => {
       if (!user) {
         // Not logged in: show demo data with sample logs
-        setAppData({ workouts: demoWorkoutData, lastSyncTime: null })
+        setAppData({ workouts: demoWorkoutData, workoutDays: demoWorkoutDays, lastSyncTime: null })
         
         // Load demo data from Supabase (with fallback to client-side data)
         try {
@@ -56,14 +58,20 @@ export function WorkoutTracker() {
         }
         return
       }
-      // Logged in: load workouts from Supabase
+      // Logged in: load workouts and workout days from Supabase
       let workouts = await loadUserWorkouts(supabase, user.id)
+      let workoutDays: WorkoutDay[] = []
+      try {
+        workoutDays = await (await import("@/lib/supabase-storage")).loadUserWorkoutDays(supabase, user.id)
+      } catch (e) {
+        workoutDays = []
+      }
       // If no workouts, create a single blank 'My Workouts' routine
       if (!workouts || workouts.length === 0) {
         await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], user.id)
         workouts = await loadUserWorkouts(supabase, user.id)
       }
-      setAppData({ workouts, lastSyncTime: null })
+      setAppData({ workouts, workoutDays, lastSyncTime: null })
       const logs = await loadWorkoutLogs(supabase, user.id)
       setWorkoutLogs(logs)
       
@@ -83,7 +91,12 @@ export function WorkoutTracker() {
   // Save data when it changes (only for logged-in users)
   useEffect(() => {
     if (appData.workouts.length > 0 && user?.id) {
-      saveUserWorkouts(supabase, appData.workouts, user.id)
+      (async () => {
+        await saveUserWorkouts(supabase, appData.workouts, user.id)
+        if (appData.workoutDays) {
+          await (await import("@/lib/supabase-storage")).saveUserWorkoutDays(supabase, appData.workoutDays, user.id)
+        }
+      })()
     }
   }, [appData, user?.id])
 
@@ -101,14 +114,21 @@ export function WorkoutTracker() {
     }
   }
 
-  // Update workouts (only for logged-in users)
-  const updateWorkouts = (workouts: Workout[]) => {
-    setAppData((prev) => ({
+  // Update workouts and workoutDays
+  const updateWorkoutsAndDays = (workouts: Workout[], workoutDays: WorkoutDay[]) => {
+    setAppData((prev: any) => ({
       ...prev,
       workouts,
+      workoutDays,
     }))
     if (user?.id) {
-      saveUserWorkouts(supabase, workouts, user.id)
+      (async () => {
+        await saveUserWorkouts(supabase, workouts, user.id)
+        await (await import("@/lib/supabase-storage")).saveUserWorkoutDays(supabase, workoutDays, user.id)
+      })()
+    } else {
+      // Save to localStorage for guests
+      saveWorkoutData({ workouts, workoutDays, lastSyncTime: null })
     }
   }
 
@@ -138,6 +158,7 @@ export function WorkoutTracker() {
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
             <WorkoutScreen
               workouts={appData.workouts}
+              workoutDays={appData.workoutDays}
               onAddWorkoutLog={addWorkoutLog}
             />
           </TabsContent>
@@ -149,7 +170,8 @@ export function WorkoutTracker() {
           <TabsContent value="settings" className="mt-0 p-0" id="settings-tab">
             <SettingsScreen
               workouts={appData.workouts}
-              onUpdateWorkouts={updateWorkouts}
+              workoutDays={appData.workoutDays}
+              onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
               lastSyncTime={appData.lastSyncTime}
             />
           </TabsContent>

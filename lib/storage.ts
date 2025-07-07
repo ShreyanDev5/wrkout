@@ -1,36 +1,55 @@
 import { workoutData as initialWorkoutData } from "./workout-data"
-import type { AppData } from "./types"
+import { demoWorkoutDays } from "./demo-data"
+import type { AppData, WorkoutDay } from "./types"
+
+// Updated AppData type for normalized structure
+// export interface AppData {
+//   workouts: Workout[]
+//   workoutDays: WorkoutDay[]
+//   lastSyncTime: string | null
+// }
 
 // Initialize workout data in localStorage if it doesn't exist
 export async function initializeWorkoutData(): Promise<void> {
   const existingData = localStorage.getItem("workoutData")
 
   if (!existingData) {
-    const initialData: AppData = {
+    const initialData: any = {
       workouts: initialWorkoutData,
+      workoutDays: demoWorkoutDays, // Add normalized days
       lastSyncTime: null,
     }
-
     localStorage.setItem("workoutData", JSON.stringify(initialData))
   }
 }
 
-// Load workout data from localStorage
-export async function loadWorkoutData(): Promise<AppData> {
+// Load workout data from localStorage (normalized)
+export async function loadWorkoutData(): Promise<any> {
   const data = localStorage.getItem("workoutData")
 
   if (data) {
-    return JSON.parse(data)
+    const parsed = JSON.parse(data)
+    // Backward compatibility: if workoutDays missing, flatten from workouts
+    if (!parsed.workoutDays && parsed.workouts) {
+      parsed.workoutDays = parsed.workouts.flatMap((w: any) =>
+        (w.days || []).map((d: any) => ({
+          ...d,
+          workout_id: w.id,
+        }))
+      )
+    }
+    return parsed
   }
 
   return {
     workouts: [],
+    workoutDays: [],
     lastSyncTime: null,
   }
 }
 
-// Save workout data to localStorage
-export async function saveWorkoutData(data: AppData): Promise<void> {
+// Save workout data to localStorage (normalized)
+export async function saveWorkoutData(data: any): Promise<void> {
   localStorage.setItem("workoutData", JSON.stringify(data))
 }
 
