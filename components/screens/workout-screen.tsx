@@ -251,6 +251,7 @@ export function WorkoutScreen({
                   key={`${day.id}-${tickCounter}`}
                   exercises={day.exercises}
                   dayId={day.id}
+                  workoutId={currentWorkout.id}
                   onLogWorkout={(log) => {
                     onAddWorkoutLog(log)
                   }}

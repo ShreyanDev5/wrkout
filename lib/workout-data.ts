@@ -2,7 +2,8 @@ import type { Workout } from "./types"
 
 export const workoutData: Workout[] = [
   {
-    id: "workout-i",
+    id: "b7e6e2c2-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+    slug: "Workout I",
     name: "Workout I",
     days: [
       {
@@ -54,7 +55,8 @@ export const workoutData: Workout[] = [
     ],
   },
   {
-    id: "workout-ii",
+    id: "c1d2e3f4-5b6a-7c8d-9e0f-1a2b3c4d5e6f",
+    slug: "Workout II",
     name: "Workout II",
     days: [
       {

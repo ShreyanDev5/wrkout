@@ -17,6 +17,7 @@ import { useAuth } from '@/lib/auth'
 import { workoutData as demoWorkoutData } from "@/lib/workout-data"
 import { getDemoWorkoutLogs } from "@/lib/demo-data"
 import { OnboardingGuide } from "@/components/onboarding-guide"
+import { v4 as uuidv4 } from 'uuid'
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -82,6 +83,8 @@ export function WorkoutTracker() {
   // Add workout log (only for logged-in users)
   const addWorkoutLog = async (log: WorkoutLog) => {
     if (!user?.id) return
+    // Ensure log.id is a UUID
+    if (!log.id) log.id = uuidv4()
     try {
       await saveWorkoutLog(log, user.id)
       setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top

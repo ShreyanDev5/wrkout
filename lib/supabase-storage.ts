@@ -2,6 +2,7 @@ import { supabase, handleSupabaseError } from './supabase'
 import type { Workout, WorkoutLog, AppData } from './types'
 import { workoutData } from './workout-data'
 import { getDemoWorkoutLogs } from './demo-data'
+import { v4 as uuidv4 } from 'uuid'
 
 // Convert AppData to database format
 const convertToDatabaseFormat = (appData: AppData, userId: string) => ({
@@ -126,9 +127,11 @@ export async function saveWorkoutData(appData: AppData, userId: string): Promise
 // Save a workout log to Supabase
 export async function saveWorkoutLog(log: WorkoutLog, userId: string): Promise<void> {
   try {
+    // Ensure log.id is a UUID
+    const logToSave = { ...log, id: log.id || uuidv4(), user_id: userId }
     const { error } = await supabase
       .from('workout_logs')
-      .insert({ ...log, user_id: userId })
+      .insert(logToSave)
 
     if (error) throw error
   } catch (error) {

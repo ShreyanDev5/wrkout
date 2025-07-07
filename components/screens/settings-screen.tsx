@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
 import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 import { OnboardingGuide } from '@/components/onboarding-guide'
+import { v4 as uuidv4 } from 'uuid'
 
 interface SettingsScreenProps {
   workouts: Workout[]
@@ -74,7 +75,8 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
     if (!newWorkoutName.trim()) return
 
     const newWorkout: Workout = {
-      id: `workout-${Date.now()}`,
+      id: uuidv4(),
+      slug: newWorkoutName,
       name: newWorkoutName,
       days: [],
     }
@@ -178,7 +180,7 @@ export function SettingsScreen({ workouts, onUpdateWorkouts, lastSyncTime }: Set
                 exercises: [
                   ...day.exercises,
                   {
-                    id: `exercise-${Date.now()}`,
+                    id: uuidv4(),
                     name: newExerciseName,
                   },
                 ],

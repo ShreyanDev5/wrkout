@@ -8,6 +8,7 @@ import { WeightSlider } from "@/components/ui/weight-slider"
 import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
+import { v4 as uuidv4 } from 'uuid'
 
 interface WorkoutLogModalProps {
   isOpen: boolean
@@ -60,7 +61,7 @@ export function WorkoutLogModal({
     setLastUsedValues(exercise.id, { weight, reps, sets })
 
     const log: WorkoutLog = {
-      id: `log-${Date.now()}`,
+      id: uuidv4(),
       workout_id: workoutId,
       exercise_name: exercise.name,
       weight,

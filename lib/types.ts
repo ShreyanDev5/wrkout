@@ -12,13 +12,14 @@ export interface WorkoutDay {
 
 export interface Workout {
   id: string
+  slug?: string
   name: string
   days: WorkoutDay[]
 }
 
 // New type matching the workout_logs table
 export interface WorkoutLog {
-  id: string
+  id: string // UUID
   user_id?: string
   workout_id: string
   exercise_name: string

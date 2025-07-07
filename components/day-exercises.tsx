@@ -12,6 +12,7 @@ import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
 interface DayExercisesProps {
   exercises: Exercise[]
   dayId: string
+  workoutId: string
   onLogWorkout: (log: WorkoutLog) => void | Promise<void>
   onExerciseToggled?: () => void
   dayColor: string
@@ -21,7 +22,7 @@ function getTickStorageKey(dayId: string) {
   return `tickedExercises-${dayId}`
 }
 
-export function DayExercises({ exercises, dayId, onLogWorkout, onExerciseToggled, dayColor }: DayExercisesProps) {
+export function DayExercises({ exercises, dayId, workoutId, onLogWorkout, onExerciseToggled, dayColor }: DayExercisesProps) {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [ticked, setTicked] = useState<string[]>(() => {
@@ -145,7 +146,7 @@ export function DayExercises({ exercises, dayId, onLogWorkout, onExerciseToggled
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           exercise={selectedExercise}
-          workoutId="current-workout"
+          workoutId={workoutId}
           dayId={dayId}
           workoutName="Current Workout"
           dayName={dayId.toUpperCase()}
