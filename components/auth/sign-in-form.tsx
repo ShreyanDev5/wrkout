@@ -10,8 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
-import { workoutData } from '@/lib/workout-data';
-import { loadUserWorkouts, saveUserWorkouts } from '@/lib/supabase-storage';
+import { loadUserWorkouts, saveUserWorkouts } from '@/lib/supabase-data';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export function SignInForm() {
