@@ -28,6 +28,8 @@ import { useAuth } from '@/lib/auth/auth-context'
 import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 import { OnboardingGuide } from '@/components/onboarding-guide'
 import { v4 as uuidv4 } from 'uuid'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getDemoWorkoutLogs } from '@/lib/demo-data'
 
 interface SettingsScreenProps {
   workouts: Workout[]
@@ -52,6 +54,63 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
   const { toast } = useToast()
   const { signOut, user, username } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
+  const supabase = createClientComponentClient();
+  const [isProcessingDemo, setIsProcessingDemo] = useState(false);
+  const [hasDemoData, setHasDemoData] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    // Check if user has demo data
+    (async () => {
+      const { data, error } = await supabase
+        .from('workout_logs')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_demo', true)
+        .limit(1);
+      setHasDemoData(!!(data && data.length > 0));
+    })();
+  }, [user]);
+
+  const handleAddDemoData = async () => {
+    if (!user) return;
+    setIsProcessingDemo(true);
+    try {
+      const demoLogs = getDemoWorkoutLogs().map(log => ({
+        ...log,
+        user_id: user.id,
+        id: undefined,
+        is_demo: true,
+      }));
+      const { error } = await supabase.from('workout_logs').insert(demoLogs);
+      if (error) throw error;
+      toast({ title: 'Demo data added!' });
+      setHasDemoData(true);
+    } catch (e) {
+      toast({ title: 'Failed to add demo data', description: String(e), variant: 'destructive' });
+    } finally {
+      setIsProcessingDemo(false);
+    }
+  };
+
+  const handleRemoveDemoData = async () => {
+    if (!user) return;
+    setIsProcessingDemo(true);
+    try {
+      const { error } = await supabase
+        .from('workout_logs')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('is_demo', true);
+      if (error) throw error;
+      toast({ title: 'Demo data removed!' });
+      setHasDemoData(false);
+    } catch (e) {
+      toast({ title: 'Failed to remove demo data', description: String(e), variant: 'destructive' });
+    } finally {
+      setIsProcessingDemo(false);
+    }
+  };
 
   // Reset scroll position when component mounts
   useEffect(() => {
@@ -730,6 +789,26 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
         isOpen={showOnboarding} 
         onClose={() => setShowOnboarding(false)} 
       />
+
+      <div className="my-6">
+        {hasDemoData ? (
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+            onClick={handleRemoveDemoData}
+            disabled={isProcessingDemo}
+          >
+            Remove Demo Data
+          </button>
+        ) : (
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            onClick={handleAddDemoData}
+            disabled={isProcessingDemo}
+          >
+            Add Demo Data
+          </button>
+        )}
+      </div>
     </Card>
   )
 }

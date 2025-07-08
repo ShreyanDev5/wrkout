@@ -1,56 +1,6 @@
-import type { WorkoutLog, WorkoutDay } from "./types"
+import type { WorkoutLog } from "./types"
 
-// Demo workout days (normalized)
-export const demoWorkoutDays: WorkoutDay[] = [
-  // For demo-workout
-  {
-    id: "demo-day-push",
-    workout_id: "demo-workout",
-    day_id: "push",
-    name: "Push Day",
-    exercises: [
-      { id: "bench-press", name: "Barbell Bench Press" },
-      { id: "dumbbell-overhead-press", name: "Dumbbell Overhead Press" },
-      { id: "incline-dumbbell-press", name: "Incline Dumbbell Press" },
-      { id: "triceps-pushdown", name: "Triceps Pushdown" },
-    ],
-  },
-  {
-    id: "demo-day-pull",
-    workout_id: "demo-workout",
-    day_id: "pull",
-    name: "Pull Day",
-    exercises: [
-      { id: "pull-ups", name: "Pull-ups" },
-      { id: "barbell-row", name: "Barbell Row" },
-      { id: "lat-pulldown", name: "Lat Pulldown" },
-      { id: "barbell-curl", name: "Barbell Curl" },
-    ],
-  },
-  {
-    id: "demo-day-leg",
-    workout_id: "demo-workout",
-    day_id: "leg",
-    name: "Leg Day",
-    exercises: [
-      { id: "barbell-squat", name: "Barbell Squat" },
-      { id: "romanian-deadlift", name: "Romanian Deadlift" },
-      { id: "leg-press", name: "Leg Press" },
-      { id: "standing-calf-raise", name: "Standing Calf Raise" },
-    ],
-  },
-]
-
-// Helper to map exercise_name to workout_day_id
-const getDemoDayIdForExercise = (exercise_name: string): string => {
-  const lower = exercise_name.toLowerCase()
-  if (lower.includes("bench press") || lower.includes("overhead press") || lower.includes("incline") || lower.includes("triceps")) return "demo-day-push"
-  if (lower.includes("pull") || lower.includes("row") || lower.includes("curl")) return "demo-day-pull"
-  if (lower.includes("squat") || lower.includes("deadlift") || lower.includes("leg press") || lower.includes("calf")) return "demo-day-leg"
-  return "demo-day-push" // fallback
-}
-
-// Realistic demo data for Monthly Summary Table
+// Realistic demo data for Monthly Summary Table (used for onboarding demo logs)
 export const demoWorkoutLogs: WorkoutLog[] = [
   // Push exercises (4 items)
   {
@@ -93,7 +43,6 @@ export const demoWorkoutLogs: WorkoutLog[] = [
     performed_at: "2025-07-02T09:15:00Z",
     user_id: "demo-user"
   },
-  
   // Pull exercises (4 items)
   {
     id: "demo-5",
@@ -135,7 +84,6 @@ export const demoWorkoutLogs: WorkoutLog[] = [
     performed_at: "2025-06-28T13:10:00Z",
     user_id: "demo-user"
   },
-  
   // Leg exercises (4 items)
   {
     id: "demo-9",
@@ -179,7 +127,7 @@ export const demoWorkoutLogs: WorkoutLog[] = [
   }
 ]
 
-// Previous workout data for trend indicators
+// Previous workout data for trend indicators (used for onboarding demo logs)
 export const demoPreviousWorkoutLogs: WorkoutLog[] = [
   // Push exercises (previous data - showing improvement)
   {
@@ -222,7 +170,6 @@ export const demoPreviousWorkoutLogs: WorkoutLog[] = [
     performed_at: "2025-06-12T09:15:00Z",
     user_id: "demo-user"
   },
-  
   // Pull exercises (previous data - mixed progress)
   {
     id: "demo-prev-5",
@@ -264,7 +211,6 @@ export const demoPreviousWorkoutLogs: WorkoutLog[] = [
     performed_at: "2025-06-08T13:10:00Z",
     user_id: "demo-user"
   },
-  
   // Leg exercises (previous data - showing progress)
   {
     id: "demo-prev-9",
@@ -304,89 +250,6 @@ export const demoPreviousWorkoutLogs: WorkoutLog[] = [
     weight: 125,
     avg_reps: 13,
     performed_at: "2025-06-04T14:20:00Z",
-    user_id: "demo-user"
-  }
-]
-
-// Additional intermediate data points for better chart progression
-export const demoIntermediateLogs: WorkoutLog[] = [
-  // Barbell Bench Press progression
-  {
-    id: "demo-int-1",
-    exercise_name: "Barbell Bench Press",
-    workout_id: "demo-workout",
-    weight: 180,
-    avg_reps: 6,
-    performed_at: "2025-06-25T10:30:00Z",
-    user_id: "demo-user"
-  },
-  {
-    id: "demo-int-2",
-    exercise_name: "Barbell Bench Press",
-    workout_id: "demo-workout",
-    weight: 182,
-    avg_reps: 6,
-    performed_at: "2025-06-30T10:30:00Z",
-    user_id: "demo-user"
-  },
-  
-  // Dumbbell Overhead Press progression
-  {
-    id: "demo-int-3",
-    exercise_name: "Dumbbell Overhead Press",
-    workout_id: "demo-workout",
-    weight: 62,
-    avg_reps: 8,
-    performed_at: "2025-06-24T14:20:00Z",
-    user_id: "demo-user"
-  },
-  {
-    id: "demo-int-4",
-    exercise_name: "Dumbbell Overhead Press",
-    workout_id: "demo-workout",
-    weight: 64,
-    avg_reps: 8,
-    performed_at: "2025-06-29T14:20:00Z",
-    user_id: "demo-user"
-  },
-  
-  // Barbell Squat progression
-  {
-    id: "demo-int-5",
-    exercise_name: "Barbell Squat",
-    workout_id: "demo-workout",
-    weight: 220,
-    avg_reps: 5,
-    performed_at: "2025-06-20T17:30:00Z",
-    user_id: "demo-user"
-  },
-  {
-    id: "demo-int-6",
-    exercise_name: "Barbell Squat",
-    workout_id: "demo-workout",
-    weight: 222,
-    avg_reps: 5,
-    performed_at: "2025-06-23T17:30:00Z",
-    user_id: "demo-user"
-  },
-  
-  // Pull-ups progression
-  {
-    id: "demo-int-7",
-    exercise_name: "Pull-ups",
-    workout_id: "demo-workout",
-    weight: 190,
-    avg_reps: 7,
-    performed_at: "2025-06-22T11:30:00Z",
-    user_id: "demo-user"
-  },
-  {
-    id: "demo-int-8",
-    exercise_name: "Pull-ups",
-    workout_id: "demo-workout",
-    weight: 195,
-    avg_reps: 8,
-    performed_at: "2025-06-25T11:30:00Z",
     user_id: "demo-user"
   }
 ]

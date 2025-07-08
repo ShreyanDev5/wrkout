@@ -9,17 +9,14 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
-import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs, loadDemoWorkouts, loadDemoWorkoutDays } from "@/lib/supabase-storage"
+import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadUserWorkoutDays, saveUserWorkoutDays } from "@/lib/supabase-data"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
 import { useAuth } from '@/lib/auth'
-import { workoutData as demoWorkoutData } from "@/lib/workout-data"
-import { getDemoWorkoutLogs, demoWorkoutDays } from "@/lib/demo-data"
 import { OnboardingGuide } from "@/components/onboarding-guide"
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { saveWorkoutData } from "@/lib/storage"
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
@@ -40,57 +37,13 @@ export function WorkoutTracker() {
     initAudioSystem()
   }, [])
 
-  // Main effect: load demo data for pre-login, user data for logged-in
+  // Main effect: load user data for logged-in users only
   useEffect(() => {
     const initializeApp = async () => {
-      if (!user) {
-        // Not logged in: show demo data from Supabase (with fallback to static data)
-        try {
-          const [workoutsRaw, workoutDays] = await Promise.all([
-            loadDemoWorkouts(supabase),
-            loadDemoWorkoutDays(supabase),
-          ])
-          // Nest days into each workout
-          const workouts = workoutsRaw.map(w => ({
-            ...w,
-            days: workoutDays.filter(d => d.workout_id === w.id),
-          }))
-          if (workouts.length > 0 && workoutDays.length > 0) {
-            setAppData({ workouts, workoutDays, lastSyncTime: null })
-          } else {
-            // Fallback: also nest days
-            const fallbackWorkouts = demoWorkoutData.map(w => ({
-              ...w,
-              days: demoWorkoutDays.filter(d => d.workout_id === w.id),
-            }))
-            setAppData({ workouts: fallbackWorkouts, workoutDays: demoWorkoutDays, lastSyncTime: null })
-          }
-        } catch (error) {
-          // Fallback: also nest days
-          const fallbackWorkouts = demoWorkoutData.map(w => ({
-            ...w,
-            days: demoWorkoutDays.filter(d => d.workout_id === w.id),
-          }))
-          setAppData({ workouts: fallbackWorkouts, workoutDays: demoWorkoutDays, lastSyncTime: null })
-        }
-        // Load demo logs from Supabase (with fallback to client-side data)
-        try {
-          const demoLogs = await loadDemoWorkoutLogs(supabase)
-          setWorkoutLogs(demoLogs)
-        } catch (error) {
-          const demoLogs = getDemoWorkoutLogs()
-          setWorkoutLogs(demoLogs)
-        }
-        return
-      }
+      if (!user) return;
       // Logged in: load workouts and workout days from Supabase
       let workouts = await loadUserWorkouts(supabase, user.id)
-      let workoutDays: WorkoutDay[] = []
-      try {
-        workoutDays = await (await import("@/lib/supabase-storage")).loadUserWorkoutDays(supabase, user.id)
-      } catch (e) {
-        workoutDays = []
-      }
+      let workoutDays: WorkoutDay[] = await loadUserWorkoutDays(supabase, user.id)
       // If no workouts, create a single blank 'My Workouts' routine
       if (!workouts || workouts.length === 0) {
         await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], user.id)
@@ -119,7 +72,7 @@ export function WorkoutTracker() {
       (async () => {
         await saveUserWorkouts(supabase, appData.workouts, user.id)
         if (appData.workoutDays) {
-          await (await import("@/lib/supabase-storage")).saveUserWorkoutDays(supabase, appData.workoutDays, user.id)
+          await saveUserWorkoutDays(supabase, appData.workoutDays, user.id)
         }
       })()
     }
@@ -149,11 +102,8 @@ export function WorkoutTracker() {
     if (user?.id) {
       (async () => {
         await saveUserWorkouts(supabase, workouts, user.id)
-        await (await import("@/lib/supabase-storage")).saveUserWorkoutDays(supabase, workoutDays, user.id)
+        await saveUserWorkoutDays(supabase, workoutDays, user.id)
       })()
-    } else {
-      // Save to localStorage for guests
-      saveWorkoutData({ workouts, workoutDays, lastSyncTime: null })
     }
   }
 

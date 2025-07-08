@@ -10,36 +10,54 @@ export default async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Auth routes handling
-  if (req.nextUrl.pathname.startsWith('/auth')) {
-    if (session) {
-      // If user is signed in and tries to access auth pages, redirect to home
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+  // Allow unauthenticated access to auth pages, API routes, and static assets
+  const publicPaths = [
+    '/auth',
+    '/api',
+    '/_next',
+    '/favicon.ico',
+    '/favicon.png',
+    '/apple-touch-icon.png',
+    '/android-chrome-192x192.png',
+    '/android-chrome-512x512.png',
+    '/site.webmanifest',
+    '/placeholder-logo.png',
+    '/placeholder-logo.svg',
+    '/placeholder-user.jpg',
+    '/placeholder.jpg',
+    '/placeholder.svg',
+    '/sounds',
+    '/public',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/manifest.json',
+    '/assets',
+    '/fonts',
+    '/images',
+    '/static',
+  ];
+  const isPublic = publicPaths.some((path) => req.nextUrl.pathname.startsWith(path));
+
+  if (isPublic) {
+    // Allow access to public paths
     return res;
   }
 
-  // Protected routes handling - only protect specific routes that require auth
-  const protectedRoutes = ['/dashboard', '/profile', '/settings/premium'];
-  const isProtectedRoute = protectedRoutes.some(route => 
-    req.nextUrl.pathname.startsWith(route)
-  );
-
-  if (isProtectedRoute && !session) {
-    // If user is not signed in and tries to access protected routes, redirect to sign in
+  // If not authenticated, redirect to sign in
+  if (!session) {
     const redirectUrl = new URL('/auth/signin', req.url);
     redirectUrl.searchParams.set('redirectedFrom', req.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
+  // If authenticated, allow access
   return res;
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
+    '/((?!_next|favicon.ico|favicon.png|apple-touch-icon.png|android-chrome-192x192.png|android-chrome-512x512.png|site.webmanifest|placeholder-logo.png|placeholder-logo.svg|placeholder-user.jpg|placeholder.jpg|placeholder.svg|sounds|public|robots.txt|sitemap.xml|manifest.json|assets|fonts|images|static|api|auth).*)',
     '/auth/:path*',
-    '/profile/:path*',
-    '/settings/premium/:path*'
-  ]
+    '/api/:path*',
+  ],
 }; 
