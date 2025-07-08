@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { ModernTabNavigation } from "@/components/modern-tab-navigation"
 import { useTheme } from "@/components/theme-context"
-import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs } from "@/lib/supabase-storage"
+import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadDemoWorkoutLogs, loadDemoWorkouts, loadDemoWorkoutDays } from "@/lib/supabase-storage"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
@@ -44,10 +44,36 @@ export function WorkoutTracker() {
   useEffect(() => {
     const initializeApp = async () => {
       if (!user) {
-        // Not logged in: show demo data with sample logs
-        setAppData({ workouts: demoWorkoutData, workoutDays: demoWorkoutDays, lastSyncTime: null })
-        
-        // Load demo data from Supabase (with fallback to client-side data)
+        // Not logged in: show demo data from Supabase (with fallback to static data)
+        try {
+          const [workoutsRaw, workoutDays] = await Promise.all([
+            loadDemoWorkouts(supabase),
+            loadDemoWorkoutDays(supabase),
+          ])
+          // Nest days into each workout
+          const workouts = workoutsRaw.map(w => ({
+            ...w,
+            days: workoutDays.filter(d => d.workout_id === w.id),
+          }))
+          if (workouts.length > 0 && workoutDays.length > 0) {
+            setAppData({ workouts, workoutDays, lastSyncTime: null })
+          } else {
+            // Fallback: also nest days
+            const fallbackWorkouts = demoWorkoutData.map(w => ({
+              ...w,
+              days: demoWorkoutDays.filter(d => d.workout_id === w.id),
+            }))
+            setAppData({ workouts: fallbackWorkouts, workoutDays: demoWorkoutDays, lastSyncTime: null })
+          }
+        } catch (error) {
+          // Fallback: also nest days
+          const fallbackWorkouts = demoWorkoutData.map(w => ({
+            ...w,
+            days: demoWorkoutDays.filter(d => d.workout_id === w.id),
+          }))
+          setAppData({ workouts: fallbackWorkouts, workoutDays: demoWorkoutDays, lastSyncTime: null })
+        }
+        // Load demo logs from Supabase (with fallback to client-side data)
         try {
           const demoLogs = await loadDemoWorkoutLogs(supabase)
           setWorkoutLogs(demoLogs)

@@ -24,7 +24,7 @@ INSERT INTO workout_logs (id, user_id, workout_id, workout_day_id, exercise_name
   ('e5e5e5e5-5555-5555-5555-555555555555', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'd2b8f9d3-2e3f-5d4e-9f5a-6b7c8d9e0f1a', 'Pull-ups (Assisted)', 67, 10, '2025-07-06', '2025-07-06T09:05:00Z', '2025-07-06T09:05:00Z'),
   ('e6f6f6f6-6666-6666-6666-666666666666', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'd2b8f9d3-2e3f-5d4e-9f5a-6b7c8d9e0f1a', 'Dumbbell Hammer Curl', 15, 10, '2025-07-06', '2025-07-06T09:10:00Z', '2025-07-06T09:10:00Z'),
   -- Legs Day (2025-07-05)
-  ('e7g7g7g7-7777-7777-7777-777777777777', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Barbell Back Squat', 90, 6, '2025-07-05', '2025-07-05T09:00:00Z', '2025-07-05T09:00:00Z'),
-  ('e8h8h8h8-8888-8888-8888-888888888888', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Romanian Deadlift', 65, 10, '2025-07-05', '2025-07-05T09:05:00Z', '2025-07-05T09:05:00Z'),
-  ('e9i9i9i9-9999-9999-9999-999999999999', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Standing Calf Raise', 50, 15, '2025-07-05', '2025-07-05T09:10:00Z', '2025-07-05T09:10:00Z')
-ON CONFLICT (id) DO NOTHING; 
+  ('e7a7a7a7-7777-7777-7777-777777777777', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Barbell Back Squat', 90, 6, '2025-07-05', '2025-07-05T09:00:00Z', '2025-07-05T09:00:00Z'),
+  ('e8a8a8a8-8888-8888-8888-888888888888', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Romanian Deadlift', 65, 10, '2025-07-05', '2025-07-05T09:05:00Z', '2025-07-05T09:05:00Z'),
+  ('e9a9a9a9-9999-9999-9999-999999999999', NULL, 'b1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e0f', 'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Standing Calf Raise', 50, 15, '2025-07-05', '2025-07-05T09:10:00Z', '2025-07-05T09:10:00Z')
+ON CONFLICT (id) DO NOTHING;

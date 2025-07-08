@@ -129,6 +129,88 @@ export async function loadDemoWorkoutLogs(supabaseClient: SupabaseClient): Promi
   }
 }
 
+// Load demo workouts from Supabase (for non-authenticated users)
+export async function loadDemoWorkouts(supabaseClient: SupabaseClient): Promise<Workout[]> {
+  try {
+    const { data, error } = await supabaseClient
+      .from('workouts')
+      .select('*')
+      .is('user_id', null)
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    // Return with empty days; days loaded separately
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      days: [],
+    }));
+  } catch (error) {
+    // Fallback: return empty array
+    return [];
+  }
+}
+
+// Fallback exercises for demo days (using corrected Supabase IDs)
+const DEMO_DAY_EXERCISES: Record<string, { id: string, name: string }[]> = {
+  'd1a7e8c2-1f2d-4c3e-8e4f-5a6b7c8d9e01': [
+    { id: 'bench-press', name: 'Barbell Bench Press' },
+    { id: 'seated-dumbbell-press', name: 'Seated Dumbbell Press' },
+    { id: 'cable-tricep-pushdown', name: 'Cable Tricep Pushdown' },
+  ],
+  'd2b8f9d3-2e3f-5d4e-9f5a-6b7c8d9e0f1a': [
+    { id: 'barbell-bent-over-row', name: 'Barbell Bent-over Row' },
+    { id: 'pull-ups-assisted', name: 'Pull-ups (Assisted)' },
+    { id: 'dumbbell-hammer-curl', name: 'Dumbbell Hammer Curl' },
+  ],
+  'a3b2c1d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d': [
+    { id: 'barbell-back-squat', name: 'Barbell Back Squat' },
+    { id: 'romanian-deadlift', name: 'Romanian Deadlift' },
+    { id: 'standing-calf-raise', name: 'Standing Calf Raise' },
+  ],
+}
+
+// Load demo workout days from Supabase (for non-authenticated users)
+// Populates exercises array using unique exercise_name values from demo logs for that day
+export async function loadDemoWorkoutDays(supabaseClient: SupabaseClient): Promise<WorkoutDay[]> {
+  try {
+    // Get all demo workout days
+    const { data, error } = await supabaseClient
+      .from('workout_days')
+      .select('*')
+      .in('workout_id',
+        (await supabaseClient.from('workouts').select('id').is('user_id', null)).data?.map((w: any) => w.id) || []
+      )
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+
+    // Get all demo logs to infer exercises per day
+    const { data: logs } = await supabaseClient
+      .from('workout_logs')
+      .select('exercise_name, workout_day_id')
+      .is('user_id', null);
+    // Map: day_id -> Set of exercise names
+    const exercisesByDay: Record<string, Set<string>> = {};
+    (logs || []).forEach((log: any) => {
+      if (!exercisesByDay[log.workout_day_id]) exercisesByDay[log.workout_day_id] = new Set();
+      exercisesByDay[log.workout_day_id].add(log.exercise_name);
+    });
+
+    // Build WorkoutDay[] with exercises array, fallback to static if empty
+    return (data || []).map((row: any) => {
+      const exercisesArr = Array.from(exercisesByDay[row.id] || []);
+      return {
+        ...row,
+        exercises: exercisesArr.length > 0
+          ? exercisesArr.map((name, idx) => ({ id: `${row.id}-ex${idx}`, name }))
+          : (DEMO_DAY_EXERCISES[row.id] || []),
+      }
+    });
+  } catch (error) {
+    // Fallback: return empty array
+    return [];
+  }
+}
+
 // Save workout data to Supabase
 export async function saveWorkoutData(supabaseClient: SupabaseClient, appData: any, userId: string): Promise<void> {
   if (!userId) {
