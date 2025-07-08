@@ -85,7 +85,6 @@ export function WorkoutScreen({
         }
         setIsInitialized(true)
       } catch (error) {
-        console.error("Error loading last workout section:", error)
         setIsInitialized(true)
       }
     }
@@ -100,7 +99,6 @@ export function WorkoutScreen({
       const stored = localStorage.getItem(`tickedExercises-${day}`)
       return stored ? JSON.parse(stored) as string[] : []
     } catch (error) {
-      console.error('Error loading ticked exercises:', error)
       return []
     }
   }, [])
@@ -110,7 +108,6 @@ export function WorkoutScreen({
     // Only save after initial load to prevent overwriting with default value
     if (isInitialized) {
       saveLastWorkoutSection(selectedDay).catch((error) => {
-        console.error("Error saving last workout section:", error)
       })
     }
   }, [selectedDay, isInitialized])

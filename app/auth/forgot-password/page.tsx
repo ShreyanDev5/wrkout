@@ -27,7 +27,6 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      console.log("🔍 Looking up user by username:", username);
       
       // Validate username format
       if (!username || username.length < 3) {
@@ -43,8 +42,7 @@ export default function ForgotPasswordPage() {
 
       // Check if user exists by trying to sign in with the pseudo-email
       const pseudoEmail = `${username}@wrkout.app`;
-      console.log("🔍 Checking if user exists:", pseudoEmail);
-
+      
       // Check if user exists by attempting to sign in (we'll catch the error if user doesn't exist)
       // This is a workaround since we can't use admin APIs from the client
       const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -55,7 +53,6 @@ export default function ForgotPasswordPage() {
       // If we get "Invalid login credentials", the user exists but password is wrong
       // If we get "User not found", the user doesn't exist
       if (signInError && signInError.message.includes('User not found')) {
-        console.log("❌ User not found:", signInError);
         setError("No account found with this username. Please check your username or create a new account.");
         setLoading(false);
         return;
@@ -63,17 +60,14 @@ export default function ForgotPasswordPage() {
       
       // If we get "Invalid login credentials", the user exists (which is what we want)
       if (signInError && signInError.message.includes('Invalid login credentials')) {
-        console.log("✅ User exists (invalid credentials expected)");
         setStep('email');
         setMessage("Username found! Please provide an email address where we can send your password reset link.");
       } else {
         // If we get here, something unexpected happened
-        console.log("❌ Unexpected error checking user existence:", signInError);
         setError("An error occurred while checking your username. Please try again.");
       }
       
     } catch (err) {
-      console.error("❌ Unexpected error:", err);
       setError("An unexpected error occurred. Please try again.");
       setDebugInfo(`Unexpected error: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
@@ -89,7 +83,6 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      console.log("📧 Processing password reset for username:", username, "with email:", recoveryEmail);
       
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -100,8 +93,6 @@ export default function ForgotPasswordPage() {
       }
 
       // Call our custom API route
-      console.log("📡 Making API call to /api/auth/reset-password");
-      console.log("📤 Request payload:", { username, recoveryEmail });
       
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
@@ -114,24 +105,18 @@ export default function ForgotPasswordPage() {
         }),
       });
 
-      console.log("📥 Response status:", response.status);
-      console.log("📥 Response headers:", Object.fromEntries(response.headers.entries()));
-
+      
       const result = await response.json();
-      console.log("📥 Response body:", result);
-
+      
       if (!response.ok) {
-        console.error("❌ API error:", result);
         setError(result.error || "Failed to send password reset email");
         setDebugInfo(`API error: ${response.status} - ${JSON.stringify(result)}`);
       } else {
-        console.log("✅ Password reset email sent successfully");
         setStep('success');
         setMessage("Password reset link sent! Check your email for the reset link.");
         setDebugInfo("Email sent successfully via API");
       }
     } catch (err) {
-      console.error("❌ Unexpected error:", err);
       setError("An unexpected error occurred. Please try again.");
       setDebugInfo(`Unexpected error: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {

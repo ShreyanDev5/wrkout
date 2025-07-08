@@ -6,8 +6,6 @@ export async function POST(request: NextRequest) {
   try {
     const { username, recoveryEmail } = await request.json();
     
-    console.log('🔍 Password reset request:', { username, recoveryEmail });
-    
     if (!username || !recoveryEmail) {
       return NextResponse.json(
         { error: 'Username and recovery email are required' },
@@ -34,7 +32,6 @@ export async function POST(request: NextRequest) {
 
     // Construct the pseudo-email
     const pseudoEmail = `${username}@wrkout.app`;
-    console.log('🔍 Looking for user with pseudo-email:', pseudoEmail);
     
     // Create a service role client for admin operations
     const { createClient } = await import('@supabase/supabase-js');
@@ -44,7 +41,6 @@ export async function POST(request: NextRequest) {
     );
 
     // Use the same method as frontend: try to sign in with dummy password
-    console.log('🔍 Checking user existence using signInWithPassword...');
     let user = null;
     
     try {
@@ -56,11 +52,9 @@ export async function POST(request: NextRequest) {
       
       if (foundUser) {
         user = foundUser;
-        console.log('✅ User found via signInWithPassword');
       } else if (signInError) {
         // If we get "Invalid login credentials", the user exists but password is wrong
         if (signInError.message.includes('Invalid login credentials')) {
-          console.log('✅ User exists (invalid credentials expected)');
           // We need to get the user details, so let's use listUsers as fallback
           const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
           
@@ -73,17 +67,14 @@ export async function POST(request: NextRequest) {
           }
           
           user = users?.find(u => u.email === pseudoEmail);
-          if (user) {
-            console.log('✅ User found via listUsers fallback');
-          }
         } else if (signInError.message.includes('User not found')) {
-          console.log('❌ User not found');
+          // console.log('❌ User not found'); // Removed
         } else {
-          console.log('⚠️ Unexpected signIn error:', signInError.message);
+          // console.log('⚠️ Unexpected signIn error:', signInError.message); // Removed
         }
       }
     } catch (err) {
-      console.log('⚠️ SignIn method failed, using listUsers fallback:', err);
+      // console.log('⚠️ SignIn method failed, using listUsers fallback:', err); // Removed
       // Fallback to listUsers
       const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
       
@@ -95,26 +86,17 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      console.log('🔍 Total users found:', users?.length || 0);
-      if (users && users.length > 0) {
-        console.log('🔍 User emails:', users.map(u => u.email).slice(0, 5));
-      }
-      
       user = users?.find(u => u.email === pseudoEmail);
     }
     
     if (!user) {
-      console.log('❌ User not found with email:', pseudoEmail);
       return NextResponse.json(
         { error: 'No account found with this username' },
         { status: 404 }
       );
     }
 
-    console.log('✅ User found:', { id: user.id, email: user.email });
-
     // Temporarily update the user's email to the recovery email
-    console.log('🔄 Updating user email to recovery email...');
     const { error: updateError } = await serviceRoleSupabase.auth.admin.updateUserById(
       user.id,
       { email: recoveryEmail }
@@ -128,12 +110,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ User email updated successfully');
-
     // Send password reset email to the recovery email
     const redirectUrl = `${request.nextUrl.origin}/auth/reset-password`;
-    console.log('📧 Sending password reset email to:', recoveryEmail);
-    console.log('🔗 Redirect URL:', redirectUrl);
     
     const { error: resetError } = await serviceRoleSupabase.auth.admin.generateLink({
       type: 'recovery',
@@ -151,10 +129,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ Password reset email sent successfully');
-
     // Revert the email back to the pseudo-email format
-    console.log('🔄 Reverting user email back to pseudo-email...');
     const { error: revertError } = await serviceRoleSupabase.auth.admin.updateUserById(
       user.id,
       { email: pseudoEmail }
@@ -163,8 +138,6 @@ export async function POST(request: NextRequest) {
     if (revertError) {
       console.error('❌ Error reverting user email:', revertError);
       // Don't fail the request, but log the error
-    } else {
-      console.log('✅ User email reverted successfully');
     }
 
     return NextResponse.json(

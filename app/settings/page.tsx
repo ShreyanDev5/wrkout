@@ -15,21 +15,17 @@ export default function SettingsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Settings page mounted, user:', user);
   }, [user]);
 
   const handleSignIn = () => {
-    console.log('Sign in clicked');
     router.push('/auth/signin');
   };
 
   const handleSignUp = () => {
-    console.log('Sign up clicked');
     router.push('/auth/signup');
   };
 
   const handleSignOut = async () => {
-    console.log('Sign out clicked');
     await signOut();
   };
 

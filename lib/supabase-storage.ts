@@ -124,7 +124,6 @@ export async function loadDemoWorkoutLogs(supabaseClient: SupabaseClient): Promi
     if (error) throw error
     return data || []
   } catch (error) {
-    console.error('Error loading demo workout logs:', error)
     // Fallback to client-side demo data
     return getDemoWorkoutLogs()
   }

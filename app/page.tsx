@@ -11,7 +11,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Auth state:', { user, isLoading });
   }, [user, isLoading]);
 
   if (isLoading) {

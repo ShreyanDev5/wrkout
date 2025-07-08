@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           router.push('/auth/signin?message=Session expired, please sign in again.');
         }
       } catch (error) {
-        console.error('Error in onAuthStateChange:', error);
+        // Remove: console.error('Error in onAuthStateChange:', error);
       }
     });
 
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await supabase.auth.signOut();
     } catch (error) {
-      console.error('Error during sign out:', error);
+      // Remove: console.error('Error during sign out:', error);
     }
     router.push('/auth/signin');
   };

@@ -52,7 +52,6 @@ export function WorkoutTracker() {
           const demoLogs = await loadDemoWorkoutLogs(supabase)
           setWorkoutLogs(demoLogs)
         } catch (error) {
-          console.error('Error loading demo logs, using fallback:', error)
           const demoLogs = getDemoWorkoutLogs()
           setWorkoutLogs(demoLogs)
         }

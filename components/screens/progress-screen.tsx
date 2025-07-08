@@ -43,7 +43,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         setChartExerciseFilter(savedState.chartExerciseFilter)
         setIsInitialized(true)
       } catch (error) {
-        console.error("Error loading last progress state:", error)
         setIsInitialized(true)
       }
     }
@@ -56,7 +55,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
     // Only save after initial load to prevent overwriting with default values
     if (isInitialized) {
       saveLastProgressState({ mainFilter, chartExerciseFilter }).catch((error) => {
-        console.error("Error saving progress state:", error)
       })
     }
   }, [mainFilter, chartExerciseFilter, isInitialized])

@@ -12,14 +12,12 @@ export function AuthPopup() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('AuthPopup mounted, user:', user);
     // Show popup after a short delay if not signed in
     if (!user) {
       // Prefetch auth pages for faster navigation
       router.prefetch('/auth/signin');
       router.prefetch('/auth/signup');
       const timer = setTimeout(() => {
-        console.log('Setting popup to open');
         setIsOpen(true);
       }, 2000);
       return () => clearTimeout(timer);
@@ -27,13 +25,12 @@ export function AuthPopup() {
   }, [user, router]);
 
   const handleClose = () => {
-    console.log('Closing popup');
     setIsOpen(false);
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
         localStorage.setItem('hasSeenAuthPopup', 'true');
       } catch (error) {
-        console.error('Error setting localStorage:', error);
+        // Remove: console.error('Error setting localStorage:', error);
       }
     }
   };
@@ -51,7 +48,6 @@ export function AuthPopup() {
   // Always render the dialog, but control its visibility with the open prop
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
-      console.log('Dialog open state changing to:', open);
       setIsOpen(open);
     }}>
       <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -240,7 +240,6 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
       return sortedData
     } catch (error) {
-      console.error("Error processing chart data:", error)
       return []
     }
   }, [timeframeFilteredLogs, exerciseFilter, mainFilter])
@@ -541,7 +540,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
   // Debug logging for development
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.log("Progress Chart - Data Points:", chartData.length)
+      // console.log("Progress Chart - Data Points:", chartData.length)
     }
   }, [chartData])
 
