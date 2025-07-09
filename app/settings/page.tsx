@@ -9,10 +9,23 @@ import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Settings2 } from 'lucide-react';
 import { CollapsibleHeaderLayout } from '@/components/layouts/collapsible-header-layout';
+import { SettingsScreen } from '@/components/screens/settings-screen';
+import { useState } from 'react';
+import type { Workout, WorkoutDay } from '@/lib/types';
 
 export default function SettingsPage() {
   const { user, signOut, username } = useAuth();
   const router = useRouter();
+
+  // Add local state for workouts and workoutDays
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>([]);
+
+  // Handler to update both workouts and workoutDays
+  const handleUpdateWorkoutsAndDays = (newWorkouts: Workout[], newWorkoutDays: WorkoutDay[]) => {
+    setWorkouts(newWorkouts);
+    setWorkoutDays(newWorkoutDays);
+  };
 
   useEffect(() => {
   }, [user]);
@@ -108,6 +121,13 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+        {/* Render the SettingsScreen for workout management */}
+        <SettingsScreen
+          workouts={workouts}
+          workoutDays={workoutDays}
+          onUpdateWorkoutsAndDays={handleUpdateWorkoutsAndDays}
+          lastSyncTime={null}
+        />
       </div>
     </CollapsibleHeaderLayout>
   );
