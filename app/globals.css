@@ -642,7 +642,6 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 /* Apple Fitness-inspired styles */
 .fitness-gradient-bg {
   background: linear-gradient(135deg, rgba(249, 217, 73, 0.1), rgba(76, 175, 80, 0.1), rgba(244, 67, 54, 0.1));
@@ -1497,3 +1496,4 @@ body {
 .note-grid {
   /* Remove these classes */
 }
+

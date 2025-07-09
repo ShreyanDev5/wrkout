@@ -24,33 +24,30 @@ export function AuthPopup() {
     }
   }, [user, router]);
 
-  const handleClose = () => {
-    setIsOpen(false);
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
-        localStorage.setItem('hasSeenAuthPopup', 'true');
-      } catch (error) {
-        // Remove: console.error('Error setting localStorage:', error);
-      }
-    }
+  // Prevent closing the dialog by any means except sign in or sign up
+  const handleOpenChange = (open: boolean) => {
+    // Only allow closing if user is authenticated
+    if (user) setIsOpen(open);
+    else setIsOpen(true); // Force open if not authenticated
   };
 
   const handleSignIn = () => {
-    handleClose();
     router.push('/auth/signin');
   };
 
   const handleSignUp = () => {
-    handleClose();
     router.push('/auth/signup');
   };
 
   // Always render the dialog, but control its visibility with the open prop
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-    }}>
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        hideCloseButton
+        className="sm:max-w-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        onInteractOutside={e => e.preventDefault()} // Prevent click outside
+        onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-green-400 to-red-500 bg-clip-text text-transparent">
             Welcome to wrkout
@@ -72,13 +69,6 @@ export function AuthPopup() {
             className="w-full border-2 hover:bg-accent"
           >
             Create Account
-          </Button>
-          <Button
-            onClick={handleClose}
-            variant="ghost"
-            className="w-full text-muted-foreground hover:text-foreground"
-          >
-            Maybe Later
           </Button>
         </div>
       </DialogContent>
