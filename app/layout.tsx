@@ -4,8 +4,6 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-context"
 import { AuthProvider } from '../lib/auth/auth-context'
-import AuthGate from "@/components/auth/auth-gate"
-import DemoDataLoader from "@/components/auth/demo-data-loader"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,11 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} dark`}>
       <body className="font-sans antialiased">
         <AuthProvider>
-          <AuthGate>
-            <DemoDataLoader>
-              <ThemeProvider>{children}</ThemeProvider>
-            </DemoDataLoader>
-          </AuthGate>
+          <ThemeProvider>{children}</ThemeProvider>
         </AuthProvider>
       </body>
     </html>
