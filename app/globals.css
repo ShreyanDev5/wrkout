@@ -101,6 +101,9 @@
   body {
     @apply bg-background text-foreground;
     font-feature_settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-inter, Inter, system-ui, sans-serif);
+    background-color: #181818; /* fallback for dark mode */
+    color: #e5e5e5; /* fallback for foreground */
   }
 }
 
