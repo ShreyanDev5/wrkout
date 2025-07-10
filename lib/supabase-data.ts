@@ -29,12 +29,24 @@ export async function saveUserWorkouts(supabase: any, workouts: Workout[], userI
 
 // Load all workout days for a user (by joining workouts)
 export async function loadUserWorkoutDays(supabase: any, userId: string): Promise<WorkoutDay[]> {
+  // First, get all workout IDs for this user
+  const { data: workouts, error: workoutsError } = await supabase
+    .from('workouts')
+    .select('id')
+    .eq('user_id', userId);
+
+  if (workoutsError || !workouts) return [];
+
+  const workoutIds = workouts.map((w: any) => w.id);
+
+  if (!Array.isArray(workoutIds) || workoutIds.length === 0) return [];
+
+  // Now, get all workout_days for those workout IDs
   const { data, error } = await supabase
     .from('workout_days')
     .select('*')
-    .in('workout_id',
-      supabase.from('workouts').select('id').eq('user_id', userId)
-    );
+    .in('workout_id', workoutIds);
+
   if (error) return [];
   return data || [];
 }
