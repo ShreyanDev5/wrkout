@@ -29,15 +29,16 @@ import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 import { OnboardingGuide } from '@/components/onboarding-guide'
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRef } from "react"
+import { updateWorkoutDayExercises, loadUserWorkoutDays } from '@/lib/supabase-data'
 
 interface SettingsScreenProps {
   workouts: Workout[]
   workoutDays: WorkoutDay[]
   onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void
-  lastSyncTime: string | null
 }
 
-export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays, lastSyncTime }: SettingsScreenProps) {
+export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays }: SettingsScreenProps) {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [isAddDayOpen, setIsAddDayOpen] = useState(false)
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
@@ -55,6 +56,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
   const supabase = createClientComponentClient();
 
+  // Add a new state to track a pending exercise open request
+  const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{workoutId: string, dayId: string} | null>(null)
+
   useEffect(() => {
     if (!user) return;
     // Check if user has demo data
@@ -67,6 +71,24 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  useEffect(() => {
+    if (!isAddExerciseOpen) {
+      setSelectedWorkoutId(null)
+      setSelectedDayId(null)
+      setNewExerciseName("")
+    }
+  }, [isAddExerciseOpen])
+
+  // Add a useEffect to open the dialog only after IDs are set
+  useEffect(() => {
+    if (pendingExerciseOpen) {
+      setSelectedWorkoutId(pendingExerciseOpen.workoutId)
+      setSelectedDayId(pendingExerciseOpen.dayId)
+      setIsAddExerciseOpen(true)
+      setPendingExerciseOpen(null)
+    }
+  }, [pendingExerciseOpen])
 
   const toggleWorkoutExpanded = (workoutId: string) => {
     setExpandedWorkouts((prev) => ({
@@ -87,12 +109,14 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
 
     const newWorkout: Workout = {
       id: uuidv4(),
-      slug: newWorkoutName,
+      user_id: user?.id || '',
       name: newWorkoutName,
       days: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
 
-    onUpdateWorkoutsAndDays(workouts, workoutDays)
+    onUpdateWorkoutsAndDays([...workouts, newWorkout], workoutDays)
     setNewWorkoutName("")
     setIsAddWorkoutOpen(false)
 
@@ -119,77 +143,123 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
     })
   }
 
-  const handleAddDay = () => {
-    if (!newDayName.trim() || !newDayId.trim() || !selectedWorkoutId) return
-    const newDay: WorkoutDay = {
-      id: uuidv4(),
-      workout_id: selectedWorkoutId,
-      day_id: newDayId.toLowerCase(),
-      name: newDayName,
-      exercises: [],
+  const handleAddDay = async () => {
+    if (!newDayName.trim() || !newDayId.trim() || !selectedWorkoutId || !user) return;
+    
+    try {
+      console.log('User info:', { id: user.id, email: user.email });
+      console.log('Selected workout ID:', selectedWorkoutId);
+      // Check if a day with this day_id already exists for this workout
+      const existingDay = workoutDays.find(day => 
+        day.workout_id === selectedWorkoutId && 
+        day.day_id.toLowerCase() === newDayId.toLowerCase()
+      );
+      
+      if (existingDay) {
+        toast({ 
+          title: 'Error', 
+          description: `A day with ID "${newDayId}" already exists in this workout.`, 
+          className: 'bg-[#EA4335] border-none text-white' 
+        });
+        return;
+      }
+      
+      const newDay = {
+        id: uuidv4(),
+        workout_id: selectedWorkoutId,
+        day_id: newDayId.toLowerCase(),
+        name: newDayName,
+        exercises: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('Attempting to insert workout day:', newDay);
+      
+      // First, let's check if the table exists by trying to query it
+      const { data: tableCheck, error: tableError } = await supabase
+        .from('workout_days')
+        .select('id')
+        .limit(1);
+      console.log('Table check response:', { tableCheck, tableError });
+      
+      const { data, error } = await supabase.from('workout_days').insert([newDay]);
+      console.log('Supabase response:', { data, error });
+      if (error) {
+        console.error('Supabase insert error:', error);
+        toast({ 
+          title: 'Error', 
+          description: error.message || 'Failed to add workout day. Please try again.', 
+          className: 'bg-[#EA4335] border-none text-white' 
+        });
+        return;
+      }
+      
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      setNewDayName("");
+      setNewDayId("");
+      setIsAddDayOpen(false);
+      setExpandedDays((prev) => ({
+        ...prev,
+        [`${selectedWorkoutId}-${newDayId.toLowerCase()}`]: true,
+      }));
+      toast({
+        title: "Day Added",
+        description: `${newDayName} has been added to your workout.`,
+        className: "bg-[#34A853] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error adding workout day:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
     }
-    const updatedWorkoutDays = [...workoutDays, newDay]
-    onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays)
-    setNewDayName("")
-    setNewDayId("")
-    setIsAddDayOpen(false)
-    setExpandedDays((prev) => ({
-      ...prev,
-      [`${selectedWorkoutId}-${newDayId.toLowerCase()}`]: true,
-    }))
-    toast({
-      title: "Day Added",
-      description: `${newDayName} has been added to your workout.`,
-      className: "bg-[#34A853] border-none text-white",
-    })
-  }
+  };
 
-  const handleDeleteDay = (workoutId: string, dayId: string) => {
-    const updatedWorkoutDays = workoutDays.filter((day) => !(day.workout_id === workoutId && day.id === dayId))
-    onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays)
+  const handleDeleteDay = async (workoutId: string, dayId: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('workout_days').delete().eq('id', dayId);
+    if (error) {
+      console.error('Supabase delete error:', error);
+      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+      return;
+    }
+    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
     toast({
       title: "Day Deleted",
       description: "The day has been removed from your workout.",
       className: "bg-[#EA4335] border-none text-white",
-    })
-  }
+    });
+  };
 
-  const handleAddExercise = () => {
-    if (!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId) return
-
-    const updatedWorkouts = workouts.map((workout) => {
-      if (workout.id === selectedWorkoutId) {
-        return {
-          ...workout,
-          days: workout.days.map((day) => {
-            if (day.id === selectedDayId) {
-              return {
-                ...day,
-                exercises: [
-                  ...day.exercises,
-                  {
-                    id: uuidv4(),
-                    name: newExerciseName,
-                  },
-                ],
-              }
-            }
-            return day
-          }),
-        }
-      }
-      return workout
-    })
-
-    onUpdateWorkoutsAndDays(updatedWorkouts, workoutDays)
-    setNewExerciseName("")
-    setIsAddExerciseOpen(false)
-
+  const handleAddExercise = async () => {
+    if (!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || !user) return;
+    // Find the workout day to update
+    const dayToUpdate = workoutDays.find(day => day.id === selectedDayId);
+    if (!dayToUpdate) return;
+    const updatedExercises = [
+      ...(dayToUpdate.exercises || []),
+      { id: uuidv4(), name: newExerciseName }
+    ];
+    const { error } = await updateWorkoutDayExercises(supabase, selectedDayId, updatedExercises);
+    if (error) {
+      console.error('Supabase update error:', error);
+      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+      return;
+    }
+    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+    setNewExerciseName("");
+    setIsAddExerciseOpen(false);
     toast({
       title: "Exercise Added",
       description: `${newExerciseName} has been added to your workout.`,
       className: "bg-[#34A853] border-none text-white",
-    })
+    });
   }
 
   const handleDeleteExercise = (workoutId: string, dayId: string, exerciseId: string) => {
@@ -294,19 +364,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
               <p className="text-xs text-muted-foreground mt-0.5">Customize your workout.</p>
             </div>
           </div>
-          {lastSyncTime && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center gap-2 text-sm text-muted-foreground"
-            >
-              <div className="flex items-center justify-center w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800">
-                <Zap className="h-3 w-3" />
-              </div>
-              Last synced: {formatDate(lastSyncTime)}
-            </motion.div>
-          )}
+          {/* Removed lastSyncTime display */}
         </div>
       </CardHeader>
 
@@ -501,9 +559,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
                                                     size="sm"
                                                     onClick={(e) => {
                                                       e.stopPropagation()
-                                                      setSelectedWorkoutId(workout.id)
-                                                      setSelectedDayId(day.id)
-                                                      setIsAddExerciseOpen(true)
+                                                      setPendingExerciseOpen({ workoutId: workout.id, dayId: day.id })
                                                     }}
                                                     className={`h-7 text-xs rounded-md border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300`}
                                                     aria-label={`Add exercise to ${day.name}`}
@@ -720,6 +776,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays,
               onClick={handleAddExercise}
               className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
               aria-label="Confirm add exercise"
+              disabled={
+                !newExerciseName.trim() || !selectedWorkoutId || !selectedDayId
+              }
             >
               Add Exercise
             </button>

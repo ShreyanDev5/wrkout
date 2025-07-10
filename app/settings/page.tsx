@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import { Settings2 } from 'lucide-react';
 import { CollapsibleHeaderLayout } from '@/components/layouts/collapsible-header-layout';
 import { SettingsScreen } from '@/components/screens/settings-screen';
-import { useState } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { loadUserWorkouts, loadUserWorkoutDays, saveUserWorkouts, saveUserWorkoutDays } from '@/lib/supabase-data';
 import type { Workout, WorkoutDay } from '@/lib/types';
 
 export default function SettingsPage() {
@@ -21,10 +22,37 @@ export default function SettingsPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>([]);
 
+  // Load workouts and workoutDays from Supabase on mount (and when user changes)
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+      const supabase = createClientComponentClient();
+      const loadedWorkouts = await loadUserWorkouts(supabase, user.id);
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      setWorkouts(loadedWorkouts);
+      setWorkoutDays(loadedWorkoutDays);
+    };
+    fetchData();
+  }, [user]);
+
   // Handler to update both workouts and workoutDays
-  const handleUpdateWorkoutsAndDays = (newWorkouts: Workout[], newWorkoutDays: WorkoutDay[]) => {
+  const handleUpdateWorkoutsAndDays = async (newWorkouts: Workout[], newWorkoutDays: WorkoutDay[]) => {
     setWorkouts(newWorkouts);
     setWorkoutDays(newWorkoutDays);
+    if (user) {
+      const supabase = createClientComponentClient();
+      try {
+        await saveUserWorkouts(supabase, newWorkouts, user.id);
+        await saveUserWorkoutDays(supabase, newWorkoutDays, user.id);
+        // Reload from Supabase to ensure UI is in sync
+        const loadedWorkouts = await loadUserWorkouts(supabase, user.id);
+        const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+        setWorkouts(loadedWorkouts);
+        setWorkoutDays(loadedWorkoutDays);
+      } catch (error) {
+        console.error('Supabase save or reload error:', error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -126,7 +154,6 @@ export default function SettingsPage() {
           workouts={workouts}
           workoutDays={workoutDays}
           onUpdateWorkoutsAndDays={handleUpdateWorkoutsAndDays}
-          lastSyncTime={null}
         />
       </div>
     </CollapsibleHeaderLayout>

@@ -24,6 +24,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { PlusCircle } from "lucide-react"
+import { v4 as uuidv4 } from 'uuid'
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -35,7 +40,8 @@ export function WorkoutScreen({
   workouts,
   workoutDays,
   onAddWorkoutLog,
-}: WorkoutScreenProps) {
+  onUpdateWorkoutsAndDays, // <-- Add this prop
+}: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const [tickCounter, setTickCounter] = useState(0) // Force re-render when exercises are toggled
@@ -74,6 +80,8 @@ export function WorkoutScreen({
   }, [])
 
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
+  const [newWorkoutName, setNewWorkoutName] = useState("")
 
   // Load the last selected day from localStorage on component mount
   useEffect(() => {
@@ -148,8 +156,71 @@ export function WorkoutScreen({
 
   if (workouts.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <p className="text-muted-foreground">No workouts available. Add a workout in Settings.</p>
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-6">
+        <p className="text-muted-foreground">No workouts available. Add a workout to get started.</p>
+        <Button
+          onClick={() => setIsAddWorkoutOpen(true)}
+          className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
+          aria-label="Add new workout"
+        >
+          <PlusCircle className="h-5 w-5 mr-2" aria-hidden="true" />
+          Add Workout
+        </Button>
+        <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
+          <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
+            <DialogHeader>
+              <div className="flex flex-col items-center gap-2 mb-2">
+                <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
+                <DialogTitle className="line-height-readable text-center">Add New Workout</DialogTitle>
+              </div>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="line-height-readable text-center mb-4 text-sm text-muted-foreground">
+                Create a new workout routine. Workouts contain days and exercises.
+              </p>
+              <Label htmlFor="workout-name" className="block text-center mb-2">Workout Name</Label>
+              <Input
+                id="workout-name"
+                value={newWorkoutName}
+                onChange={(e) => setNewWorkoutName(e.target.value)}
+                placeholder="Enter workout name"
+                className="mt-2"
+              />
+            </div>
+            <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+              <button
+                type="button"
+                onClick={() => setIsAddWorkoutOpen(false)}
+                className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
+                aria-label="Cancel add workout"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!newWorkoutName.trim()) return
+                  const newWorkout: Workout = {
+                    id: uuidv4(),
+                    user_id: "placeholder_user_id", // Replace with actual user ID
+                    name: newWorkoutName,
+                    days: [],
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    last_sync_time: null
+                  }
+                  onUpdateWorkoutsAndDays([newWorkout], [])
+                  setNewWorkoutName("")
+                  setIsAddWorkoutOpen(false)
+                }}
+                className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
+                aria-label="Confirm add workout"
+              >
+                Add Workout
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     )
   }

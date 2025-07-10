@@ -23,7 +23,6 @@ export function WorkoutTracker() {
   const [appData, setAppData] = useState<any>({
     workouts: [],
     workoutDays: [],
-    lastSyncTime: null,
   })
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -46,10 +45,17 @@ export function WorkoutTracker() {
       let workoutDays: WorkoutDay[] = await loadUserWorkoutDays(supabase, user.id)
       // If no workouts, create a single blank 'My Workouts' routine
       if (!workouts || workouts.length === 0) {
-        await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], user.id)
+        await saveUserWorkouts(supabase, [{
+          id: crypto.randomUUID(),
+          user_id: user.id,
+          name: 'My Workouts',
+          days: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }], user.id)
         workouts = await loadUserWorkouts(supabase, user.id)
       }
-      setAppData({ workouts, workoutDays, lastSyncTime: null })
+      setAppData({ workouts, workoutDays })
       const logs = await loadWorkoutLogs(supabase, user.id)
       setWorkoutLogs(logs)
       
@@ -83,9 +89,19 @@ export function WorkoutTracker() {
     if (!user?.id) return
     // Ensure log.id is a UUID
     if (!log.id) log.id = uuidv4()
+    // Ensure all required fields are present
+    const now = new Date().toISOString()
+    const logToSave: WorkoutLog = {
+      ...log,
+      id: log.id,
+      user_id: user.id,
+      workout_day_id: log.workout_day_id ?? null,
+      created_at: now,
+      updated_at: now
+    }
     try {
-      await saveWorkoutLog(supabase, log, user.id)
-      setWorkoutLogs((prev) => [log, ...prev]) // Add new log to the top
+      await saveWorkoutLog(supabase, logToSave, user.id)
+      setWorkoutLogs((prev) => [logToSave, ...prev]) // Add new log to the top
       toast({ title: "Workout logged!" })
     } catch (error) {
       toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
@@ -135,6 +151,7 @@ export function WorkoutTracker() {
               workouts={appData.workouts}
               workoutDays={appData.workoutDays}
               onAddWorkoutLog={addWorkoutLog}
+              onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
             />
           </TabsContent>
 
@@ -147,7 +164,6 @@ export function WorkoutTracker() {
               workouts={appData.workouts}
               workoutDays={appData.workoutDays}
               onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
-              lastSyncTime={appData.lastSyncTime}
             />
           </TabsContent>
         </div>

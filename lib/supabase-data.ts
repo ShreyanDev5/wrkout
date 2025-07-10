@@ -13,28 +13,53 @@ export async function loadUserWorkouts(supabase: any, userId: string): Promise<W
 
 // Save all workouts for a user (overwrites existing)
 export async function saveUserWorkouts(supabase: any, workouts: Workout[], userId: string): Promise<void> {
-  // Remove all existing workouts for user, then insert new
   await supabase.from('workouts').delete().eq('user_id', userId);
   if (workouts.length > 0) {
-    await supabase.from('workouts').insert(workouts.map(w => ({ ...w, user_id: userId })));
+    await supabase.from('workouts').insert(
+      workouts.map(w => ({
+        id: w.id,
+        name: w.name,
+        user_id: userId,
+        created_at: w.created_at,
+        updated_at: w.updated_at
+      }))
+    );
   }
 }
 
-// Load all workout days for a user
+// Load all workout days for a user (by joining workouts)
 export async function loadUserWorkoutDays(supabase: any, userId: string): Promise<WorkoutDay[]> {
   const { data, error } = await supabase
     .from('workout_days')
     .select('*')
-    .eq('user_id', userId);
+    .in('workout_id',
+      supabase.from('workouts').select('id').eq('user_id', userId)
+    );
   if (error) return [];
   return data || [];
 }
 
 // Save all workout days for a user (overwrites existing)
 export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay[], userId: string): Promise<void> {
-  await supabase.from('workout_days').delete().eq('user_id', userId);
+  // Find all workout_ids for this user
+  const { data: workouts } = await supabase.from('workouts').select('id').eq('user_id', userId);
+  const userWorkoutIds = (workouts || []).map((w: any) => w.id);
+  // Delete only workout_days belonging to user's workouts
+  if (userWorkoutIds.length > 0) {
+    await supabase.from('workout_days').delete().in('workout_id', userWorkoutIds);
+  }
   if (workoutDays.length > 0) {
-    await supabase.from('workout_days').insert(workoutDays.map(d => ({ ...d, user_id: userId })));
+    await supabase.from('workout_days').insert(
+      workoutDays.map(d => ({
+        id: d.id,
+        workout_id: d.workout_id,
+        day_id: d.day_id,
+        name: d.name,
+        exercises: d.exercises || [],
+        created_at: d.created_at,
+        updated_at: d.updated_at
+      }))
+    );
   }
 }
 
@@ -51,5 +76,18 @@ export async function loadWorkoutLogs(supabase: any, userId: string): Promise<Wo
 
 // Save a workout log for a user
 export async function saveWorkoutLog(supabase: any, log: WorkoutLog, userId: string): Promise<void> {
-  await supabase.from('workout_logs').insert([{ ...log, user_id: userId }]);
+  await supabase.from('workout_logs').insert([{ 
+    ...log, 
+    user_id: userId,
+    workout_day_id: log.workout_day_id ?? null,
+    created_at: log.created_at,
+    updated_at: log.updated_at
+  }]);
+}
+
+export async function updateWorkoutDayExercises(supabase: any, workoutDayId: string, newExercises: any[]) {
+  return await supabase
+    .from('workout_days')
+    .update({ exercises: newExercises })
+    .eq('id', workoutDayId);
 } 

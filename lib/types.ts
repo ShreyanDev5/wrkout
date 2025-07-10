@@ -9,28 +9,32 @@ export interface WorkoutDay {
   workout_id: string // UUID, references parent workout
   day_id: string // e.g., 'push', 'pull', 'leg', or custom
   name: string // Human-friendly name
-  created_at?: string
-  updated_at?: string
-  exercises: Exercise[]
+  exercises: any[] // JSONB array, can be refined if structure is known
+  created_at: string
+  updated_at: string
 }
 
 export interface Workout {
   id: string
-  slug?: string
+  user_id: string
   name: string
   days: WorkoutDay[]
+  created_at: string
+  updated_at: string
 }
 
 // New type matching the workout_logs table
 export interface WorkoutLog {
   id: string // UUID
-  user_id?: string
+  user_id: string
   workout_id: string
-  workout_day_id?: string // UUID, references workout_days(id)
+  workout_day_id: string | null
   exercise_name: string
   weight: number
   avg_reps: number
   performed_at: string // ISO date string
+  created_at: string
+  updated_at: string
 }
 
 export interface AppData {
