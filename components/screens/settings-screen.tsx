@@ -414,9 +414,6 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                         onClick={() => toggleWorkoutExpanded(workout.id)}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-                            <Dumbbell className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
-                          </div>
                           <span className="font-medium text-foreground">{workout.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -604,7 +601,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                   })}
                                 </div>
                               ) : (
-                                <div className="text-center py-8 text-muted-foreground">No days added for this workout yet.</div>
+                                <div className="text-center py-8 text-muted-foreground text-sm sm:text-base px-2">No days added for this workout yet.</div>
                               )}
                             </div>
                           </motion.div>

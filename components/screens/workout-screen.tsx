@@ -157,7 +157,10 @@ export function WorkoutScreen({
   if (workouts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-6">
-        <p className="text-muted-foreground">No workouts available. Add a workout to get started.</p>
+        <p className="text-muted-foreground text-base sm:text-lg text-center px-4 py-2 leading-relaxed">
+          No workouts available.<br className="hidden sm:block" />
+          <span className="block mt-1">Add a workout to get started.</span>
+        </p>
         <Button
           onClick={() => setIsAddWorkoutOpen(true)}
           className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
