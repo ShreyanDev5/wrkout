@@ -207,7 +207,6 @@ export function WorkoutScreen({
                     days: [],
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
-                    last_sync_time: null
                   }
                   onUpdateWorkoutsAndDays([newWorkout], [])
                   setNewWorkoutName("")
