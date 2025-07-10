@@ -745,213 +745,6 @@ body {
   transition: background-color 0.2s ease;
 }
 
-/* iOS-inspired chart styles */
-.ios-chart-container {
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.dark .ios-chart-container {
-  background-color: #1c1c1e;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.ios-chart-header {
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ios-chart-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #000;
-}
-
-.dark .ios-chart-title {
-  color: #fff;
-}
-
-.ios-chart-subtitle {
-  font-size: 13px;
-  color: #8e8e93;
-  margin-top: 2px;
-}
-
-/* Enhanced dot styles */
-.chart-dot {
-  transition: all 0.2s ease;
-}
-
-.chart-dot-active {
-  filter: drop-shadow(0 0 4px var(--dot-color));
-}
-
-.chart-dot-highlight {
-  animation: pulse-glow 1.5s infinite alternate;
-}
-
-@keyframes pulse-glow {
-  0% {
-    filter: drop-shadow(0 0 2px var(--dot-color));
-  }
-  100% {
-    filter: drop-shadow(0 0 6px var(--dot-color));
-  }
-}
-
-/* Smooth line animation */
-.recharts-curve.recharts-line-curve {
-  transition: stroke-dashoffset 1s ease;
-}
-
-/* Tooltip enhancements */
-.ios-chart-tooltip {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 10px;
-  padding: 8px 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: none;
-  font-size: 13px;
-}
-
-.dark .ios-chart-tooltip {
-  background-color: rgba(30, 30, 30, 0.95);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.ios-chart-tooltip-label {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.ios-chart-tooltip-value {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.ios-chart-tooltip-color {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-/* Grid line styling */
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-  stroke: rgba(0, 0, 0, 0.1);
-}
-
-.dark .recharts-cartesian-grid-horizontal line,
-.dark .recharts-cartesian-grid-vertical line {
-  stroke: rgba(255, 255, 255, 0.1);
-}
-
-/* Axis styling */
-.recharts-cartesian-axis-line {
-  stroke: rgba(0, 0, 0, 0.1);
-}
-
-.dark .recharts-cartesian-axis-line {
-  stroke: rgba(255, 255, 255, 0.1);
-}
-
-.recharts-cartesian-axis-tick-line {
-  stroke: rgba(0, 0, 0, 0.1);
-}
-
-.dark .recharts-cartesian-axis-tick-line {
-  stroke: rgba(255, 255, 255, 0.1);
-}
-
-.recharts-text.recharts-cartesian-axis-tick-value {
-  fill: #8e8e93;
-  font-size: 11px;
-}
-
-/* Area gradient enhancement */
-.recharts-area-area {
-  opacity: 0.8;
-}
-
-/* Premium chart container */
-.premium-chart-container {
-  --chart-bg-from: #2a2a2c;
-  --chart-bg-to: #1c1c1e;
-  --chart-border: rgba(255, 255, 255, 0.1);
-  --chart-shadow: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-/* Premium tooltip styling */
-.premium-tooltip {
-  background-color: rgba(28, 28, 30, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 0.75rem 1rem;
-}
-
-/* Enhanced data point styling */
-.data-point {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.data-point-highlight {
-  filter: drop-shadow(0 0 6px var(--point-color));
-  transform: scale(1.2);
-}
-
-/* Smooth line styling */
-.smooth-line {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* Gradient background for chart */
-.chart-gradient-bg {
-  background: linear-gradient(to bottom, var(--chart-bg-from), var(--chart-bg-to));
-}
-
-/* Soft inner shadow for premium look */
-.chart-inner-shadow {
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Improved chart axis styling */
-.chart-axis {
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-/* Improved grid line styling */
-.chart-grid {
-  stroke: rgba(255, 255, 255, 0.05);
-  stroke-opacity: 0.3;
-}
-
-/* Enhanced reference line styling */
-.chart-reference-line {
-  stroke-dasharray: 3 3;
-  stroke-opacity: 0.6;
-}
-
-/* Improved chart label styling */
-.chart-label {
-  font-size: 10px;
-  font-weight: 600;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-}
-
 /* Percentage change indicator styling */
 .percentage-change {
   display: flex;
@@ -992,254 +785,70 @@ body {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* New artistic styles for Notes and Settings */
-
-/* Vibrant gradient backgrounds */
-.artistic-gradient-bg {
-  background: linear-gradient(135deg, #1e1e24, #2d2d3a);
-}
-
-.artistic-card {
+/* Artistic settings panels */
+.settings-accordion {
   background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  margin-bottom: 16px;
   transition: all 0.3s ease;
 }
 
-.artistic-card:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+.settings-accordion:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* Colorful section headers */
-.section-header-push {
-  background: linear-gradient(90deg, rgba(249, 217, 73, 0.2), transparent);
-  border-left: 4px solid #f9d949;
-}
-
-.section-header-pull {
-  background: linear-gradient(90deg, rgba(76, 175, 80, 0.2), transparent);
-  border-left: 4px solid #4caf50;
-}
-
-.section-header-leg {
-  background: linear-gradient(90deg, rgba(244, 67, 54, 0.2), transparent);
-  border-left: 4px solid #f44336;
-}
-
-/* Artistic buttons */
-.artistic-button {
-  background: linear-gradient(135deg, rgba(60, 60, 70, 0.8), rgba(40, 40, 50, 0.8));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.artistic-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(135deg, rgba(70, 70, 80, 0.8), rgba(50, 50, 60, 0.8));
-}
-
-.artistic-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Glowing accents */
-.glow-accent-push {
-  box-shadow: 0 0 15px rgba(249, 217, 73, 0.3);
-}
-
-.glow-accent-pull {
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
-}
-
-.glow-accent-leg {
-  box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
-}
-
-/* Artistic note cards */
-
-/* Artistic toolbar */
-.editor-toolbar {
+.settings-accordion-header {
   background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
-  border-radius: 12px;
-  padding: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.toolbar-button {
-  background: rgba(60, 60, 70, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
+  padding: 14px 16px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.8);
-  transition: all 0.2s ease;
-}
-
-.toolbar-button:hover {
-  background: rgba(70, 70, 80, 0.7);
-  transform: translateY(-1px);
-}
-
-.toolbar-button:active {
-  transform: translateY(1px);
-}
-
-/* Artistic settings panels */
-.settings-panel {
-  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(30, 30, 40, 0.8));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-.settings-panel-header {
-  background: linear-gradient(90deg, rgba(50, 50, 60, 0.8), rgba(40, 40, 50, 0.8));
-  padding: 12px 16px;
+  justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.settings-panel-content {
+.settings-accordion-content {
   padding: 16px;
 }
 
-/* Artistic form elements */
-.artistic-input {
-  background: rgba(30, 30, 40, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 10px 14px;
-  color: rgba(255, 255, 255, 0.9);
+/* Artistic workout day cards */
+.workout-day-card {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.7), rgba(30, 30, 40, 0.7));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.artistic-input:focus {
-  background: rgba(35, 35, 45, 0.7);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
-  outline: none;
+.workout-day-card-push {
+  border-left: 3px solid #f9d949;
 }
 
-.artistic-label {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  margin-bottom: 6px;
-  display: block;
+.workout-day-card-pull {
+  border-left: 3px solid #4caf50;
 }
 
-/* Artistic dialog */
-.artistic-dialog {
-  background: linear-gradient(135deg, rgba(40, 40, 50, 0.95), rgba(30, 30, 40, 0.95));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+.workout-day-card-leg {
+  border-left: 3px solid #f44336;
 }
 
-.artistic-dialog-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.workout-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.artistic-dialog-content {
-  padding: 24px;
-}
-
-.artistic-dialog-footer {
-  padding: 16px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+.workout-day-header {
+  padding: 12px 16px;
+  cursor: pointer;
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-/* Artistic scrollbar */
-.artistic-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.artistic-scrollbar::-webkit-scrollbar-track {
-  background: rgba(30, 30, 40, 0.3);
-  border-radius: 10px;
-}
-
-.artistic-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(80, 80, 100, 0.5);
-  border-radius: 10px;
-}
-
-.artistic-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 100, 120, 0.7);
-}
-
-/* Artistic animations */
-@keyframes gentle-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.animate-float {
-  animation: gentle-float 3s ease-in-out infinite;
-}
-
-@keyframes soft-pulse {
-  0% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.8;
-  }
-}
-
-.animate-soft-pulse {
-  animation: soft-pulse 2s ease-in-out infinite;
-}
-
-/* Artistic empty states */
-.artistic-empty-state {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px;
-  text-align: center;
+  justify-content: space-between;
 }
 
-.empty-state-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 20px;
-  opacity: 0.2;
-}
-
-.empty-state-text {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 16px;
-  max-width: 300px;
-  line-height: 1.6;
+.workout-day-content {
+  padding: 0 16px 16px;
 }
 
 /* Artistic dividers */
@@ -1253,32 +862,6 @@ body {
   width: 1px;
   height: 100%;
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-}
-
-/* Artistic badges */
-.artistic-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.badge-push {
-  background: rgba(249, 217, 73, 0.2);
-  color: #f9d949;
-}
-
-.badge-pull {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4caf50;
-}
-
-.badge-leg {
-  background: rgba(244, 67, 54, 0.2);
-  color: #f44336;
 }
 
 /* Artistic tooltips */
@@ -1482,26 +1065,5 @@ body {
   color: rgba(255, 255, 255, 0.5);
   max-width: 300px;
   line-height: 1.6;
-}
-
-/* Remove any Notes-specific CSS classes */
-/* For example, remove classes like .note-card, .note-editor, etc. */
-
-/* Remove these if they exist */
-.note-card,
-.note-editor,
-.note-toolbar,
-.note-content,
-.note-title,
-.note-date,
-.note-category,
-.note-color,
-.note-search,
-.note-filter,
-.note-sort,
-.note-empty-state,
-.note-list,
-.note-grid {
-  /* Remove these classes */
 }
 
