@@ -208,7 +208,7 @@
 }
 
 .workout-tab-button {
-  border-radius: 16px;
+  border-radius: 9999px; /* fully rounded pill shape for premium look */
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -421,10 +421,15 @@
 /* Premium checkbox styles */
 .checkbox-premium {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid hsl(var(--border)); /* visible outline for unchecked state */
+  background-color: transparent;
+  border-radius: 6px; /* smoother, modern look */
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04); /* subtle shadow for depth */
 }
 
 .checkbox-premium:checked {
   box-shadow: 0 0 0 1px currentColor, 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid currentColor; /* keep border for checked state, match fill color */
 }
 
 /* Touch target optimization */

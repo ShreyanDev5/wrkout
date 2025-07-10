@@ -55,12 +55,12 @@ const AnimatedCheckbox = React.forwardRef<
       <CheckboxPrimitive.Root
         ref={ref}
         className={cn(
-          "peer h-4 w-4 shrink-0 rounded-[3px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 checkbox-premium",
+          "peer h-5 w-5 shrink-0 rounded-[3px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 checkbox-premium",
           checked && "animate-checkbox-subtle",
           className,
         )}
         style={{
-          backgroundColor: checked ? checkboxColor : "transparent",
+          backgroundColor: checked ? checkboxColor : undefined,
           // Remove boxShadow and border for minimal look
         }}
         checked={checked}
