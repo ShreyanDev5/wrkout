@@ -203,15 +203,22 @@ export function WorkoutScreen({
                 type="button"
                 onClick={() => {
                   if (!newWorkoutName.trim()) return
+                  let userId = "";
+                  if (workouts && workouts.length > 0) {
+                    userId = workouts[0]?.user_id || "";
+                  } else if (typeof window !== 'undefined') {
+                    // Try to get userId from localStorage or a global context if available
+                    userId = window.localStorage.getItem('wrkout-user-id') || "";
+                  }
                   const newWorkout: Workout = {
                     id: uuidv4(),
-                    user_id: "placeholder_user_id", // Replace with actual user ID
+                    user_id: userId,
                     name: newWorkoutName,
                     days: [],
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   }
-                  onUpdateWorkoutsAndDays([newWorkout], [])
+                  onUpdateWorkoutsAndDays([...(workouts || []), newWorkout], workoutDays)
                   setNewWorkoutName("")
                   setIsAddWorkoutOpen(false)
                 }}

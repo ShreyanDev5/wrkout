@@ -55,12 +55,11 @@ export function SignInForm() {
             return;
           }
         }
-        // Initialize workout data for new user if not present
-        const workouts = await loadUserWorkouts(supabase, data.user.id);
-        if (!workouts || workouts.length === 0) {
-          // Create a single blank 'My Workouts' routine
-          await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], data.user.id);
-        }
+        // Only load user workouts; do not insert any default routine
+        // const workouts = await loadUserWorkouts(supabase, data.user.id);
+        // if (!workouts || workouts.length === 0) {
+        //   await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], data.user.id);
+        // }
       }
 
       router.push('/');
