@@ -172,29 +172,29 @@ export function WorkoutScreen({
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
           <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
             <DialogHeader>
-              <div className="flex flex-col items-center gap-2 mb-2">
-                <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
-                <DialogTitle className="line-height-readable text-center">Add New Workout</DialogTitle>
+              <div className="flex flex-col items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#34A853]" aria-hidden="true" />
+                <DialogTitle className="line-height-readable text-center text-base sm:text-lg">Add New Workout</DialogTitle>
               </div>
             </DialogHeader>
-            <div className="py-4">
-              <p className="line-height-readable text-center mb-4 text-sm text-muted-foreground">
+            <div className="py-3 sm:py-4">
+              <p className="line-height-readable text-center mb-3 sm:mb-4 text-xs sm:text-sm text-muted-foreground">
                 Create a new workout routine. Workouts contain days and exercises.
               </p>
-              <Label htmlFor="workout-name" className="block text-center mb-2">Workout Name</Label>
+              <Label htmlFor="workout-name" className="block text-center mb-1.5 sm:mb-2 text-sm">Workout Name</Label>
               <Input
                 id="workout-name"
                 value={newWorkoutName}
                 onChange={(e) => setNewWorkoutName(e.target.value)}
                 placeholder="Enter workout name"
-                className="mt-2"
+                className="mt-1.5 sm:mt-2 text-sm"
               />
             </div>
-            <div className="flex flex-row justify-between gap-2 mt-2 w-full">
+            <div className="flex flex-row justify-between gap-2 mt-1.5 sm:mt-2 w-full">
               <button
                 type="button"
                 onClick={() => setIsAddWorkoutOpen(false)}
-                className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary"
+                className="min-w-[120px] sm:min-w-[140px] px-3 sm:px-4 py-2 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary text-sm"
                 aria-label="Cancel add workout"
               >
                 Cancel
@@ -222,7 +222,7 @@ export function WorkoutScreen({
                   setNewWorkoutName("")
                   setIsAddWorkoutOpen(false)
                 }}
-                className="min-w-[140px] px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none"
+                className="min-w-[120px] sm:min-w-[140px] px-3 sm:px-4 py-2 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none text-sm"
                 aria-label="Confirm add workout"
               >
                 Add Workout
@@ -236,11 +236,11 @@ export function WorkoutScreen({
 
   return (
     <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector">
-      <CardHeader className="px-4">
+      <CardHeader className="px-3 sm:px-4">
         <div className="flex items-center w-full">
           <div className={`transition-all duration-200 ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
             <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
-              <SelectTrigger className="w-full h-9 text-sm">
+              <SelectTrigger className="w-full h-8 sm:h-9 text-sm">
                 <SelectValue placeholder="Select Workout" className="truncate" />
               </SelectTrigger>
               <SelectContent>
@@ -256,21 +256,21 @@ export function WorkoutScreen({
             <Button 
               variant="outline" 
               size="icon" 
-              className="h-9 w-9 flex-shrink-0 ml-1.5"
+              className="h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 ml-1.5"
               onClick={() => setIsResetDialogOpen(true)}
               aria-label="Reset workout progress"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>
       </CardHeader>
-      <CardContent className="px-4">
+      <CardContent className="px-3 sm:px-4">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-4 modern-tabs-list workout-tabs-container">
+          <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 modern-tabs-list workout-tabs-container">
             <TabsTrigger
               value="push"
-              className="flex items-center gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button"
+              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
               style={{
                 backgroundColor:
                   selectedDay === "push"
@@ -285,7 +285,7 @@ export function WorkoutScreen({
             </TabsTrigger>
             <TabsTrigger
               value="pull"
-              className="flex items-center gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button"
+              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
               style={{
                 backgroundColor:
                   selectedDay === "pull"
@@ -300,7 +300,7 @@ export function WorkoutScreen({
             </TabsTrigger>
             <TabsTrigger
               value="leg"
-              className="flex items-center gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button"
+              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
               style={{
                 backgroundColor:
                   selectedDay === "leg"
@@ -315,7 +315,7 @@ export function WorkoutScreen({
             </TabsTrigger>
           </TabsList>
           
-          <div className="flex justify-center my-4">
+          <div className="flex justify-center my-3 sm:my-4">
             <CircularProgress 
               value={activeProgress}
               category={selectedDay}
@@ -347,17 +347,17 @@ export function WorkoutScreen({
 
       {/* Reset Confirmation Dialog */}
       <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-full max-w-sm mx-auto">
           <AlertDialogHeader>
-            <AlertDialogTitle>Reset Workout Progress</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-base sm:text-lg">Reset Workout Progress</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
               Are you sure you want to reset all completed exercises for {selectedDay.toUpperCase()} day? 
               This will clear your checkmarks but will not affect your workout history.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={resetTickedExercises} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="text-sm">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={resetTickedExercises} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm">
               Reset
             </AlertDialogAction>
           </AlertDialogFooter>
