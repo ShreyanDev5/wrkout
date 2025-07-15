@@ -681,42 +681,44 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       {/* Add Day Dialog */}
       <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
-        <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
+        <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto px-4 py-4 sm:px-6 sm:py-6">
           <DialogHeader>
-            <div className="flex flex-col items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-              <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#34A853]" aria-hidden="true" />
+            <div className="flex flex-col items-center gap-1 mb-0"> {/* gap-1 and no margin-bottom for minimal spacing */}
+              <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base sm:text-lg">Add Workout Day</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="py-3 sm:py-4 space-y-3 sm:space-y-4">
-            <p className="line-height-readable text-center mb-1.5 sm:mb-2 text-xs sm:text-sm text-muted-foreground">
+          <div className="py-2 sm:py-3 flex flex-col gap-4 sm:gap-5">
+            <p className="line-height-readable text-center mb-0 mt-0 text-xs sm:text-sm text-muted-foreground">
               Define a day's routine (e.g., push, pull, leg, or custom).
             </p>
-            <div>
-              <Label htmlFor="day-name" className="block text-center mb-1.5 sm:mb-2 text-sm">Day Name</Label>
-              <Input
-                id="day-name"
-                value={newDayName}
-                onChange={(e) => setNewDayName(e.target.value)}
-                placeholder="Enter day name (e.g. Push Day)"
-                className="mt-1.5 sm:mt-2 text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="day-id" className="block text-center mb-1.5 sm:mb-2 text-sm">Day ID</Label>
-              <Input
-                id="day-id"
-                value={newDayId}
-                onChange={(e) => setNewDayId(e.target.value)}
-                placeholder="Enter day ID (e.g. 'push', 'pull', 'leg')"
-                className="mt-1.5 sm:mt-2 text-sm"
-              />
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 text-center">
-                Use "push", "pull", or "leg" for special styling
-              </p>
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <Label htmlFor="day-name" className="block text-center text-sm">Day Name</Label>
+                <Input
+                  id="day-name"
+                  value={newDayName}
+                  onChange={(e) => setNewDayName(e.target.value)}
+                  placeholder="Enter day name (e.g. Push Day)"
+                  className="mt-1 text-sm px-3 py-2 sm:px-4 sm:py-2.5 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <Label htmlFor="day-id" className="block text-center text-sm">Day ID</Label>
+                <Input
+                  id="day-id"
+                  value={newDayId}
+                  onChange={(e) => setNewDayId(e.target.value)}
+                  placeholder="Enter day ID (e.g. 'push', 'pull', 'leg')"
+                  className="mt-1 text-sm px-3 py-2 sm:px-4 sm:py-2.5 rounded-md"
+                />
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 text-center">
+                  Use "push", "pull", or "leg" for special styling
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex flex-row justify-between gap-2 mt-1.5 sm:mt-2 w-full">
+          <div className="flex flex-row justify-between gap-2 mt-3 sm:mt-4 w-full">
             <button
               type="button"
               onClick={() => setIsAddDayOpen(false)}
@@ -741,16 +743,16 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
         <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto">
           <DialogHeader>
-            <div className="flex flex-col items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+            <div className="flex flex-col items-center gap-1.5 sm:gap-2 mb-0"> {/* no margin-bottom for heading */}
               <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base sm:text-lg">Add Exercise</DialogTitle>
             </div>
           </DialogHeader>
           <div className="py-3 sm:py-4">
-            <p className="line-height-readable text-center mb-3 sm:mb-4 text-xs sm:text-sm text-muted-foreground">
+            <p className="line-height-readable text-center mb-0.5 sm:mb-1 text-xs sm:text-sm text-muted-foreground mt-0"> {/* minimal margin below, none above */}
               Add an exercise to your workout day.
             </p>
-            <Label htmlFor="exercise-name" className="block text-center mb-1.5 sm:mb-2 text-sm">Exercise Name</Label>
+            <Label htmlFor="exercise-name" className="block text-center mt-4 sm:mt-5 mb-1.5 sm:mb-2 text-sm">Exercise Name</Label> {/* increased mt for more gap above label */}
             <Input
               id="exercise-name"
               value={newExerciseName}
