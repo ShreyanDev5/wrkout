@@ -267,51 +267,72 @@ export function WorkoutScreen({
       </CardHeader>
       <CardContent className="px-3 sm:px-4">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 modern-tabs-list workout-tabs-container">
+          <TabsList className="grid grid-cols-3 mb-1 modern-tabs-list workout-tabs-container">
             <TabsTrigger
               value="push"
-              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
+              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
               style={{
                 backgroundColor:
                   selectedDay === "push"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 18%, transparent)`
                     : undefined,
                 color: selectedDay === "push" ? getWorkoutDayColor("push", colorMode) : undefined,
+                borderRadius: '9999px',
+                height: '22px',
+                padding: '0 6px',
+                fontWeight: 600,
+                boxShadow: selectedDay === "push" ? '0 2px 8px 0 rgba(249,217,73,0.08)' : 'none',
+                fontSize: '0.82rem',
+                letterSpacing: '0.01em',
               }}
               aria-label="Push day"
             >
               {getWorkoutDayIcon("push", true)}
-              <span className="font-medium">PUSH</span>
+              <span className="font-semibold">PUSH</span>
             </TabsTrigger>
             <TabsTrigger
               value="pull"
-              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
+              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
               style={{
                 backgroundColor:
                   selectedDay === "pull"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 18%, transparent)`
                     : undefined,
                 color: selectedDay === "pull" ? getWorkoutDayColor("pull", colorMode) : undefined,
+                borderRadius: '9999px',
+                height: '22px',
+                padding: '0 6px',
+                fontWeight: 600,
+                boxShadow: selectedDay === "pull" ? '0 2px 8px 0 rgba(76,175,80,0.08)' : 'none',
+                fontSize: '0.82rem',
+                letterSpacing: '0.01em',
               }}
               aria-label="Pull day"
             >
               {getWorkoutDayIcon("pull", true)}
-              <span className="font-medium">PULL</span>
+              <span className="font-semibold">PULL</span>
             </TabsTrigger>
             <TabsTrigger
               value="leg"
-              className="flex items-center gap-1.5 sm:gap-2 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm"
+              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
               style={{
                 backgroundColor:
                   selectedDay === "leg"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
+                    ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 18%, transparent)`
                     : undefined,
                 color: selectedDay === "leg" ? getWorkoutDayColor("leg", colorMode) : undefined,
+                borderRadius: '9999px',
+                height: '22px',
+                padding: '0 6px',
+                fontWeight: 600,
+                boxShadow: selectedDay === "leg" ? '0 2px 8px 0 rgba(244,67,54,0.08)' : 'none',
+                fontSize: '0.82rem',
+                letterSpacing: '0.01em',
               }}
               aria-label="Leg day"
             >
               {getWorkoutDayIcon("leg", true)}
-              <span className="font-medium">LEG</span>
+              <span className="font-semibold">LEG</span>
             </TabsTrigger>
           </TabsList>
           
