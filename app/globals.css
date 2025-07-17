@@ -1112,3 +1112,10 @@ body {
   }
 }
 
+@media (max-width: 640px) {
+  .mobile-narrow-modal {
+    max-width: 90vw !important;
+    width: 95vw !important;
+  }
+}
+

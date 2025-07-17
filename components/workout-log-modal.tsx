@@ -82,7 +82,7 @@ export function WorkoutLogModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-sm dark:bg-background dark:border-opacity-10 rounded-lg mx-auto [background:hsl(var(--background))] [border:1px_solid_hsl(var(--border))] [box-shadow:none] [backdrop-filter:none]">
+      <DialogContent className="w-full max-w-sm mobile-narrow-modal dark:bg-background dark:border-opacity-10 rounded-lg mx-auto [background:hsl(var(--background))] [border:1px_solid_hsl(var(--border))] [box-shadow:none] [backdrop-filter:none]">
         <DialogHeader className="pb-3 sm:pb-4">
           <DialogTitle className="flex items-center gap-1.5 sm:gap-2 text-white text-base sm:text-lg">
             <span
@@ -102,7 +102,7 @@ export function WorkoutLogModal({
                 value={weight}
                 onChange={setWeight}
                 min={0}
-                max={500}
+                max={250}
                 step={2.5}
                 className="w-full text-white"
                 accentColor={dayColor}

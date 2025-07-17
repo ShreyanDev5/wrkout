@@ -77,7 +77,7 @@ export async function loadUserWorkoutDays(supabase: any, userId: string): Promis
   return data || [];
 }
 
-// Save all workout days for a user (overwrites existing)
+// Save all workout days for a user (non-destructive)
 export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay[], userId: string): Promise<void> {
   // Find all workout_ids for this user
   const { data: workouts, error: workoutFetchError } = await supabase.from('workouts').select('id').eq('user_id', userId);
@@ -86,9 +86,23 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
     throw workoutFetchError;
   }
   const userWorkoutIds = (workouts || []).map((w: any) => w.id);
-  // Delete only workout_days belonging to user's workouts
+
+  // Get current workout_days in DB for this user
+  let currentDays: any[] = [];
   if (userWorkoutIds.length > 0) {
-    const { error: deleteError } = await supabase.from('workout_days').delete().in('workout_id', userWorkoutIds);
+    const { data: dbDays, error: dbDaysError } = await supabase.from('workout_days').select('id').in('workout_id', userWorkoutIds);
+    if (dbDaysError) {
+      console.error('Failed to fetch current workout_days:', dbDaysError);
+      throw dbDaysError;
+    }
+    currentDays = dbDays || [];
+  }
+  const currentDayIds = currentDays.map((d: any) => d.id);
+  const newDayIds = workoutDays.map(d => d.id);
+  // Only delete days that are in DB but not in the new list
+  const toDelete = currentDayIds.filter((id: string) => !newDayIds.includes(id));
+  if (toDelete.length > 0) {
+    const { error: deleteError } = await supabase.from('workout_days').delete().in('id', toDelete);
     if (deleteError) {
       console.error('Failed to delete workout_days:', deleteError);
       throw deleteError;
