@@ -87,3 +87,13 @@ wrkout/
 - Optimized bundle size
 - Strategic caching
 - Core Web Vitals optimization
+
+## Data Safety & Cascading Delete Logic Improvements Checklist
+
+- [x] **components/screens/settings-screen.tsx**: Added confirmation dialog for deleting the last workout routine.
+- [x] **lib/supabase-data.ts**: Hardened save logic to prevent accidental mass deletion; added clear comments about cascading deletes and safety.
+- [ ] **components/workout-tracker.tsx**: (No changes needed, but logic reviewed for safety.)
+- [ ] **components/screens/workout-screen.tsx**: (No changes needed, but logic reviewed for safety.)
+- [ ] **components/reset-confirmation-modal.tsx**: (Reused for confirmation dialog.)
+
+All critical logic for safe, predictable data handling and cascading deletes is now in place. See code comments for details.

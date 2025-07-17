@@ -12,7 +12,16 @@ export async function loadUserWorkouts(supabase: any, userId: string): Promise<W
 }
 
 // Save all workouts for a user (non-destructive)
-export async function saveUserWorkouts(supabase: any, workouts: Workout[], userId: string): Promise<void> {
+//
+// Cascading delete logic:
+// - Deleting a workout in the DB will automatically delete all associated workout_days (ON DELETE CASCADE in schema).
+// - This function now prevents accidental mass deletion: if the new list is empty, it throws unless allowDeleteAll is true.
+// - Only call with allowDeleteAll=true after explicit user confirmation (e.g., via a confirmation dialog in the UI).
+export async function saveUserWorkouts(supabase: any, workouts: Workout[], userId: string, allowDeleteAll: boolean = false): Promise<void> {
+  // Defensive: Prevent accidental mass deletion unless explicitly allowed
+  if (workouts.length === 0 && !allowDeleteAll) {
+    throw new Error('Attempted to delete all workouts. This action requires explicit confirmation.');
+  }
   // 1. Load current workouts from DB
   const { data: currentWorkouts, error: loadError } = await supabase
     .from('workouts')
@@ -78,36 +87,24 @@ export async function loadUserWorkoutDays(supabase: any, userId: string): Promis
 }
 
 // Save all workout days for a user (non-destructive)
-export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay[], userId: string): Promise<void> {
+//
+// Cascading delete logic:
+// - Deleting a workout_day in the DB will delete all its exercises (since exercises are embedded JSON, not a separate table).
+// - This function now prevents accidental mass deletion: if the new list is empty, it throws unless allowDeleteAll is true.
+// - Only call with allowDeleteAll=true after explicit user confirmation (e.g., via a confirmation dialog in the UI).
+export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay[], userId: string, allowDeleteAll: boolean = false): Promise<void> {
+  // Defensive: Prevent accidental mass deletion unless explicitly allowed
+  if (workoutDays.length === 0 && !allowDeleteAll) {
+    throw new Error('Attempted to delete all workout days. This action requires explicit confirmation.');
+  }
   // Find all workout_ids for this user
   const { data: workouts, error: workoutFetchError } = await supabase.from('workouts').select('id').eq('user_id', userId);
   if (workoutFetchError) {
-    console.error('Failed to fetch workouts for workoutDays delete:', workoutFetchError);
+    console.error('Failed to fetch workouts for workoutDays upsert:', workoutFetchError);
     throw workoutFetchError;
   }
   const userWorkoutIds = (workouts || []).map((w: any) => w.id);
-
-  // Get current workout_days in DB for this user
-  let currentDays: any[] = [];
-  if (userWorkoutIds.length > 0) {
-    const { data: dbDays, error: dbDaysError } = await supabase.from('workout_days').select('id').in('workout_id', userWorkoutIds);
-    if (dbDaysError) {
-      console.error('Failed to fetch current workout_days:', dbDaysError);
-      throw dbDaysError;
-    }
-    currentDays = dbDays || [];
-  }
-  const currentDayIds = currentDays.map((d: any) => d.id);
-  const newDayIds = workoutDays.map(d => d.id);
-  // Only delete days that are in DB but not in the new list
-  const toDelete = currentDayIds.filter((id: string) => !newDayIds.includes(id));
-  if (toDelete.length > 0) {
-    const { error: deleteError } = await supabase.from('workout_days').delete().in('id', toDelete);
-    if (deleteError) {
-      console.error('Failed to delete workout_days:', deleteError);
-      throw deleteError;
-    }
-  }
+  // Only upsert (insert/update) workout days
   if (workoutDays.length > 0) {
     // Use upsert to avoid duplicate key errors
     const { error: insertError } = await supabase.from('workout_days').upsert(

@@ -58,6 +58,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   // Add a new state to track a pending exercise open request
   const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{workoutId: string, dayId: string} | null>(null)
+  const [isDeleteAllWorkoutsOpen, setIsDeleteAllWorkoutsOpen] = useState(false);
+  const [pendingDeleteWorkoutId, setPendingDeleteWorkoutId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -134,6 +136,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   }
 
   const handleDeleteWorkout = (workoutId: string) => {
+    if (workouts.length === 1) {
+      setPendingDeleteWorkoutId(workoutId);
+      setIsDeleteAllWorkoutsOpen(true);
+      return;
+    }
     onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== workoutId), workoutDays)
 
     toast({
@@ -262,32 +269,25 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     });
   }
 
-  const handleDeleteExercise = (workoutId: string, dayId: string, exerciseId: string) => {
-    const updatedWorkouts = workouts.map((workout) => {
-      if (workout.id === workoutId) {
-        return {
-          ...workout,
-          days: workout.days.map((day) => {
-            if (day.id === dayId) {
-              return {
-                ...day,
-                exercises: day.exercises.filter((exercise) => exercise.id !== exerciseId),
-              }
-            }
-            return day
-          }),
-        }
-      }
-      return workout
-    })
-
-    onUpdateWorkoutsAndDays(updatedWorkouts, workoutDays)
-
+  const handleDeleteExercise = async (workoutId: string, dayId: string, exerciseId: string) => {
+    if (!user) return;
+    // Find the workout day to update
+    const dayToUpdate = workoutDays.find(day => day.id === dayId);
+    if (!dayToUpdate) return;
+    const updatedExercises = (dayToUpdate.exercises || []).filter((exercise: any) => exercise.id !== exerciseId);
+    const { error } = await updateWorkoutDayExercises(supabase, dayId, updatedExercises);
+    if (error) {
+      console.error('Supabase update error:', error);
+      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+      return;
+    }
+    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
     toast({
       title: "Exercise Deleted",
       description: "The exercise has been removed from your workout.",
       className: "bg-[#EA4335] border-none text-white",
-    })
+    });
   }
 
   // Get day icon and color based on day ID
@@ -797,6 +797,24 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <OnboardingGuide 
         isOpen={showOnboarding} 
         onClose={() => setShowOnboarding(false)} 
+      />
+
+      <ResetConfirmationModal
+        isOpen={isDeleteAllWorkoutsOpen}
+        onClose={() => setIsDeleteAllWorkoutsOpen(false)}
+        onConfirm={() => {
+          if (pendingDeleteWorkoutId) {
+            onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== pendingDeleteWorkoutId), workoutDays);
+            toast({
+              title: "Workout Deleted",
+              description: "The last workout routine has been removed.",
+              className: "bg-[#EA4335] border-none text-white",
+            });
+            setPendingDeleteWorkoutId(null);
+          }
+        }}
+        dayColor="#EA4335"
+        message={"Are you sure you want to delete your last workout routine? This will remove all associated days and exercises. This action cannot be undone."}
       />
 
       <div className="my-6">
