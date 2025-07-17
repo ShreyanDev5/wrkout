@@ -40,32 +40,24 @@ export function WorkoutTracker() {
   useEffect(() => {
     const initializeApp = async () => {
       if (!user) return;
-      // Logged in: load workouts and workout days from Supabase
-      let workouts = await loadUserWorkouts(supabase, user.id)
-      let workoutDays: WorkoutDay[] = await loadUserWorkoutDays(supabase, user.id)
-      // If no workouts, create a single blank 'My Workouts' routine
-      if (!workouts || workouts.length === 0) {
-        await saveUserWorkouts(supabase, [{
-          id: crypto.randomUUID(),
-          user_id: user.id,
-          name: 'My Workouts',
-          days: [],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }], user.id)
-        workouts = await loadUserWorkouts(supabase, user.id)
-      }
-      setAppData({ workouts, workoutDays })
-      const logs = await loadWorkoutLogs(supabase, user.id)
-      setWorkoutLogs(logs)
-      
-      // Check if this is the user's first time (onboarding not completed)
-      const onboardingCompleted = localStorage.getItem(`onboarding-completed-${user.id}`)
-      if (!onboardingCompleted) {
-        // Show onboarding after a short delay to ensure the app is loaded
-        setTimeout(() => {
-          setShowOnboarding(true)
-        }, 1000)
+      try {
+        // Logged in: load workouts and workout days from Supabase
+        let workouts = await loadUserWorkouts(supabase, user.id)
+        let workoutDays: WorkoutDay[] = await loadUserWorkoutDays(supabase, user.id)
+        // Remove all logic that auto-creates a default 'My Workouts' routine
+        setAppData({ workouts, workoutDays })
+        const logs = await loadWorkoutLogs(supabase, user.id)
+        setWorkoutLogs(logs)
+        // Check if this is the user's first time (onboarding not completed)
+        const onboardingCompleted = localStorage.getItem(`onboarding-completed-${user.id}`)
+        if (!onboardingCompleted) {
+          // Show onboarding after a short delay to ensure the app is loaded
+          setTimeout(() => {
+            setShowOnboarding(true)
+          }, 1000)
+        }
+      } catch (err) {
+        console.error('Error initializing app data:', err)
       }
     }
     initializeApp()
@@ -74,13 +66,21 @@ export function WorkoutTracker() {
 
   // Save data when it changes (only for logged-in users)
   useEffect(() => {
-    if (appData.workouts.length > 0 && user?.id) {
+    if (user?.id && appData.workouts.length > 0) {
       (async () => {
-        await saveUserWorkouts(supabase, appData.workouts, user.id)
-        if (appData.workoutDays) {
-          await saveUserWorkoutDays(supabase, appData.workoutDays, user.id)
+        try {
+          await saveUserWorkouts(supabase, appData.workouts, user.id)
+          if (appData.workoutDays) {
+            await saveUserWorkoutDays(supabase, appData.workoutDays, user.id)
+          }
+        } catch (err) {
+          console.error('Error saving workout data:', err)
         }
       })()
+    } else if (user?.id && appData.workouts.length === 0) {
+      // Prevent destructive save if list is empty (unless user explicitly deletes all workouts)
+      // Optionally, show a warning or log here
+      console.warn('Attempted to save empty workout list. Skipping destructive save.');
     }
   }, [appData, user?.id])
 

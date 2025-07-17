@@ -11,16 +11,31 @@ export async function loadUserWorkouts(supabase: any, userId: string): Promise<W
   return data || [];
 }
 
-// Save all workouts for a user (overwrites existing)
+// Save all workouts for a user (non-destructive)
 export async function saveUserWorkouts(supabase: any, workouts: Workout[], userId: string): Promise<void> {
-  // Delete first, and await completion
-  const { error: deleteError } = await supabase.from('workouts').delete().eq('user_id', userId);
-  if (deleteError) {
-    console.error('Failed to delete workouts:', deleteError);
-    throw deleteError;
+  // 1. Load current workouts from DB
+  const { data: currentWorkouts, error: loadError } = await supabase
+    .from('workouts')
+    .select('id')
+    .eq('user_id', userId);
+  if (loadError) {
+    console.error('Failed to load current workouts:', loadError);
+    throw loadError;
   }
+  const currentIds = (currentWorkouts || []).map((w: any) => w.id);
+  const newIds = workouts.map(w => w.id);
+  // 2. Find workouts to delete (present in DB, not in newWorkouts)
+  const toDelete = currentIds.filter((id: string) => !newIds.includes(id));
+  // 3. Delete only those workouts
+  if (toDelete.length > 0) {
+    const { error: deleteError } = await supabase.from('workouts').delete().in('id', toDelete);
+    if (deleteError) {
+      console.error('Failed to delete workouts:', deleteError);
+      throw deleteError;
+    }
+  }
+  // 4. Upsert new/updated workouts
   if (workouts.length > 0) {
-    // Only send valid columns to Supabase (id, name, user_id, created_at, updated_at)
     const workoutsToInsert = workouts.map(w => ({
       id: w.id,
       name: w.name,
@@ -28,7 +43,6 @@ export async function saveUserWorkouts(supabase: any, workouts: Workout[], userI
       created_at: w.created_at,
       updated_at: w.updated_at
     }));
-    // Use upsert to avoid duplicate key errors
     const { error: insertError } = await supabase.from('workouts').upsert(workoutsToInsert, { onConflict: 'id' });
     if (insertError) {
       const errorMsg = (typeof insertError === 'string' && insertError) ||

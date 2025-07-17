@@ -85,8 +85,15 @@ export function SignUpForm() {
       
       if (signInData && signInData.user) {
         const supabase = createClientComponentClient();
-        // Do not insert any default workout routine for new users
-        // await saveUserWorkouts(supabase, [{ id: crypto.randomUUID(), name: 'My Workouts', days: [] }], signInData.user.id);
+        // Create a default 'My Workouts' routine for new users (one-time, only on sign-up)
+        await saveUserWorkouts(supabase, [{
+          id: crypto.randomUUID(),
+          user_id: signInData.user.id,
+          name: 'My Workouts',
+          days: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }], signInData.user.id);
       }
       
       router.push('/');
