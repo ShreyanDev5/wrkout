@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PlusCircle } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
+import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -367,23 +368,13 @@ export function WorkoutScreen({
       </CardContent>
 
       {/* Reset Confirmation Dialog */}
-      <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <AlertDialogContent className="w-full max-w-sm mx-auto">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base sm:text-lg">Reset Workout Progress</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              Are you sure you want to reset all completed exercises for {selectedDay.toUpperCase()} day? 
-              This will clear your checkmarks but will not affect your workout history.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="text-sm">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={resetTickedExercises} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm">
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ResetConfirmationModal
+        isOpen={isResetDialogOpen}
+        onClose={() => setIsResetDialogOpen(false)}
+        onConfirm={resetTickedExercises}
+        dayColor="#EA4335"
+        message={`Are you sure you want to reset all completed exercises for ${selectedDay.toUpperCase()} day? This will clear your checkmarks but will not affect your workout history.`}
+      />
     </Card>
   )
 }
