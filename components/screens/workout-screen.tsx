@@ -240,7 +240,7 @@ export function WorkoutScreen({
         <div className="flex items-center w-full">
           <div className={`transition-all duration-200 ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
             <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
-              <SelectTrigger className="w-full h-8 sm:h-9 text-sm">
+              <SelectTrigger className="w-full h-8 sm:h-9 text-sm flex items-center">
                 <SelectValue placeholder="Select Workout" className="truncate" />
               </SelectTrigger>
               <SelectContent>
@@ -256,7 +256,7 @@ export function WorkoutScreen({
             <Button 
               variant="outline" 
               size="icon" 
-              className="h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 ml-1.5"
+              className="h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 ml-1.5 my-0.5"
               onClick={() => setIsResetDialogOpen(true)}
               aria-label="Reset workout progress"
             >
