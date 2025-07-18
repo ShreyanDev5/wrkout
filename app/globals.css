@@ -504,13 +504,7 @@
   color-scheme: dark;
 }
 
-html {
-  background-color: #181818;
-}
-
-body {
-  background-color: #181818;
-}
+/* Removed unconditional html and body background-color rules to fix SSR/CSR mismatch */
 
 @keyframes fadeIn {
   from {
