@@ -48,20 +48,55 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
   const name = exerciseName.toLowerCase()
   
   // Leg exercises (check first to avoid conflicts with generic terms)
+  // Add new leg exercises here. Include both singular and plural forms if needed.
   const legKeywords = [
-    'leg press', 'hack squat', 'bulgarian', 'romanian', 'rdl', 'hip thrust', 'leg curl',
+    // User's leg routine
+    'lying leg curl', // Lying Leg Curl
+    'hack squat', // Hack Squat
+    'romanian deadlift', 'rdl', // Romanian Deadlift (RDL)
+    'leg extension', // Leg Extension
+    'standing calf raise', // Standing Calf Raise
+    'wrist curls', 'wrist curl', // Wrist Curls (Barbell)
+    'wrist extension', // Wrist Extension (Barbell)
+    // Existing generic leg terms
+    'leg press', 'bulgarian', 'hip thrust', 'leg curl',
     'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up',
     'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge', 'extension'
   ]
   
   // Push exercises (chest, shoulders, triceps)
+  // Add new push exercises here. Include both singular and plural forms if needed.
   const pushKeywords = [
+    // User's push routine
+    'machine chest press', // Flat & Incline
+    'dips', // Dips
+    'machine shoulder press', // Machine Shoulder Press
+    'dumbbell lateral raise', // Dumbbell Lateral Raise
+    'machine lateral raise', // Machine Lateral Raise
+    'peck deck fly', // Peck Deck Fly
+    'triceps pushdown', // Triceps Pushdown (Bar & Rope)
+    'overhead triceps extension', // Overhead Triceps Extension (V-Bar & Rope)
+    // Existing generic push terms
     'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
     'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise'
   ]
   
   // Pull exercises (back, biceps, rear delts)
+  // Add new pull exercises here. Include both singular and plural forms if needed.
   const pullKeywords = [
+    // User's pull routine
+    'lat pulldown', 'lat pulldown (cable)', // Lat Pulldown (Cable)
+    'seated cable row', // Seated Cable Row
+    'chest supported row', // Chest Supported Row
+    'reverse peck deck', // Reverse Peck Deck
+    'face pulls', 'face pull', // Face Pulls
+    'cable crunch', 'cable crunches', // Cable Crunch (user prefers pull)
+    'hanging leg raises', 'hanging leg raise', // Hanging Leg Raises (user prefers pull)
+    'machine preacher curl', // Machine Preacher Curl
+    'barbell biceps curl', // Barbell Biceps Curl
+    'hammer curl', // Hammer Curl
+    'dumbbell shrug', // Dumbbell Shrug
+    // Existing generic pull terms
     'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
     'face pull', 'rear delt', 'shrug', 'rack pull', 't-bar', 't bar'
   ]
