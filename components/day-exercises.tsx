@@ -130,8 +130,7 @@ export function DayExercises({ exercises, dayId, workoutId, onLogWorkout, onExer
               onClick={() => handleOpenLogging(exercise)}
               aria-label={`Log session for ${exercise.name}`}
             >
-              <PlusCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
-              Log
+              <PlusCircle className="h-3.5 w-3.5" aria-hidden="true" />
             </Button>
           </div>
         )
