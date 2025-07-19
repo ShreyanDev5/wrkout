@@ -33,13 +33,23 @@ export function WorkoutLogModal({
   dayColor,
   onSave,
 }: WorkoutLogModalProps) {
-  const { getLastUsedValues, setLastUsedValues } = useExerciseStore()
+  const { getLastUsedValues, setLastUsedValues, getLastLog, setLastLog } = useExerciseStore()
   const lastValues = getLastUsedValues(exercise.id)
+  const lastLog = getLastLog(exercise.id)
 
   const [weight, setWeight] = useState(lastValues.weight || 20)
   const [reps, setReps] = useState(lastValues.reps || 8)
   const [sets, setSets] = useState(lastValues.sets || 3)
   const [isSaving, setIsSaving] = useState(false)
+
+  // If the modal is opened, reset to last used values
+  useEffect(() => {
+    if (isOpen) {
+      setWeight(lastValues.weight || 20)
+      setReps(lastValues.reps || 8)
+      setSets(lastValues.sets || 3)
+    }
+  }, [isOpen, lastValues])
 
   // Ensure audio context is running when the modal opens
   useEffect(() => {
@@ -51,18 +61,14 @@ export function WorkoutLogModal({
   const handleSave = () => {
     if (isSaving) return
     if (weight <= 0 || reps <= 0) {
-      // Optionally, show a toast or alert here
       setIsSaving(false)
       return
     }
     setIsSaving(true)
-
-    // Save the current values for this exercise
     setLastUsedValues(exercise.id, { weight, reps, sets })
-
     const log: WorkoutLog = {
       id: uuidv4(),
-      user_id: "", // This will be set by the parent component
+      user_id: "",
       workout_id: workoutId,
       workout_day_id: null,
       exercise_name: exercise.name,
@@ -72,12 +78,17 @@ export function WorkoutLogModal({
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
-
-    // Save the log
+    setLastLog(exercise.id, log)
     onSave(log)
-
-    // Reset saving state
     setIsSaving(false)
+  }
+
+  const handleRecallLastLog = () => {
+    if (lastLog) {
+      setWeight(lastLog.weight)
+      setReps(lastLog.avg_reps)
+      // Optionally set sets if you store it in the log
+    }
   }
 
   return (
@@ -122,6 +133,29 @@ export function WorkoutLogModal({
             </div>
           </div>
 
+          {lastLog && (
+            <div
+              className="w-full flex flex-col items-center"
+              style={{ marginTop: 32 }}
+            >
+              <span className="text-xs text-muted-foreground mb-1">Last log: {lastLog.weight} kg × {lastLog.avg_reps} reps</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRecallLastLog}
+                className="w-full h-8 px-2 text-xs"
+                aria-label="Recall last log values"
+              >
+                Use Last Log
+              </Button>
+              <style>{`
+                @media (min-width: 640px) {
+                  .workout-log-modal-lastlog { margin-top: 48px !important; }
+                }
+              `}</style>
+            </div>
+          )}
         </div>
 
         <DialogFooter className="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-[#1a1a1a]">

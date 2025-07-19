@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import type { WorkoutLog } from "./types"
 
 interface ExerciseValues {
   weight: number
@@ -11,6 +12,9 @@ interface ExerciseStore {
   lastUsedValues: Record<string, ExerciseValues>
   setLastUsedValues: (exerciseId: string, values: ExerciseValues) => void
   getLastUsedValues: (exerciseId: string) => ExerciseValues
+  lastLogs: Record<string, WorkoutLog | null>
+  setLastLog: (exerciseId: string, log: WorkoutLog) => void
+  getLastLog: (exerciseId: string) => WorkoutLog | null
 }
 
 // Default values for new exercises
@@ -24,6 +28,7 @@ export const useExerciseStore = create<ExerciseStore>()(
   persist(
     (set, get) => ({
       lastUsedValues: {},
+      lastLogs: {},
 
       setLastUsedValues: (exerciseId, values) => {
         set((state) => ({
@@ -33,10 +38,21 @@ export const useExerciseStore = create<ExerciseStore>()(
           },
         }))
       },
-
+      setLastLog: (exerciseId, log) => {
+        set((state) => ({
+          lastLogs: {
+            ...state.lastLogs,
+            [exerciseId]: log,
+          },
+        }))
+      },
       getLastUsedValues: (exerciseId) => {
         const state = get()
         return state.lastUsedValues[exerciseId] || DEFAULT_VALUES
+      },
+      getLastLog: (exerciseId) => {
+        const state = get()
+        return state.lastLogs[exerciseId] || null
       },
     }),
     {
