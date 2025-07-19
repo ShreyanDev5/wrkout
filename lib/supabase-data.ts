@@ -141,13 +141,18 @@ export async function loadWorkoutLogs(supabase: any, userId: string): Promise<Wo
 
 // Save a workout log for a user
 export async function saveWorkoutLog(supabase: any, log: WorkoutLog, userId: string): Promise<void> {
-  await supabase.from('workout_logs').insert([{ 
-    ...log, 
-    user_id: userId,
-    workout_day_id: log.workout_day_id ?? null,
-    created_at: log.created_at,
-    updated_at: log.updated_at
-  }]);
+  // Upsert by user_id, exercise_name, and performed_at (date) to avoid duplicates for the same day/exercise
+  await supabase.from('workout_logs').upsert([
+    {
+      ...log,
+      user_id: userId,
+      workout_day_id: log.workout_day_id ?? null,
+      created_at: log.created_at,
+      updated_at: log.updated_at
+    }
+  ], {
+    onConflict: 'user_id,exercise_name,performed_at'
+  });
 }
 
 export async function updateWorkoutDayExercises(supabase: any, workoutDayId: string, newExercises: any[]) {

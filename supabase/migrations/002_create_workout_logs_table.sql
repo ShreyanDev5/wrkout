@@ -11,6 +11,18 @@ CREATE TABLE IF NOT EXISTS workout_logs (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Add unique constraint for upsert support (user_id, exercise_name, performed_at)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'unique_user_exercise_date'
+  ) THEN
+    ALTER TABLE workout_logs ADD CONSTRAINT unique_user_exercise_date UNIQUE (user_id, exercise_name, performed_at);
+  END IF;
+END $$;
+
 -- Create or replace the function to update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
