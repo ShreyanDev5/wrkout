@@ -55,13 +55,22 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'hack squat', // Hack Squat
     'romanian deadlift', 'rdl', // Romanian Deadlift (RDL)
     'leg extension', // Leg Extension
+    'smith machine squat', // Smith Machine Squat
+    'walking lunges', // Walking Lunges
+    'goblet squat', // Goblet Squat
+    'seated leg curl', // Seated Leg Curl
+    'barbell hip thrust', // Barbell Hip Thrust
+    'cable kickbacks', // Cable Kickbacks
     'standing calf raise', // Standing Calf Raise
+    'seated calf raise', // Seated Calf Raise
+    'leg press calf raise', // Leg Press Calf Raise
     'wrist curls', 'wrist curl', // Wrist Curls (Barbell)
     'wrist extension', // Wrist Extension (Barbell)
+    'farmer’s carry', 'farmers carry', // Farmer’s Carry (apostrophe and non-apostrophe)
     // Existing generic leg terms
     'leg press', 'bulgarian', 'hip thrust', 'leg curl',
     'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up',
-    'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge', 'extension'
+    'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge'
   ]
   
   // Push exercises (chest, shoulders, triceps)
@@ -69,41 +78,64 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
   const pushKeywords = [
     // User's push routine
     'machine chest press', // Flat & Incline
-    'dips', // Dips
-    'machine shoulder press', // Machine Shoulder Press
-    'dumbbell lateral raise', // Dumbbell Lateral Raise
-    'machine lateral raise', // Machine Lateral Raise
-    'peck deck fly', // Peck Deck Fly
-    'triceps pushdown', // Triceps Pushdown (Bar & Rope)
-    'overhead triceps extension', // Overhead Triceps Extension (V-Bar & Rope)
+    'machine chest press (flat)',
+    'machine chest press (incline)',
+    'peck deck fly',
+    'dumbbell bench press (flat)',
+    'dumbbell bench press (incline)',
+    'push-ups', 'push-ups (weighted optional)', 'push ups',
+    'dips',
+    'machine shoulder press',
+    'dumbbell shoulder press',
+    'dumbbell lateral raise',
+    'machine lateral raise',
+    'dumbbell front raise',
+    'arnold press',
+    'triceps pushdown', 'triceps pushdown (bar)', 'triceps pushdown (rope)',
+    'overhead triceps extension', 'overhead triceps extension (v-bar)', 'overhead triceps extension (rope)',
+    'skull crushers',
+    'close-grip bench press',
     // Existing generic push terms
     'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
-    'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise'
+    'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise',
+    'overhead rope extension', 'rope triceps extension'
   ]
   
-  // Pull exercises (back, biceps, rear delts)
+  // Pull exercises (back, biceps, rear delts, traps, core)
   // Add new pull exercises here. Include both singular and plural forms if needed.
   const pullKeywords = [
     // User's pull routine
-    'lat pulldown', 'lat pulldown (cable)', // Lat Pulldown (Cable)
-    'seated cable row', // Seated Cable Row
-    'chest supported row', // Chest Supported Row
-    'reverse peck deck', // Reverse Peck Deck
-    'face pulls', 'face pull', // Face Pulls
-    'cable crunch', 'cable crunches', // Cable Crunch (user prefers pull)
-    'hanging leg raises', 'hanging leg raise', // Hanging Leg Raises (user prefers pull)
-    'machine preacher curl', // Machine Preacher Curl
-    'barbell biceps curl', // Barbell Biceps Curl
-    'hammer curl', // Hammer Curl
-    'dumbbell shrug', // Dumbbell Shrug
+    'lat pulldown', 'lat pulldown (cable)',
+    'seated cable row',
+    'chest supported row',
+    'barbell bent-over row',
+    'pull-ups', 'pull-ups (assisted or weighted)', 'pull ups',
+    't-bar row', 't bar row',
+    'reverse peck deck',
+    'face pulls', 'face pull',
+    'rear delt cable fly',
+    'machine preacher curl',
+    'barbell biceps curl',
+    'hammer curl', 'hammer curl (dumbbell)',
+    'concentration curl',
+    'cable curl', 'cable curl (ez bar or rope)',
+    'dumbbell shrug',
+    'barbell shrug',
+    'cable crunch',
+    'hanging leg raises',
+    'decline sit-ups', 'decline sit ups',
+    'leg raises on bench',
+    'plank', 'plank (timed)',
+    'russian twists',
     // Existing generic pull terms
     'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
     'face pull', 'rear delt', 'shrug', 'rack pull', 't-bar', 't bar'
   ]
   
-  if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
-  if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
-  if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
+  // Match full phrase first for push/pull, then leg
+  if (pushKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'push'
+  if (pullKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'pull'
+  if (legKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'leg'
   
   return null
 } 
