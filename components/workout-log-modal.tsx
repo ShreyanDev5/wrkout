@@ -116,7 +116,6 @@ export function WorkoutLogModal({
                 max={250}
                 step={2.5}
                 className="w-full text-white"
-                accentColor={dayColor}
               />
             </div>
 
@@ -127,7 +126,6 @@ export function WorkoutLogModal({
                 onChange={setReps} 
                 min={0} 
                 max={30} 
-                accentColor={dayColor}
                 className="hover:scale-[1.02] transition-transform duration-200 text-white w-full"
               />
             </div>

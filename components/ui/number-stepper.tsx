@@ -11,11 +11,10 @@ interface NumberStepperProps {
   min: number
   max: number
   step?: number
-  accentColor?: string
   className?: string
 }
 
-export function NumberStepper({ value, onChange, min, max, step = 1, accentColor, className }: NumberStepperProps) {
+export function NumberStepper({ value, onChange, min, max, step = 1, className }: NumberStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -72,7 +71,6 @@ export function NumberStepper({ value, onChange, min, max, step = 1, accentColor
             "text-center font-medium w-12 transition-all text-white",
             isPlaying && "scale-110 text-accent"
           )}
-          style={isPlaying ? { color: accentColor } : undefined}
         >
           {value}
         </span>

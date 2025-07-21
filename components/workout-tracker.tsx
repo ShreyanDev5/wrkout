@@ -27,7 +27,6 @@ export function WorkoutTracker() {
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
   const [showOnboarding, setShowOnboarding] = useState(false)
   const { toast } = useToast()
-  const { colorMode, isFirstVisit, setIsFirstVisit } = useTheme()
   const { user } = useAuth()
   const supabase = createClientComponentClient()
 

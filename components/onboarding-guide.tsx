@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useTheme } from "@/components/theme-context"
 import { useAuth } from "@/lib/auth"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
@@ -50,7 +49,6 @@ interface OnboardingStep {
   description: string;
   icon?: React.ComponentType<LucideProps>; // Made icon optional
   color: string;
-  accentColor: string;
   content: React.ReactNode;
 }
 
@@ -67,7 +65,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Designed for progressive overload training with clean, distraction-free tracking.",
     icon: Sparkles,
     color: "from-violet-500 to-purple-600",
-    accentColor: "violet",
     content: (
       <div className="space-y-4 text-center pt-8">
         <div className="space-y-5">
@@ -125,7 +122,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Unlock unlimited workout variations to keep training dynamic, enjoyable, and optimized for long-term strength, muscle growth, and progressive overload.",
     icon: Target,
     color: "from-blue-500 to-cyan-600",
-    accentColor: "blue",
     content: (
       <div className="space-y-3 pt-2">
         <motion.div 
@@ -201,7 +197,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Gradually increase weight or reps to continuously challenge your muscles.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
-    accentColor: "emerald",
     content: (
       <div className="space-y-6 mb-4">
         <motion.div 
@@ -264,7 +259,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Log your performance after completing each workout with intelligent defaults.",
     icon: Zap,
     color: "from-orange-500 to-red-600",
-    accentColor: "orange",
     content: (
       <div className="space-y-4 mb-4">
         <motion.div 
@@ -338,7 +332,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Clean, touch-friendly charts showing your strength progression over time.",
     icon: BarChart3,
     color: "from-purple-500 to-pink-600",
-    accentColor: "purple",
     content: (
       <div className="space-y-3 mb-4">
         <motion.div 
@@ -464,7 +457,6 @@ const onboardingSteps: OnboardingStep[] = [
     description: "Your fitness journey starts now. Track, improve, and celebrate your progress with every rep.",
     icon: CheckCircle,
     color: "from-emerald-500 to-teal-600",
-    accentColor: "emerald",
     content: (
       <div className="space-y-4 text-center">
         <motion.div 
@@ -513,7 +505,6 @@ const onboardingSteps: OnboardingStep[] = [
 
 export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const { colorMode } = useTheme()
   const { user } = useAuth()
 
   useEffect(() => {

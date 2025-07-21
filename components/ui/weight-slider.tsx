@@ -12,7 +12,6 @@ interface WeightSliderProps {
   step: number
   label?: string
   className?: string
-  accentColor?: string
 }
 
 export function WeightSlider({
@@ -23,7 +22,6 @@ export function WeightSlider({
   step,
   label = "Weight",
   className = "",
-  accentColor,
 }: WeightSliderProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 50 })
   const lastValueRef = useRef(value)
@@ -50,8 +48,10 @@ export function WeightSlider({
       <div className="flex justify-between items-center">
         <label className="text-sm font-medium text-white">{label}</label>
         <span
-          className={cn("text-sm font-medium transition-all text-white", isPlaying && "scale-110 text-accent")}
-          style={isPlaying ? { color: accentColor } : undefined}
+          className={cn(
+            "text-sm font-medium transition-all text-white",
+            isPlaying && "scale-110 text-accent"
+          )}
         >
           {value} <span className="text-muted-foreground">kg</span>
         </span>
@@ -71,9 +71,6 @@ export function WeightSlider({
           "h-4 w-4 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
           isPlaying && "scale-110"
         )}
-        style={{
-          "--track-active-color": accentColor || "hsl(var(--accent))",
-        }}
       />
     </div>
   )
