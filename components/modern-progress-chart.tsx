@@ -557,63 +557,31 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       <style jsx global>{chartStyles}</style>
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
-        <div className="p-6 bg-gradient-to-b from-zinc-800/80 to-transparent border-b border-zinc-700/20">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-semibold text-zinc-100 mb-1">{exerciseName}</h3>
-            </div>
-
-            {/* Updated Weight change indicator with dynamic text */}
-            {percentChange && (
-              <div className="flex flex-col items-end gap-0.5">
-                <div
-                  className={`flex items-center gap-0.5 px-2.5 py-1 rounded-full text-sm ${
-                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                  }`}
-                >
-                  <ChevronUp className={`h-3.5 w-3.5 ${Number(percentChange) <= 0 && "rotate-180"}`} />
-                  <span className="font-semibold">{Math.abs(Number(percentChange))}%</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Updated Timeframe Selector */}
-          <div className="mt-5 -ml-1">
-            <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)} className="w-full">
-              <TabsList className="h-8 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30 overflow-x-auto flex-nowrap scrollbar-none">
-                <TabsTrigger
-                  value="month"
-                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
-                >
-                  1M
-                </TabsTrigger>
-                <TabsTrigger
-                  value="threeMonths"
-                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
-                >
-                  3M
-                </TabsTrigger>
-                <TabsTrigger
-                  value="sixMonths"
-                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
-                >
-                  6M
-                </TabsTrigger>
-                <TabsTrigger
-                  value="year"
-                  className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium tracking-wide transition-all duration-200 whitespace-nowrap min-w-[52px] sm:min-w-[64px] hover:bg-zinc-700/40"
-                >
-                  1Y
-                </TabsTrigger>
+        <div className="flex items-center justify-between p-4 border-b border-zinc-700/20">
+            {/* Timeframe Selector */}
+            <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
+              <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
+                <TabsTrigger value="month" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
+                <TabsTrigger value="threeMonths" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
+                <TabsTrigger value="sixMonths" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
+                <TabsTrigger value="year" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
               </TabsList>
             </Tabs>
-          </div>
+
+            {/* Weight change indicator */}
+            {percentChange && (
+              <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+              }`}>
+                <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
+                <span>{Math.abs(Number(percentChange))}%</span>
+              </div>
+            )}
         </div>
 
-        {/* Enhanced Chart Content */}
-        <div className="p-0 pt-6 sm:pt-8 pb-4 sm:pb-6">
-          <div className="h-[220px] sm:h-[240px] w-full px-4 mt-2 sm:mt-0">
+        {/* Enhanced Chart Content with reduced height */}
+        <div className="p-0 pt-4 sm:pt-6 pb-2 sm:pb-4">
+          <div className="h-[180px] sm:h-[200px] w-full px-2 mt-1 sm:mt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}

@@ -12,12 +12,8 @@ const inter = Inter({
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
-      <body className="font-sans antialiased">
-        <AuthProvider>
-            <ThemeProvider>{children}</ThemeProvider>
-        </AuthProvider>
-      </body>
-    </html>
+    <AuthProvider>
+      <ThemeProvider>{children}</ThemeProvider>
+    </AuthProvider>
   );
 } 
