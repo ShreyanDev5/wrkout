@@ -10,7 +10,7 @@ import { useTheme } from "@/components/theme-context"
 import type { WorkoutLog } from "@/lib/types"
 import type { Variants } from "framer-motion"
 
-type TimeframeType = "month" | "threeMonths" | "sixMonths" | "year"
+type TimeframeType = "month" | "threeMonths" | "sixMonths" | "year" | "fiveYears" | "all"
 
 interface ModernProgressChartProps {
   logs: WorkoutLog[]
@@ -133,12 +133,23 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       case "year":
         cutoffDate.setFullYear(now.getFullYear() - 1)
         break
+      case "fiveYears":
+        cutoffDate.setFullYear(now.getFullYear() - 5)
+        break
+      case "all":
+        // For "all", we don't set a cutoff date, so we return all logs
+        return filteredLogs
     }
 
-    return filteredLogs.filter((log) => {
-      const logDate = new Date(log.performed_at)
-      return logDate >= cutoffDate
-    })
+    // For all timeframes except "all", filter by cutoff date
+    if (timeframe !== "all") {
+      return filteredLogs.filter((log) => {
+        const logDate = new Date(log.performed_at)
+        return logDate >= cutoffDate
+      })
+    }
+
+    return filteredLogs
   }, [filteredLogs, timeframe])
 
   // Process data for the chart
@@ -582,10 +593,12 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
             {/* Timeframe Selector */}
             <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
               <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
-                <TabsTrigger value="month" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
-                <TabsTrigger value="threeMonths" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
-                <TabsTrigger value="sixMonths" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
-                <TabsTrigger value="year" className="text-xs px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
+                <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
+                <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
+                <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
+                <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
+                <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">5Y</TabsTrigger>
+                <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">All</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -600,9 +613,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
             )}
         </div>
 
-        {/* Enhanced Chart Content with reduced height */}
+        {/* Enhanced Chart Content with adjusted height for longer timeframes */}
         <div className="p-0 pt-4 sm:pt-6 pb-2 sm:pb-4">
-          <div className="h-[180px] sm:h-[200px] w-full px-2 mt-1 sm:mt-0">
+          <div className="h-[180px] sm:h-[220px] w-full px-2 mt-1 sm:mt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
