@@ -116,8 +116,8 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
             </TableHeader>
             <TableBody>
               {weeklyData.map((exercise) => {
-                const workoutType = getExerciseWorkoutType(exercise.exerciseName) || 'push';
-                const dayColor = getWorkoutDayColor(workoutType, colorMode)
+                const workoutType = getExerciseWorkoutType(exercise.exerciseName);
+                const dayColor = workoutType ? getWorkoutDayColor(workoutType, colorMode) : 'hsl(var(--muted))';
                 
                 return (
                   <TableRow 

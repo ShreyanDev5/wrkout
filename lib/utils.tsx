@@ -66,7 +66,7 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'leg press calf raise', // Leg Press Calf Raise
     'wrist curls', 'wrist curl', // Wrist Curls (Barbell)
     'wrist extension', // Wrist Extension (Barbell)
-    'farmer’s carry', 'farmers carry', // Farmer’s Carry (apostrophe and non-apostrophe)
+    'farmer’s carry', 'farmers carry', // Farmer's Carry (apostrophe and non-apostrophe)
     // Existing generic leg terms
     'leg press', 'bulgarian', 'hip thrust', 'leg curl',
     'seated calf', 'standing calf', 'hip abduction', 'hip adduction', 'step[- ]?up',
@@ -108,12 +108,12 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'lat pulldown', 'lat pulldown (cable)',
     'seated cable row',
     'chest supported row',
-    'barbell bent-over row',
+    'barbell bent-over row', 'barbell bent over row',
     'pull-ups', 'pull-ups (assisted or weighted)', 'pull ups',
     't-bar row', 't bar row',
     'reverse peck deck',
     'face pulls', 'face pull',
-    'rear delt cable fly',
+    'rear delt cable fly', 'rear delt fly',
     'machine preacher curl',
     'barbell biceps curl',
     'hammer curl', 'hammer curl (dumbbell)',
@@ -133,9 +133,9 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
   ]
   
   // Match full phrase first for push/pull, then leg
-  if (pushKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'push'
-  if (pullKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'pull'
-  if (legKeywords.some(keyword => new RegExp(`\b${keyword}\b`).test(name))) return 'leg'
+  if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
+  if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
+  if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
   
   return null
-} 
+}

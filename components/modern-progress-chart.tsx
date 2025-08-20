@@ -152,10 +152,16 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         // Show only the selected exercise
         processedLogs = timeframeFilteredLogs.filter(log => log.exercise_name === exerciseFilter)
       } else if (mainFilter) {
-        // For main filter only, group by exercise and find the best progression
+        // For main filter only, filter logs by workout type first
+        processedLogs = timeframeFilteredLogs.filter(log => {
+          const exerciseType = getExerciseWorkoutType(log.exercise_name)
+          return exerciseType === mainFilter.toLowerCase()
+        })
+        
+        // Then group by exercise and find the best progression
         const exerciseGroups: Record<string, WorkoutLog[]> = {}
         
-        timeframeFilteredLogs.forEach(log => {
+        processedLogs.forEach(log => {
           if (!exerciseGroups[log.exercise_name]) {
             exerciseGroups[log.exercise_name] = []
           }
