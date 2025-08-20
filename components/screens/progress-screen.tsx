@@ -21,7 +21,7 @@ interface ProgressScreenProps {
 export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
-  const [mainFilter, setMainFilter] = useState<string | null>(null)
+  const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -39,10 +39,13 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
     const loadSavedState = async () => {
       try {
         const savedState = await loadLastProgressState()
-        setMainFilter(savedState.mainFilter)
+        // Set to saved filter or default to "push"
+        setMainFilter(savedState.mainFilter || "push")
         setChartExerciseFilter(savedState.chartExerciseFilter)
         setIsInitialized(true)
       } catch (error) {
+        // Default to "push" if there's an error loading saved state
+        setMainFilter("push")
         setIsInitialized(true)
       }
     }
@@ -102,6 +105,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
   // Filter exercises by main filter for chart
   const filteredExercisesForChart = useMemo(() => {
+    // If no filter is set, return all exercises (shouldn't happen with our new implementation)
     if (!mainFilter) return exercisesWithCompleteData
     
     return exercisesWithCompleteData.filter(exercise => {
@@ -162,39 +166,14 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
           {/* Tabs Section */}
           <div className="w-full">
             <Tabs
-              value={mainFilter || "all"}
-              onValueChange={(value) => setMainFilter(value === "all" ? null : value)}
+              value={mainFilter || "push"}
+              onValueChange={(value) => setMainFilter(value)}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-4 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
-                <TabsTrigger
-                  value="all"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2 md:px-3.5 text-sm md:text-base font-medium transition-all -ml-1 md:-ml-1.5 ${
-                    !mainFilter 
-                      ? 'text-white' 
-                      : 'text-muted-foreground hover:text-foreground/80'
-                  }`}
-                  style={{
-                    backgroundColor: !mainFilter
-                      ? 'color-mix(in srgb, #6b7280 15%, transparent)'
-                      : undefined,
-                  }}
-                >
-                  {(!mainFilter && isMobile) ? null : getWorkoutIcon("all")}
-                  <span>All</span>
-                  {!mainFilter && (
-                    <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-zinc-500/10 text-zinc-300">
-                      {filteredExercisesForChart.length}
-                    </span>
-                  )}
-                </TabsTrigger>
+              <TabsList className="grid grid-cols-3 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
                 <TabsTrigger
                   value="push"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ${
-                    mainFilter === "push" 
-                      ? 'text-push-dark' 
-                      : 'text-muted-foreground hover:text-foreground/80'
-                  }`}
+                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ${mainFilter === "push" ? 'text-push-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "push"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
@@ -211,11 +190,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="pull"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5 ${
-                    mainFilter === "pull" 
-                      ? 'text-pull-dark' 
-                      : 'text-muted-foreground hover:text-foreground/80'
-                  }`}
+                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5 ${mainFilter === "pull" ? 'text-pull-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "pull"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
@@ -232,11 +207,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="leg"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2 ${
-                    mainFilter === "leg" 
-                      ? 'text-leg-dark' 
-                      : 'text-muted-foreground hover:text-foreground/80'
-                  }`}
+                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2 ${mainFilter === "leg" ? 'text-leg-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "leg"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`

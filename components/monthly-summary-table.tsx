@@ -23,6 +23,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
   const filteredLogs = useMemo(() => {
     const validLogs = logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
     
+    // If no filter is set, return all valid logs (shouldn't happen with our new implementation)
     if (!mainFilter) return validLogs
     
     return validLogs.filter((log) => {
