@@ -165,24 +165,32 @@ export function processWorkoutData(logs: WorkoutLog[]) {
       }
     })
 
-    // Get previous workout data for comparison
-    const previousWorkout = sortedExerciseLogs.find(log => {
-      const logDate = new Date(log.performed_at)
-      const currentWeekData = weeks[weekLabels[0]]
-      if (!currentWeekData) return false
+    // Get previous workout data for comparison - find the immediately previous workout of the same exercise
+    let previousWorkout = null;
+    if (sortedExerciseLogs.length > 1) {
+      // The second entry (index 1) after sorting by date (newest first) is the immediately previous workout
+      const immediatelyPreviousWorkout = sortedExerciseLogs[1];
+      const currentWeekData = weeks[weekLabels[0]];
       
-      const currentWeekDate = new Date(currentWeekData.date)
-      return logDate < currentWeekDate
-    })
+      if (currentWeekData) {
+        const currentWeekDate = new Date(currentWeekData.date);
+        const previousWorkoutDate = new Date(immediatelyPreviousWorkout.performed_at);
+        
+        // Only consider it the previous workout if it's before the current week's workout
+        if (previousWorkoutDate < currentWeekDate) {
+          previousWorkout = {
+            reps: immediatelyPreviousWorkout.avg_reps,
+            weight: immediatelyPreviousWorkout.weight,
+            date: immediatelyPreviousWorkout.performed_at,
+          };
+        }
+      }
+    }
 
     return {
       exerciseName,
       weeks,
-      previousWorkout: previousWorkout ? {
-        reps: previousWorkout.avg_reps,
-        weight: previousWorkout.weight,
-        date: previousWorkout.performed_at,
-      } : null,
+      previousWorkout,
     }
   })
 

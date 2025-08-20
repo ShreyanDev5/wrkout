@@ -39,16 +39,18 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
 
   // Function to render trend indicator
   const renderTrend = (current: number | null, previous: number | null) => {
-    if (!current || !previous) return null
+    // Handle edge cases
+    if (!current || !previous || previous === 0) return null
     const diff = ((current - previous) / previous) * 100
     
+    // Consider changes less than 1% as neutral
     if (Math.abs(diff) < 1) return <Minus className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground mx-auto" />
     
     if (diff > 0) {
       return (
         <div className="flex items-center justify-center text-green-500">
           <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
-          <span className="text-[10px] sm:text-xs font-medium">{Math.round(diff)}%</span>
+          <span className="text-[10px] sm:text-xs font-medium">{Math.abs(Math.round(diff))}%</span>
         </div>
       )
     } else {

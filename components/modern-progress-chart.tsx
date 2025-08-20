@@ -189,7 +189,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         return []
       }
 
-      // Group by date and keep the best weight for each date
+      // Group by date and keep the best volume (weight * reps) for each date
       const groupedData: Record<
         string,
         {
@@ -205,7 +205,10 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
       processedLogs.forEach((log) => {
         const dateKey = log.performed_at
-        if (!groupedData[dateKey] || log.weight > groupedData[dateKey].weight) {
+        const currentVolume = log.weight * log.avg_reps
+        const existingVolume = groupedData[dateKey] ? groupedData[dateKey].weight * groupedData[dateKey].avgReps : 0
+        
+        if (!groupedData[dateKey] || currentVolume > existingVolume) {
           groupedData[dateKey] = {
             date: dateKey,
             weight: log.weight,
@@ -228,17 +231,18 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         item.index = index
       })
 
-      // Find the max weight (PR)
-      const maxWeight = sortedData.length > 0 ? Math.max(...sortedData.map((item) => item.weight)) : 0
+      // Find the max volume (weight * reps) for PR identification
+      const maxVolume = sortedData.length > 0 ? Math.max(...sortedData.map((item) => item.weight * item.avgReps)) : 0
 
       // Mark the latest entry and PR
       if (sortedData.length > 0) {
         // Mark the latest entry
         sortedData[sortedData.length - 1].isLatest = true
 
-        // Mark all PR entries
+        // Mark all PR entries (based on volume)
         sortedData.forEach((item) => {
-          if (item.weight === maxWeight) {
+          const itemVolume = item.weight * item.avgReps;
+          if (itemVolume === maxVolume) {
             item.isPR = true
           }
         })
@@ -250,19 +254,30 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     }
   }, [timeframeFilteredLogs, exerciseFilter, mainFilter])
 
-  // Calculate stats
-  const personalRecord = chartData.length ? Math.max(...chartData.map((item) => item.weight)) : 0
+  // Calculate stats based on volume (weight × reps) for more comprehensive tracking
+  const personalRecord = chartData.length ? Math.max(...chartData.map((item) => item.weight * item.avgReps)) : 0
   const minWeight = chartData.length ? Math.max(0, Math.min(...chartData.map((item) => item.weight)) - 5) : 0
   const currentWeight = chartData.length ? chartData[chartData.length - 1].weight : 0
 
-  // Calculate percentage change based on timeframe
+  // Calculate percentage change based on timeframe - enhanced to consider volume (weight × reps)
   const percentChange = useMemo(() => {
     if (chartData.length < 2) return null;
 
     // Compare the latest value to the earliest value within the filtered timeframe
     const earliestWeight = chartData[0].weight;
     const latestWeight = chartData[chartData.length - 1].weight;
+    
+    // Calculate volume (weight × reps) for more comprehensive progress tracking
+    const earliestVolume = chartData[0].weight * chartData[0].avgReps;
+    const latestVolume = chartData[chartData.length - 1].weight * chartData[chartData.length - 1].avgReps;
 
+    // Use volume for percentage calculation if both volumes are available
+    if (earliestVolume > 0 && latestVolume > 0 && earliestVolume !== latestVolume) {
+      const change = ((latestVolume - earliestVolume) / earliestVolume) * 100;
+      return change.toFixed(1);
+    }
+    
+    // Fallback to weight-only calculation if volume data is incomplete
     if (earliestWeight === 0 || earliestWeight === latestWeight) return null;
 
     const change = ((latestWeight - earliestWeight) / earliestWeight) * 100;
