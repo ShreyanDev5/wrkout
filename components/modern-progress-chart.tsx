@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronUp } from "lucide-react"
 import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
+import { useIsMobile } from "@/components/ui/use-mobile"
 import type { WorkoutLog } from "@/lib/types"
 import type { Variants } from "framer-motion"
 
@@ -57,12 +58,20 @@ const chartVariants: Variants = {
 
 // Move all styles to a single constant at the top level of the component
 const chartStyles = `
-  .scrollbar-none {
+  .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-none::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .timeframe-button {
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  .timeframe-button-active {
+    transform: scale(1.05);
   }
 
   .touch-tooltip {
@@ -88,6 +97,7 @@ const chartStyles = `
 
 export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: ModernProgressChartProps) {
   const { colorMode } = useTheme()
+  const isMobile = useIsMobile()
   const [timeframe, setTimeframe] = useState<TimeframeType>("month")
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null)
   const [isHoveringChart, setIsHoveringChart] = useState(false)
@@ -590,7 +600,77 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
         {/* Chart Header */}
         <div className="flex items-center justify-between p-4 border-b border-zinc-700/20">
-            {/* Timeframe Selector */}
+          {/* Timeframe Selector */}
+          {isMobile ? (
+            // Mobile-optimized selector with horizontal scrolling
+            <div className="flex items-center w-full">
+              <div className="flex overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1 w-full">
+                <div className="flex space-x-1.5">
+                  <button
+                    onClick={() => setTimeframe("month")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "month"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    1M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("threeMonths")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "threeMonths"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    3M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("sixMonths")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "sixMonths"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    6M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("year")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "year"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    1Y
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("fiveYears")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "fiveYears"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    5Y
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("all")}
+                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                      timeframe === "all"
+                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                    }`}
+                  >
+                    All
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Desktop selector
             <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
               <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
                 <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
@@ -601,16 +681,17 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                 <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">All</TabsTrigger>
               </TabsList>
             </Tabs>
+          )}
 
-            {/* Weight change indicator */}
-            {percentChange && (
-              <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                  Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-              }`}>
-                <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
-                <span>{Math.abs(Number(percentChange))}%</span>
-              </div>
-            )}
+          {/* Weight change indicator */}
+          {percentChange && (
+            <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+            }`}>
+              <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
+              <span>{Math.abs(Number(percentChange))}%</span>
+            </div>
+          )}
         </div>
 
         {/* Enhanced Chart Content with adjusted height for longer timeframes */}
