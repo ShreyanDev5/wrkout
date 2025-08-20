@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { NumberStepper } from "@/components/ui/number-stepper"
-import { WeightSlider } from "@/components/ui/weight-slider"
+import { WeightStepper } from "@/components/ui/weight-stepper"
 import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
@@ -109,7 +109,7 @@ export function WorkoutLogModal({
           <div className="w-full space-y-3 sm:space-y-4">
             <div className="space-y-1">
               <h3 className="text-xs sm:text-sm font-medium text-white text-center">Weight (kg)</h3>
-              <WeightSlider
+              <WeightStepper
                 value={weight}
                 onChange={setWeight}
                 min={0}
