@@ -123,7 +123,7 @@ export function WorkoutLogModal({
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Weight</h3>
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-white" style={{ color: dayColor }}>
                   {weight} <span className="text-muted-foreground text-xs">kg</span>
                 </span>
               </div>
@@ -134,6 +134,7 @@ export function WorkoutLogModal({
                 max={250}
                 step={2.5}
                 className="w-full"
+                dayColor={dayColor}
               />
             </div>
 
@@ -141,7 +142,9 @@ export function WorkoutLogModal({
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Reps</h3>
-                <span className="text-sm font-semibold text-white">{reps}</span>
+                <span className="text-sm font-semibold text-white" style={{ color: dayColor }}>
+                  {reps}
+                </span>
               </div>
               <NumberStepper 
                 value={reps} 
@@ -149,6 +152,7 @@ export function WorkoutLogModal({
                 min={0} 
                 max={30} 
                 className="w-full"
+                dayColor={dayColor}
               />
             </div>
 
@@ -157,7 +161,7 @@ export function WorkoutLogModal({
               <div className="mt-2 pt-3 border-t border-white/10">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs text-muted-foreground">Last log</span>
-                  <span className="text-xs font-medium text-white">
+                  <span className="text-xs font-medium text-white" style={{ color: dayColor }}>
                     {lastLog.weight} kg × {lastLog.avg_reps} reps
                   </span>
                 </div>

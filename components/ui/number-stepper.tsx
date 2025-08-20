@@ -12,9 +12,10 @@ interface NumberStepperProps {
   max: number
   step?: number
   className?: string
+  dayColor?: string
 }
 
-export function NumberStepper({ value, onChange, min, max, step = 1, className }: NumberStepperProps) {
+export function NumberStepper({ value, onChange, min, max, step = 1, className, dayColor }: NumberStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -67,7 +68,9 @@ export function NumberStepper({ value, onChange, min, max, step = 1, className }
           <Minus className="h-3.5 w-3.5" />
         </Button>
         
-        <span className="text-lg font-semibold text-white">{value}</span>
+        <span className="text-lg font-semibold text-white" style={{ color: dayColor }}>
+          {value}
+        </span>
         
         <Button
           type="button"

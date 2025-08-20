@@ -12,9 +12,10 @@ interface WeightStepperProps {
   max: number
   step?: number
   className?: string
+  dayColor?: string
 }
 
-export function WeightStepper({ value, onChange, min, max, step = 2.5, className }: WeightStepperProps) {
+export function WeightStepper({ value, onChange, min, max, step = 2.5, className, dayColor }: WeightStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -68,7 +69,9 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
         </Button>
         
         <div className="flex flex-col items-center">
-          <span className="text-lg font-semibold text-white">{value}</span>
+          <span className="text-lg font-semibold text-white" style={{ color: dayColor }}>
+            {value}
+          </span>
           <span className="text-xs text-muted-foreground -mt-0.5">kg</span>
         </div>
         
