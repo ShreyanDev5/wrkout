@@ -118,14 +118,11 @@ export function WorkoutLogModal({
 
         {/* Main content */}
         <div className="flex flex-col items-center py-4 px-4">
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-5">
             {/* Weight Section */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Weight</h3>
-                <span className="text-sm font-semibold text-white" style={{ color: dayColor }}>
-                  {weight} <span className="text-muted-foreground text-xs">kg</span>
-                </span>
               </div>
               <WeightStepper
                 value={weight}
@@ -139,12 +136,9 @@ export function WorkoutLogModal({
             </div>
 
             {/* Reps Section */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Reps</h3>
-                <span className="text-sm font-semibold text-white" style={{ color: dayColor }}>
-                  {reps}
-                </span>
               </div>
               <NumberStepper 
                 value={reps} 
