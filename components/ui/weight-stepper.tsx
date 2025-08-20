@@ -50,8 +50,8 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
   }
 
   return (
-    <div className={cn("space-y-2 w-full", className)}>
-      <div className="flex items-center justify-center gap-2">
+    <div className={cn("space-y-3 w-full", className)}>
+      <div className="flex items-center justify-between bg-background/30 backdrop-blur-sm rounded-xl p-2 border border-white/10">
         <Button
           type="button"
           variant="outline"
@@ -59,21 +59,19 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "h-8 w-8 rounded-full bg-[#1a1a1a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
-            isPlaying && "bg-accent/10"
+            "h-10 w-10 rounded-lg bg-background/50 border-white/10 text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 stepper-control",
+            isPlaying && "bg-accent/20 border-accent/30 stepper-active"
           )}
           aria-label="Decrease weight"
         >
-          <Minus className="h-3 w-3" />
+          <Minus className="h-4 w-4" />
         </Button>
-        <span
-          className={cn(
-            "text-center font-medium w-16 transition-all text-white",
-            isPlaying && "scale-110 text-accent"
-          )}
-        >
-          {value} <span className="text-muted-foreground text-xs">kg</span>
-        </span>
+        
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-semibold text-white">{value}</span>
+          <span className="text-xs text-muted-foreground -mt-1">kg</span>
+        </div>
+        
         <Button
           type="button"
           variant="outline"
@@ -81,12 +79,12 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           onClick={increment}
           disabled={value >= max}
           className={cn(
-            "h-8 w-8 rounded-full bg-[#1a1a1a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]/80 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all",
-            isPlaying && "bg-accent/10"
+            "h-10 w-10 rounded-lg bg-background/50 border-white/10 text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 stepper-control",
+            isPlaying && "bg-accent/20 border-accent/30 stepper-active"
           )}
           aria-label="Increase weight"
         >
-          <Plus className="h-3 w-3" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
     </div>
