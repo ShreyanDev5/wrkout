@@ -96,29 +96,29 @@ export function WorkoutLogModal({
       >
         {/* Header with gradient background */}
         <div 
-          className="relative pt-6 pb-8 px-6 rounded-t-2xl"
+          className="relative pt-4 pb-5 px-6 rounded-t-2xl"
           style={{ 
             background: `linear-gradient(135deg, ${dayColor}20 0%, ${dayColor}10 100%)`,
             borderBottom: `1px solid ${dayColor}20`
           }}
         >
           <DialogHeader className="items-center">
-            <DialogTitle className="flex flex-col items-center gap-3 text-white">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm border border-white/10">
+            <DialogTitle className="flex flex-col items-center gap-2 text-white">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-background/30 backdrop-blur-sm border border-white/10">
                 <span
-                  className="inline-block w-3 h-3 rounded-full"
+                  className="inline-block w-2.5 h-2.5 rounded-full"
                   style={{ backgroundColor: dayColor }}
                   aria-hidden="true"
                 ></span>
               </div>
-              <span className="font-semibold text-lg">{exercise.name}</span>
+              <span className="font-semibold text-base">{exercise.name}</span>
             </DialogTitle>
           </DialogHeader>
         </div>
 
         {/* Main content */}
-        <div className="flex flex-col items-center py-6 px-4">
-          <div className="w-full space-y-6">
+        <div className="flex flex-col items-center py-4 px-4">
+          <div className="w-full space-y-4">
             {/* Weight Section */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
@@ -154,8 +154,8 @@ export function WorkoutLogModal({
 
             {/* Last Log Section */}
             {lastLog && (
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <div className="flex justify-between items-center mb-3">
+              <div className="mt-2 pt-3 border-t border-white/10">
+                <div className="flex justify-between items-center mb-2">
                   <span className="text-xs text-muted-foreground">Last log</span>
                   <span className="text-xs font-medium text-white">
                     {lastLog.weight} kg × {lastLog.avg_reps} reps
@@ -176,7 +176,7 @@ export function WorkoutLogModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 px-4 pb-5">
+        <div className="grid grid-cols-2 gap-3 px-4 pb-4 pt-2">
           <Button
             type="button"
             variant="outline"
