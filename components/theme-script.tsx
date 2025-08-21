@@ -1,7 +1,3 @@
-'use client';
-
-import React from 'react';
-
 export const ThemeScript = () => {
   const script = `
     (function() {

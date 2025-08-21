@@ -157,6 +157,7 @@ const chartStyles = `
   /* Chart container spacing */
   .chart-container {
     padding-top: 16px;
+    background: linear-gradient(to bottom, rgba(26, 26, 26, 0.5), transparent); /* Subtle gradient for depth */
   }
   
   @media (max-width: 640px) {
@@ -711,15 +712,17 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       onTouchStart={handleChartContainerTouch}
       style={{ 
         willChange: "transform",
-        background: "linear-gradient(135deg, rgba(30, 30, 40, 0.7), rgba(20, 20, 30, 0.7))",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)"
+        background: "linear-gradient(135deg, rgba(24, 24, 24, 0.85), rgba(18, 18, 18, 0.85))", // Premium dark gradient matching tooltip
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        border: "1px solid rgba(255, 255, 255, 0.08)", // Subtle border for iOS-like effect
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)" // Enhanced shadow for depth
       }}
     >
       <style jsx global>{chartStyles}</style>
-      <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#141414] rounded-xl overflow-hidden">
         {/* Chart Header */}
-        <div className="flex items-center justify-between p-4 border-b border-zinc-700/20">
+        <div className="flex items-center justify-between p-4 border-b border-white/5 bg-gradient-to-r from-[#1a1a1a] to-[#181818]">
           {/* Timeframe Selector */}
           {isMobile ? (
             // Mobile-optimized selector with horizontal scrolling
@@ -730,8 +733,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("month")}
                     className={`mobile-timeframe-button ${
                       timeframe === "month"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     1M
@@ -740,8 +743,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("threeMonths")}
                     className={`mobile-timeframe-button ${
                       timeframe === "threeMonths"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     3M
@@ -750,8 +753,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("sixMonths")}
                     className={`mobile-timeframe-button ${
                       timeframe === "sixMonths"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     6M
@@ -760,8 +763,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("year")}
                     className={`mobile-timeframe-button ${
                       timeframe === "year"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     1Y
@@ -770,8 +773,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("fiveYears")}
                     className={`mobile-timeframe-button ${
                       timeframe === "fiveYears"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     5Y
@@ -780,8 +783,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     onClick={() => setTimeframe("all")}
                     className={`mobile-timeframe-button ${
                       timeframe === "all"
-                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
-                        : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
                     }`}
                   >
                     All
@@ -803,13 +806,13 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
             // Desktop selector
             <div className="flex items-center gap-3">
               <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
-                <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
-                  <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
-                  <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
-                  <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
-                  <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
-                  <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">5Y</TabsTrigger>
-                  <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">All</TabsTrigger>
+                <TabsList className="h-7 p-0.5 bg-[#1a1a1a] rounded-full border border-white/10">
+                  <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">1M</TabsTrigger>
+                  <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">3M</TabsTrigger>
+                  <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">6M</TabsTrigger>
+                  <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">1Y</TabsTrigger>
+                  <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">5Y</TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">All</TabsTrigger>
                 </TabsList>
               </Tabs>
               
@@ -828,7 +831,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
         {/* Enhanced Chart Content with adjusted height for longer timeframes */}
         <div className="chart-container">
-          <div className="h-[180px] sm:h-[220px] w-full px-2">
+          <div className="h-[180px] sm:h-[220px] w-full px-3"> {/* Increased padding for better spacing */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
