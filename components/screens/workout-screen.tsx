@@ -171,31 +171,31 @@ export function WorkoutScreen({
           Add Workout
         </Button>
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-          <DialogContent className="w-full max-w-sm sm:max-w-md dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-6 shadow-2xl backdrop-blur-xl">
+          <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
             <DialogHeader>
-              <div className="flex flex-col items-center gap-2 mb-2">
-                <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-[#34A853]" aria-hidden="true" />
-                <DialogTitle className="line-height-readable text-center text-lg sm:text-xl">Add New Workout</DialogTitle>
+              <div className="flex flex-col items-center gap-1.5 mb-1.5">
+                <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
+                <DialogTitle className="line-height-readable text-center text-base">Add New Workout</DialogTitle>
               </div>
             </DialogHeader>
-            <div className="py-4">
-              <p className="line-height-readable text-center mb-4 text-sm sm:text-base text-muted-foreground px-2">
+            <div className="py-3">
+              <p className="line-height-readable text-center mb-3 text-xs text-muted-foreground">
                 Create a new workout routine. Workouts contain days and exercises.
               </p>
-              <Label htmlFor="workout-name" className="block text-center mb-2 text-sm">Workout Name</Label>
+              <Label htmlFor="workout-name" className="block text-center mb-1.5 text-sm">Workout Name</Label>
               <Input
                 id="workout-name"
                 value={newWorkoutName}
                 onChange={(e) => setNewWorkoutName(e.target.value)}
                 placeholder="Enter workout name"
-                className="mt-2 text-sm px-3 py-2 rounded-lg"
+                className="mt-1.5 text-sm px-2.5 py-1.5 rounded-md"
               />
             </div>
-            <div className="flex flex-row justify-between gap-3 mt-4 w-full px-2">
+            <div className="flex flex-row justify-between gap-2 mt-3.5 w-full">
               <button
                 type="button"
                 onClick={() => setIsAddWorkoutOpen(false)}
-                className="flex-1 px-4 py-2.5 rounded-lg border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary text-sm sm:text-base"
+                className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary text-sm"
                 aria-label="Cancel add workout"
               >
                 Cancel
@@ -223,7 +223,7 @@ export function WorkoutScreen({
                   setNewWorkoutName("")
                   setIsAddWorkoutOpen(false)
                 }}
-                className="flex-1 px-4 py-2.5 rounded-lg border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none text-sm sm:text-base"
+                className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none text-sm"
                 aria-label="Confirm add workout"
               >
                 Add Workout
