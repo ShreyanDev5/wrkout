@@ -45,6 +45,7 @@ export function CircularProgress({
   const [animatedPercentage, setAnimatedPercentage] = React.useState(0)
   const [isComplete, setIsComplete] = React.useState(false)
   const [isScaling, setIsScaling] = React.useState(false)
+  const [isPulsing, setIsPulsing] = React.useState(false)
   const prevPercentageRef = React.useRef(0)
 
   // Get color based on category
@@ -64,7 +65,7 @@ export function CircularProgress({
   const trackColor = "var(--track-color, #E5E7EB)" // Light muted gray
   const progressColor = getCategoryColor(category)
 
-  // Animation effect with forward-only transition
+  // Animation effect with consistent linear speed using requestAnimationFrame
   React.useEffect(() => {
     if (!animated) {
       setAnimatedPercentage(percentage)
@@ -72,40 +73,41 @@ export function CircularProgress({
       return
     }
 
-    // Only animate if the new percentage is higher than the previous one
-    // or if we're resetting to 0
-    if (percentage > prevPercentageRef.current || percentage === 0) {
-      const animationDuration = 600 // ms
-      const steps = 30
-      const increment = (percentage - prevPercentageRef.current) / steps
-      let currentPercentage = prevPercentageRef.current
+    // Only animate if the new percentage is different from the previous one
+    if (percentage !== prevPercentageRef.current) {
+      const startPercentage = prevPercentageRef.current
+      const endPercentage = percentage
+      const startTime = performance.now()
+      const animationDuration = 600 // Fixed duration for consistent speed
 
-      const interval = setInterval(() => {
-        currentPercentage += increment
-        if ((increment > 0 && currentPercentage >= percentage) || (increment < 0 && currentPercentage <= percentage)) {
-          clearInterval(interval)
-          setAnimatedPercentage(percentage)
-          prevPercentageRef.current = percentage
-
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime
+        const progress = Math.min(elapsed / animationDuration, 1)
+        
+        // Linear interpolation for consistent speed
+        const currentPercentage = startPercentage + (endPercentage - startPercentage) * progress
+        setAnimatedPercentage(currentPercentage)
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate)
+        } else {
+          // Animation complete
+          prevPercentageRef.current = endPercentage
+          
           // Check if we've reached 100%
-          if (percentage >= 100 && !isComplete) {
+          if (endPercentage >= 100 && !isComplete) {
             setIsComplete(true)
             setIsScaling(true)
-            setTimeout(() => setIsScaling(false), 600) // Reset scaling after animation
-          } else if (percentage < 100) {
+            setIsPulsing(true)
+            setTimeout(() => setIsScaling(false), 600)
+            setTimeout(() => setIsPulsing(false), 1200)
+          } else if (endPercentage < 100) {
             setIsComplete(false)
           }
-        } else {
-          setAnimatedPercentage(currentPercentage)
         }
-      }, animationDuration / steps)
+      }
 
-      return () => clearInterval(interval)
-    } else {
-      // If new percentage is lower, just set it without animation
-      setAnimatedPercentage(percentage)
-      prevPercentageRef.current = percentage
-      setIsComplete(percentage >= 100)
+      requestAnimationFrame(animate)
     }
   }, [percentage, animated, isComplete])
 
@@ -119,6 +121,7 @@ export function CircularProgress({
       className={cn(circularProgressVariants({ size }), className, isScaling ? "scale-105" : "")}
       style={{
         transition: "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        filter: isPulsing ? `drop-shadow(0 0 8px ${progressColor}80)` : "none",
       }}
       {...props}
     >
@@ -134,7 +137,7 @@ export function CircularProgress({
           strokeLinecap="round"
           className="opacity-20"
         />
-        {/* Progress arc */}
+        {/* Progress arc with consistent animation */}
         <circle
           cx="50"
           cy="50"
@@ -145,23 +148,59 @@ export function CircularProgress({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="transition-all duration-300 ease-out"
+          className="transition-none"
+          style={{
+            transition: "none",
+            filter: isPulsing ? `drop-shadow(0 0 4px ${progressColor}B0)` : "none",
+          }}
         />
+        {/* Subtle glow effect when complete */}
+        {isComplete && (
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke={progressColor}
+            strokeWidth={strokeWidth / 2}
+            strokeDasharray={circumference}
+            strokeDashoffset={0}
+            strokeLinecap="round"
+            className="animate-pulse"
+            style={{
+              opacity: 0.3,
+              filter: "blur(2px)",
+            }}
+          />
+        )}
       </svg>
 
-      {/* Center content */}
+      {/* Center content with consistent animation */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className={cn(
-            "font-medium tabular-nums",
-            size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl"
+            "font-medium tabular-nums transition-all duration-500",
+            size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl",
+            isComplete ? "scale-110" : ""
           )}
-          style={{ color: isComplete ? progressColor : "inherit" }}
+          style={{ 
+            color: isComplete ? progressColor : "inherit",
+            textShadow: isPulsing ? `0 0 8px ${progressColor}80` : "none",
+            transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
         >
           {Math.round(animatedPercentage)}%
         </span>
         {showLabel && labelText && (
-          <span className={cn("text-xs text-muted-foreground mt-1", size === "lg" && "text-sm")}>{labelText}</span>
+          <span 
+            className={cn(
+              "text-xs text-muted-foreground mt-1 transition-all duration-500",
+              size === "lg" && "text-sm",
+              isComplete ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+            )}
+          >
+            {labelText}
+          </span>
         )}
       </div>
     </div>
