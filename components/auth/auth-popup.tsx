@@ -44,29 +44,29 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
-        className="sm:max-w-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        className="w-full max-w-sm sm:max-w-md bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 rounded-xl p-6 shadow-2xl"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >
-        <DialogHeader>
+        <DialogHeader className="items-center">
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-green-400 to-red-500 bg-clip-text text-transparent">
             Welcome to wrkout
           </DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground mt-2">
+          <DialogDescription className="text-base text-muted-foreground mt-2 text-center">
             Sign in to sync your workouts across devices and track your progress over time.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-4 mt-6 px-2">
           <Button
             onClick={handleSignIn}
-            className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold"
+            className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold py-2.5 rounded-lg"
           >
             Sign In
           </Button>
           <Button
             onClick={handleSignUp}
             variant="outline"
-            className="w-full border-2 hover:bg-accent"
+            className="w-full border-2 hover:bg-accent py-2.5 rounded-lg"
           >
             Create Account
           </Button>

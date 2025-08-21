@@ -91,36 +91,36 @@ export function WorkoutLogModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="w-full max-w-sm mobile-narrow-modal dark:bg-background/90 dark:border-opacity-10 rounded-2xl mx-auto border-none shadow-2xl backdrop-blur-xl overflow-hidden"
+        className="w-full max-w-sm sm:max-w-md mobile-narrow-modal dark:bg-background/90 dark:border-opacity-10 rounded-2xl mx-auto border-none shadow-2xl backdrop-blur-xl overflow-hidden"
         hideCloseButton={true}
       >
         {/* Header with gradient background */}
         <div 
-          className="relative pt-4 pb-5 px-6 rounded-t-2xl"
+          className="relative pt-5 pb-6 px-6 rounded-t-2xl"
           style={{ 
             background: `linear-gradient(135deg, ${dayColor}20 0%, ${dayColor}10 100%)`,
             borderBottom: `1px solid ${dayColor}20`
           }}
         >
           <DialogHeader className="items-center">
-            <DialogTitle className="flex flex-col items-center gap-2 text-white">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-background/30 backdrop-blur-sm border border-white/10">
+            <DialogTitle className="flex flex-col items-center gap-2.5 text-white">
+              <div className="flex items-center justify-center w-11 h-11 rounded-full bg-background/30 backdrop-blur-sm border border-white/10">
                 <span
-                  className="inline-block w-2.5 h-2.5 rounded-full"
+                  className="inline-block w-3 h-3 rounded-full"
                   style={{ backgroundColor: dayColor }}
                   aria-hidden="true"
                 ></span>
               </div>
-              <span className="font-semibold text-base">{exercise.name}</span>
+              <span className="font-semibold text-lg">{exercise.name}</span>
             </DialogTitle>
           </DialogHeader>
         </div>
 
         {/* Main content */}
-        <div className="flex flex-col items-center py-4 px-4">
-          <div className="w-full space-y-5">
+        <div className="flex flex-col items-center py-5 px-5">
+          <div className="w-full space-y-6">
             {/* Weight Section */}
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Weight</h3>
               </div>
@@ -136,7 +136,7 @@ export function WorkoutLogModal({
             </div>
 
             {/* Reps Section */}
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Reps</h3>
               </div>
@@ -152,8 +152,8 @@ export function WorkoutLogModal({
 
             {/* Last Log Section */}
             {lastLog && (
-              <div className="mt-2 pt-3 border-t border-white/10">
-                <div className="flex justify-between items-center mb-2">
+              <div className="mt-3 pt-4 border-t border-white/10">
+                <div className="flex justify-between items-center mb-2.5">
                   <span className="text-xs text-muted-foreground">Last log</span>
                   <span className="text-xs font-medium text-white" style={{ color: dayColor }}>
                     {lastLog.weight} kg × {lastLog.avg_reps} reps
@@ -164,7 +164,7 @@ export function WorkoutLogModal({
                   variant="outline"
                   size="sm"
                   onClick={handleRecallLastLog}
-                  className="w-full h-9 px-4 text-xs font-medium rounded-lg bg-background/50 border-white/10 hover:bg-white/5 transition-all duration-200"
+                  className="w-full h-10 px-4 text-xs font-medium rounded-lg bg-background/50 border-white/10 hover:bg-white/5 transition-all duration-200"
                 >
                   Use Last Log
                 </Button>
@@ -174,12 +174,12 @@ export function WorkoutLogModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 px-4 pb-4 pt-2">
+        <div className="grid grid-cols-2 gap-3 px-5 pb-5 pt-3">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="h-11 rounded-xl font-medium border-white/10 bg-background/50 hover:bg-white/5 text-white transition-all duration-200"
+            className="h-12 rounded-xl font-medium border-white/10 bg-background/50 hover:bg-white/5 text-white transition-all duration-200"
             disabled={isSaving}
           >
             Cancel
@@ -188,7 +188,7 @@ export function WorkoutLogModal({
             type="button"
             onClick={handleSave}
             style={{ backgroundColor: dayColor }}
-            className="h-11 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:brightness-110"
+            className="h-12 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:brightness-110"
             disabled={isSaving}
           >
             {isSaving ? (
