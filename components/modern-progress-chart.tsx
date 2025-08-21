@@ -86,7 +86,7 @@ const chartStyles = `
     box-sizing: border-box;
     z-index: 1000;
     width: calc(100% - 32px);
-    max-width: 320px;
+    max-width: 260px;
     margin: 0 auto;
     pointer-events: none;
   }
@@ -168,9 +168,9 @@ const chartStyles = `
   /* Compact mobile tooltip */
   @media (max-width: 640px) {
     .compact-mobile-tooltip {
-      padding: 12px 16px !important;
-      width: calc(100% - 24px) !important;
-      max-width: 280px !important;
+      padding: 10px 14px !important;
+      width: calc(100% - 32px) !important;
+      max-width: 260px !important;
     }
   }
 `
@@ -496,7 +496,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
         }`}
         style={{
-          backgroundColor: "rgba(24, 24, 24, 0.95)", // Premium dark gray matching the modal background (#181818)
+          backgroundColor: "rgba(24, 24, 24, 0.98)", // Increased opacity for better readability
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -506,37 +506,37 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           touchAction: 'none', // Prevent default touch actions
         }}
       >
-        <div className="space-y-2.5">
-          <p className="font-medium text-white">{formatFullDate(label)}</p>
-          <div className="flex items-center gap-3">
+        <div className="space-y-2">
+          <p className="font-medium text-white text-sm">{formatFullDate(label)}</p>
+          <div className="flex items-center gap-2.5">
             <div 
-              className="h-3 w-3 rounded-full flex-shrink-0" 
+              className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
               style={{ 
                 backgroundColor: chartColor,
-                boxShadow: `0 0 12px ${chartColor}60`
+                boxShadow: `0 0 8px ${chartColor}60`
               }}
             />
-            <div className="flex items-baseline gap-2">
-              <span className="font-bold text-xl" style={{ color: chartColor }}>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-lg" style={{ color: chartColor }}>
                 {payload[0].value}
               </span>
-              <span className="text-white/70 text-sm">kg</span>
+              <span className="text-white/70 text-xs">kg</span>
             </div>
           </div>
           {data.avgReps > 0 && (
-            <div className="text-white/70 text-sm font-medium">
+            <div className="text-white/70 text-xs font-medium">
               {data.avgReps} reps
             </div>
           )}
           {(isPR || isLatest) && (
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-1.5 pt-0.5">
               {isPR && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/25 text-green-300 border border-green-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/25 text-green-300 border border-green-500/30">
                   PR
                 </span>
               )}
               {isLatest && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/25 text-blue-300 border border-blue-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/25 text-blue-300 border border-blue-500/30">
                   Latest
                 </span>
               )}
