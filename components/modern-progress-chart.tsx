@@ -803,22 +803,76 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
               )}
             </div>
           ) : (
-            // Desktop selector
-            <div className="flex items-center gap-3">
-              <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
-                <TabsList className="h-7 p-0.5 bg-[#1a1a1a] rounded-full border border-white/10">
-                  <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">1M</TabsTrigger>
-                  <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">3M</TabsTrigger>
-                  <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">6M</TabsTrigger>
-                  <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">1Y</TabsTrigger>
-                  <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">5Y</TabsTrigger>
-                  <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-[#2a2a2a] data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-[#252525]">All</TabsTrigger>
-                </TabsList>
-              </Tabs>
+            // Desktop selector - using mobile design for consistency
+            <div className="mobile-timeframe-container w-full">
+              <div className="mobile-timeframe-scroll scrollbar-hide">
+                <div className="mobile-timeframe-buttons">
+                  <button
+                    onClick={() => setTimeframe("month")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "month"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    1M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("threeMonths")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "threeMonths"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    3M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("sixMonths")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "sixMonths"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    6M
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("year")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "year"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    1Y
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("fiveYears")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "fiveYears"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    5Y
+                  </button>
+                  <button
+                    onClick={() => setTimeframe("all")}
+                    className={`mobile-timeframe-button ${
+                      timeframe === "all"
+                        ? "bg-[#2a2a2a] text-foreground border-white/10 active"
+                        : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
+                    }`}
+                  >
+                    All
+                  </button>
+                </div>
+              </div>
               
-              {/* Weight change indicator */}
+              {/* Weight change indicator - placed after timeframe selector for mobile */}  
               {percentChange && (
-                <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                <div className={`change-indicator ${
                     Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
                 }`}>
                   <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
