@@ -459,12 +459,18 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
   }
 
   const handleTouchEnd = () => {
-    // Small delay to allow for tap interactions
-    setTimeout(() => {
+    // For better UX, we'll keep the tooltip visible until the user interacts elsewhere
+    // The tooltip will be dismissed when the user taps outside the chart or taps another point
+  }
+
+  // Add a handler to dismiss tooltip when tapping outside the chart
+  const handleChartContainerTouch = (e: React.TouchEvent) => {
+    // If touching outside a data point, dismiss tooltip
+    if (touchedPoint !== null && e.target === e.currentTarget) {
       setTouchedPoint(null)
       setHoveredPoint(null)
       setIsHoveringChart(false)
-    }, 2000) // Dismiss after 2 seconds for better mobile experience
+    }
   }
 
   // Enhanced Custom Tooltip component with iOS-like styling
@@ -490,7 +496,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
         }`}
         style={{
-          backgroundColor: "rgba(30, 30, 40, 0.95)", // Increased opacity for better readability
+          backgroundColor: "rgba(24, 24, 24, 0.95)", // Premium dark gray matching the modal background (#181818)
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -590,13 +596,25 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         onTouchEnd={(e) => {
           e.preventDefault() // Prevent default touch behavior
           e.stopPropagation() // Prevent event bubbling
-          handleTouchEnd()
+          // Dismiss tooltip when touching outside of a dot
+          if (touchedPoint === index) {
+            setTouchedPoint(null)
+            setHoveredPoint(null)
+            setIsHoveringChart(false)
+          }
         }}
         onClick={() => {
-          // Also handle click events for better touch support
+          // Toggle tooltip visibility on click/tap for better touch support
           if (isTouchDevice) {
-            handleTouchStart(index)
-            setTimeout(() => handleTouchEnd(), 2000)
+            if (touchedPoint === index) {
+              // If tapping the same point, dismiss tooltip
+              setTouchedPoint(null)
+              setHoveredPoint(null)
+              setIsHoveringChart(false)
+            } else {
+              // If tapping a different point, show tooltip for that point
+              handleTouchStart(index)
+            }
           }
         }}
         style={{ 
@@ -690,6 +708,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
       onMouseEnter={() => !isTouchDevice && setIsHoveringChart(true)}
       onMouseLeave={() => !isTouchDevice && setIsHoveringChart(false)}
+      onTouchStart={handleChartContainerTouch}
       style={{ 
         willChange: "transform",
         background: "linear-gradient(135deg, rgba(30, 30, 40, 0.7), rgba(20, 20, 30, 0.7))",
@@ -828,6 +847,10 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                       onMouseLeave={() => {
                         setHoveredPoint(null)
                         setIsHoveringChart(false)
+                        // On mobile, also clear touched point when leaving chart area
+                        if (isTouchDevice) {
+                          setTouchedPoint(null)
+                        }
                       }}
                     >
                       <defs>
