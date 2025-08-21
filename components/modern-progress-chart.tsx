@@ -35,28 +35,31 @@ const containerVariants: Variants = {
 // Update chart variants for smoother revealing animation
 const chartVariants: Variants = {
   initial: { 
-    opacity: 0.4,
-    clipPath: "inset(0 100% 0 0)"
+    opacity: 0.3,
+    clipPath: "inset(0 100% 0 0)",
+    filter: "blur(4px)"
   },
   hover: { 
     opacity: 1,
     clipPath: "inset(0 0% 0 0)",
+    filter: "blur(0px)",
     transition: {
-      duration: 0.6,
+      duration: 0.7,
       ease: [0.22, 1, 0.36, 1]
     }
   },
   exit: { 
     opacity: 0,
     clipPath: "inset(0 0% 0 100%)",
+    filter: "blur(4px)",
     transition: {
-      duration: 0.4,
+      duration: 0.5,
       ease: [0.22, 1, 0.36, 1]
     }
   }
 }
 
-// Move all styles to a single constant at the top level of the component
+  // Move all styles to a single constant at the top level of the component
 const chartStyles = `
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -91,6 +94,83 @@ const chartStyles = `
   @media (hover: none) {
     .recharts-wrapper {
       touch-action: pan-x pan-y;
+    }
+  }
+  
+  /* Mobile-optimized timeframe selector */
+  .mobile-timeframe-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .mobile-timeframe-scroll {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 4px 0;
+    width: 100%;
+  }
+  
+  .mobile-timeframe-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-timeframe-buttons {
+    display: flex;
+    gap: 5px;
+    padding: 0 2px;
+  }
+  
+  .mobile-timeframe-button {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    border: 1px solid;
+    white-space: nowrap;
+    min-width: 36px;
+  }
+  
+  .mobile-timeframe-button.active {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transform: scale(1.05);
+  }
+  
+  /* Change indicator */
+  .change-indicator {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 9999px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  
+  /* Chart container spacing */
+  .chart-container {
+    padding-top: 16px;
+  }
+  
+  @media (max-width: 640px) {
+    .chart-container {
+      padding-top: 20px;
+    }
+  }
+  
+  /* Compact mobile tooltip */
+  @media (max-width: 640px) {
+    .compact-mobile-tooltip {
+      padding: 12px 16px !important;
+      width: calc(100% - 24px) !important;
+      max-width: 280px !important;
     }
   }
 `
@@ -384,7 +464,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       setTouchedPoint(null)
       setHoveredPoint(null)
       setIsHoveringChart(false)
-    }, 2000) // Dismiss after 2 seconds
+    }, 2000) // Dismiss after 2 seconds for better mobile experience
   }
 
   // Enhanced Custom Tooltip component with iOS-like styling
@@ -397,56 +477,60 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+        initial={{ opacity: 0, y: 8, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+        exit={{ opacity: 0, y: 8, scale: 0.95 }}
         transition={{ 
           type: "spring",
-          stiffness: 500,
-          damping: 30,
-          mass: 0.8
+          stiffness: 600,
+          damping: 35,
+          mass: 0.7
         }}
-        className={`bg-zinc-800/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-zinc-700/30 text-sm ${
-          isTouchDevice ? 'touch-tooltip' : ''
+        className={`rounded-2xl p-4 text-sm backdrop-blur-2xl ${
+          isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
         }`}
         style={{
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "rgba(30, 30, 40, 0.95)", // Increased opacity for better readability
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08)",
           transformOrigin: "center bottom",
           willChange: "transform, opacity",
           touchAction: 'none', // Prevent default touch actions
         }}
       >
-        <div className="space-y-2">
-          <p className="font-medium text-zinc-200">{formatFullDate(label)}</p>
-          <div className="flex items-center gap-2.5">
+        <div className="space-y-2.5">
+          <p className="font-medium text-white">{formatFullDate(label)}</p>
+          <div className="flex items-center gap-3">
             <div 
-              className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
+              className="h-3 w-3 rounded-full flex-shrink-0" 
               style={{ 
                 backgroundColor: chartColor,
-                boxShadow: `0 0 8px ${chartColor}40`
+                boxShadow: `0 0 12px ${chartColor}60`
               }}
             />
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-semibold text-lg" style={{ color: chartColor }}>
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-xl" style={{ color: chartColor }}>
                 {payload[0].value}
               </span>
-              <span className="text-zinc-400 text-sm">kg</span>
+              <span className="text-white/70 text-sm">kg</span>
             </div>
           </div>
           {data.avgReps > 0 && (
-            <div className="text-zinc-400 text-sm">
+            <div className="text-white/70 text-sm font-medium">
               {data.avgReps} reps
             </div>
           )}
           {(isPR || isLatest) && (
             <div className="flex items-center gap-2 pt-1">
               {isPR && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/25 text-green-300 border border-green-500/30">
                   PR
                 </span>
               )}
               {isLatest && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/25 text-blue-300 border border-blue-500/30">
                   Latest
                 </span>
               )}
@@ -479,10 +563,10 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     const isHovered = hoveredPoint === index
     const isTouched = touchedPoint === index
     const shouldHighlight = isLatest || isHovered || isPR || isTouched
-    const dotSize = shouldHighlight ? 5.5 : 4
+    const dotSize = shouldHighlight ? 6 : 4.5
 
-    const labelYOffset = isMobile ? -14 : -16
-    const labelFontSize = isMobile ? 11 : 15
+    const labelYOffset = isMobile ? -16 : -18
+    const labelFontSize = isMobile ? 12 : 16
 
     return (
       <g
@@ -500,18 +584,27 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         }}
         onTouchStart={(e) => {
           e.preventDefault() // Prevent default touch behavior
+          e.stopPropagation() // Prevent event bubbling
           handleTouchStart(index)
         }}
         onTouchEnd={(e) => {
           e.preventDefault() // Prevent default touch behavior
+          e.stopPropagation() // Prevent event bubbling
           handleTouchEnd()
+        }}
+        onClick={() => {
+          // Also handle click events for better touch support
+          if (isTouchDevice) {
+            handleTouchStart(index)
+            setTimeout(() => handleTouchEnd(), 2000)
+          }
         }}
         style={{ 
           cursor: isTouchDevice ? 'pointer' : 'default',
           touchAction: 'none' // Prevent default touch actions
         }}
       >
-        {/* Base dot */}
+        {/* Base dot with iOS-like styling */}
         <circle
           cx={cx}
           cy={cy}
@@ -519,57 +612,60 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           fill={chartColor}
           style={{
             opacity: 1,
-            stroke: "rgba(255, 255, 255, 0.12)",
-            strokeWidth: shouldHighlight ? 1 : 0.5,
+            stroke: "rgba(255, 255, 255, 0.2)",
+            strokeWidth: shouldHighlight ? 1.5 : 0.8,
+            filter: shouldHighlight ? "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))" : "none",
           }}
         />
 
-        {/* Highlight effect */}
+        {/* Highlight effect with smoother animation */}
         {shouldHighlight && (
           <circle
             cx={cx}
             cy={cy}
-            r={dotSize + 2}
+            r={dotSize + 3}
             fill="none"
             style={{
               stroke: chartColor,
-              strokeWidth: 1.2,
-              opacity: 0.25,
+              strokeWidth: 1.5,
+              opacity: 0.3,
+              filter: "blur(1px)",
             }}
           />
         )}
 
-        {/* Inner highlight */}
+        {/* Inner highlight for PR/Latest */}
         {(isPR || isLatest) && (
           <circle
             cx={cx}
             cy={cy}
-            r={dotSize * 0.5}
-            fill="rgba(255, 255, 255, 0.6)"
+            r={dotSize * 0.6}
+            fill="rgba(255, 255, 255, 0.8)"
             style={{
-              mixBlendMode: "soft-light",
+              mixBlendMode: "screen",
             }}
           />
         )}
 
-        {/* Weight label */}
+        {/* Weight label with improved visibility */}
         {shouldHighlight && (
           <text
             x={cx}
             y={cy + labelYOffset}
             textAnchor="middle"
-            fill={chartColor}
+            fill="white"
             fontSize={labelFontSize}
             fontWeight="600"
             style={{
               paintOrder: "stroke",
-              stroke: "rgba(0,0,0,0.2)",
-              strokeWidth: 2,
+              stroke: "rgba(0,0,0,0.5)",
+              strokeWidth: 3,
               strokeLinecap: "round",
               strokeLinejoin: "round",
-              filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.2))",
+              filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.3))",
               zIndex: 1000,
               pointerEvents: 'none', // Prevent text from interfering with touch events
+              fontFamily: "system-ui, -apple-system, sans-serif",
             }}
           >
             {payload.weight}kg
@@ -591,10 +687,15 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="rounded-xl overflow-hidden border border-zinc-700/30 shadow-xl"
+      className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
       onMouseEnter={() => !isTouchDevice && setIsHoveringChart(true)}
       onMouseLeave={() => !isTouchDevice && setIsHoveringChart(false)}
-      style={{ willChange: "transform" }}
+      style={{ 
+        willChange: "transform",
+        background: "linear-gradient(135deg, rgba(30, 30, 40, 0.7), rgba(20, 20, 30, 0.7))",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)"
+      }}
     >
       <style jsx global>{chartStyles}</style>
       <div className="bg-gradient-to-b from-zinc-800/95 to-zinc-900/95 rounded-xl overflow-hidden">
@@ -603,14 +704,14 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           {/* Timeframe Selector */}
           {isMobile ? (
             // Mobile-optimized selector with horizontal scrolling
-            <div className="flex items-center w-full">
-              <div className="flex overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1 w-full">
-                <div className="flex space-x-1.5">
+            <div className="mobile-timeframe-container">
+              <div className="mobile-timeframe-scroll scrollbar-hide">
+                <div className="mobile-timeframe-buttons">
                   <button
                     onClick={() => setTimeframe("month")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "month"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -618,9 +719,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                   <button
                     onClick={() => setTimeframe("threeMonths")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "threeMonths"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -628,9 +729,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                   <button
                     onClick={() => setTimeframe("sixMonths")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "sixMonths"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -638,9 +739,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                   <button
                     onClick={() => setTimeframe("year")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "year"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -648,9 +749,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                   <button
                     onClick={() => setTimeframe("fiveYears")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "fiveYears"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -658,9 +759,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                   <button
                     onClick={() => setTimeframe("all")}
-                    className={`timeframe-button text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 whitespace-nowrap border ${
+                    className={`mobile-timeframe-button ${
                       timeframe === "all"
-                        ? "bg-zinc-700/80 text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.25)] timeframe-button-active border-zinc-600"
+                        ? "bg-zinc-700/80 text-foreground border-zinc-600 active"
                         : "bg-zinc-800/50 text-muted-foreground hover:bg-zinc-700/40 border-zinc-700/30"
                     }`}
                   >
@@ -668,35 +769,47 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                   </button>
                 </div>
               </div>
+              
+              {/* Weight change indicator - placed after timeframe selector for mobile */}
+              {percentChange && (
+                <div className={`change-indicator ${
+                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                }`}>
+                  <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
+                  <span>{Math.abs(Number(percentChange))}%</span>
+                </div>
+              )}
             </div>
           ) : (
             // Desktop selector
-            <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
-              <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
-                <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
-                <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
-                <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
-                <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
-                <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">5Y</TabsTrigger>
-                <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">All</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          )}
-
-          {/* Weight change indicator */}
-          {percentChange && (
-            <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-            }`}>
-              <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
-              <span>{Math.abs(Number(percentChange))}%</span>
+            <div className="flex items-center gap-3">
+              <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
+                <TabsList className="h-7 p-0.5 bg-zinc-800/70 rounded-full border border-zinc-700/30">
+                  <TabsTrigger value="month" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1M</TabsTrigger>
+                  <TabsTrigger value="threeMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">3M</TabsTrigger>
+                  <TabsTrigger value="sixMonths" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">6M</TabsTrigger>
+                  <TabsTrigger value="year" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">1Y</TabsTrigger>
+                  <TabsTrigger value="fiveYears" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">5Y</TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs px-2 sm:px-3 rounded-full data-[state=active]:bg-zinc-700/80 data-[state=active]:shadow-sm font-medium transition-all duration-200 whitespace-nowrap hover:bg-zinc-700/40">All</TabsTrigger>
+                </TabsList>
+              </Tabs>
+              
+              {/* Weight change indicator */}
+              {percentChange && (
+                <div className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                }`}>
+                  <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
+                  <span>{Math.abs(Number(percentChange))}%</span>
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* Enhanced Chart Content with adjusted height for longer timeframes */}
-        <div className="p-0 pt-4 sm:pt-6 pb-2 sm:pb-4">
-          <div className="h-[180px] sm:h-[220px] w-full px-2 mt-1 sm:mt-0">
+        <div className="chart-container">
+          <div className="h-[180px] sm:h-[220px] w-full px-2">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
@@ -718,10 +831,11 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                       }}
                     >
                       <defs>
-                        {/* Simple gradient for area */}
+                        {/* Premium gradient for area with multiple stops */}
                         <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.15} />
-                          <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
+                          <stop offset="0%" stopColor={chartColor} stopOpacity={0.25} />
+                          <stop offset="50%" stopColor={chartColor} stopOpacity={0.12} />
+                          <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
                         </linearGradient>
                       </defs>
 
@@ -761,15 +875,16 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                         type="monotone"
                         dataKey="weight"
                         stroke={chartColor}
-                        strokeWidth={2}
+                        strokeWidth={3}
                         dot={<CustomDot />}
-                        animationDuration={1200}
+                        animationDuration={1500}
                         animationEasing="ease-out"
                         connectNulls={true}
                         style={{
                           strokeLinecap: "round",
                           strokeLinejoin: "round",
-                          opacity: 1
+                          opacity: 1,
+                          filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))"
                         }}
                       />
 
@@ -780,10 +895,10 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                         stroke="none"
                         fillOpacity={1}
                         fill="url(#colorWeight)"
-                        animationDuration={1200}
+                        animationDuration={1500}
                         animationEasing="ease-out"
                         style={{
-                          opacity: 0.8
+                          opacity: 0.7
                         }}
                       />
                     </LineChart>
