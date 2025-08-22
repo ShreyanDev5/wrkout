@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
 import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
+import { DeletionConfirmationModal } from '@/components/deletion-confirmation-modal'
 import { OnboardingGuide } from '@/components/onboarding-guide'
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -60,6 +61,12 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{workoutId: string, dayId: string} | null>(null)
   const [isDeleteAllWorkoutsOpen, setIsDeleteAllWorkoutsOpen] = useState(false);
   const [pendingDeleteWorkoutId, setPendingDeleteWorkoutId] = useState<string | null>(null);
+  const [isDeleteWorkoutOpen, setIsDeleteWorkoutOpen] = useState(false);
+  const [workoutToDelete, setWorkoutToDelete] = useState<{id: string, name: string} | null>(null);
+  const [isDeleteDayOpen, setIsDeleteDayOpen] = useState(false);
+  const [dayToDelete, setDayToDelete] = useState<{workoutId: string, id: string, name: string} | null>(null);
+  const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
+  const [exerciseToDelete, setExerciseToDelete] = useState<{workoutId: string, dayId: string, id: string, name: string} | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -135,19 +142,52 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     })
   }
 
-  const handleDeleteWorkout = (workoutId: string) => {
+  const handleDeleteWorkout = (workoutId: string, workoutName: string) => {
     if (workouts.length === 1) {
       setPendingDeleteWorkoutId(workoutId);
       setIsDeleteAllWorkoutsOpen(true);
       return;
     }
-    onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== workoutId), workoutDays)
+    setWorkoutToDelete({ id: workoutId, name: workoutName });
+    setIsDeleteWorkoutOpen(true);
+  }
 
-    toast({
-      title: "Workout Deleted",
-      description: "The workout has been removed.",
-      className: "bg-[#EA4335] border-none text-white",
-    })
+  const confirmDeleteWorkout = async () => {
+    if (!workoutToDelete || !user) return;
+    
+    try {
+      // Delete workout from database (cascading delete will remove days and exercises)
+      const { error } = await supabase.from('workouts').delete().eq('id', workoutToDelete.id);
+      
+      if (error) {
+        console.error('Supabase delete error:', error);
+        toast({ 
+          title: 'Error', 
+          description: error.message, 
+          className: 'bg-[#EA4335] border-none text-white' 
+        });
+        return;
+      }
+      
+      // Update local state
+      onUpdateWorkoutsAndDays(
+        workouts.filter((w) => w.id !== workoutToDelete.id), 
+        workoutDays.filter((d) => d.workout_id !== workoutToDelete.id)
+      );
+      
+      toast({
+        title: "Workout Deleted",
+        description: "The workout has been removed.",
+        className: "bg-[#EA4335] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error deleting workout:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
+    }
   }
 
   const handleAddDay = async () => {
@@ -226,21 +266,36 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }
   };
 
-  const handleDeleteDay = async (workoutId: string, dayId: string) => {
-    if (!user) return;
-    const { error } = await supabase.from('workout_days').delete().eq('id', dayId);
-    if (error) {
-      console.error('Supabase delete error:', error);
-      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
-      return;
+  const handleDeleteDay = async (workoutId: string, dayId: string, dayName: string) => {
+    setDayToDelete({ workoutId, id: dayId, name: dayName });
+    setIsDeleteDayOpen(true);
+  }
+
+  const confirmDeleteDay = async () => {
+    if (!dayToDelete || !user) return;
+    
+    try {
+      const { error } = await supabase.from('workout_days').delete().eq('id', dayToDelete.id);
+      if (error) {
+        console.error('Supabase delete error:', error);
+        toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+        return;
+      }
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      toast({
+        title: "Day Deleted",
+        description: "The day has been removed from your workout.",
+        className: "bg-[#EA4335] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error deleting day:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
     }
-    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
-    toast({
-      title: "Day Deleted",
-      description: "The day has been removed from your workout.",
-      className: "bg-[#EA4335] border-none text-white",
-    });
   };
 
   const handleAddExercise = async () => {
@@ -269,25 +324,41 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     });
   }
 
-  const handleDeleteExercise = async (workoutId: string, dayId: string, exerciseId: string) => {
-    if (!user) return;
-    // Find the workout day to update
-    const dayToUpdate = workoutDays.find(day => day.id === dayId);
-    if (!dayToUpdate) return;
-    const updatedExercises = (dayToUpdate.exercises || []).filter((exercise: any) => exercise.id !== exerciseId);
-    const { error } = await updateWorkoutDayExercises(supabase, dayId, updatedExercises);
-    if (error) {
-      console.error('Supabase update error:', error);
-      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
-      return;
+  const handleDeleteExercise = async (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => {
+    setExerciseToDelete({ workoutId, dayId, id: exerciseId, name: exerciseName });
+    setIsDeleteExerciseOpen(true);
+  }
+
+  const confirmDeleteExercise = async () => {
+    if (!exerciseToDelete || !user) return;
+    
+    try {
+      // Find the workout day to update
+      const dayToUpdate = workoutDays.find(day => day.id === exerciseToDelete.dayId);
+      if (!dayToUpdate) return;
+      
+      const updatedExercises = (dayToUpdate.exercises || []).filter((exercise: any) => exercise.id !== exerciseToDelete.id);
+      const { error } = await updateWorkoutDayExercises(supabase, exerciseToDelete.dayId, updatedExercises);
+      if (error) {
+        console.error('Supabase update error:', error);
+        toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+        return;
+      }
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      toast({
+        title: "Exercise Deleted",
+        description: "The exercise has been removed from your workout.",
+        className: "bg-[#EA4335] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error deleting exercise:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
     }
-    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
-    toast({
-      title: "Exercise Deleted",
-      description: "The exercise has been removed from your workout.",
-      className: "bg-[#EA4335] border-none text-white",
-    });
   }
 
   // Get day icon and color based on day ID
@@ -422,7 +493,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleDeleteWorkout(workout.id)
+                              handleDeleteWorkout(workout.id, workout.name)
                             }}
                             className="h-7 w-7 sm:h-8 sm:w-8 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
                             aria-label={`Delete ${workout.name} workout`}
@@ -508,7 +579,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                               size="sm"
                                               onClick={(e) => {
                                                 e.stopPropagation()
-                                                handleDeleteDay(workout.id, day.id)
+                                                handleDeleteDay(workout.id, day.id, day.name)
                                               }}
                                               className="h-6 w-6 sm:h-7 sm:w-7 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
                                               aria-label={`Delete ${day.name} day`}
@@ -579,7 +650,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                           variant="ghost"
                                                           size="sm"
                                                           onClick={() =>
-                                                            handleDeleteExercise(workout.id, day.id, exercise.id)
+                                                            handleDeleteExercise(workout.id, day.id, exercise.id, exercise.name)
                                                           }
                                                           className="h-5 w-5 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
                                                           aria-label={`Delete ${exercise.name} exercise`}
@@ -815,6 +886,42 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         }}
         dayColor="#EA4335"
         message={"Are you sure you want to delete your last workout routine? This will remove all associated days and exercises. This action cannot be undone."}
+      />
+
+      {/* Workout Deletion Confirmation Modal */}
+      <DeletionConfirmationModal
+        isOpen={isDeleteWorkoutOpen}
+        onClose={() => {
+          setIsDeleteWorkoutOpen(false);
+          setWorkoutToDelete(null);
+        }}
+        onConfirm={confirmDeleteWorkout}
+        itemType="workout"
+        itemName={workoutToDelete?.name || ""}
+      />
+
+      {/* Day Deletion Confirmation Modal */}
+      <DeletionConfirmationModal
+        isOpen={isDeleteDayOpen}
+        onClose={() => {
+          setIsDeleteDayOpen(false);
+          setDayToDelete(null);
+        }}
+        onConfirm={confirmDeleteDay}
+        itemType="day"
+        itemName={dayToDelete?.name || ""}
+      />
+
+      {/* Exercise Deletion Confirmation Modal */}
+      <DeletionConfirmationModal
+        isOpen={isDeleteExerciseOpen}
+        onClose={() => {
+          setIsDeleteExerciseOpen(false);
+          setExerciseToDelete(null);
+        }}
+        onConfirm={confirmDeleteExercise}
+        itemType="exercise"
+        itemName={exerciseToDelete?.name || ""}
       />
 
       <div className="my-6">
