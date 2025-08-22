@@ -150,7 +150,7 @@ export function WorkoutScreen({
     return totalExercises > 0 
       ? Math.min(Math.round((completedExercises / totalExercises) * 100), 100)
       : 0
-  }, [currentWorkoutDays, tickCounter, loadTickedExercises])
+  }, [currentWorkoutDays, loadTickedExercises])
   
   // Calculate progress for the current day
   const activeProgress = useMemo(() => calculateProgress(selectedDay), [calculateProgress, selectedDay])

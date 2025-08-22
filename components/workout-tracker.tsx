@@ -81,7 +81,7 @@ export function WorkoutTracker() {
       // Optionally, show a warning or log here
       console.warn('Attempted to save empty workout list. Skipping destructive save.');
     }
-  }, [appData, user?.id])
+  }, [appData, user?.id, supabase])
 
   // Add workout log (only for logged-in users)
   const addWorkoutLog = async (log: WorkoutLog) => {
@@ -136,6 +136,7 @@ export function WorkoutTracker() {
             wrkout
           </h1>
           <div className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo_1.0.png"
               alt="wrkout logo"

@@ -212,7 +212,7 @@ export default function ForgotPasswordPage() {
 
           {/* Compact Help Text */}
           <p className="text-xs text-muted-foreground text-center">
-            Didn't receive the email? Check spam folder or try again.
+            Didn&apos;t receive the email? Check spam folder or try again.
           </p>
         </div>
       </AuthLayout>
@@ -282,7 +282,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
               />
               <p className="text-xs text-muted-foreground">
-                We'll send the password reset link to this email address.
+                We&apos;ll send the password reset link to this email address.
               </p>
             </div>
           )}
@@ -309,9 +309,9 @@ export default function ForgotPasswordPage() {
         
         {/* Additional help text */}
         <div className="text-xs text-muted-foreground text-center space-y-1">
-          <p>• Check your spam/junk folder if you don't receive the email</p>
-          <p>• The reset link will expire in 24 hours</p>
-          <p>• Make sure you're using the same username you signed up with</p>
+          <p>&#8226; Check your spam/junk folder if you don&apos;t receive the email</p>
+          <p>&#8226; The reset link will expire in 24 hours</p>
+          <p>&#8226; Make sure you&apos;re using the same username you signed up with</p>
         </div>
       </form>
     </AuthLayout>

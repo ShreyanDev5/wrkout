@@ -761,7 +761,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           </DialogHeader>
           <div className="py-3 flex flex-col gap-4">
             <p className="line-height-readable text-center text-xs text-muted-foreground">
-              Define a day's routine (e.g., push, pull, leg, or custom).
+              Define a day&apos;s routine (e.g., push, pull, leg, or custom).
             </p>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1.5">
@@ -784,7 +784,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                   className="mt-1 text-sm px-2.5 py-1.5 rounded-md"
                 />
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 text-center">
-                  Use "push", "pull", or "leg" for special styling
+                  Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling
                 </p>
               </div>
             </div>
@@ -861,7 +861,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         onClose={() => setIsSignOutOpen(false)}
         onConfirm={handleSignOut}
         dayColor="#EA4335"
-        message={"Are you sure you want to sign out? You'll need to log in again to access your workouts and progress."}
+        message={"Are you sure you want to sign out? You&apos;ll need to log in again to access your workouts and progress."}
       />
       
       {/* Onboarding Guide */}

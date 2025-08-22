@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
     // Only depend on router, supabase is stable
-  }, [router]);
+  }, [router, supabase.auth]);
 
   const signUp = async (email: string, password: string) => {
     try {

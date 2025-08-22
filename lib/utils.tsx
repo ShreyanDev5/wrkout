@@ -52,7 +52,7 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
   const legKeywords = [
     // User's leg routine
     'lying leg curl', // Lying Leg Curl
-    'hack squat', // Hack Squat
+    'hack squat',
     'romanian deadlift', 'rdl', // Romanian Deadlift (RDL)
     'leg extension', // Leg Extension
     'smith machine squat', // Smith Machine Squat
