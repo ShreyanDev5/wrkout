@@ -266,7 +266,7 @@ export function WorkoutScreen({
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pt-0 pb-2">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="flex flex-nowrap justify-center mb-3 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-1 w-full">
+          <TabsList className="flex flex-nowrap justify-center mb-3 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-2 w-full md:justify-center md:gap-3">
             {['push', 'pull', 'leg'].map((day) => (
               <TabsTrigger
                 key={day}
@@ -274,7 +274,8 @@ export function WorkoutScreen({
                 className={cn(
                   'flex-1 text-xs whitespace-nowrap',
                   'flex items-center justify-center gap-1 focus-visible-ring modern-tab-trigger workout-tab-button rounded-full transition-all duration-200 data-[state=active]:shadow-sm',
-                  'py-1.5 px-2 xs:py-2 xs:px-2.5 sm:py-2 sm:px-3 md:py-2 md:px-4'
+                  'py-1.5 px-2 xs:py-2 xs:px-2.5 sm:py-2 sm:px-3 md:py-2 md:px-4 lg:py-2.5 lg:px-5',
+                  'md:flex-none md:w-auto md:min-w-[100px] lg:min-w-[120px]'
                 )}
                 style={{
                   backgroundColor:

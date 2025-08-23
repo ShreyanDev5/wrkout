@@ -234,6 +234,23 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Desktop-specific enhancements for premium look */
+@media (min-width: 768px) {
+  .workout-tabs-container {
+    display: flex;
+    justify-content: center;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.8), rgba(26, 26, 26, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 6px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
 /* Enhanced pill/capsule-shaped workout tab button styles with higher specificity */
 .workout-tab-button,
 [data-state="active"] .workout-tab-button,
@@ -277,6 +294,55 @@
   letter-spacing: 0.01em;
 }
 
+/* Desktop-specific enhancements for premium look */
+@media (min-width: 768px) {
+  .workout-tab-button {
+    height: 44px !important;
+    padding: 0 20px !important;
+    font-size: 0.875rem !important;
+    gap: 0.5rem !important;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .workout-tab-button:not([data-state="active"]):hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .workout-tab-button[data-state="active"] {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .workout-tab-button span {
+    font-size: 0.875rem !important;
+    font-weight: 600;
+  }
+  
+  /* Premium color scheme for active buttons */
+  .workout-tab-button[data-state="active"][aria-label*="Push"] {
+    background: linear-gradient(135deg, rgba(249, 217, 73, 0.2), rgba(249, 217, 73, 0.1)) !important;
+    border: 1px solid rgba(249, 217, 73, 0.3) !important;
+    color: #f9d949 !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Pull"] {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)) !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    color: #4caf50 !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Leg"] {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(244, 67, 54, 0.1)) !important;
+    border: 1px solid rgba(244, 67, 54, 0.3) !important;
+    color: #f44336 !important;
+  }
+}
+
 /* Ensure mobile styles override desktop styles */
 @media (max-width: 768px) {
   .workout-tab-button,
@@ -287,10 +353,40 @@
     padding: 0 12px !important;
     gap: 0.3rem !important;
     background: transparent;
+    backdrop-filter: none;
   }
   
   .workout-tab-button span {
     font-size: 0.75rem !important;
+  }
+  
+  /* Restore premium color scheme for mobile active buttons */
+  .workout-tab-button[data-state="active"] {
+    background: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  /* Premium color scheme for active buttons on mobile */
+  .workout-tab-button[data-state="active"][aria-label*="Push"] {
+    background: rgba(249, 217, 73, 0.2) !important;
+    border: 1px solid rgba(249, 217, 73, 0.3) !important;
+    color: #f9d949 !important;
+    box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Pull"] {
+    background: rgba(76, 175, 80, 0.2) !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    color: #4caf50 !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Leg"] {
+    background: rgba(244, 67, 54, 0.2) !important;
+    border: 1px solid rgba(244, 67, 54, 0.3) !important;
+    color: #f44336 !important;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.15) !important;
   }
 }
 
@@ -312,6 +408,28 @@
     width: 14px !important;
     height: 14px !important;
   }
+  
+  /* Maintain premium color scheme on smaller screens */
+  .workout-tab-button[data-state="active"][aria-label*="Push"] {
+    background: rgba(249, 217, 73, 0.2) !important;
+    border: 1px solid rgba(249, 217, 73, 0.3) !important;
+    color: #f9d949 !important;
+    box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Pull"] {
+    background: rgba(76, 175, 80, 0.2) !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    color: #4caf50 !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Leg"] {
+    background: rgba(244, 67, 54, 0.2) !important;
+    border: 1px solid rgba(244, 67, 54, 0.3) !important;
+    color: #f44336 !important;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.15) !important;
+  }
 }
 
 /* Extra compact styles for very small screens */
@@ -332,6 +450,28 @@
   .workout-tab-button .modern-icon {
     width: 12px !important;
     height: 12px !important;
+  }
+  
+  /* Maintain premium color scheme on very small screens */
+  .workout-tab-button[data-state="active"][aria-label*="Push"] {
+    background: rgba(249, 217, 73, 0.2) !important;
+    border: 1px solid rgba(249, 217, 73, 0.3) !important;
+    color: #f9d949 !important;
+    box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Pull"] {
+    background: rgba(76, 175, 80, 0.2) !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    color: #4caf50 !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
+  }
+  
+  .workout-tab-button[data-state="active"][aria-label*="Leg"] {
+    background: rgba(244, 67, 54, 0.2) !important;
+    border: 1px solid rgba(244, 67, 54, 0.3) !important;
+    color: #f44336 !important;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.15) !important;
   }
 }
 
