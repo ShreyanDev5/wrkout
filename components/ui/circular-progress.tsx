@@ -143,7 +143,7 @@ export function CircularProgress({
       {...props}
     >
       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        {/* Background track */}
+        {/* Background track with enhanced styling */}
         <circle
           cx="50"
           cy="50"
@@ -154,7 +154,7 @@ export function CircularProgress({
           strokeLinecap="round"
           className="opacity-20"
         />
-        {/* Progress arc with consistent animation */}
+        {/* Progress arc with consistent animation and enhanced styling */}
         <circle
           cx="50"
           cy="50"
@@ -171,7 +171,7 @@ export function CircularProgress({
             filter: isPulsing ? `drop-shadow(0 0 4px ${progressColor}B0)` : "none",
           }}
         />
-        {/* Subtle glow effect when complete */}
+        {/* Enhanced glow effect when complete */}
         {isComplete && (
           <circle
             cx="50"
@@ -185,18 +185,28 @@ export function CircularProgress({
             strokeLinecap="round"
             className="animate-pulse"
             style={{
-              opacity: 0.3,
-              filter: "blur(2px)",
+              opacity: 0.4,
+              filter: "blur(3px)",
             }}
           />
         )}
+        {/* Subtle inner shadow for depth */}
+        <circle
+          cx="50"
+          cy="50"
+          r={radius - strokeWidth / 2}
+          fill="none"
+          stroke="rgba(0,0,0,0.1)"
+          strokeWidth="1"
+          className="opacity-30"
+        />
       </svg>
 
-      {/* Center content with consistent animation */}
+      {/* Center content with enhanced styling */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className={cn(
-            "font-medium tabular-nums transition-all duration-500",
+            "font-semibold tabular-nums transition-all duration-500 tracking-tight",
             size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl",
             isComplete ? "scale-110" : ""
           )}
@@ -211,7 +221,7 @@ export function CircularProgress({
         {showLabel && labelText && (
           <span 
             className={cn(
-              "text-xs text-muted-foreground mt-1 transition-all duration-500",
+              "text-xs text-muted-foreground mt-1 transition-all duration-500 font-medium",
               size === "lg" && "text-sm",
               isComplete ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
             )}

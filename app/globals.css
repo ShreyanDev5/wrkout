@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  @variants responsive {
+    .xs\:inline {
+      display: inline;
+    }
+  }
+}
+
 @layer base {
   :root {
     --background: 240 10% 3.9%;
@@ -199,72 +207,205 @@
   }
 }
 
-/* Workout tab button styles */
-.workout-tabs-container {
-  border-radius: 16px;
-  padding: 1px 2px 1px 2px;
-  background-color: rgba(255, 255, 255, 0.03);
-  margin-bottom: 0.5rem;
-  min-height: unset;
+/* Premium card styles */
+.premium-card {
+  background: #1a1a1a !important;
+  border-radius: 20px !important;
+  border: 1px solid #2d2d2d !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+  overflow: hidden;
 }
 
-.workout-tab-button {
+/* Premium workout header styles */
+.workout-selector {
+  background: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Enhanced workout tab container with pill shape */
+.workout-tabs-container {
   border-radius: 9999px;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  background: linear-gradient(135deg, #1e1e1e, #1a1a1a);
+  border: 1px solid #2d2d2d;
+  padding: 4px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced pill/capsule-shaped workout tab button styles with higher specificity */
+.workout-tab-button,
+[data-state="active"] .workout-tab-button,
+[data-state="inactive"] .workout-tab-button,
+.dark .workout-tab-button {
+  border-radius: 9999px !important;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
-  height: 32px;
-  padding: 0 8px;
-  font-size: 0.9rem;
+  height: 40px !important;
+  padding: 0 14px !important;
+  font-size: 0.8125rem !important;
   min-width: 0;
-  line-height: 1.1;
+  line-height: 1.2;
   font-weight: 500;
   box-shadow: none;
-  background: none;
-  gap: 0.15rem;
+  background: transparent;
+  gap: 0.375rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.workout-tab-button:not([data-state="active"]):hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.workout-tab-button[data-state="active"] {
+  background: rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .workout-tab-button span {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.8125rem !important;
+  font-weight: 600;
   letter-spacing: 0.01em;
 }
 
-@media (max-width: 640px) {
-  .workout-tabs-container {
-    padding: 0 1px 0 1px;
-    margin-bottom: 0.35rem;
+/* Ensure mobile styles override desktop styles */
+@media (max-width: 768px) {
+  .workout-tab-button,
+  [data-state="active"] .workout-tab-button,
+  [data-state="inactive"] .workout-tab-button,
+  .dark .workout-tab-button {
+    height: 36px !important;
+    padding: 0 12px !important;
+    gap: 0.3rem !important;
+    background: transparent;
   }
-  .workout-tab-button {
-    height: 28px;
-    padding: 0 6px;
-    font-size: 0.8rem;
-    gap: 0.1rem;
-  }
+  
   .workout-tab-button span {
-    font-size: 0.8rem;
+    font-size: 0.75rem !important;
   }
 }
 
-@media (max-width: 360px) {
-  .workout-tabs-container {
-    padding: 0;
-    margin-bottom: 0.2rem;
+@media (max-width: 480px) {
+  .workout-tab-button,
+  [data-state="active"] .workout-tab-button,
+  [data-state="inactive"] .workout-tab-button,
+  .dark .workout-tab-button {
+    height: 32px !important;
+    padding: 0 10px !important;
+    gap: 0.25rem !important;
   }
-  .workout-tab-button {
-    height: 24px;
-    padding: 0 2px;
-    font-size: 0.75rem;
-    gap: 0.05rem;
-  }
+  
   .workout-tab-button span {
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
   }
+  
   .workout-tab-button .modern-icon {
-    width: 12px;
-    height: 12px;
+    width: 14px !important;
+    height: 14px !important;
   }
 }
+
+/* Extra compact styles for very small screens */
+@media (max-width: 360px) {
+  .workout-tab-button,
+  [data-state="active"] .workout-tab-button,
+  [data-state="inactive"] .workout-tab-button,
+  .dark .workout-tab-button {
+    height: 30px !important;
+    padding: 0 8px !important;
+    gap: 0.2rem !important;
+  }
+  
+  .workout-tab-button span {
+    font-size: 0.75rem !important;
+  }
+  
+  .workout-tab-button .modern-icon {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+/* Enhanced workout selector */
+.workout-header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+/* Matte dark grey select styles */
+.workout-select .min-touch-target {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 12px !important;
+  border: 1px solid #2d2d2d !important;
+  background: #1e1e1e !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.workout-select .min-touch-target:focus {
+  border-color: hsl(var(--ring)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  outline: none;
+}
+
+.workout-select .min-touch-target:hover:not(:focus) {
+  background: #252525 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Consistent reset button size across all devices */
+.reset-button-premium {
+  flex-shrink: 0;
+  height: 36px !important;
+  width: 36px !important;
+  border-radius: 12px !important;
+  border: 1px solid #2d2d2d !important;
+  background: #1e1e1e !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.reset-button-premium:hover {
+  background: #252525 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.reset-button-premium:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Moderately darkened progress container for better contrast */
+.progress-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0 2rem;
+  padding: 1rem;
+  background: #1f1f1f;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+
 
 /* Icon animation */
 .workout-tab-button:hover .modern-icon {
@@ -287,18 +428,7 @@
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 360px) {
-  .workout-tab-button {
-    padding: 0 8px;
-    height: 44px;
-  }
 
-  .workout-tab-button .modern-icon {
-    width: 16px;
-    height: 16px;
-  }
-}
 
 /* Button animations */
 .button-hover-effect {

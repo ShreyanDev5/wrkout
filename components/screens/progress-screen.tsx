@@ -12,7 +12,7 @@ import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
 import { motion } from "framer-motion"
 import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
-import { useIsMobile } from "@/components/ui/use-mobile"
+
 
 interface ProgressScreenProps {
   logs: WorkoutLog[]
@@ -20,7 +20,7 @@ interface ProgressScreenProps {
 
 export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
-  const isMobile = useIsMobile()
+  
   const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -180,7 +180,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       : undefined,
                   }}
                 >
-                  {(mainFilter === "push" && isMobile) ? null : getWorkoutIcon("push")}
+                  {getWorkoutIcon("push")}
                   <span>Push</span>
                   {mainFilter === "push" && (
                     <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-push-dark/10 text-push-dark">
@@ -197,7 +197,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       : undefined,
                   }}
                 >
-                  {(mainFilter === "pull" && isMobile) ? null : getWorkoutIcon("pull")}
+                  {getWorkoutIcon("pull")}
                   <span>Pull</span>
                   {mainFilter === "pull" && (
                     <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-pull-dark/10 text-pull-dark">
@@ -214,7 +214,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       : undefined,
                   }}
                 >
-                  {(mainFilter === "leg" && isMobile) ? null : getWorkoutIcon("leg")}
+                  {getWorkoutIcon("leg")}
                   <span>Legs</span>
                   {mainFilter === "leg" && (
                     <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-leg-dark/10 text-leg-dark">

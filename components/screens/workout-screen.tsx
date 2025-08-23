@@ -83,8 +83,6 @@ export function WorkoutScreen({
   const [isInitialized, setIsInitialized] = useState(false)
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
-
-  // Load the last selected day from localStorage on component mount
   useEffect(() => {
     const loadSavedSection = async () => {
       try {
@@ -236,12 +234,12 @@ export function WorkoutScreen({
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector">
-      <CardHeader className="px-3 sm:px-4">
-        <div className="flex items-center w-full">
-          <div className={`transition-all duration-200 ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
+    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector premium-card">
+      <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
+        <div className="workout-header-container">
+          <div className={`transition-all duration-200 workout-select ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
             <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
-              <SelectTrigger className="w-full h-8 sm:h-9 text-sm flex items-center">
+              <SelectTrigger className="w-full min-touch-target">
                 <SelectValue placeholder="Select Workout" className="truncate" />
               </SelectTrigger>
               <SelectContent>
@@ -257,87 +255,45 @@ export function WorkoutScreen({
             <Button 
               variant="outline" 
               size="icon" 
-              className="h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 ml-1.5 my-0.5"
+              className="reset-button-premium"
               onClick={() => setIsResetDialogOpen(true)}
               aria-label="Reset workout progress"
             >
-              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <RotateCcw className="h-4 w-4" />
             </Button>
           )}
         </div>
       </CardHeader>
-      <CardContent className="px-3 sm:px-4">
+      <CardContent className="px-3 sm:px-4 pt-0 pb-2">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-1 modern-tabs-list workout-tabs-container">
-            <TabsTrigger
-              value="push"
-              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
-              style={{
-                backgroundColor:
-                  selectedDay === "push"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 18%, transparent)`
-                    : undefined,
-                color: selectedDay === "push" ? getWorkoutDayColor("push", colorMode) : undefined,
-                borderRadius: '9999px',
-                height: '22px',
-                padding: '0 6px',
-                fontWeight: 600,
-                boxShadow: selectedDay === "push" ? '0 2px 8px 0 rgba(249,217,73,0.08)' : 'none',
-                fontSize: '0.82rem',
-                letterSpacing: '0.01em',
-              }}
-              aria-label="Push day"
-            >
-              {getWorkoutDayIcon("push", true)}
-              <span className="font-semibold">PUSH</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="pull"
-              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
-              style={{
-                backgroundColor:
-                  selectedDay === "pull"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 18%, transparent)`
-                    : undefined,
-                color: selectedDay === "pull" ? getWorkoutDayColor("pull", colorMode) : undefined,
-                borderRadius: '9999px',
-                height: '22px',
-                padding: '0 6px',
-                fontWeight: 600,
-                boxShadow: selectedDay === "pull" ? '0 2px 8px 0 rgba(76,175,80,0.08)' : 'none',
-                fontSize: '0.82rem',
-                letterSpacing: '0.01em',
-              }}
-              aria-label="Pull day"
-            >
-              {getWorkoutDayIcon("pull", true)}
-              <span className="font-semibold">PULL</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="leg"
-              className="flex items-center gap-0.5 min-touch-target focus-visible-ring modern-tab-trigger workout-tab-button text-xs sm:text-sm compact-mobile-tab"
-              style={{
-                backgroundColor:
-                  selectedDay === "leg"
-                    ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 18%, transparent)`
-                    : undefined,
-                color: selectedDay === "leg" ? getWorkoutDayColor("leg", colorMode) : undefined,
-                borderRadius: '9999px',
-                height: '22px',
-                padding: '0 6px',
-                fontWeight: 600,
-                boxShadow: selectedDay === "leg" ? '0 2px 8px 0 rgba(244,67,54,0.08)' : 'none',
-                fontSize: '0.82rem',
-                letterSpacing: '0.01em',
-              }}
-              aria-label="Leg day"
-            >
-              {getWorkoutDayIcon("leg", true)}
-              <span className="font-semibold">LEG</span>
-            </TabsTrigger>
+          <TabsList className="flex flex-nowrap justify-center mb-3 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-1 w-full">
+            {['push', 'pull', 'leg'].map((day) => (
+              <TabsTrigger
+                key={day}
+                value={day}
+                className={cn(
+                  'flex-1 text-xs whitespace-nowrap',
+                  'flex items-center justify-center gap-1 focus-visible-ring modern-tab-trigger workout-tab-button rounded-full transition-all duration-200 data-[state=active]:shadow-sm',
+                  'py-1.5 px-2 xs:py-2 xs:px-2.5 sm:py-2 sm:px-3 md:py-2 md:px-4'
+                )}
+                style={{
+                  backgroundColor:
+                    selectedDay === day
+                      ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15%, transparent)`
+                      : 'transparent',
+                  color: selectedDay === day ? getWorkoutDayColor(day, colorMode) : 'hsl(var(--muted-foreground))',
+                  fontWeight: selectedDay === day ? 600 : 500,
+                  boxShadow: selectedDay === day ? `0 2px 8px 0 rgba(${day === 'push' ? '249,217,73' : day === 'pull' ? '76,175,80' : '244,67,54'},0.12)` : 'none',
+                }}
+                aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
+              >
+                {getWorkoutDayIcon(day, true, 'h-4 w-4 xs:h-4 xs:w-4 sm:h-4 sm:w-4 md:h-5 md:w-5')}
+                <span className="hidden xs:inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+              </TabsTrigger>
+            ))}
           </TabsList>
           
-          <div className="flex justify-center my-3 sm:my-4">
+          <div className="flex justify-center progress-container">
             <CircularProgress 
               value={activeProgress}
               category={selectedDay}

@@ -29,18 +29,18 @@ export function getWorkoutDayColor(dayId: string, colorMode?: string): string {
   }
 }
 
-export function getWorkoutDayIcon(dayId: string, modern = false): ReactNode {
+export function getWorkoutDayIcon(dayId: string, modern = false, size = "h-5 w-5"): ReactNode {
   const iconClass = modern ? "modern-icon" : ""
 
   switch (dayId.toLowerCase()) {
     case "push":
-      return <ArrowUp className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
+      return <ArrowUp className={`${size} ${iconClass}`} aria-hidden="true" />
     case "pull":
-      return <ArrowDown className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
+      return <ArrowDown className={`${size} ${iconClass}`} aria-hidden="true" />
     case "leg":
-      return <Footprints className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
+      return <Footprints className={`${size} ${iconClass}`} aria-hidden="true" />
     default:
-      return <Dumbbell className={`h-5 w-5 ${iconClass}`} aria-hidden="true" />
+      return <Dumbbell className={`${size} ${iconClass}`} aria-hidden="true" />
   }
 }
 
