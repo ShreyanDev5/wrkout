@@ -42,11 +42,12 @@ export function CircularProgress({
   ...props
 }: CircularProgressProps) {
   const percentage = Math.min(100, Math.max(0, (value / maxValue) * 100))
-  const [animatedPercentage, setAnimatedPercentage] = React.useState(0)
-  const [isComplete, setIsComplete] = React.useState(false)
+  const [animatedPercentage, setAnimatedPercentage] = React.useState(percentage) // Initialize with actual percentage
+  const [isComplete, setIsComplete] = React.useState(percentage >= 100)
   const [isScaling, setIsScaling] = React.useState(false)
   const [isPulsing, setIsPulsing] = React.useState(false)
-  const prevPercentageRef = React.useRef(0)
+  const prevPercentageRef = React.useRef(percentage) // Initialize with actual percentage
+  const firstRenderRef = React.useRef(true)
 
   // Get color based on category
   const getCategoryColor = (category: string): string => {
@@ -67,9 +68,16 @@ export function CircularProgress({
 
   // Animation effect with consistent linear speed using requestAnimationFrame
   React.useEffect(() => {
+    // Skip animation on first render to prevent incorrect animation on screen re-entry
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false
+      return
+    }
+
     if (!animated) {
       setAnimatedPercentage(percentage)
       setIsComplete(percentage >= 100)
+      prevPercentageRef.current = percentage
       return
     }
 
@@ -88,21 +96,30 @@ export function CircularProgress({
         const currentPercentage = startPercentage + (endPercentage - startPercentage) * progress
         setAnimatedPercentage(currentPercentage)
         
+        // Update completion state during animation for smoother visual transitions
+        const currentlyComplete = currentPercentage >= 100
+        if (currentlyComplete !== isComplete) {
+          setIsComplete(currentlyComplete)
+        }
+        
         if (progress < 1) {
           requestAnimationFrame(animate)
         } else {
           // Animation complete
           prevPercentageRef.current = endPercentage
           
-          // Check if we've reached 100%
+          // Final check for completion state
+          const finalComplete = endPercentage >= 100
+          if (finalComplete !== isComplete) {
+            setIsComplete(finalComplete)
+          }
+          
+          // Trigger completion effects only when reaching 100%
           if (endPercentage >= 100 && !isComplete) {
-            setIsComplete(true)
             setIsScaling(true)
             setIsPulsing(true)
             setTimeout(() => setIsScaling(false), 600)
             setTimeout(() => setIsPulsing(false), 1200)
-          } else if (endPercentage < 100) {
-            setIsComplete(false)
           }
         }
       }
