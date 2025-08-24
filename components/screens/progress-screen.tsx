@@ -173,7 +173,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               <TabsList className="grid grid-cols-3 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
                 <TabsTrigger
                   value="push"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ${mainFilter === "push" ? 'text-push-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
+                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ${mainFilter === "push" ? 'text-push-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "push"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
@@ -190,7 +190,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="pull"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1 md:ml-1.5 ${mainFilter === "pull" ? 'text-pull-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
+                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ml-1 md:ml-1.5 ${mainFilter === "pull" ? 'text-pull-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "pull"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
@@ -207,7 +207,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="leg"
-                  className={`rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-2.5 md:px-4 text-sm md:text-base font-medium transition-all ml-1.5 md:ml-2 ${mainFilter === "leg" ? 'text-leg-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
+                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ml-1.5 md:ml-2 ${mainFilter === "leg" ? 'text-leg-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
                   style={{
                     backgroundColor: mainFilter === "leg"
                       ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`

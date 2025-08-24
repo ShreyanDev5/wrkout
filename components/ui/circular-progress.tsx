@@ -29,6 +29,11 @@ export interface CircularProgressProps
   animated?: boolean
 }
 
+// Easing function for a smooth, iOS-like animation
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
 export function CircularProgress({
   className,
   size,
@@ -49,6 +54,12 @@ export function CircularProgress({
   const prevPercentageRef = React.useRef(percentage) // Initialize with actual percentage
   const firstRenderRef = React.useRef(true)
   const dataStabilizationRef = React.useRef(false)
+  const [hasMounted, setHasMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
 
   // Get color based on category
   const getCategoryColor = (category: string): string => {
@@ -64,8 +75,21 @@ export function CircularProgress({
     }
   }
 
+  // Get text color based on category and completion status
+  const getTextColor = (category: string, isComplete: boolean): string => {
+    if (!hasMounted) {
+      return "transparent" // Avoid flash of incorrect color on initial render
+    }
+    if (isComplete) {
+      return getCategoryColor(category)
+    }
+    // For incomplete routines, use white text
+    return "white"
+  }
+
   const trackColor = "var(--track-color, #E5E7EB)" // Light muted gray
   const progressColor = getCategoryColor(category)
+  const textColor = getTextColor(category, percentage >= 100)
 
   // Animation effect with consistent linear speed using requestAnimationFrame
   React.useEffect(() => {
@@ -105,34 +129,36 @@ export function CircularProgress({
       const startPercentage = prevPercentageRef.current
       const endPercentage = percentage
       const startTime = performance.now()
-      const animationDuration = 600 // Fixed duration for consistent speed
+      const animationDuration = 800 // Slightly longer duration for a smoother feel
 
       const animate = (currentTime: number) => {
         const elapsed = currentTime - startTime
         const progress = Math.min(elapsed / animationDuration, 1)
-        
-        // Linear interpolation for consistent speed
-        const currentPercentage = startPercentage + (endPercentage - startPercentage) * progress
+        const easedProgress = easeInOutCubic(progress) // Apply easing
+
+        // Interpolate using the eased progress
+        const currentPercentage =
+          startPercentage + (endPercentage - startPercentage) * easedProgress
         setAnimatedPercentage(currentPercentage)
-        
+
         // Update completion state during animation for smoother visual transitions
         const currentlyComplete = currentPercentage >= 100
         if (currentlyComplete !== isComplete) {
           setIsComplete(currentlyComplete)
         }
-        
+
         if (progress < 1) {
           requestAnimationFrame(animate)
         } else {
           // Animation complete
           prevPercentageRef.current = endPercentage
-          
+
           // Final check for completion state
           const finalComplete = endPercentage >= 100
           if (finalComplete !== isComplete) {
             setIsComplete(finalComplete)
           }
-          
+
           // Trigger completion effects only when reaching 100%
           if (endPercentage >= 100 && !isComplete) {
             setIsScaling(true)
@@ -227,10 +253,10 @@ export function CircularProgress({
           className={cn(
             "font-semibold tabular-nums transition-all duration-500 tracking-tight",
             size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl",
-            isComplete ? "scale-110" : ""
+            percentage >= 100 ? "scale-110" : ""
           )}
           style={{ 
-            color: isComplete ? progressColor : "inherit",
+            color: textColor,
             textShadow: isPulsing ? `0 0 8px ${progressColor}80` : "none",
             transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
@@ -242,7 +268,7 @@ export function CircularProgress({
             className={cn(
               "text-xs text-muted-foreground mt-1 transition-all duration-500 font-medium",
               size === "lg" && "text-sm",
-              isComplete ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+              percentage >= 100 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
             )}
           >
             {labelText}
