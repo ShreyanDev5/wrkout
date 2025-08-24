@@ -49,10 +49,10 @@ export function AuthPopup() {
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >
         <DialogHeader className="items-center">
-          <DialogTitle className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-green-400 to-red-500 bg-clip-text text-transparent">
+          <DialogTitle className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-400 to-red-500 bg-clip-text text-transparent">
             Welcome to wrkout
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground mt-1.5 text-center">
+          <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1.5 text-center">
             Sign in to sync your workouts across devices and track your progress over time.
           </DialogDescription>
         </DialogHeader>

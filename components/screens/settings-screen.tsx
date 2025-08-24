@@ -861,7 +861,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         onClose={() => setIsSignOutOpen(false)}
         onConfirm={handleSignOut}
         dayColor="#EA4335"
-        message={"Are you sure you want to sign out? You&apos;ll need to log in again to access your workouts and progress."}
+        message={"Are you sure you want to sign out? You will need to log in again to access your workouts and progress."}
       />
       
       {/* Onboarding Guide */}

@@ -121,7 +121,7 @@ export function SignUpForm() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor="username" className="text-sm font-medium">Username</Label>
           <Input
             id="username"
             value={username}

@@ -40,7 +40,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto flex flex-col items-center text-center p-4 shadow-lg backdrop-blur-xl">
+      <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto flex flex-col items-center text-center p-4 shadow-lg backdrop-blur-xl">
         <DialogHeader className="w-full flex flex-col items-center">
           <div className="flex flex-col items-center gap-1.5 mb-1.5 w-full text-center">
             <AlertTriangle className="h-5 w-5 text-amber-500 mx-auto" aria-hidden="true" />
@@ -49,7 +49,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
         </DialogHeader>
 
         <div className="py-2 w-full flex flex-col items-center">
-          <p className="line-height-readable w-full text-center text-sm text-muted-foreground px-0.5">
+          <p className="line-height-readable w-full text-center text-sm md:text-base text-muted-foreground px-0.5">
             {message || 'Are you sure you want to restart this session? All checked exercises will be marked as incomplete.'}
           </p>
         </div>
