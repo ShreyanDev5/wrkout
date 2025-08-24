@@ -85,77 +85,71 @@ export default function SettingsPage() {
   );
 
   return (
-    <CollapsibleHeaderLayout
-      header={header}
-      initialHeaderHeight={100}
-      collapseThreshold={50}
-    >
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Account</CardTitle>
-            <CardDescription>
-              Manage your account settings and preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {/* User Info Section */}
-              {user && (
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-gradient-to-r from-yellow-400 to-green-400 text-black">
-                        {user.email?.[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{displayUsername || user.email}</p>
-                      <p className="text-sm text-muted-foreground">Signed in</p>
-                    </div>
-                  </div>
-                  <Separator />
-                </div>
-              )}
-
-              {/* Auth Buttons */}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Account</CardTitle>
+          <CardDescription>
+            Manage your account settings and preferences
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* User Info Section */}
+            {user && (
               <div className="space-y-4">
-                {user ? (
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-gradient-to-r from-yellow-400 to-green-400 text-black">
+                      {user.email?.[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium">{displayUsername || user.email}</p>
+                    <p className="text-sm text-muted-foreground">Signed in</p>
+                  </div>
+                </div>
+                <Separator />
+              </div>
+            )}
+
+            {/* Auth Buttons */}
+            <div className="space-y-4">
+              {user ? (
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="w-full border-2 hover:bg-accent"
+                >
+                  Sign Out
+                </Button>
+              ) : (
+                <>
                   <Button
-                    onClick={handleSignOut}
+                    onClick={handleSignIn}
+                    className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={handleSignUp}
                     variant="outline"
                     className="w-full border-2 hover:bg-accent"
                   >
-                    Sign Out
+                    Create Account
                   </Button>
-                ) : (
-                  <>
-                    <Button
-                      onClick={handleSignIn}
-                      className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold"
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      onClick={handleSignUp}
-                      variant="outline"
-                      className="w-full border-2 hover:bg-accent"
-                    >
-                      Create Account
-                    </Button>
-                  </>
-                )}
-              </div>
+                </>
+              )}
             </div>
-          </CardContent>
-        </Card>
-        {/* Render the SettingsScreen for workout management */}
-        <SettingsScreen
-          workouts={workouts}
-          workoutDays={workoutDays}
-          onUpdateWorkoutsAndDays={handleUpdateWorkoutsAndDays}
-        />
-      </div>
-    </CollapsibleHeaderLayout>
+          </div>
+        </CardContent>
+      </Card>
+      {/* Render the SettingsScreen for workout management */}
+      <SettingsScreen
+        workouts={workouts}
+        workoutDays={workoutDays}
+        onUpdateWorkoutsAndDays={handleUpdateWorkoutsAndDays}
+      />
+    </div>
   );
 } 
