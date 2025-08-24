@@ -101,7 +101,7 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'hip abduction', 'abduction hip', 'hip adduction', 'adduction hip', 
     'step[- ]?up', 'step[- ]?down',
     'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge',
-    'calf raise', 'leg curl machine'
+    'calf raise', 'leg curl machine', 'leg curl'
   ]
   
   // Push exercises (chest, shoulders, triceps)
@@ -143,10 +143,10 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'incline chest fly', 'chest fly incline',
     'decline chest fly', 'chest fly decline',
     'overhead press', 'press overhead',
-    // Existing generic push terms
     'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
     'fly', 'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'lateral raise',
-    'overhead rope extension', 'rope triceps extension'
+    'overhead rope extension', 'rope triceps extension',
+    'dumbbell flyes', 'flyes'
   ]
   
   // Pull exercises (back, biceps, rear delts, traps, core)
@@ -175,7 +175,7 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'barbell shrug', 'shrug barbell',
     'cable shrug', 'shrug cable',
     'cable crunch', 'crunch cable',
-    'hanging leg raises', 'leg raises hanging', 'hanging knee raises',
+    'hanging leg raises', 'leg raises hanging', 'hanging knee raises', 'knee raises hanging',
     'decline sit-ups', 'decline sit ups', 'sit ups decline', 'decline crunch',
     'leg raises on bench', 'bench leg raises', 'lying leg raise',
     'plank', 'plank (timed)', 'plank hold',
@@ -183,7 +183,6 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'cable row', 'row cable',
     'lat pullover', 'pullover lat', 'lat pull over',
     'straight arm pulldown', 'pulldown straight arm',
-    // Existing generic pull terms
     'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
     'face pull', 'rear delt', 'rack pull', 't-bar', 't bar'
   ]
