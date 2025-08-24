@@ -156,9 +156,9 @@ export function WorkoutScreen({
   if (workouts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-6">
-        <p className="text-muted-foreground text-base sm:text-lg text-center px-4 py-2 leading-relaxed">
+        <p className="text-muted-foreground text-base sm:text-lg text-center px-4 py-2 leading-tight">
           No workouts available.<br className="hidden sm:block" />
-          <span className="block mt-1">Add a workout to get started.</span>
+          <span className="block mt-0.5">Add a workout to get started.</span>
         </p>
         <Button
           onClick={() => setIsAddWorkoutOpen(true)}
