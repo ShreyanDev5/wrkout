@@ -48,6 +48,7 @@ export function CircularProgress({
   const [isPulsing, setIsPulsing] = React.useState(false)
   const prevPercentageRef = React.useRef(percentage) // Initialize with actual percentage
   const firstRenderRef = React.useRef(true)
+  const dataStabilizationRef = React.useRef(false)
 
   // Get color based on category
   const getCategoryColor = (category: string): string => {
@@ -71,6 +72,24 @@ export function CircularProgress({
     // Skip animation on first render to prevent incorrect animation on screen re-entry
     if (firstRenderRef.current) {
       firstRenderRef.current = false
+      // Set the previous percentage to current to prevent animation on re-mount
+      prevPercentageRef.current = percentage
+      // Mark that data has stabilized after first render
+      setTimeout(() => {
+        dataStabilizationRef.current = true
+      }, 50)
+      return
+    }
+
+    // Skip animation until data has stabilized to prevent flickering on re-mount
+    if (!dataStabilizationRef.current) {
+      setAnimatedPercentage(percentage)
+      setIsComplete(percentage >= 100)
+      prevPercentageRef.current = percentage
+      // Mark that data has stabilized after short delay
+      setTimeout(() => {
+        dataStabilizationRef.current = true
+      }, 50)
       return
     }
 
