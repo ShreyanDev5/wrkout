@@ -169,15 +169,15 @@ export function WorkoutScreen({
           Add Workout
         </Button>
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-          <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
+          <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
             <DialogHeader>
               <div className="flex flex-col items-center gap-1.5 mb-1.5">
                 <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
                 <DialogTitle className="line-height-readable text-center text-base">Add New Workout</DialogTitle>
               </div>
             </DialogHeader>
-            <div className="py-3">
-              <p className="line-height-readable text-center mb-3 text-xs text-muted-foreground">
+            <div className="pt-2 pb-3">
+              <p className="line-height-readable text-center mb-4 text-sm md:text-base text-muted-foreground">
                 Create a new workout routine. Workouts contain days and exercises.
               </p>
               <Label htmlFor="workout-name" className="block text-center mb-1.5 text-sm">Workout Name</Label>

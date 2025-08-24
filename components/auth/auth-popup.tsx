@@ -44,7 +44,7 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
-        className="w-[92%] max-w-[320px] bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 rounded-xl p-4 shadow-lg"
+        className="w-[92%] max-w-[320px] md:max-w-[400px] bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 rounded-xl p-4 shadow-lg"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >

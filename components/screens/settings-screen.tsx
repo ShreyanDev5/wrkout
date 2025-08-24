@@ -709,18 +709,18 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       {/* Add Workout Dialog */}
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
+        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-1.5 mb-1.5">
               <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base">Add New Workout</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="py-3">
-            <p className="line-height-readable text-center mb-3 text-xs text-muted-foreground">
+          <div className="pt-2 pb-3">
+            <p className="line-height-readable text-center mb-4 text-sm md:text-base text-muted-foreground">
               Create a new workout routine. Workouts contain days and exercises.
             </p>
-            <Label htmlFor="workout-name" className="block text-center mb-1.5 text-sm">Workout Name</Label>
+            <Label htmlFor="workout-name" className="text-sm mb-1.5">Workout Name</Label>
             <Input
               id="workout-name"
               value={newWorkoutName}
@@ -752,39 +752,39 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       {/* Add Day Dialog */}
       <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
+        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-1.5 mb-1.5">
               <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base">Add Workout Day</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="py-3 flex flex-col gap-4">
-            <p className="line-height-readable text-center text-xs text-muted-foreground">
+          <div className="pt-2 pb-3 flex flex-col gap-4">
+            <p className="line-height-readable text-center text-sm md:text-base text-muted-foreground">
               Define a day&apos;s routine (e.g., push, pull, leg, or custom).
             </p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="day-name" className="block text-center text-sm">Day Name</Label>
+                <Label htmlFor="day-name" className="text-sm">Day Name</Label>
                 <Input
                   id="day-name"
                   value={newDayName}
                   onChange={(e) => setNewDayName(e.target.value)}
-                  placeholder="Enter day name (e.g. Push Day)"
+                  placeholder="e.g. Push Day"
                   className="mt-1 text-sm px-2.5 py-1.5 rounded-md"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="day-id" className="block text-center text-sm">Day ID</Label>
+                <Label htmlFor="day-id" className="text-sm">Day ID</Label>
                 <Input
                   id="day-id"
                   value={newDayId}
                   onChange={(e) => setNewDayId(e.target.value)}
-                  placeholder="Enter day ID (e.g. 'push', 'pull', 'leg')"
+                  placeholder="e.g. 'push', 'pull', or 'leg'"
                   className="mt-1 text-sm px-2.5 py-1.5 rounded-md"
                 />
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 text-center">
-                  Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling.
                 </p>
               </div>
             </div>
@@ -812,23 +812,23 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       {/* Add Exercise Dialog */}
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
+        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-1.5 mb-1.5">
               <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base">Add Exercise</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="py-3">
-            <p className="line-height-readable text-center mb-1 text-xs text-muted-foreground">
+          <div className="pt-2 pb-3">
+            <p className="line-height-readable text-center mb-4 text-sm md:text-base text-muted-foreground">
               Add an exercise to your workout day.
             </p>
-            <Label htmlFor="exercise-name" className="block text-center mt-4 mb-1.5 text-sm">Exercise Name</Label>
+            <Label htmlFor="exercise-name" className="text-sm mb-1.5">Exercise Name</Label>
             <Input
               id="exercise-name"
               value={newExerciseName}
               onChange={(e) => setNewExerciseName(e.target.value)}
-              placeholder="Enter exercise name"
+              placeholder="e.g. Bench Press"
               className="mt-1.5 text-sm px-2.5 py-1.5 rounded-md"
             />
           </div>
