@@ -11,7 +11,7 @@ import { useTheme } from "@/components/theme-context"
 import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 import { cn } from "@/lib/utils"
-import { saveLastWorkoutSection, loadLastWorkoutSection } from "@/lib/storage"
+import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
 import { RotateCcw } from "lucide-react"
 import {
@@ -43,7 +43,7 @@ export function WorkoutScreen({
   onAddWorkoutLog,
   onUpdateWorkoutsAndDays, // <-- Add this prop
 }: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
-  const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]?.id || "")
+  const [selectedWorkout, setSelectedWorkout] = useState("")
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const [tickCounter, setTickCounter] = useState(0) // Force re-render when exercises are toggled
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
@@ -84,20 +84,41 @@ export function WorkoutScreen({
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
   useEffect(() => {
-    const loadSavedSection = async () => {
+    const loadSavedData = async () => {
       try {
+        // Load saved workout section (push/pull/leg)
         const savedDay = await loadLastWorkoutSection()
         if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
           setSelectedDay(savedDay as "push" | "pull" | "leg")
         }
+        
+        // Load saved workout selection
+        const savedWorkout = await loadSelectedWorkout()
+        if (savedWorkout && workouts.some(w => w.id === savedWorkout)) {
+          setSelectedWorkout(savedWorkout)
+        } else if (workouts.length > 0) {
+          // Default to first workout if none saved or saved workout not found
+          setSelectedWorkout(workouts[0].id)
+        }
+        
         setIsInitialized(true)
       } catch (error) {
+        // Set default values if there's an error
+        if (workouts.length > 0 && !selectedWorkout) {
+          setSelectedWorkout(workouts[0].id)
+        }
         setIsInitialized(true)
       }
     }
     
-    loadSavedSection()
-  }, [])
+    // Only load saved data when workouts are available
+    if (workouts.length > 0 && !selectedWorkout) {
+      loadSavedData()
+    } else if (workouts.length > 0 && selectedWorkout) {
+      // Already initialized
+      setIsInitialized(true)
+    }
+  }, [workouts, selectedWorkout])
   
   // Load ticked exercises when selectedDay changes
   const loadTickedExercises = useCallback((day: string) => {
@@ -238,7 +259,18 @@ export function WorkoutScreen({
       <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
         <div className="workout-header-container">
           <div className={`transition-all duration-200 workout-select ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
-            <Select value={selectedWorkout} onValueChange={setSelectedWorkout} disabled={workouts.length === 0}>
+            <Select 
+              value={selectedWorkout} 
+              onValueChange={(value) => {
+                if (workouts.some(w => w.id === value)) {
+                  setSelectedWorkout(value)
+                  saveSelectedWorkout(value).catch((error) => {
+                    // Error handling for saving selected workout
+                  })
+                }
+              }} 
+              disabled={workouts.length === 0}
+            >
               <SelectTrigger className="w-full min-touch-target">
                 <SelectValue placeholder="Select Workout" className="truncate" />
               </SelectTrigger>
