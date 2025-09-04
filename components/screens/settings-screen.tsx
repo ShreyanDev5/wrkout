@@ -329,6 +329,67 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     setIsDeleteExerciseOpen(true);
   }
 
+  // Move exercise up in the list
+  const moveExerciseUp = async (dayId: string, index: number) => {
+    if (index === 0) return;
+    
+    // Find the workout day to update
+    const dayToUpdate = workoutDays.find(day => day.id === dayId);
+    if (!dayToUpdate || !user) return;
+    
+    // Create a new array with the exercises reordered
+    const exercises = [...dayToUpdate.exercises];
+    [exercises[index], exercises[index - 1]] = [exercises[index - 1], exercises[index]];
+    
+    // Update the exercises in the database
+    const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
+    if (error) {
+      console.error('Supabase update error:', error);
+      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+      return;
+    }
+    
+    // Update local state
+    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+    
+    toast({
+      title: "Exercise Moved",
+      description: "The exercise has been moved up in the list.",
+      className: "bg-[#34A853] border-none text-white",
+    });
+  };
+
+  // Move exercise down in the list
+  const moveExerciseDown = async (dayId: string, index: number) => {
+    const dayToUpdate = workoutDays.find(day => day.id === dayId);
+    if (!dayToUpdate || !user) return;
+    
+    if (index === dayToUpdate.exercises.length - 1) return;
+    
+    // Create a new array with the exercises reordered
+    const exercises = [...dayToUpdate.exercises];
+    [exercises[index], exercises[index + 1]] = [exercises[index + 1], exercises[index]];
+    
+    // Update the exercises in the database
+    const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
+    if (error) {
+      console.error('Supabase update error:', error);
+      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
+      return;
+    }
+    
+    // Update local state
+    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+    
+    toast({
+      title: "Exercise Moved",
+      description: "The exercise has been moved down in the list.",
+      className: "bg-[#34A853] border-none text-white",
+    });
+  };
+
   const confirmDeleteExercise = async () => {
     if (!exerciseToDelete || !user) return;
     
@@ -638,14 +699,38 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                 </div>
                                                 {day.exercises.length > 0 ? (
                                                   <ul className="space-y-1 sm:space-y-1.5 mt-1.5 sm:mt-2">
-                                                    {day.exercises.map((exercise) => (
+                                                    {day.exercises.map((exercise, index) => (
                                                       <li
                                                         key={exercise.id}
                                                         className={`flex items-center justify-between p-1.5 sm:p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
                                                       >
-                                                        <span className={`text-xs sm:text-sm text-foreground`}>
-                                                          {exercise.name}
-                                                        </span>
+                                                        <div className="flex items-center gap-2">
+                                                          <div className="flex flex-col gap-1">
+                                                            <Button
+                                                              variant="ghost"
+                                                              size="sm"
+                                                              onClick={() => moveExerciseUp(day.id, index)}
+                                                              disabled={index === 0}
+                                                              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+                                                              aria-label={`Move ${exercise.name} up`}
+                                                            >
+                                                              <ArrowUp className="h-3 w-3" aria-hidden="true" />
+                                                            </Button>
+                                                            <Button
+                                                              variant="ghost"
+                                                              size="sm"
+                                                              onClick={() => moveExerciseDown(day.id, index)}
+                                                              disabled={index === day.exercises.length - 1}
+                                                              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+                                                              aria-label={`Move ${exercise.name} down`}
+                                                            >
+                                                              <ArrowDown className="h-3 w-3" aria-hidden="true" />
+                                                            </Button>
+                                                          </div>
+                                                          <span className={`text-xs sm:text-sm text-foreground`}>
+                                                            {exercise.name}
+                                                          </span>
+                                                        </div>
                                                         <Button
                                                           variant="ghost"
                                                           size="sm"
