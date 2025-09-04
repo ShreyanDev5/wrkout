@@ -10,8 +10,10 @@ import type { WorkoutLog } from "@/lib/types"
 import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
+import { useIsMobile } from "@/components/ui/use-mobile"
+import { ChevronDown, Check } from "lucide-react"
 
 
 interface ProgressScreenProps {
@@ -20,11 +22,13 @@ interface ProgressScreenProps {
 
 export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
+  const isMobile = useIsMobile()
   
   const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isExerciseSelectorOpen, setIsExerciseSelectorOpen] = useState(false)
   
   // Set loading state based on logs
   useEffect(() => {
@@ -33,6 +37,26 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
       setIsLoading(false)
     }
   }, [logs])
+
+  // Handle escape key for closing mobile selector
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isExerciseSelectorOpen) {
+        setIsExerciseSelectorOpen(false)
+      }
+    }
+
+    if (isExerciseSelectorOpen) {
+      document.addEventListener('keydown', handleEscape)
+      // Prevent background scrolling when modal is open
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isExerciseSelectorOpen])
 
   // Load the last progress state from localStorage on component mount
   useEffect(() => {
@@ -129,6 +153,148 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
       default:
         return <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
     }
+  }
+
+  // Custom Mobile Exercise Selector Component
+  const MobileExerciseSelector = () => {
+    if (!isMobile) {
+      return (
+        <Select
+          value={chartExerciseFilter || "all"}
+          onValueChange={(value) => {
+            const exerciseName = value === "all" ? null : value
+            setChartExerciseFilter(exerciseName)
+          }}
+        >
+          <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
+            <SelectValue placeholder="All exercises" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
+            <SelectItem value="all" className="rounded-lg my-1 px-4">
+              All exercises
+            </SelectItem>
+            {filteredExercisesForChart.length > 0 ? (
+              filteredExercisesForChart.map((exercise) => (
+                <SelectItem 
+                  key={exercise.name} 
+                  value={exercise.name} 
+                  className="rounded-lg my-1 px-4"
+                >
+                  <div className="flex items-center gap-2.5 whitespace-nowrap">
+                    <span
+                      className="h-2 w-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
+                    ></span>
+                    <span className="truncate">{exercise.name}</span>
+                  </div>
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
+                No exercises available
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      )
+    }
+
+    return (
+      <>
+        <div 
+          className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 px-4 flex items-center justify-between cursor-pointer"
+          onClick={() => setIsExerciseSelectorOpen(true)}
+        >
+          <div className="flex items-center gap-2.5">
+            {chartExerciseFilter ? (
+              <>
+                <span
+                  className="h-2 w-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(chartExerciseFilter) || "push", colorMode) }}
+                ></span>
+                <span className="truncate text-sm">{chartExerciseFilter}</span>
+              </>
+            ) : (
+              <span className="text-sm text-muted-foreground">All exercises</span>
+            )}
+          </div>
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        </div>
+
+        <AnimatePresence>
+          {isExerciseSelectorOpen && (
+            <>
+              <motion.div
+                className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsExerciseSelectorOpen(false)}
+              />
+              <motion.div
+                className="fixed bottom-0 left-0 right-0 bg-background border-t border-border rounded-t-2xl z-50 max-h-[70vh] mx-4 mb-4 rounded-2xl shadow-2xl"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              >
+                <div className="p-4 border-b border-border">
+                  <h3 className="text-lg font-semibold">Select Exercise</h3>
+                </div>
+                <div className="overflow-y-auto max-h-[calc(70vh-140px)]">
+                  <div 
+                    className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => {
+                      setChartExerciseFilter(null)
+                      setIsExerciseSelectorOpen(false)
+                    }}
+                  >
+                    <span className="font-medium">All exercises</span>
+                    {!chartExerciseFilter && <Check className="h-5 w-5 text-primary" />}
+                  </div>
+                  {filteredExercisesForChart.length > 0 ? (
+                    filteredExercisesForChart.map((exercise, index) => (
+                      <motion.div
+                        key={exercise.name}
+                        className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.02 }}
+                        onClick={() => {
+                          setChartExerciseFilter(exercise.name)
+                          setIsExerciseSelectorOpen(false)
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="h-2 w-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
+                          ></span>
+                          <span className="text-sm">{exercise.name}</span>
+                        </div>
+                        {chartExerciseFilter === exercise.name && <Check className="h-4 w-4 text-primary" />}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-6 text-center text-muted-foreground text-sm">
+                      No exercises available
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 border-t border-border">
+                  <button
+                    className="w-full py-3 rounded-xl bg-muted font-medium text-sm active:scale-[0.98] transition-transform"
+                    onClick={() => setIsExerciseSelectorOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </>
+    )
   }
 
   // Animation variants
@@ -269,43 +435,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
             </div>
 
             {/* Chart Exercise Filter */}
-            <Select
-              value={chartExerciseFilter || "all"}
-              onValueChange={(value) => {
-                const exerciseName = value === "all" ? null : value
-                setChartExerciseFilter(exerciseName)
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
-                <SelectValue placeholder="All exercises" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
-                <SelectItem value="all" className="rounded-lg my-1 px-4">
-                  All exercises
-                </SelectItem>
-                {filteredExercisesForChart.length > 0 ? (
-                  filteredExercisesForChart.map((exercise) => (
-                    <SelectItem 
-                      key={exercise.name} 
-                      value={exercise.name} 
-                      className="rounded-lg my-1 px-4"
-                    >
-                      <div className="flex items-center gap-2.5 whitespace-nowrap">
-                        <span
-                          className="h-2 w-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
-                        ></span>
-                        <span className="truncate">{exercise.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
-                    No exercises available
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
+            <MobileExerciseSelector />
 
             <div className="pt-2">
               <ModernProgressChart 
