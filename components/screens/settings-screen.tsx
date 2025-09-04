@@ -192,7 +192,27 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   }
 
   const handleAddDay = async () => {
-    if (!newDayName.trim() || !newDayId.trim() || !selectedWorkoutId || !user) return;
+    // Validate that we have required data
+    if (!selectedWorkoutId || !user) return;
+    
+    // Validate that we have a day name and ID
+    if (!newDayName.trim()) {
+      toast({ 
+        title: 'Error', 
+        description: 'Please enter a day name.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
+      return;
+    }
+    
+    if (!newDayId.trim()) {
+      toast({ 
+        title: 'Error', 
+        description: 'Please select a day ID or enter a custom one.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
+      return;
+    }
     
     try {
       console.log('User info:', { id: user.id, email: user.email });
@@ -936,16 +956,88 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="day-id" className="text-sm">Day ID</Label>
-                <Input
-                  id="day-id"
-                  value={newDayId}
-                  onChange={(e) => setNewDayId(e.target.value)}
-                  placeholder="e.g. 'push', 'pull', or 'leg'"
-                  className="mt-1 text-sm px-2.5 py-1.5 rounded-md"
-                />
+                <Label className="text-sm">Day ID</Label>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewDayId("push");
+                      setNewDayName("Push Day");
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
+                      newDayId === "push"
+                        ? "border-[#FBBC04] bg-[#FBBC04]/10"
+                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FBBC04] mb-1.5">
+                      <ArrowUp className="h-4 w-4 text-zinc-900" />
+                    </div>
+                    <span className="text-xs font-medium">Push</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewDayId("pull");
+                      setNewDayName("Pull Day");
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
+                      newDayId === "pull"
+                        ? "border-[#34A853] bg-[#34A853]/10"
+                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#34A853] mb-1.5">
+                      <ArrowDown className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium">Pull</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewDayId("leg");
+                      setNewDayName("Leg Day");
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
+                      newDayId === "leg"
+                        ? "border-[#EA4335] bg-[#EA4335]/10"
+                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#EA4335] mb-1.5">
+                      <Footprints className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium">Leg</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewDayId("");
+                      setNewDayName("");
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
+                      newDayId && !["push", "pull", "leg"].includes(newDayId)
+                        ? "border-blue-500 bg-blue-500/10"
+                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 mb-1.5">
+                      <Dumbbell className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium">Custom</span>
+                  </button>
+                </div>
+                {newDayId && !["push", "pull", "leg"].includes(newDayId) && (
+                  <Input
+                    id="custom-day-id"
+                    value={newDayId}
+                    onChange={(e) => setNewDayId(e.target.value)}
+                    placeholder="Enter custom ID"
+                    className="mt-2 text-sm px-2.5 py-1.5 rounded-md"
+                  />
+                )}
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Use &quot;push&quot;, &quot;pull&quot;, or &quot;leg&quot; for special styling.
+                  Select a predefined option or choose Custom for your own ID.
                 </p>
               </div>
             </div>
