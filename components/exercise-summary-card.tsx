@@ -5,6 +5,7 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import type { WeeklyWorkoutData } from "@/lib/types"
+import { motion } from "framer-motion"
 
 interface ExerciseSummaryCardProps {
   exercise: WeeklyWorkoutData
@@ -23,12 +24,12 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
     const diff = current - previous
     
     // Consider changes less than 1kg/reps as neutral
-    if (Math.abs(diff) < 1) return <Minus className="h-3.5 w-3.5 text-muted-foreground" />
+    if (Math.abs(diff) < 1) return <Minus className="h-4 w-4 text-muted-foreground" />
     
     if (diff > 0) {
-      return <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+      return <TrendingUp className="h-4 w-4 text-emerald-500" />
     } else {
-      return <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+      return <TrendingDown className="h-4 w-4 text-rose-500" />
     }
   }
 
@@ -37,17 +38,19 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
   const previousWorkout = exercise.previousWorkout
 
   return (
-    <div 
-      className="border rounded-xl p-3 transition-all bg-background border-border/60 hover:bg-muted/10"
+    <motion.div 
+      className="rounded-2xl p-4 transition-all duration-300 bg-background/80 backdrop-blur-xl border border-border/50 shadow-sm hover:shadow-md"
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <div 
-            className="w-1.5 h-6 rounded-full flex-shrink-0"
+            className="w-1 h-8 rounded-full flex-shrink-0"
             style={{ backgroundColor: dayColor }}
           />
           <div className="min-w-0">
-            <h3 className="font-medium text-foreground truncate text-sm" title={exercise.exerciseName}>
+            <h3 className="font-semibold text-foreground truncate text-base" title={exercise.exerciseName}>
               {exercise.exerciseName}
             </h3>
           </div>
@@ -55,53 +58,63 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
       </div>
       
       {weekData ? (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <div className="bg-muted/30 rounded-lg p-2">
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="bg-muted/20 rounded-xl p-3 backdrop-blur-sm border border-border/30">
             <div className="flex items-center justify-between">
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</div>
+              <div className="text-xs text-muted-foreground font-medium tracking-wide">Weight</div>
               {weekData && previousWorkout && (
-                <div className="flex items-center gap-1">
+                <motion.div 
+                  className="flex items-center gap-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {renderTrend(weekData.weight, previousWorkout.weight)}
-                </div>
+                </motion.div>
               )}
             </div>
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-base font-bold text-foreground">
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-xl font-bold text-foreground">
                 {weekData.weight}
               </span>
-              <span className="text-xs text-muted-foreground">kg</span>
+              <span className="text-sm text-muted-foreground">kg</span>
             </div>
           </div>
           
-          <div className="bg-muted/30 rounded-lg p-2">
+          <div className="bg-muted/20 rounded-xl p-3 backdrop-blur-sm border border-border/30">
             <div className="flex items-center justify-between">
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Reps</div>
+              <div className="text-xs text-muted-foreground font-medium tracking-wide">Reps</div>
               {weekData && previousWorkout && (
-                <div className="flex items-center gap-1">
+                <motion.div 
+                  className="flex items-center gap-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 }}
+                >
                   {renderTrend(weekData.reps, previousWorkout.reps)}
-                </div>
+                </motion.div>
               )}
             </div>
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-base font-bold text-foreground">
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-xl font-bold text-foreground">
                 {weekData.reps}
               </span>
-              <span className="text-xs text-muted-foreground">reps</span>
+              <span className="text-sm text-muted-foreground">reps</span>
             </div>
           </div>
           
-          <div className="col-span-2 bg-muted/30 rounded-lg p-2">
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Last Performed</div>
-            <div className="text-xs font-medium text-foreground mt-0.5">
+          <div className="col-span-2 bg-muted/20 rounded-xl p-3 backdrop-blur-sm border border-border/30">
+            <div className="text-xs text-muted-foreground font-medium tracking-wide">Last Performed</div>
+            <div className="text-sm font-medium text-foreground mt-1">
               {format(new Date(weekData.date), 'MMM d, yyyy')}
             </div>
           </div>
         </div>
       ) : (
-        <div className="mt-3 text-center py-4 text-muted-foreground text-sm">
+        <div className="mt-4 text-center py-6 text-muted-foreground text-sm">
           No data available
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
