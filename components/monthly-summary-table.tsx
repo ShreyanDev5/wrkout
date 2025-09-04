@@ -14,11 +14,9 @@ import { ExerciseSummaryCard } from "@/components/exercise-summary-card"
 interface MonthlySummaryTableProps {
   logs: WorkoutLog[]
   mainFilter: string | null
-  selectedExercise: string | null
-  onExerciseSelect: (exerciseName: string) => void
 }
 
-export function MonthlySummaryTable({ logs, mainFilter, selectedExercise, onExerciseSelect }: MonthlySummaryTableProps) {
+export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTableProps) {
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
 
@@ -91,13 +89,11 @@ export function MonthlySummaryTable({ logs, mainFilter, selectedExercise, onExer
         ) : (
           <div className="space-y-4">
             {weeklyData.map((exercise) => (
-              <ExerciseSummaryCard 
-                key={exercise.exerciseName} 
-                exercise={exercise} 
-                weekLabels={weekLabels} 
-                isSelected={selectedExercise === exercise.exerciseName}
-                onSelect={() => onExerciseSelect(exercise.exerciseName)}
-              />
+                              <ExerciseSummaryCard 
+                  key={exercise.exerciseName} 
+                  exercise={exercise} 
+                  weekLabels={weekLabels} 
+                />
             ))}
           </div>
         )}
@@ -165,52 +161,20 @@ export function MonthlySummaryTable({ logs, mainFilter, selectedExercise, onExer
                 return (
                   <TableRow 
                     key={exercise.exerciseName} 
-                    className={`transition-colors group border-b border-border/40 cursor-pointer relative overflow-hidden ${
-                      selectedExercise === exercise.exerciseName 
-                        ? 'hover:bg-muted/20' 
-                        : 'hover:bg-muted/10'
-                    }`}
-                    onClick={() => onExerciseSelect(exercise.exerciseName)}
+                    className="transition-colors group border-b border-border/40 hover:bg-muted/10"
                   >
-                    {/* Gradient glow effect for selected exercise */}
-                    {selectedExercise === exercise.exerciseName && (
-                      <>
-                        <div 
-                          className="absolute inset-y-0 left-0 w-full pointer-events-none rounded-r-lg"
-                          style={{
-                            background: `linear-gradient(90deg, ${dayColor}30 0%, ${dayColor}15 50%, transparent 100%)`,
-                            zIndex: 0
-                          }}
-                        />
-                        <div 
-                          className="absolute inset-y-0 left-0 w-1 pointer-events-none rounded-r"
-                          style={{
-                            backgroundColor: dayColor,
-                            opacity: 0.7,
-                            zIndex: 5
-                          }}
-                        />
-                      </>
-                    )}
                     <TableCell
-                      className="font-medium break-words whitespace-normal py-3 sm:py-4 border-r border-border/60 bg-background relative"
+                      className="font-medium break-words whitespace-normal py-3 sm:py-4 border-r border-border/60 bg-background"
                       style={{
                         color: dayColor,
-                        zIndex: 10
                       }}
                     >
-                      <div className="flex items-center">
-                        <div 
-                          className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-sm"
-                          style={{ backgroundColor: dayColor }}
-                        />
-                        <span 
-                          className="block text-xs sm:text-sm font-medium pl-4 sm:pl-5 pr-2 sm:pr-4 leading-tight" 
-                          title={exercise.exerciseName}
-                        >
-                          {exercise.exerciseName}
-                        </span>
-                      </div>
+                      <span 
+                        className="block text-xs sm:text-sm font-medium px-2 sm:px-4 leading-tight" 
+                        title={exercise.exerciseName}
+                      >
+                        {exercise.exerciseName}
+                      </span>
                     </TableCell>
 
                     {weekLabels.map((weekLabel, weekIndex) => {

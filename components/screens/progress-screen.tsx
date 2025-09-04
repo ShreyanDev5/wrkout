@@ -23,7 +23,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   
   const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   
@@ -41,8 +40,8 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
       try {
         const savedState = await loadLastProgressState()
         // Set to saved filter or default to "push"
-        setMainFilter(savedState.mainFilter || "push")
-        setChartExerciseFilter(savedState.chartExerciseFilter)
+        setMainFilter(savedState?.mainFilter || "push")
+        setChartExerciseFilter(savedState?.chartExerciseFilter || null)
         setIsInitialized(true)
       } catch (error) {
         // Default to "push" if there's an error loading saved state
@@ -58,7 +57,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   useEffect(() => {
     // Only save after initial load to prevent overwriting with default values
     if (isInitialized) {
-      saveLastProgressState({ mainFilter, chartExerciseFilter }).catch((error) => {
+      saveLastProgressState({ 
+        mainFilter: mainFilter || null, 
+        chartExerciseFilter: chartExerciseFilter || null 
+      }).catch((error) => {
       })
     }
   }, [mainFilter, chartExerciseFilter, isInitialized])
@@ -66,7 +68,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   // Reset secondary filters when main filter changes
   useEffect(() => {
     setChartExerciseFilter(null)
-    setSelectedExercise(null)
   }, [mainFilter])
 
   // Group logs by exercise_name
@@ -251,12 +252,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
             <MonthlySummaryTable 
               logs={logs} 
-              mainFilter={mainFilter} 
-              selectedExercise={selectedExercise}
-              onExerciseSelect={(exerciseName) => {
-                setSelectedExercise(exerciseName)
-                setChartExerciseFilter(exerciseName)
-              }}
+              mainFilter={mainFilter}
             />
           </motion.div>
 
@@ -278,7 +274,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               onValueChange={(value) => {
                 const exerciseName = value === "all" ? null : value
                 setChartExerciseFilter(exerciseName)
-                setSelectedExercise(exerciseName)
               }}
             >
               <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
@@ -316,7 +311,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               <ModernProgressChart 
                 logs={logs} 
                 mainFilter={mainFilter} 
-                exerciseFilter={selectedExercise || chartExerciseFilter} 
+                exerciseFilter={chartExerciseFilter} 
               />
             </div>
           </motion.div>

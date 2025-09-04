@@ -233,14 +233,10 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     }
 
     // For all timeframes except "all", filter by cutoff date
-    if (timeframe !== "all") {
-      return filteredLogs.filter((log) => {
-        const logDate = new Date(log.performed_at)
-        return logDate >= cutoffDate
-      })
-    }
-
-    return filteredLogs
+    return filteredLogs.filter((log) => {
+      const logDate = new Date(log.performed_at)
+      return logDate >= cutoffDate
+    })
   }, [filteredLogs, timeframe])
 
   // Process data for the chart
@@ -248,7 +244,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     try {
       // If we have an exercise filter, only show that exercise
       // If we have a main filter but no exercise filter, group by exercise and show the best progression
-      let processedLogs = timeframeFilteredLogs
+      let processedLogs: WorkoutLog[] = timeframeFilteredLogs
 
       if (exerciseFilter) {
         // Show only the selected exercise

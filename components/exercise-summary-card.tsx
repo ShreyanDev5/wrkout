@@ -9,11 +9,9 @@ import type { WeeklyWorkoutData } from "@/lib/types"
 interface ExerciseSummaryCardProps {
   exercise: WeeklyWorkoutData
   weekLabels: string[]
-  isSelected: boolean
-  onSelect: () => void
 }
 
-export function ExerciseSummaryCard({ exercise, weekLabels, isSelected, onSelect }: ExerciseSummaryCardProps) {
+export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCardProps) {
   const { colorMode } = useTheme()
   const workoutType = getExerciseWorkoutType(exercise.exerciseName)
   const dayColor = workoutType ? getWorkoutDayColor(workoutType, colorMode) : 'hsl(var(--muted))'
@@ -40,17 +38,7 @@ export function ExerciseSummaryCard({ exercise, weekLabels, isSelected, onSelect
 
   return (
     <div 
-      className={`border rounded-xl p-3 transition-all cursor-pointer relative ${
-        isSelected 
-          ? 'ring-2 ring-offset-2 ring-offset-background border-transparent' 
-          : 'bg-background border-border/60 hover:bg-muted/10'
-      }`}
-      style={{
-        ...(isSelected && {
-          boxShadow: `0 0 0 1px ${dayColor}, 0 0 15px 3px ${dayColor}30`
-        })
-      }}
-      onClick={onSelect}
+      className="border rounded-xl p-3 transition-all bg-background border-border/60 hover:bg-muted/10"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2.5 min-w-0">

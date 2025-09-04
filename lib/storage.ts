@@ -3,8 +3,8 @@ const PROGRESS_STATE_KEY = 'lastProgressState';
 const WORKOUT_SECTION_KEY = 'lastWorkoutSection';
 
 type ProgressState = {
-  mainFilter: string;
-  chartExerciseFilter: string;
+  mainFilter: string | null;
+  chartExerciseFilter: string | null;
 };
 
 export async function saveLastProgressState(state: ProgressState): Promise<void> {
