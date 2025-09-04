@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -335,8 +335,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     if (index === 0) return;
     
     // Find the workout day to update
-    const dayToUpdate = workoutDays.find(day => day.id === dayId);
-    if (!dayToUpdate || !user) return;
+    const dayIndex = workoutDays.findIndex(day => day.id === dayId);
+    if (dayIndex === -1 || !user) return;
+    
+    const dayToUpdate = workoutDays[dayIndex];
     
     // Create a new array with the exercises reordered
     const exercises = [...dayToUpdate.exercises];
@@ -355,9 +357,14 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         return;
       }
       
-      // Update local state
-      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      // Update local state directly without reloading from database
+      const updatedWorkoutDays = [...workoutDays];
+      updatedWorkoutDays[dayIndex] = {
+        ...dayToUpdate,
+        exercises
+      };
+      
+      onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
       
       toast({
         title: "Exercise Moved",
@@ -376,8 +383,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   // Move exercise down in the list
   const moveExerciseDown = async (dayId: string, index: number) => {
-    const dayToUpdate = workoutDays.find(day => day.id === dayId);
-    if (!dayToUpdate || !user) return;
+    const dayIndex = workoutDays.findIndex(day => day.id === dayId);
+    if (dayIndex === -1 || !user) return;
+    
+    const dayToUpdate = workoutDays[dayIndex];
     
     if (index === dayToUpdate.exercises.length - 1) return;
     
@@ -398,9 +407,14 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         return;
       }
       
-      // Update local state
-      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      // Update local state directly without reloading from database
+      const updatedWorkoutDays = [...workoutDays];
+      updatedWorkoutDays[dayIndex] = {
+        ...dayToUpdate,
+        exercises
+      };
+      
+      onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
       
       toast({
         title: "Exercise Moved",
@@ -448,6 +462,73 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     }
   }
+
+  // Exercise item component for better performance
+  const ExerciseItem = useCallback(({ 
+    exercise, 
+    index, 
+    totalExercises, 
+    dayId, 
+    workoutId,
+    onMoveUp,
+    onMoveDown,
+    onDelete
+  }: {
+    exercise: any;
+    index: number;
+    totalExercises: number;
+    dayId: string;
+    workoutId: string;
+    onMoveUp: (dayId: string, index: number) => void;
+    onMoveDown: (dayId: string, index: number) => void;
+    onDelete: (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => void;
+  }) => {
+    return (
+      <li
+        className={`flex items-center justify-between p-1.5 sm:p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
+      >
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="flex flex-col items-center gap-0.5 sm:gap-1 pr-1">
+            <GripVertical className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col gap-0.5 sm:gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onMoveUp(dayId, index)}
+              disabled={index === 0}
+              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+              aria-label={`Move ${exercise.name} up`}
+            >
+              <ArrowUp className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onMoveDown(dayId, index)}
+              disabled={index === totalExercises - 1}
+              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+              aria-label={`Move ${exercise.name} down`}
+            >
+              <ArrowDown className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
+            </Button>
+          </div>
+          <span className={`text-xs sm:text-sm text-foreground truncate`} title={exercise.name}>
+            {exercise.name}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
+          className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+          aria-label={`Delete ${exercise.name} exercise`}
+        >
+          <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
+        </Button>
+      </li>
+    );
+  }, []);
 
   // Get day icon and color based on day ID
   const getDayIconAndColor = (dayId: string) => {
@@ -727,52 +808,17 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                 {day.exercises.length > 0 ? (
                                                   <ul className="space-y-1 sm:space-y-1.5 mt-1.5 sm:mt-2">
                                                     {day.exercises.map((exercise, index) => (
-                                                      <li
+                                                      <ExerciseItem
                                                         key={exercise.id}
-                                                        className={`flex items-center justify-between p-1.5 sm:p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
-                                                      >
-                                                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                                                          <div className="flex flex-col items-center gap-0.5 sm:gap-1 pr-1">
-                                                            <GripVertical className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-                                                          </div>
-                                                          <div className="flex flex-col gap-0.5 sm:gap-1">
-                                                            <Button
-                                                              variant="ghost"
-                                                              size="sm"
-                                                              onClick={() => moveExerciseUp(day.id, index)}
-                                                              disabled={index === 0}
-                                                              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
-                                                              aria-label={`Move ${exercise.name} up`}
-                                                            >
-                                                              <ArrowUp className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
-                                                            </Button>
-                                                            <Button
-                                                              variant="ghost"
-                                                              size="sm"
-                                                              onClick={() => moveExerciseDown(day.id, index)}
-                                                              disabled={index === day.exercises.length - 1}
-                                                              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
-                                                              aria-label={`Move ${exercise.name} down`}
-                                                            >
-                                                              <ArrowDown className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
-                                                            </Button>
-                                                          </div>
-                                                          <span className={`text-xs sm:text-sm text-foreground truncate`} title={exercise.name}>
-                                                            {exercise.name}
-                                                          </span>
-                                                        </div>
-                                                        <Button
-                                                          variant="ghost"
-                                                          size="sm"
-                                                          onClick={() =>
-                                                            handleDeleteExercise(workout.id, day.id, exercise.id, exercise.name)
-                                                          }
-                                                          className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-                                                          aria-label={`Delete ${exercise.name} exercise`}
-                                                        >
-                                                          <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
-                                                        </Button>
-                                                      </li>
+                                                        exercise={exercise}
+                                                        index={index}
+                                                        totalExercises={day.exercises.length}
+                                                        dayId={day.id}
+                                                        workoutId={workout.id}
+                                                        onMoveUp={moveExerciseUp}
+                                                        onMoveDown={moveExerciseDown}
+                                                        onDelete={handleDeleteExercise}
+                                                      />
                                                     ))}
                                                   </ul>
                                                 ) : (
