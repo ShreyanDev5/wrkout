@@ -23,6 +23,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   
   const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   
@@ -65,6 +66,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   // Reset secondary filters when main filter changes
   useEffect(() => {
     setChartExerciseFilter(null)
+    setSelectedExercise(null)
   }, [mainFilter])
 
   // Group logs by exercise_name
@@ -235,65 +237,87 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
           animate="visible" 
           variants={containerVariants}
         >
-          {/* Monthly Summary Table */}
+          {/* Current Status Snapshot */}
           <motion.div className="space-y-4" variants={itemVariants}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-medium flex items-center gap-2">
                 <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
-                Monthly Summary
+                Current Status
               </h3>
+              <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                Most recent performance
+              </div>
             </div>
 
-            <MonthlySummaryTable logs={logs} mainFilter={mainFilter} />
+            <MonthlySummaryTable 
+              logs={logs} 
+              mainFilter={mainFilter} 
+              selectedExercise={selectedExercise}
+              onExerciseSelect={(exerciseName) => {
+                setSelectedExercise(exerciseName)
+                setChartExerciseFilter(exerciseName)
+              }}
+            />
           </motion.div>
 
-          {/* Progress Chart */}
+          {/* Detailed Progress Analysis */}
           <motion.div className="space-y-6" variants={itemVariants}>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <h3 className="text-lg font-medium flex items-center gap-2 whitespace-nowrap">
                 <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
-                Progress Chart
+                Progress Analysis
               </h3>
-
-              {/* Chart Exercise Filter */}
-              <Select
-                value={chartExerciseFilter || "all"}
-                onValueChange={(value) => setChartExerciseFilter(value === "all" ? null : value)}
-              >
-                <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
-                  <SelectValue placeholder="All exercises" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
-                  <SelectItem value="all" className="rounded-lg my-1 px-4">
-                    All exercises
-                  </SelectItem>
-                  {filteredExercisesForChart.length > 0 ? (
-                    filteredExercisesForChart.map((exercise) => (
-                      <SelectItem 
-                        key={exercise.name} 
-                        value={exercise.name} 
-                        className="rounded-lg my-1 px-4"
-                      >
-                        <div className="flex items-center gap-2.5 whitespace-nowrap">
-                          <span
-                            className="h-2 w-2 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
-                          ></span>
-                          <span className="truncate">{exercise.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
-                      No exercises available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+              <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                Historical view over time
+              </div>
             </div>
 
+            {/* Chart Exercise Filter */}
+            <Select
+              value={chartExerciseFilter || "all"}
+              onValueChange={(value) => {
+                const exerciseName = value === "all" ? null : value
+                setChartExerciseFilter(exerciseName)
+                setSelectedExercise(exerciseName)
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
+                <SelectValue placeholder="All exercises" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
+                <SelectItem value="all" className="rounded-lg my-1 px-4">
+                  All exercises
+                </SelectItem>
+                {filteredExercisesForChart.length > 0 ? (
+                  filteredExercisesForChart.map((exercise) => (
+                    <SelectItem 
+                      key={exercise.name} 
+                      value={exercise.name} 
+                      className="rounded-lg my-1 px-4"
+                    >
+                      <div className="flex items-center gap-2.5 whitespace-nowrap">
+                        <span
+                          className="h-2 w-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
+                        ></span>
+                        <span className="truncate">{exercise.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
+                    No exercises available
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+
             <div className="pt-2">
-              <ModernProgressChart logs={logs} mainFilter={mainFilter} exerciseFilter={chartExerciseFilter} />
+              <ModernProgressChart 
+                logs={logs} 
+                mainFilter={mainFilter} 
+                exerciseFilter={selectedExercise || chartExerciseFilter} 
+              />
             </div>
           </motion.div>
         </motion.div>
