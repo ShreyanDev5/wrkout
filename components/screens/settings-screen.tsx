@@ -16,6 +16,7 @@ import {
   Sparkles,
   Zap,
   RotateCcw,
+  GripVertical,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
@@ -341,23 +342,36 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     const exercises = [...dayToUpdate.exercises];
     [exercises[index], exercises[index - 1]] = [exercises[index - 1], exercises[index]];
     
-    // Update the exercises in the database
-    const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
-    if (error) {
-      console.error('Supabase update error:', error);
-      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
-      return;
+    try {
+      // Update the exercises in the database
+      const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
+      if (error) {
+        console.error('Supabase update error:', error);
+        toast({ 
+          title: 'Error', 
+          description: error.message || 'Failed to move exercise. Please try again.', 
+          className: 'bg-[#EA4335] border-none text-white' 
+        });
+        return;
+      }
+      
+      // Update local state
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      
+      toast({
+        title: "Exercise Moved",
+        description: "The exercise has been moved up in the list.",
+        className: "bg-[#34A853] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error moving exercise:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
     }
-    
-    // Update local state
-    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
-    
-    toast({
-      title: "Exercise Moved",
-      description: "The exercise has been moved up in the list.",
-      className: "bg-[#34A853] border-none text-white",
-    });
   };
 
   // Move exercise down in the list
@@ -371,23 +385,36 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     const exercises = [...dayToUpdate.exercises];
     [exercises[index], exercises[index + 1]] = [exercises[index + 1], exercises[index]];
     
-    // Update the exercises in the database
-    const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
-    if (error) {
-      console.error('Supabase update error:', error);
-      toast({ title: 'Error', description: error.message, className: 'bg-[#EA4335] border-none text-white' });
-      return;
+    try {
+      // Update the exercises in the database
+      const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
+      if (error) {
+        console.error('Supabase update error:', error);
+        toast({ 
+          title: 'Error', 
+          description: error.message || 'Failed to move exercise. Please try again.', 
+          className: 'bg-[#EA4335] border-none text-white' 
+        });
+        return;
+      }
+      
+      // Update local state
+      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
+      onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
+      
+      toast({
+        title: "Exercise Moved",
+        description: "The exercise has been moved down in the list.",
+        className: "bg-[#34A853] border-none text-white",
+      });
+    } catch (err) {
+      console.error('Unexpected error moving exercise:', err);
+      toast({ 
+        title: 'Error', 
+        description: 'An unexpected error occurred. Please try again.', 
+        className: 'bg-[#EA4335] border-none text-white' 
+      });
     }
-    
-    // Update local state
-    const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-    onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
-    
-    toast({
-      title: "Exercise Moved",
-      description: "The exercise has been moved down in the list.",
-      className: "bg-[#34A853] border-none text-white",
-    });
   };
 
   const confirmDeleteExercise = async () => {
@@ -704,30 +731,33 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                         key={exercise.id}
                                                         className={`flex items-center justify-between p-1.5 sm:p-2 bg-zinc-50 dark:bg-zinc-800 rounded-md`}
                                                       >
-                                                        <div className="flex items-center gap-2">
-                                                          <div className="flex flex-col gap-1">
+                                                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                          <div className="flex flex-col items-center gap-0.5 sm:gap-1 pr-1">
+                                                            <GripVertical className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+                                                          </div>
+                                                          <div className="flex flex-col gap-0.5 sm:gap-1">
                                                             <Button
                                                               variant="ghost"
                                                               size="sm"
                                                               onClick={() => moveExerciseUp(day.id, index)}
                                                               disabled={index === 0}
-                                                              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+                                                              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
                                                               aria-label={`Move ${exercise.name} up`}
                                                             >
-                                                              <ArrowUp className="h-3 w-3" aria-hidden="true" />
+                                                              <ArrowUp className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
                                                             </Button>
                                                             <Button
                                                               variant="ghost"
                                                               size="sm"
                                                               onClick={() => moveExerciseDown(day.id, index)}
                                                               disabled={index === day.exercises.length - 1}
-                                                              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+                                                              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
                                                               aria-label={`Move ${exercise.name} down`}
                                                             >
-                                                              <ArrowDown className="h-3 w-3" aria-hidden="true" />
+                                                              <ArrowDown className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
                                                             </Button>
                                                           </div>
-                                                          <span className={`text-xs sm:text-sm text-foreground`}>
+                                                          <span className={`text-xs sm:text-sm text-foreground truncate`} title={exercise.name}>
                                                             {exercise.name}
                                                           </span>
                                                         </div>
@@ -737,10 +767,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                           onClick={() =>
                                                             handleDeleteExercise(workout.id, day.id, exercise.id, exercise.name)
                                                           }
-                                                          className="h-5 w-5 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+                                                          className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
                                                           aria-label={`Delete ${exercise.name} exercise`}
                                                         >
-                                                          <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" aria-hidden="true" />
+                                                          <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
                                                         </Button>
                                                       </li>
                                                     ))}
