@@ -165,18 +165,38 @@ export function MonthlySummaryTable({ logs, mainFilter, selectedExercise, onExer
                 return (
                   <TableRow 
                     key={exercise.exerciseName} 
-                    className={`transition-colors group border-b border-border/40 cursor-pointer ${
+                    className={`transition-colors group border-b border-border/40 cursor-pointer relative overflow-hidden ${
                       selectedExercise === exercise.exerciseName 
-                        ? 'bg-muted/30 border-l-4 border-l-primary' 
+                        ? 'hover:bg-muted/20' 
                         : 'hover:bg-muted/10'
                     }`}
                     onClick={() => onExerciseSelect(exercise.exerciseName)}
                   >
+                    {/* Gradient glow effect for selected exercise */}
+                    {selectedExercise === exercise.exerciseName && (
+                      <>
+                        <div 
+                          className="absolute inset-y-0 left-0 w-full pointer-events-none rounded-r-lg"
+                          style={{
+                            background: `linear-gradient(90deg, ${dayColor}30 0%, ${dayColor}15 50%, transparent 100%)`,
+                            zIndex: 0
+                          }}
+                        />
+                        <div 
+                          className="absolute inset-y-0 left-0 w-1 pointer-events-none rounded-r"
+                          style={{
+                            backgroundColor: dayColor,
+                            opacity: 0.7,
+                            zIndex: 5
+                          }}
+                        />
+                      </>
+                    )}
                     <TableCell
-                      className="font-medium break-words whitespace-normal py-3 sm:py-4 border-r border-border/60 bg-background"
+                      className="font-medium break-words whitespace-normal py-3 sm:py-4 border-r border-border/60 bg-background relative"
                       style={{
-                        position: 'relative',
                         color: dayColor,
+                        zIndex: 10
                       }}
                     >
                       <div className="flex items-center">
@@ -218,12 +238,18 @@ export function MonthlySummaryTable({ logs, mainFilter, selectedExercise, onExer
                                 )}
                               </div>
                               
-                              {/* Reps display */}
-                              <div className="flex items-center justify-center space-x-1.5">
+                              {/* Reps display with trend */}
+                              <div className="flex items-center justify-center space-x-1.5 mt-1">
                                 <span className="text-sm sm:text-base text-foreground font-medium">
                                   {weekData.reps}
                                 </span>
                                 <span className="text-xs sm:text-sm text-muted-foreground">reps</span>
+                                {/* Simplified trend indicator for reps */}
+                                {previousWorkout && (
+                                  <div className="ml-1 flex items-center">
+                                    {renderTrend(weekData.reps, previousWorkout.reps)}
+                                  </div>
+                                )}
                               </div>
                               
                               {/* Date indicator */}
