@@ -62,7 +62,6 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
               {weekData && previousWorkout && (
                 <div className="flex items-center gap-1">
                   {renderTrend(weekData.weight, previousWorkout.weight)}
-                  <span className="text-xs text-muted-foreground">kg</span>
                 </div>
               )}
             </div>
@@ -80,7 +79,6 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
               {weekData && previousWorkout && (
                 <div className="flex items-center gap-1">
                   {renderTrend(weekData.reps, previousWorkout.reps)}
-                  <span className="text-xs text-muted-foreground">reps</span>
                 </div>
               )}
             </div>
