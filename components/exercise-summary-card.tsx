@@ -52,25 +52,20 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
             </h3>
           </div>
         </div>
-        
-        {weekData && previousWorkout && (
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1">
-              {renderTrend(weekData.weight, previousWorkout.weight)}
-              <span className="text-xs text-muted-foreground">kg</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {renderTrend(weekData.reps, previousWorkout.reps)}
-              <span className="text-xs text-muted-foreground">reps</span>
-            </div>
-          </div>
-        )}
       </div>
       
       {weekData ? (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div className="bg-muted/30 rounded-lg p-2">
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</div>
+            <div className="flex items-center justify-between">
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</div>
+              {weekData && previousWorkout && (
+                <div className="flex items-center gap-1">
+                  {renderTrend(weekData.weight, previousWorkout.weight)}
+                  <span className="text-xs text-muted-foreground">kg</span>
+                </div>
+              )}
+            </div>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-base font-bold text-foreground">
                 {weekData.weight}
@@ -80,7 +75,15 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
           </div>
           
           <div className="bg-muted/30 rounded-lg p-2">
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Reps</div>
+            <div className="flex items-center justify-between">
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Reps</div>
+              {weekData && previousWorkout && (
+                <div className="flex items-center gap-1">
+                  {renderTrend(weekData.reps, previousWorkout.reps)}
+                  <span className="text-xs text-muted-foreground">reps</span>
+                </div>
+              )}
+            </div>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-base font-bold text-foreground">
                 {weekData.reps}
