@@ -164,7 +164,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: "ppl-philosophy",
     title: "Push • Pull • Legs",
-    subtitle: "Your evolving training system",
+    subtitle: "One of the most time-tested systems",
     description: "Built on the proven PPL split with three organizational layers for flexible workout planning.",
     icon: Target,
     color: "from-blue-500 to-cyan-600",
@@ -439,7 +439,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging-workflow",
     title: "Smart Logging",
     subtitle: "Track what matters",
-    description: "Log weights and average reps for simplicity. Sets are consistent at 2-3 per exercise.",
+    description: "Log weights and average reps for simplicity.",
     icon: Zap,
     color: "from-orange-500 to-red-600",
     content: (
@@ -569,7 +569,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress-visualization",
     title: "Progress Charts",
     subtitle: "See your growth",
-    description: "Clean, touch-friendly charts showing your strength progression over time based on volume.",
+    description: "Clean, touch-friendly charts showing strength progression over time.",
     icon: BarChart3,
     color: "from-purple-500 to-pink-600",
     content: (
@@ -900,7 +900,7 @@ const onboardingSteps: OnboardingStep[] = [
                 <Settings className="h-4 w-4 text-amber-400" />
               </div>
               <h4 className="font-bold text-sm mt-1.5 text-foreground">Customize</h4>
-              <p className="text-[10px] text-muted-foreground/80 mt-1">Set preferences</p>
+              <p className="text-[10px] text-muted-foreground/80 mt-1">Set routines</p>
             </motion.div>
           </motion.div>
         </div>
