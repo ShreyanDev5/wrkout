@@ -171,7 +171,7 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="space-y-3 pt-1">
         <motion.div 
-          className="grid grid-cols-1 gap-3"
+          className="grid grid-cols-1 gap-4 px-1"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -190,10 +190,10 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-blue-900/30 to-cyan-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-3 relative">
-                <div className="flex items-center gap-2.5 mb-2.5">
+              <CardContent className="p-4 relative">
+                <div className="flex items-center gap-3 mb-3">
                   <motion.div 
-                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
                     whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
@@ -201,17 +201,17 @@ const onboardingSteps: OnboardingStep[] = [
                       duration: 0.15
                     }}
                   >
-                    <Target className="h-3.5 w-3.5 text-white" />
+                    <Target className="h-4 w-4 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm leading-tight text-foreground">Workout Routines</h4>
-                    <p className="text-[10px] text-muted-foreground/80 truncate">High-level programs</p>
+                    <h4 className="font-bold text-base leading-tight text-foreground">Workout Routines</h4>
+                    <p className="text-xs text-muted-foreground/80 truncate">High-level programs</p>
                   </div>
                 </div>
-                <div className="flex gap-1.5">
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-teal-400 to-teal-500 shadow-sm" />
+                <div className="flex gap-2">
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-teal-400 to-teal-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
@@ -228,10 +228,10 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-purple-900/30 to-pink-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-3 relative">
-                <div className="flex items-center gap-2.5 mb-2.5">
+              <CardContent className="p-4 relative">
+                <div className="flex items-center gap-3 mb-3">
                   <motion.div 
-                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center shadow-sm"
                     whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
@@ -239,17 +239,17 @@ const onboardingSteps: OnboardingStep[] = [
                       duration: 0.15
                     }}
                   >
-                    <Calendar className="h-3.5 w-3.5 text-white" />
+                    <Calendar className="h-4 w-4 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm leading-tight text-foreground">Workout Days</h4>
-                    <p className="text-[10px] text-muted-foreground/80 truncate">Push, Pull, Legs</p>
+                    <h4 className="font-bold text-base leading-tight text-foreground">Workout Days</h4>
+                    <p className="text-xs text-muted-foreground/80 truncate">Push, Pull, Legs</p>
                   </div>
                 </div>
-                <div className="flex gap-1.5">
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-red-400 to-red-500 shadow-sm" />
+                <div className="flex gap-2">
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-red-400 to-red-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
@@ -266,10 +266,10 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-amber-900/30 to-orange-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-3 relative">
-                <div className="flex items-center gap-2.5 mb-2.5">
+              <CardContent className="p-4 relative">
+                <div className="flex items-center gap-3 mb-3">
                   <motion.div 
-                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center shadow-sm"
                     whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
@@ -277,43 +277,24 @@ const onboardingSteps: OnboardingStep[] = [
                       duration: 0.15
                     }}
                   >
-                    <Dumbbell className="h-3.5 w-3.5 text-white" />
+                    <Dumbbell className="h-4 w-4 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm leading-tight text-foreground">Exercises</h4>
-                    <p className="text-[10px] text-muted-foreground/80 truncate">Individual movements</p>
+                    <h4 className="font-bold text-base leading-tight text-foreground">Exercises</h4>
+                    <p className="text-xs text-muted-foreground/80 truncate">Individual movements</p>
                   </div>
                 </div>
-                <div className="flex gap-1.5">
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
-                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm" />
+                <div className="flex gap-2">
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
+                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
           </motion.div>
         </motion.div>
 
-        <motion.div 
-          className="p-3 rounded-lg bg-gradient-to-r from-blue-900/20 to-cyan-900/10 backdrop-blur-sm border border-white/5"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ 
-            delay: 0.2, 
-            duration: 0.3,
-            type: "tween"
-          }}
-        >
-          <div className="flex items-start gap-2">
-            <Lightbulb className="h-3.5 w-3.5 text-blue-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <span className="text-[10px] font-semibold text-foreground/80">Simple Tracking</span>
-              <p className="text-[10px] text-muted-foreground/90 mt-1 leading-relaxed">
-                Log weights and average reps for simplicity. Sets are consistent at 2-3 per exercise.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+        
       </div>
     )
   },
@@ -574,8 +555,8 @@ const onboardingSteps: OnboardingStep[] = [
           <div className="flex items-start gap-2">
             <Lightbulb className="h-3.5 w-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
-              <span className="text-[10px] font-semibold text-foreground/80">Smart Defaults</span>
-              <p className="text-[10px] text-muted-foreground/90 mt-1 leading-relaxed">
+              <span className="text-xs font-semibold text-foreground/80">Smart Defaults</span>
+              <p className="text-xs text-muted-foreground/90 mt-1 leading-relaxed">
                 Previous weights and reps are pre-filled to speed up logging. Just adjust what changed.
               </p>
             </div>
@@ -806,8 +787,8 @@ const onboardingSteps: OnboardingStep[] = [
           <div className="flex items-start gap-2">
             <BarChart3 className="h-3.5 w-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
             <div>
-              <span className="text-[10px] font-semibold text-foreground/80">Volume Calculation</span>
-              <p className="text-[10px] text-muted-foreground/90 mt-1 leading-relaxed">
+              <span className="text-xs font-semibold text-foreground/80">Volume Calculation</span>
+              <p className="text-xs text-muted-foreground/90 mt-1 leading-relaxed">
                 Progress is calculated using volume (weight × average reps) for accurate strength tracking.
               </p>
             </div>
@@ -1113,7 +1094,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
             <motion.button
               type="button"
               onClick={handleNext}
-              className="flex-1 h-11 text-sm font-semibold bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 hover:from-violet-600 hover:via-blue-600 hover:to-emerald-600 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-lg hover:shadow-xl rounded-lg backdrop-blur-sm border border-white/10 flex items-center justify-center min-w-[100px]"
+              className="flex-1 h-11 text-sm font-semibold bg-gradient-to-r from-violet-700 via-blue-700 to-emerald-700 hover:from-violet-800 hover:via-blue-800 hover:to-emerald-800 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-lg hover:shadow-xl rounded-lg backdrop-blur-sm border border-white/10 flex items-center justify-center min-w-[100px]"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "tween", duration: 0.15 }}
