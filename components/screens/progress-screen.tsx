@@ -422,6 +422,11 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
             />
           </motion.div>
 
+          {/* Chart Exercise Filter - Moved upward for better mobile positioning */}
+          <div className="pt-2">
+            <MobileExerciseSelector />
+          </div>
+
           {/* Detailed Progress Analysis */}
           <motion.div className="space-y-6" variants={itemVariants}>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -433,9 +438,6 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 Historical view over time
               </div>
             </div>
-
-            {/* Chart Exercise Filter */}
-            <MobileExerciseSelector />
 
             <div className="pt-2">
               <ModernProgressChart 
