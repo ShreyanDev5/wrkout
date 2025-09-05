@@ -569,7 +569,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress-visualization",
     title: "Progress Charts",
     subtitle: "See your growth",
-    description: "Clean, touch-friendly charts showing your strength progression over time based on volume (weight × average reps).",
+    description: "Clean, touch-friendly charts showing your strength progression over time based on volume.",
     icon: BarChart3,
     color: "from-purple-500 to-pink-600",
     content: (
