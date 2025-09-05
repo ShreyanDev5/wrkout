@@ -103,7 +103,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
 
   return (
     <div className="relative">
-      <div className="w-full overflow-x-auto rounded-lg border border-border/60 bg-background shadow min-w-0">
+      <div className="w-full overflow-x-auto rounded-lg border border-border/60 bg-background shadow min-w-0" style={{ WebkitOverflowScrolling: 'touch' }}>
         {isLoading ? (
           <div className="text-center py-16 px-4">
             <div className="animate-pulse flex flex-col items-center space-y-4">

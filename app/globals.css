@@ -112,6 +112,19 @@
     font-family: var(--font-inter, Inter, system-ui, sans-serif);
     background-color: #181818; /* fallback for dark mode */
     color: #e5e5e5; /* fallback for foreground */
+    /* Enable momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize scrolling performance on mobile devices */
+  html, body {
+    /* Enable momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize scrolling for all scrollable elements */
+  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -1457,5 +1470,23 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+/* Mobile scroll optimization */
+@media (max-width: 768px) {
+  /* Enable momentum scrolling for all overflow containers on mobile */
+  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize scrolling containers with custom scrollbars */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize tab content areas */
+  .TabsContent {
+    -webkit-overflow-scrolling: touch;
   }
 }

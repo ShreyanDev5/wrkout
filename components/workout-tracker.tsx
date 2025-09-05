@@ -123,7 +123,7 @@ export function WorkoutTracker() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
       <header className="sticky top-0 z-10 bg-background border-b dark:border-opacity-10">
         <div className="container flex items-center justify-between h-16 px-4">
           <h1 
@@ -148,7 +148,7 @@ export function WorkoutTracker() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col min-h-0 flex-1">
-        <div className="flex-1 container px-4 py-6 md:py-8">
+        <div className="flex-1 container px-4 py-6 md:py-8" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
             <WorkoutScreen
               workouts={appData.workouts}

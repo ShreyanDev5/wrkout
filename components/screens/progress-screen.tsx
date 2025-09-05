@@ -241,7 +241,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 <div className="p-4 border-b border-border">
                   <h3 className="text-lg font-semibold">Select Exercise</h3>
                 </div>
-                <div className="overflow-y-auto max-h-[calc(70vh-140px)]">
+                <div className="overflow-y-auto max-h-[calc(70vh-140px)]" style={{ WebkitOverflowScrolling: 'touch' }}>
                   <div 
                     className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => {
@@ -319,7 +319,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full">
+    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
       <CardHeader className="px-4">
         <div className="space-y-6 sm:space-y-8">
           <div className="flex items-center gap-3">
@@ -397,7 +397,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="px-4">
+      <CardContent className="px-4" style={{ WebkitOverflowScrolling: 'touch' }}>
         <motion.div 
           className="space-y-12" 
           initial="hidden" 
