@@ -232,7 +232,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 onClick={() => setIsExerciseSelectorOpen(false)}
               />
               <motion.div
-                className="fixed bottom-0 left-0 right-0 bg-background border-t border-border rounded-t-2xl z-50 max-h-[70vh] mx-4 mb-4 rounded-2xl shadow-2xl"
+                className="fixed bottom-8 left-0 right-0 bg-background border border-border rounded-2xl z-50 max-h-[70vh] mx-4 shadow-2xl"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
