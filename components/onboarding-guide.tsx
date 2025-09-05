@@ -62,7 +62,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "welcome",
     title: "Welcome to wrkout",
     subtitle: "Your minimalist strength companion",
-    description: "Designed for progressive overload training with clean, distraction-free tracking.",
+    description: "Designed for progressive overload training with clean, distraction-free tracking based on the PPL (Push, Pull, Legs) split.",
     icon: Sparkles,
     color: "from-violet-500 to-purple-600",
     content: (
@@ -119,7 +119,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "ppl-philosophy",
     title: "Push • Pull • Legs",
     subtitle: "Your evolving training system",
-    description: "Unlock unlimited workout variations to keep training dynamic, enjoyable, and optimized for long-term strength, muscle growth, and progressive overload.",
+    description: "Built on the proven PPL split with three organizational layers for flexible workout planning.",
     icon: Target,
     color: "from-blue-500 to-cyan-600",
     content: (
@@ -130,16 +130,36 @@ const onboardingSteps: OnboardingStep[] = [
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Workout I */}
+          {/* Workout Structure */}
           <Card className="border-0 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 shadow-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-2.5 mb-2">
                 <div className="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">I</span>
+                  <Target className="h-3.5 w-3.5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-semibold text-sm leading-tight">Workout I</h4>
-                  <p className="text-xs text-muted-foreground truncate">3-5 days/week</p>
+                  <h4 className="font-semibold text-sm leading-tight">Workout Routines</h4>
+                  <p className="text-xs text-muted-foreground truncate">High-level programs</p>
+                </div>
+              </div>
+              <div className="flex gap-1.5">
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500" />
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-teal-400 to-teal-500" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Workout Days */}
+          <Card className="border-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center">
+                  <Calendar className="h-3.5 w-3.5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="font-semibold text-sm leading-tight">Workout Days</h4>
+                  <p className="text-xs text-muted-foreground truncate">Push, Pull, Legs</p>
                 </div>
               </div>
               <div className="flex gap-1.5">
@@ -150,42 +170,40 @@ const onboardingSteps: OnboardingStep[] = [
             </CardContent>
           </Card>
 
-          {/* Workout II */}
-          <Card className="border-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 shadow-sm">
+          {/* Exercises */}
+          <Card className="border-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 shadow-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">II</span>
+                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center">
+                  <Dumbbell className="h-3.5 w-3.5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-semibold text-sm leading-tight">Workout II</h4>
-                  <p className="text-xs text-muted-foreground truncate">Alternate Variations</p>
+                  <h4 className="font-semibold text-sm leading-tight">Exercises</h4>
+                  <p className="text-xs text-muted-foreground truncate">Individual movements</p>
                 </div>
               </div>
               <div className="flex gap-1.5">
-                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500" />
-                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
-                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-red-400 to-red-500" />
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500" />
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
+                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-rose-400 to-rose-500" />
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div 
-          className="flex items-center justify-center gap-3 text-xs text-muted-foreground"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+          className="p-3 rounded-lg bg-muted/50"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
         >
-          <div className="flex items-center gap-1">
-            <Timer className="h-2.5 w-2.5" />
-            <span>3-5 days/week</span>
+          <div className="flex items-center gap-1.5">
+            <Lightbulb className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+            <span className="text-xs font-medium">Simple Tracking</span>
           </div>
-          <div className="w-px h-2.5 bg-border" />
-          <div className="flex items-center gap-1">
-            <Activity className="h-2.5 w-2.5" />
-            <span>Progressive overload</span>
-          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Log weights and average reps for simplicity. Sets are consistent at 2-3 per exercise.
+          </p>
         </motion.div>
       </div>
     )
@@ -256,7 +274,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging-workflow",
     title: "Smart Logging",
     subtitle: "Track what matters",
-    description: "Log your performance after completing each workout with intelligent defaults.",
+    description: "Log weights and average reps for simplicity. Sets are consistent at 2-3 per exercise.",
     icon: Zap,
     color: "from-orange-500 to-red-600",
     content: (
@@ -288,7 +306,7 @@ const onboardingSteps: OnboardingStep[] = [
               </div>
               <div className="min-w-0">
                 <h4 className="font-semibold text-sm leading-tight">Log Performance</h4>
-                <p className="text-xs text-muted-foreground truncate">Weight & reps per exercise</p>
+                <p className="text-xs text-muted-foreground truncate">Weight & average reps</p>
               </div>
             </div>
             <ArrowRight className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 ml-2" />
@@ -329,7 +347,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress-visualization",
     title: "Progress Charts",
     subtitle: "See your growth",
-    description: "Clean, touch-friendly charts showing your strength progression over time.",
+    description: "Clean, touch-friendly charts showing your strength progression over time based on volume (weight × average reps).",
     icon: BarChart3,
     color: "from-purple-500 to-pink-600",
     content: (
@@ -446,7 +464,20 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
         </motion.div>
 
-
+        <motion.div 
+          className="p-3 rounded-lg bg-muted/50"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
+          <div className="flex items-center gap-1.5">
+            <BarChart3 className="h-3.5 w-3.5 text-purple-500 flex-shrink-0" />
+            <span className="text-xs font-medium">Volume Calculation</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Progress is calculated using volume (weight × average reps) for accurate strength tracking.
+          </p>
+        </motion.div>
       </div>
     )
   },
