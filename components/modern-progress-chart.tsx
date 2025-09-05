@@ -90,6 +90,22 @@ const chartStyles = `
     margin: 0 auto;
     pointer-events: none;
   }
+  
+  @media (max-width: 480px) {
+    .touch-tooltip {
+      bottom: 20px;
+      width: calc(100% - 24px);
+      max-width: 260px;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .touch-tooltip {
+      bottom: 20px;
+      width: calc(100% - 20px);
+      max-width: 260px;
+    }
+  }
 
   @media (hover: none) {
     .recharts-wrapper {
@@ -169,9 +185,75 @@ const chartStyles = `
   /* Compact mobile tooltip */
   @media (max-width: 640px) {
     .compact-mobile-tooltip {
-      padding: 10px 14px !important;
+      padding: 0.5rem 0.75rem !important;
       width: calc(100% - 32px) !important;
-      max-width: 260px !important;
+      max-width: 240px !important;
+    }
+    
+    /* More horizontally compact styles */
+    .compact-mobile-tooltip .flex.items-center.gap-2 {
+      gap: 0.5rem !important;
+    }
+    
+    .compact-mobile-tooltip .flex.items-baseline.gap-1 {
+      gap: 0.25rem !important;
+    }
+    
+    .compact-mobile-tooltip .flex.items-center.gap-1.pt-0.5 {
+      gap: 0.25rem !important;
+      padding-top: 0.125rem !important;
+    }
+    
+    .compact-mobile-tooltip .px-1.5 {
+      padding-left: 0.375rem !important;
+      padding-right: 0.375rem !important;
+    }
+    
+    .compact-mobile-tooltip .py-0.5 {
+      padding-top: 0.125rem !important;
+      padding-bottom: 0.125rem !important;
+    }
+    
+    .compact-mobile-tooltip .space-y-1.5 {
+      gap: 0.375rem !important;
+    }
+  }
+  
+  /* Extra compact mobile tooltip for smaller screens */
+  @media (max-width: 480px) {
+    .compact-mobile-tooltip {
+      padding: 0.5rem 0.75rem !important;
+      width: calc(100% - 24px) !important;
+      max-width: 220px !important;
+    }
+    
+    .compact-mobile-tooltip .text-sm {
+      font-size: 0.8125rem !important;
+    }
+    
+    .compact-mobile-tooltip .text-lg {
+      font-size: 1.125rem !important;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .compact-mobile-tooltip {
+      padding: 0.5rem 0.625rem !important;
+      width: calc(100% - 20px) !important;
+      max-width: 200px !important;
+    }
+    
+    .compact-mobile-tooltip .text-sm {
+      font-size: 0.75rem !important;
+    }
+    
+    .compact-mobile-tooltip .text-lg {
+      font-size: 1rem !important;
+    }
+    
+    .compact-mobile-tooltip .h-2.5 {
+      height: 0.625rem !important;
+      width: 0.625rem !important;
     }
   }
 `
@@ -489,7 +571,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           damping: 35,
           mass: 0.7
         }}
-        className={`rounded-2xl p-4 text-sm backdrop-blur-2xl ${
+        className={`rounded-2xl p-2 text-sm backdrop-blur-2xl ${
           isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
         }`}
         style={{
@@ -503,9 +585,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           touchAction: 'none', // Prevent default touch actions
         }}
       >
-        <div className="space-y-2">
-          <p className="font-medium text-white text-sm">{formatFullDate(label)}</p>
-          <div className="flex items-center gap-2.5">
+        <div className="space-y-1">
+          <p className="font-medium text-white text-sm truncate">{formatFullDate(label)}</p>
+          <div className="flex items-center gap-2">
             <div 
               className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
               style={{ 
@@ -513,11 +595,11 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                 boxShadow: `0 0 8px ${chartColor}60`
               }}
             />
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-lg" style={{ color: chartColor }}>
+            <div className="flex items-baseline gap-1 min-w-0">
+              <span className="font-bold text-lg truncate" style={{ color: chartColor }}>
                 {payload[0].value}
               </span>
-              <span className="text-white/70 text-xs">kg</span>
+              <span className="text-white/70 text-xs whitespace-nowrap">kg</span>
             </div>
           </div>
           {data.avgReps > 0 && (
@@ -526,14 +608,14 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
             </div>
           )}
           {(isPR || isLatest) && (
-            <div className="flex items-center gap-1.5 pt-0.5">
+            <div className="flex items-center gap-1 pt-0.5 flex-wrap">
               {isPR && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/25 text-green-300 border border-green-500/30">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-green-500/25 text-green-300 border border-green-500/30 whitespace-nowrap">
                   PR
                 </span>
               )}
               {isLatest && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/25 text-blue-300 border border-blue-500/30">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/25 text-blue-300 border border-blue-500/30 whitespace-nowrap">
                   Latest
                 </span>
               )}
@@ -881,7 +963,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
 
         {/* Enhanced Chart Content with adjusted height for longer timeframes */}
         <div className="chart-container">
-          <div className="h-[180px] sm:h-[220px] w-full px-3"> {/* Increased padding for better spacing */}
+          <div className="h-[180px] sm:h-[220px] w-full px-2"> {/* Reduced padding for better horizontal compactness */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${timeframe}-${mainFilter}-${exerciseFilter}`}
