@@ -406,7 +406,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         >
           {/* Current Status Snapshot */}
           <motion.div className="space-y-4" variants={itemVariants}>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <h3 className="text-lg font-medium flex items-center gap-2">
                 <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
                 Current Status
