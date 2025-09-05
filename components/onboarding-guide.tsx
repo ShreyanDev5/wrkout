@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -72,24 +72,38 @@ const onboardingSteps: OnboardingStep[] = [
             className="relative w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-xl backdrop-blur-sm border border-white/10"
             initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ 
+              duration: 0.5, 
+              ease: [0.16, 1, 0.3, 1],
+              type: "tween"
+            }}
           >
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent rounded-2xl"></div>
             <Sparkles className="h-8 w-8 text-white drop-shadow-md" />
             <motion.div 
               className="absolute inset-0 rounded-2xl bg-white/10"
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.3, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ opacity: [0, 0.2, 0] }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: "easeInOut",
+                repeatDelay: 1
+              }}
             />
           </motion.div>
           
           <div className="space-y-3">
             <motion.div 
               className="flex items-center justify-center gap-2.5"
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
+              transition={{ 
+                delay: 0.15, 
+                duration: 0.4, 
+                ease: "easeOut",
+                type: "tween"
+              }}
             >
               <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-sm" />
               <span className="text-sm font-semibold text-foreground/80 tracking-normal">Progressive Overload</span>
@@ -98,9 +112,14 @@ const onboardingSteps: OnboardingStep[] = [
             
             <motion.div 
               className="flex items-center justify-center gap-2.5"
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5, ease: "easeOut" }}
+              transition={{ 
+                delay: 0.25, 
+                duration: 0.4, 
+                ease: "easeOut",
+                type: "tween"
+              }}
             >
               <div className="w-2 h-2 rounded-full bg-purple-400 shadow-sm" />
               <span className="text-sm font-semibold text-foreground/80 tracking-normal">PPL Split</span>
@@ -109,9 +128,14 @@ const onboardingSteps: OnboardingStep[] = [
             
             <motion.div 
               className="flex items-center justify-center gap-2.5"
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.5, ease: "easeOut" }}
+              transition={{ 
+                delay: 0.35, 
+                duration: 0.4, 
+                ease: "easeOut",
+                type: "tween"
+              }}
             >
               <div className="w-2 h-2 rounded-full bg-pink-400 shadow-sm" />
               <span className="text-sm font-semibold text-foreground/80 tracking-normal">Clean Interface</span>
@@ -122,9 +146,13 @@ const onboardingSteps: OnboardingStep[] = [
         
         <motion.div 
           className="mx-auto max-w-[280px]"
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ 
+            delay: 0.45, 
+            duration: 0.4,
+            type: "tween"
+          }}
         >
           <p className="text-xs text-muted-foreground/90 leading-relaxed">
             Experience a premium workout tracking solution designed for serious lifters who value simplicity and effectiveness.
@@ -144,15 +172,21 @@ const onboardingSteps: OnboardingStep[] = [
       <div className="space-y-3 pt-1">
         <motion.div 
           className="grid grid-cols-1 gap-3"
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ 
+            duration: 0.4,
+            type: "tween"
+          }}
         >
           {/* Workout Structure */}
           <motion.div
-            whileHover={{ y: -3, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <Card className="border-0 bg-gradient-to-br from-blue-900/30 to-cyan-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
@@ -160,8 +194,12 @@ const onboardingSteps: OnboardingStep[] = [
                 <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
                     className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 3 }}
+                    whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
+                    transition={{ 
+                      type: "tween", 
+                      duration: 0.15
+                    }}
                   >
                     <Target className="h-3.5 w-3.5 text-white" />
                   </motion.div>
@@ -181,9 +219,12 @@ const onboardingSteps: OnboardingStep[] = [
 
           {/* Workout Days */}
           <motion.div
-            whileHover={{ y: -3, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <Card className="border-0 bg-gradient-to-br from-purple-900/30 to-pink-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
@@ -191,8 +232,12 @@ const onboardingSteps: OnboardingStep[] = [
                 <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
                     className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 3 }}
+                    whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
+                    transition={{ 
+                      type: "tween", 
+                      duration: 0.15
+                    }}
                   >
                     <Calendar className="h-3.5 w-3.5 text-white" />
                   </motion.div>
@@ -212,9 +257,12 @@ const onboardingSteps: OnboardingStep[] = [
 
           {/* Exercises */}
           <motion.div
-            whileHover={{ y: -3, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <Card className="border-0 bg-gradient-to-br from-amber-900/30 to-orange-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
@@ -222,8 +270,12 @@ const onboardingSteps: OnboardingStep[] = [
                 <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
                     className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 3 }}
+                    whileHover={{ scale: 1.05, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
+                    transition={{ 
+                      type: "tween", 
+                      duration: 0.15
+                    }}
                   >
                     <Dumbbell className="h-3.5 w-3.5 text-white" />
                   </motion.div>
@@ -246,7 +298,11 @@ const onboardingSteps: OnboardingStep[] = [
           className="p-3 rounded-lg bg-gradient-to-r from-blue-900/20 to-cyan-900/10 backdrop-blur-sm border border-white/5"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.25, duration: 0.4 }}
+          transition={{ 
+            delay: 0.2, 
+            duration: 0.3,
+            type: "tween"
+          }}
         >
           <div className="flex items-start gap-2">
             <Lightbulb className="h-3.5 w-3.5 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -272,9 +328,12 @@ const onboardingSteps: OnboardingStep[] = [
       <div className="space-y-4 mb-1">
         <motion.div 
           className="relative"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ 
+            duration: 0.5,
+            type: "tween"
+          }}
         >
           {/* Mobile-Optimized Progress visualization */}
           <div className="relative h-28 bg-gradient-to-br from-emerald-900/20 to-teal-900/10 rounded-xl p-4 backdrop-blur-sm border border-white/5 shadow-md">
@@ -287,9 +346,13 @@ const onboardingSteps: OnboardingStep[] = [
                 <motion.div
                   key={week}
                   className="flex flex-col items-center gap-1.5"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: week * 0.12, duration: 0.6, type: "spring", stiffness: 200 }}
+                  transition={{ 
+                    delay: week * 0.1, 
+                    duration: 0.4, 
+                    type: "tween"
+                  }}
                 >
                   <div 
                     className="w-5 rounded-t-md bg-gradient-to-t from-emerald-400 to-teal-400 shadow-sm"
@@ -299,7 +362,11 @@ const onboardingSteps: OnboardingStep[] = [
                     className="text-[10px] font-semibold text-foreground/70"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: week * 0.12 + 0.25, duration: 0.4 }}
+                    transition={{ 
+                      delay: week * 0.1 + 0.15, 
+                      duration: 0.3,
+                      type: "tween"
+                    }}
                   >
                     W{week}
                   </motion.span>
@@ -308,24 +375,24 @@ const onboardingSteps: OnboardingStep[] = [
             </div>
             
             {/* Simplified particles for mobile performance */}
-            {[...Array(3)].map((_, i) => (
+            {[...Array(2)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 rounded-full bg-emerald-400/20"
+                className="absolute w-1 h-1 rounded-full bg-emerald-400/15"
                 initial={{ 
                   x: Math.random() * 80, 
                   y: Math.random() * 80,
                   opacity: 0
                 }}
                 animate={{ 
-                  y: [null, -15, -30],
-                  opacity: [0, 0.7, 0],
+                  y: [null, -10, -20],
+                  opacity: [0, 0.5, 0],
                   x: Math.random() * 80
                 }}
                 transition={{ 
-                  duration: 2 + Math.random() * 1.5, 
+                  duration: 1.5 + Math.random() * 1, 
                   repeat: Infinity,
-                  delay: Math.random() * 1.5
+                  delay: Math.random() * 1
                 }}
               />
             ))}
@@ -334,14 +401,21 @@ const onboardingSteps: OnboardingStep[] = [
 
         <motion.div 
           className="space-y-2.5"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
+          transition={{ 
+            delay: 0.3, 
+            duration: 0.4,
+            type: "tween"
+          }}
         >
           <motion.div 
             className="flex items-center gap-2.5 p-3 rounded-lg bg-emerald-900/20 backdrop-blur-sm border border-white/5"
-            whileHover={{ x: 3 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ x: 2 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="p-1.5 rounded-md bg-emerald-500/20">
               <Plus className="h-3.5 w-3.5 text-emerald-400" />
@@ -351,8 +425,11 @@ const onboardingSteps: OnboardingStep[] = [
           
           <motion.div 
             className="flex items-center gap-2.5 p-3 rounded-lg bg-teal-900/20 backdrop-blur-sm border border-white/5"
-            whileHover={{ x: 3 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ x: 2 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="p-1.5 rounded-md bg-teal-500/20">
               <TrendingUp className="h-3.5 w-3.5 text-teal-400" />
@@ -362,8 +439,11 @@ const onboardingSteps: OnboardingStep[] = [
           
           <motion.div 
             className="flex items-center gap-2.5 p-3 rounded-lg bg-cyan-900/20 backdrop-blur-sm border border-white/5"
-            whileHover={{ x: 3 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ x: 2 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="p-1.5 rounded-md bg-cyan-500/20">
               <Target className="h-3.5 w-3.5 text-cyan-400" />
@@ -385,21 +465,31 @@ const onboardingSteps: OnboardingStep[] = [
       <div className="space-y-4 mb-1">
         <motion.div 
           className="space-y-3"
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ 
+            duration: 0.4,
+            type: "tween"
+          }}
         >
           {/* Mobile-Optimized Workout completion flow */}
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-orange-900/20 to-red-900/10 backdrop-blur-sm border border-white/5 shadow-sm">
               <div className="flex items-center gap-2.5">
                 <motion.div 
                   className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  whileHover={{ scale: 1.03, rotate: 2 }}
+                  transition={{ 
+                    type: "tween", 
+                    duration: 0.15
+                  }}
                 >
                   <Play className="h-4 w-4 text-white" />
                 </motion.div>
@@ -413,15 +503,22 @@ const onboardingSteps: OnboardingStep[] = [
           </motion.div>
 
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-green-900/20 to-emerald-900/10 backdrop-blur-sm border border-white/5 shadow-sm">
               <div className="flex items-center gap-2.5">
                 <motion.div 
                   className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  whileHover={{ scale: 1.03, rotate: 2 }}
+                  transition={{ 
+                    type: "tween", 
+                    duration: 0.15
+                  }}
                 >
                   <CheckCircle className="h-4 w-4 text-white" />
                 </motion.div>
@@ -435,15 +532,22 @@ const onboardingSteps: OnboardingStep[] = [
           </motion.div>
 
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-900/20 to-cyan-900/10 backdrop-blur-sm border border-white/5 shadow-sm">
               <div className="flex items-center gap-2.5">
                 <motion.div 
                   className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  whileHover={{ scale: 1.03, rotate: 2 }}
+                  transition={{ 
+                    type: "tween", 
+                    duration: 0.15
+                  }}
                 >
                   <BarChart3 className="h-4 w-4 text-white" />
                 </motion.div>
@@ -461,7 +565,11 @@ const onboardingSteps: OnboardingStep[] = [
           className="p-3 rounded-lg bg-gradient-to-r from-amber-900/20 to-orange-900/10 backdrop-blur-sm border border-white/5"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.25, duration: 0.4 }}
+          transition={{ 
+            delay: 0.2, 
+            duration: 0.3,
+            type: "tween"
+          }}
         >
           <div className="flex items-start gap-2">
             <Lightbulb className="h-3.5 w-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -487,9 +595,13 @@ const onboardingSteps: OnboardingStep[] = [
       <div className="space-y-3 mb-1">
         <motion.div 
           className="relative h-28 bg-gradient-to-b from-background/30 to-background/10 rounded-xl flex flex-col justify-start overflow-visible shadow-md backdrop-blur-sm border border-white/5"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ 
+            duration: 0.5, 
+            ease: [0.16, 1, 0.3, 1],
+            type: "tween"
+          }}
         >
           {/* Mobile-Optimized chart background with subtle grid */}
           <div className="absolute inset-0 rounded-xl overflow-hidden">
@@ -518,7 +630,11 @@ const onboardingSteps: OnboardingStep[] = [
                 }}
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
-                transition={{ delay: i * 0.08, duration: 0.4, type: "spring", stiffness: 200 }}
+                transition={{ 
+                  delay: i * 0.06, 
+                  duration: 0.3, 
+                  type: "tween"
+                }}
                 transformOrigin="bottom"
               />
             ))}
@@ -533,7 +649,7 @@ const onboardingSteps: OnboardingStep[] = [
                 <stop offset="0.85" stopColor="#ec4899" />
               </linearGradient>
               <filter id="glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
                 <feMerge> 
                   <feMergeNode in="coloredBlur"/>
                   <feMergeNode in="SourceGraphic"/>
@@ -549,7 +665,11 @@ const onboardingSteps: OnboardingStep[] = [
               filter="url(#glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ 
+                duration: 0.8, 
+                ease: [0.16, 1, 0.3, 1],
+                type: "tween"
+              }}
             />
             {/* Data points */}
             {[0, 30, 60, 90, 120, 150, 180].map((x, i) => (
@@ -557,11 +677,15 @@ const onboardingSteps: OnboardingStep[] = [
                 key={i}
                 cx={x}
                 cy={45 - 8 * Math.sin(i * 0.8)}
-                r="2.5"
+                r="2"
                 fill="#8b5cf6"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.7 + i * 0.08, duration: 0.25 }}
+                transition={{ 
+                  delay: 0.5 + i * 0.06, 
+                  duration: 0.2,
+                  type: "tween"
+                }}
               />
             ))}
           </svg>
@@ -580,9 +704,13 @@ const onboardingSteps: OnboardingStep[] = [
                     left: `${lefts[i]}px`,
                     textAlign: 'center'
                   }}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + i * 0.04, duration: 0.3 }}
+                  transition={{ 
+                    delay: 0.7 + i * 0.03, 
+                    duration: 0.25,
+                    type: "tween"
+                  }}
                 >
                   {d}
                 </motion.span>
@@ -593,14 +721,21 @@ const onboardingSteps: OnboardingStep[] = [
 
         <motion.div 
           className="grid grid-cols-3 gap-2 mt-2"
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.5 }}
+          transition={{ 
+            delay: 0.2, 
+            duration: 0.4,
+            type: "tween"
+          }}
         >
           <motion.div 
             className="p-2.5 rounded-lg bg-gradient-to-br from-purple-900/20 to-purple-900/10 backdrop-blur-sm border border-white/5"
-            whileHover={{ y: -2, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center gap-1.5 mb-1.5">
               <div className="p-1 rounded-md bg-purple-500/20">
@@ -617,8 +752,11 @@ const onboardingSteps: OnboardingStep[] = [
           
           <motion.div 
             className="p-2.5 rounded-lg bg-gradient-to-br from-pink-900/20 to-pink-900/10 backdrop-blur-sm border border-white/5"
-            whileHover={{ y: -2, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center gap-1.5 mb-1.5">
               <div className="p-1 rounded-md bg-pink-500/20">
@@ -635,8 +773,11 @@ const onboardingSteps: OnboardingStep[] = [
           
           <motion.div 
             className="p-2.5 rounded-lg bg-gradient-to-br from-blue-900/20 to-blue-900/10 backdrop-blur-sm border border-white/5"
-            whileHover={{ y: -2, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ y: -1, scale: 1.01 }}
+            transition={{ 
+              type: "tween", 
+              duration: 0.15
+            }}
           >
             <div className="flex items-center gap-1.5 mb-1.5">
               <div className="p-1 rounded-md bg-blue-500/20">
@@ -656,7 +797,11 @@ const onboardingSteps: OnboardingStep[] = [
           className="p-3 rounded-lg bg-gradient-to-r from-purple-900/20 to-pink-900/10 backdrop-blur-sm border border-white/5"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
+          transition={{ 
+            delay: 0.35, 
+            duration: 0.35,
+            type: "tween"
+          }}
         >
           <div className="flex items-start gap-2">
             <BarChart3 className="h-3.5 w-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
@@ -684,29 +829,34 @@ const onboardingSteps: OnboardingStep[] = [
           className="relative w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-xl backdrop-blur-sm border border-white/10"
           initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
           animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ 
+            duration: 0.5, 
+            ease: [0.16, 1, 0.3, 1],
+            type: "tween"
+          }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/30 via-transparent to-transparent rounded-full"></div>
           <CheckCircle className="h-8 w-8 text-white drop-shadow-md" />
-          {/* Simplified celebration particles for mobile */}
-          {[...Array(6)].map((_, i) => (
+          {/* Simplified celebration particles for mobile with reduced count */}
+          {[...Array(4)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1.5 h-1.5 rounded-full bg-white/40"
+              className="absolute w-1 h-1 rounded-full bg-white/30"
               initial={{ 
                 x: 0, 
                 y: 0,
                 opacity: 1
               }}
               animate={{ 
-                x: Math.cos(i * 60 * Math.PI / 180) * 30,
-                y: Math.sin(i * 60 * Math.PI / 180) * 30,
+                x: Math.cos(i * 90 * Math.PI / 180) * 25,
+                y: Math.sin(i * 90 * Math.PI / 180) * 25,
                 opacity: 0
               }}
               transition={{ 
-                duration: 1.2, 
-                delay: 0.4,
-                ease: "easeOut"
+                duration: 1, 
+                delay: 0.3,
+                ease: "easeOut",
+                type: "tween"
               }}
             />
           ))}
@@ -714,9 +864,13 @@ const onboardingSteps: OnboardingStep[] = [
         
         <div className="space-y-4">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.6 }}
+            transition={{ 
+              delay: 0.2, 
+              duration: 0.4,
+              type: "tween"
+            }}
           >
             <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400">
               Start Tracking Your Workouts
@@ -728,15 +882,22 @@ const onboardingSteps: OnboardingStep[] = [
 
           <motion.div 
             className="grid grid-cols-2 gap-3 mt-1"
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
+            transition={{ 
+              delay: 0.35, 
+              duration: 0.4,
+              type: "tween"
+            }}
           >
             <motion.div 
               className="p-3 rounded-xl bg-gradient-to-br from-emerald-900/30 to-emerald-900/10 backdrop-blur-sm border border-white/5 text-center shadow-sm"
-              whileHover={{ y: -3, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ 
+                type: "tween", 
+                duration: 0.15
+              }}
             >
               <div className="p-1.5 rounded-md bg-emerald-500/20 w-8 h-8 mx-auto flex items-center justify-center">
                 <Zap className="h-4 w-4 text-emerald-400" />
@@ -747,9 +908,12 @@ const onboardingSteps: OnboardingStep[] = [
             
             <motion.div 
               className="p-3 rounded-xl bg-gradient-to-br from-amber-900/30 to-amber-900/10 backdrop-blur-sm border border-white/5 text-center shadow-sm"
-              whileHover={{ y: -3, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ 
+                type: "tween", 
+                duration: 0.15
+              }}
             >
               <div className="p-1.5 rounded-md bg-amber-500/20 w-8 h-8 mx-auto flex items-center justify-center">
                 <Settings className="h-4 w-4 text-amber-400" />
@@ -774,40 +938,40 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
     }
   }, [isOpen])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentStep < onboardingSteps.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
       handleComplete()
     }
-  }
+  }, [currentStep])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
     }
-  }
+  }, [currentStep])
 
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     // Mark onboarding as completed in localStorage
     if (user?.id) {
       localStorage.setItem(`onboarding-completed-${user.id}`, 'true')
     }
     onClose()
-  }
+  }, [user?.id, onClose])
 
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     handleComplete()
-  }
+  }, [handleComplete])
 
   const currentStepData = onboardingSteps[currentStep]
   const isLastStep = currentStep === onboardingSteps.length - 1
   const isFirstStep = currentStep === 0
 
-  const renderIcon = () => {
+  const renderIcon = useCallback(() => {
     const Icon = currentStepData.icon || Sparkles;
     return <Icon className="h-4.5 w-4.5 text-white" />;
-  }
+  }, [currentStepData.icon])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -822,15 +986,24 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
             className="h-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 rounded-r-full relative"
             initial={{ width: 0 }}
             animate={{ width: `${((currentStep + 1) / onboardingSteps.length) * 100}%` }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ 
+              duration: 0.6, 
+              ease: [0.16, 1, 0.3, 1],
+              type: "tween"
+            }}
           >
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent"></div>
-            {/* Animated shine effect */}
+            {/* Animated shine effect with reduced frequency for performance */}
             <motion.div
-              className="absolute top-0 bottom-0 w-8 bg-white/30 blur-sm"
+              className="absolute top-0 bottom-0 w-8 bg-white/20 blur-[1px]"
               initial={{ x: -100 }}
               animate={{ x: "100vw" }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                ease: "easeInOut",
+                repeatDelay: 2
+              }}
             />
           </motion.div>
         </div>
@@ -844,7 +1017,11 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                 key={currentStep}
                 initial={{ scale: 0.8, rotate: -5 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ 
+                  duration: 0.5, 
+                  ease: [0.16, 1, 0.3, 1],
+                  type: "tween"
+                }}
               >
                 {React.cloneElement(renderIcon(), { className: 'h-4 w-4 text-white drop-shadow-md' })}
               </motion.div>
@@ -860,21 +1037,26 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
             <motion.button
               type="button"
               onClick={handleSkip}
-              className="text-muted-foreground hover:text-foreground px-2.5 py-1 h-7 rounded-lg transition-all duration-200 hover:bg-white/5 backdrop-blur-sm border border-white/5 text-xs font-semibold"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="text-muted-foreground hover:text-foreground px-2.5 py-1 h-7 rounded-lg transition-all duration-200 hover:bg-white/5 backdrop-blur-sm border border-white/5 text-xs font-semibold min-w-[60px] flex items-center justify-center"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "tween", duration: 0.15 }}
             >
               Skip
             </motion.button>
           </div>
           
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ 
+                duration: 0.3, 
+                ease: [0.16, 1, 0.3, 1],
+                type: "tween"
+              }}
             >
               <h2 className="text-xl font-bold mb-1.5 leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
                 {currentStepData.title}
@@ -894,13 +1076,17 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
           <div className="relative overflow-hidden rounded-xl bg-gradient-to-b from-background/50 to-background/20 border border-border/20 backdrop-blur-sm mb-5">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
             <div className="relative">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentStep}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    ease: [0.16, 1, 0.3, 1],
+                    type: "tween"
+                  }}
                   className="min-h-[220px] flex items-center justify-center p-3"
                 >
                   {currentStepData.content}
@@ -915,10 +1101,10 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
               type="button"
               onClick={handlePrevious}
               disabled={isFirstStep}
-              className="flex-1 h-11 text-sm font-semibold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-border/30 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-sm hover:shadow-md flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              whileHover={{ scale: !isFirstStep ? 1.02 : 1 }}
-              whileTap={{ scale: !isFirstStep ? 0.98 : 1 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              className="flex-1 h-11 text-sm font-semibold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-border/30 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-sm hover:shadow-md flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed min-w-[100px]"
+              whileHover={!isFirstStep ? { scale: 1.02 } : {}}
+              whileTap={!isFirstStep ? { scale: 0.98 } : {}}
+              transition={{ type: "tween", duration: 0.15 }}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Previous
@@ -927,17 +1113,21 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
             <motion.button
               type="button"
               onClick={handleNext}
-              className="flex-1 h-11 text-sm font-semibold bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 hover:from-violet-600 hover:via-blue-600 hover:to-emerald-600 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-lg hover:shadow-xl rounded-lg backdrop-blur-sm border border-white/10 flex items-center justify-center"
+              className="flex-1 h-11 text-sm font-semibold bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 hover:from-violet-600 hover:via-blue-600 hover:to-emerald-600 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-lg hover:shadow-xl rounded-lg backdrop-blur-sm border border-white/10 flex items-center justify-center min-w-[100px]"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: "tween", duration: 0.15 }}
             >
               {isLastStep ? (
                 <span className="flex items-center gap-2">
                   Get Started
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    transition={{ 
+                      duration: 1.5, 
+                      repeat: Infinity, 
+                      ease: "linear"
+                    }}
                   >
                     <Sparkles className="h-4 w-4" />
                   </motion.div>
