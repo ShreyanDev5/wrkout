@@ -171,7 +171,7 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="space-y-3 pt-1">
         <motion.div 
-          className="grid grid-cols-1 gap-4 px-1"
+          className="space-y-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -181,7 +181,7 @@ const onboardingSteps: OnboardingStep[] = [
         >
           {/* Workout Structure */}
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
+            whileHover={{ y: -1, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             transition={{ 
               type: "tween", 
@@ -190,28 +190,28 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-blue-900/30 to-cyan-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-4 relative">
-                <div className="flex items-center gap-3 mb-3">
+              <CardContent className="p-3 relative">
+                <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
-                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    whileHover={{ scale: 1.03, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
                       type: "tween", 
                       duration: 0.15
                     }}
                   >
-                    <Target className="h-4 w-4 text-white" />
+                    <Target className="h-3.5 w-3.5 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-base leading-tight text-foreground">Workout Routines</h4>
-                    <p className="text-xs text-muted-foreground/80 truncate">High-level programs</p>
+                    <h4 className="font-bold text-sm leading-tight text-foreground">Workout Routines</h4>
+                    <p className="text-[10px] text-muted-foreground/80 truncate">High-level programs</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-teal-400 to-teal-500 shadow-sm" />
+                <div className="flex gap-1.5">
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-teal-400 to-teal-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
@@ -219,7 +219,7 @@ const onboardingSteps: OnboardingStep[] = [
 
           {/* Workout Days */}
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
+            whileHover={{ y: -1, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             transition={{ 
               type: "tween", 
@@ -228,28 +228,28 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-purple-900/30 to-pink-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-4 relative">
-                <div className="flex items-center gap-3 mb-3">
+              <CardContent className="p-3 relative">
+                <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
-                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    whileHover={{ scale: 1.03, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
                       type: "tween", 
                       duration: 0.15
                     }}
                   >
-                    <Calendar className="h-4 w-4 text-white" />
+                    <Calendar className="h-3.5 w-3.5 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-base leading-tight text-foreground">Workout Days</h4>
-                    <p className="text-xs text-muted-foreground/80 truncate">Push, Pull, Legs</p>
+                    <h4 className="font-bold text-sm leading-tight text-foreground">Workout Days</h4>
+                    <p className="text-[10px] text-muted-foreground/80 truncate">Push, Pull, Legs</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-red-400 to-red-500 shadow-sm" />
+                <div className="flex gap-1.5">
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-red-400 to-red-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
@@ -257,7 +257,7 @@ const onboardingSteps: OnboardingStep[] = [
 
           {/* Exercises */}
           <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
+            whileHover={{ y: -1, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             transition={{ 
               type: "tween", 
@@ -266,28 +266,28 @@ const onboardingSteps: OnboardingStep[] = [
           >
             <Card className="border-0 bg-gradient-to-br from-amber-900/30 to-orange-900/20 shadow-md backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden relative">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-              <CardContent className="p-4 relative">
-                <div className="flex items-center gap-3 mb-3">
+              <CardContent className="p-3 relative">
+                <div className="flex items-center gap-2.5 mb-2.5">
                   <motion.div 
-                    className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0 flex items-center justify-center shadow-sm"
+                    whileHover={{ scale: 1.03, rotate: 2 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ 
                       type: "tween", 
                       duration: 0.15
                     }}
                   >
-                    <Dumbbell className="h-4 w-4 text-white" />
+                    <Dumbbell className="h-3.5 w-3.5 text-white" />
                   </motion.div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-base leading-tight text-foreground">Exercises</h4>
-                    <p className="text-xs text-muted-foreground/80 truncate">Individual movements</p>
+                    <h4 className="font-bold text-sm leading-tight text-foreground">Exercises</h4>
+                    <p className="text-[10px] text-muted-foreground/80 truncate">Individual movements</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
-                  <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm" />
+                <div className="flex gap-1.5">
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
+                  <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm" />
                 </div>
               </CardContent>
             </Card>
