@@ -904,7 +904,27 @@ const onboardingSteps: OnboardingStep[] = [
             </motion.div>
           </motion.div>
 
-          
+          {/* Accessibility instruction for adding to home screen */}
+          <motion.div 
+            className="p-3 rounded-lg bg-gradient-to-br from-blue-900/20 to-cyan-900/10 backdrop-blur-sm border border-white/5 text-center"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+              delay: 0.5, 
+              duration: 0.35,
+              type: "tween"
+            }}
+          >
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="p-1 rounded-md bg-blue-500/20">
+                <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+              </div>
+              <span className="text-xs font-semibold text-foreground/80">Pro Tip</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground/90 leading-relaxed">
+              For quick daily access on Android: Tap the <span className="font-semibold text-foreground">three-dot menu</span> in your browser, then select <span className="font-semibold text-foreground">"Add to Home Screen"</span>
+            </p>
+          </motion.div>
         </div>
       </div>
     )
