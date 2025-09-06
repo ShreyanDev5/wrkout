@@ -904,28 +904,7 @@ const onboardingSteps: OnboardingStep[] = [
             </motion.div>
           </motion.div>
 
-          {/* Accessibility instruction for adding to home screen */}
-          <motion.div 
-            className="pt-2 px-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ 
-              delay: 0.5, 
-              duration: 0.4,
-              type: "tween"
-            }}
-          >
-            <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-white/5 rounded-lg p-3 text-left">
-              <div className="flex items-start gap-2">
-                <div className="mt-0.5">
-                  <Lightbulb className="h-4 w-4 text-blue-400 flex-shrink-0" />
-                </div>
-                <p className="text-xs text-muted-foreground/90 leading-relaxed">
-                  <span className="font-medium text-foreground">Pro tip:</span> For quick daily access, tap the three-dot menu in your browser and select "Add to Home Screen".
-                </p>
-              </div>
-            </div>
-          </motion.div>
+          
         </div>
       </div>
     )
