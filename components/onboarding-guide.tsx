@@ -903,10 +903,33 @@ const onboardingSteps: OnboardingStep[] = [
               <p className="text-[10px] text-muted-foreground/80 mt-1">Set routines</p>
             </motion.div>
           </motion.div>
+
+          {/* Accessibility instruction for adding to home screen */}
+          <motion.div 
+            className="pt-2 px-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              delay: 0.5, 
+              duration: 0.4,
+              type: "tween"
+            }}
+          >
+            <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-white/5 rounded-lg p-3 text-left">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5">
+                  <Lightbulb className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                </div>
+                <p className="text-xs text-muted-foreground/90 leading-relaxed">
+                  <span className="font-medium text-foreground">Pro tip:</span> For quick daily access, tap the three-dot menu in your browser and select "Add to Home Screen".
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     )
-  },
+  }
 ]
 
 export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
@@ -950,9 +973,9 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
   const isFirstStep = currentStep === 0
 
   const renderIcon = useCallback(() => {
-    const Icon = currentStepData.icon || Sparkles;
+    const Icon = currentStepData?.icon || Sparkles;
     return <Icon className="h-4.5 w-4.5 text-white" />;
-  }, [currentStepData.icon])
+  }, [currentStepData])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -994,7 +1017,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-2.5">
               <motion.div 
-                className={`w-9 h-9 rounded-xl bg-gradient-to-br ${currentStepData.color} flex items-center justify-center shadow-lg backdrop-blur-sm border border-white/10`}
+                className={`w-9 h-9 rounded-xl bg-gradient-to-br ${(currentStepData && currentStepData.color) || 'from-violet-500 to-purple-600'} flex items-center justify-center shadow-lg backdrop-blur-sm border border-white/10`}
                 key={currentStep}
                 initial={{ scale: 0.8, rotate: -5 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -1004,14 +1027,14 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                   type: "tween"
                 }}
               >
-                {React.cloneElement(renderIcon(), { className: 'h-4 w-4 text-white drop-shadow-md' })}
+                {currentStepData && React.cloneElement(renderIcon(), { className: 'h-4 w-4 text-white drop-shadow-md' })}
               </motion.div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium text-muted-foreground/80 tracking-wide">
                   STEP {currentStep + 1} OF {onboardingSteps.length}
                 </span>
                 <span className="text-[10px] font-semibold text-foreground/60 tracking-wider mt-0.5 truncate max-w-[120px]">
-                  {currentStepData.title.toUpperCase()}
+                  {currentStepData?.title?.toUpperCase() || ''}
                 </span>
               </div>
             </div>
@@ -1040,13 +1063,13 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
               }}
             >
               <h2 className="text-xl font-bold mb-1.5 leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
-                {currentStepData.title}
+                {currentStepData?.title || 'Welcome'}
               </h2>
               <p className="text-sm font-semibold text-foreground/70 mb-1.5 tracking-normal">
-                {currentStepData.subtitle}
+                {currentStepData?.subtitle || ''}
               </p>
               <p className="text-xs text-muted-foreground/90 leading-relaxed">
-                {currentStepData.description}
+                {currentStepData?.description || ''}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -1070,7 +1093,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                   }}
                   className="min-h-[220px] flex items-center justify-center p-3"
                 >
-                  {currentStepData.content}
+                  {currentStepData?.content || <div>No content available</div>}
                 </motion.div>
               </AnimatePresence>
             </div>
