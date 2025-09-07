@@ -922,7 +922,7 @@ const onboardingSteps: OnboardingStep[] = [
               <span className="text-xs font-semibold text-foreground/80">Pro Tip</span>
             </div>
             <p className="text-[10px] text-muted-foreground/90 leading-relaxed">
-              For quick daily access on Android: Tap the <span className="font-semibold text-foreground">three-dot menu</span> in your browser, then select <span className="font-semibold text-foreground">"Add to Home Screen"</span>
+              For quick daily access: Tap the <span className="font-semibold text-foreground">three-dot menu</span> in your browser, then select <span className="font-semibold text-foreground">"Add to Home Screen"</span> or <span className="font-semibold text-foreground">"Install App"</span>
             </p>
           </motion.div>
         </div>
