@@ -942,11 +942,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           </DialogHeader>
           <div className="pt-2 pb-3 flex flex-col gap-4">
             <p className="line-height-readable text-center text-sm md:text-base text-muted-foreground">
-              Define a day&apos;s routine (e.g., push, pull, leg, or custom).
+              Select a predefined option for the day.
             </p>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="day-name" className="text-sm">Day Name</Label>
+                <Label htmlFor="day-name" className="text-sm">Day</Label>
                 <Input
                   id="day-name"
                   value={newDayName}
@@ -956,8 +956,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label className="text-sm">Day ID</Label>
-                <div className="grid grid-cols-2 gap-2 mt-1">
+                <Label className="text-sm">Day</Label>
+                <div className="grid grid-cols-3 gap-2 mt-1">
                   <button
                     type="button"
                     onClick={() => {
@@ -1009,36 +1009,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     </div>
                     <span className="text-xs font-medium">Leg</span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setNewDayId("");
-                      setNewDayName("");
-                    }}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
-                      newDayId && !["push", "pull", "leg"].includes(newDayId)
-                        ? "border-blue-500 bg-blue-500/10"
-                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 mb-1.5">
-                      <Dumbbell className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="text-xs font-medium">Custom</span>
-                  </button>
                 </div>
-                {newDayId && !["push", "pull", "leg"].includes(newDayId) && (
-                  <Input
-                    id="custom-day-id"
-                    value={newDayId}
-                    onChange={(e) => setNewDayId(e.target.value)}
-                    placeholder="Enter custom ID"
-                    className="mt-2 text-sm px-2.5 py-1.5 rounded-md"
-                  />
-                )}
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Select a predefined option or choose Custom for your own ID.
-                </p>
               </div>
             </div>
           </div>
