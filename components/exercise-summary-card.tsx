@@ -104,8 +104,8 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
           </div>
           
           <div className="col-span-2 bg-muted/20 rounded-xl p-2.5 backdrop-blur-sm border border-border/40">
-            <div className="text-[10px] text-muted-foreground font-medium tracking-wide">Last Performed</div>
-            <div className="text-xs font-medium text-foreground mt-1">
+            <div className="text-[10px] text-muted-foreground font-medium tracking-wide text-center">Last Performed</div>
+            <div className="text-xs font-medium text-foreground mt-1 text-center">
               {format(new Date(weekData.date), 'MMM d, yyyy')}
             </div>
           </div>
