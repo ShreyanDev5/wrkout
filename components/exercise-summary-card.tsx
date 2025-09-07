@@ -50,7 +50,7 @@ export function ExerciseSummaryCard({ exercise, weekLabels }: ExerciseSummaryCar
             style={{ backgroundColor: dayColor }}
           />
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground truncate text-sm" title={exercise.exerciseName}>
+            <h3 className="font-semibold text-foreground truncate text-[15px]" title={exercise.exerciseName}>
               {exercise.exerciseName}
             </h3>
           </div>
