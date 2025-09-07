@@ -935,16 +935,16 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
         <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
           <DialogHeader>
-            <div className="flex flex-col items-center gap-1.5 mb-1.5">
+            <div className="flex flex-col items-center gap-1 mb-1">
               <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
               <DialogTitle className="line-height-readable text-center text-base">Add Workout Day</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="pt-2 pb-3 flex flex-col gap-4">
+          <div className="pt-1 pb-5 flex flex-col gap-4">
             <p className="line-height-readable text-center text-sm md:text-base text-muted-foreground">
-              Select a predefined option for the day.
+              Create a new workout day. Days contain exercises.
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="day-name" className="text-sm">Day</Label>
                 <Input
@@ -955,9 +955,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                   className="mt-1 text-sm px-2.5 py-1.5 rounded-md"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <Label className="text-sm">Day</Label>
-                <div className="grid grid-cols-3 gap-2 mt-1">
+              <div className="flex flex-col gap-3">
+                <div className="text-xs font-medium text-muted-foreground pl-1">Or select a predefined option:</div>
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => {
