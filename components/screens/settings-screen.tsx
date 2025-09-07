@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
 import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
 import { DeletionConfirmationModal } from '@/components/deletion-confirmation-modal'
+import { RestrictionConfirmationModal } from '@/components/restriction-confirmation-modal'
 import { OnboardingGuide } from '@/components/onboarding-guide'
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -68,6 +69,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const [dayToDelete, setDayToDelete] = useState<{workoutId: string, id: string, name: string} | null>(null);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
   const [exerciseToDelete, setExerciseToDelete] = useState<{workoutId: string, dayId: string, id: string, name: string} | null>(null);
+  const [isDuplicateDayOpen, setIsDuplicateDayOpen] = useState(false);
+  const [isMaxDaysOpen, setIsMaxDaysOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -217,6 +220,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     try {
       console.log('User info:', { id: user.id, email: user.email });
       console.log('Selected workout ID:', selectedWorkoutId);
+      
       // Check if a day with this day_id already exists for this workout
       const existingDay = workoutDays.find(day => 
         day.workout_id === selectedWorkoutId && 
@@ -224,11 +228,14 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       );
       
       if (existingDay) {
-        toast({ 
-          title: 'Error', 
-          description: `A day with ID "${newDayId}" already exists in this workout.`, 
-          className: 'bg-[#EA4335] border-none text-white' 
-        });
+        setIsDuplicateDayOpen(true);
+        return;
+      }
+      
+      // Check if this workout already has 3 days (max limit)
+      const daysForWorkout = workoutDays.filter(day => day.workout_id === selectedWorkoutId);
+      if (daysForWorkout.length >= 3) {
+        setIsMaxDaysOpen(true);
         return;
       }
       
@@ -1146,6 +1153,22 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         onConfirm={confirmDeleteExercise}
         itemType="exercise"
         itemName={exerciseToDelete?.name || ""}
+      />
+
+      {/* Duplicate Day Restriction Modal */}
+      <RestrictionConfirmationModal
+        isOpen={isDuplicateDayOpen}
+        onClose={() => setIsDuplicateDayOpen(false)}
+        title="Duplicate Day"
+        message="This day already exists in the current workout routine. Each day type can only be added once per routine."
+      />
+
+      {/* Maximum Days Restriction Modal */}
+      <RestrictionConfirmationModal
+        isOpen={isMaxDaysOpen}
+        onClose={() => setIsMaxDaysOpen(false)}
+        title="Maximum Days Reached"
+        message="A workout routine can only contain up to 3 days. Please remove an existing day if you want to add a different one."
       />
 
       <div className="my-6">
