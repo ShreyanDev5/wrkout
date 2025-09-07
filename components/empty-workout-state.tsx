@@ -52,21 +52,20 @@ export function EmptyWorkoutState({ dayId, onStart }: EmptyWorkoutStateProps) {
         {getIcon()}
       </div>
 
-      <h3 className="text-xl font-bold mb-2 line-height-readable">Start your first {getDayName(dayId)} workout!</h3>
+      <h3 className="text-xl font-bold mb-3 line-height-readable">Start your {getDayName(dayId)} workout</h3>
 
-      <p className="text-muted-foreground mb-6 max-w-md line-height-readable">
-        Track your exercises, log your progress, and achieve your fitness goals. Let&apos;s get started with your workout
-        routine.
+      <p className="text-muted-foreground mb-6 max-w-md line-height-readable text-sm">
+        Track exercises and log your progress. Let&apos;s begin your fitness journey.
       </p>
 
       <Button
         size="lg"
         onClick={onStart}
-        className="min-touch-target focus-visible-ring"
+        className="min-touch-target focus-visible-ring px-6"
         aria-label={`Start ${getDayName(dayId)} workout`}
         style={{ backgroundColor: dayColor }}
       >
-        Go <ArrowRight className="ml-2 h-4 w-4 modern-icon" />
+        Start <ArrowRight className="ml-2 h-4 w-4 modern-icon" />
       </Button>
     </Card>
   )

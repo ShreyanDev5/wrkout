@@ -74,13 +74,13 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                 <TrendingUp className="h-6 w-6 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-medium">No workout data yet</h3>
-              <p className="text-sm text-muted-foreground">
-                Log your first workout to start tracking your progress. Your improvements will appear here.
+              <p className="text-sm text-muted-foreground px-4">
+                Log your first workout to start tracking progress. Your improvements will appear here.
               </p>
               <div className="pt-2">
                 <div className="text-xs text-muted-foreground">
                   <span className="inline-block px-2 py-1 bg-muted rounded-full">
-                    Tip: Complete your first workout to see progress
+                    Tip: Complete a workout to see progress
                   </span>
                 </div>
               </div>
@@ -118,13 +118,13 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                 <TrendingUp className="h-6 w-6 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-medium">No workout data yet</h3>
-              <p className="text-sm text-muted-foreground">
-                Log your first workout to start tracking your progress. Your improvements will appear here.
+              <p className="text-sm text-muted-foreground px-4">
+                Log your first workout to start tracking progress. Your improvements will appear here.
               </p>
               <div className="pt-2">
                 <div className="text-xs text-muted-foreground">
                   <span className="inline-block px-2 py-1 bg-muted rounded-full">
-                    Tip: Complete your first workout to see progress
+                    Tip: Complete a workout to see progress
                   </span>
                 </div>
               </div>
