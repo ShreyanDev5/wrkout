@@ -11,6 +11,16 @@ A modern workout tracking application built with Next.js, Supabase, and TypeScri
 - **Responsive Design**: Optimized for mobile, tablet, and desktop
 - **Dark/Light Theme**: Automatic theme switching
 - **Audio Feedback**: Sound notifications for workout completion
+- **Onboarding Guide**: Comprehensive carousel-based introduction for new users
+- **Username-Based Authentication**: Unique authentication system without email requirements
+
+## 🤖 AI-Assisted Development
+
+This project was developed with the assistance of AI tools, including:
+- **v0 by Vercel** - For UI component generation and design inspiration
+- **Cursor** - For intelligent code completion and refactoring
+- **Gemini CLI** - For code generation and project scaffolding
+- **Qwen CLI** - For code generation and project scaffolding
 
 ## 🏗️ Tech Stack
 
@@ -23,6 +33,7 @@ A modern workout tracking application built with Next.js, Supabase, and TypeScri
 - **Forms**: React Hook Form + Zod validation
 - **Charts**: Recharts
 - **Animations**: Framer Motion
+- **UI Components**: shadcn/ui component library
 
 ### Backend
 
@@ -30,6 +41,50 @@ A modern workout tracking application built with Next.js, Supabase, and TypeScri
 - **Authentication**: Supabase Auth with RLS
 - **Real-time**: Supabase subscriptions
 - **API**: Next.js API routes
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Supabase account
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/wrkout.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory:
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   ```
+
+4. Set up Supabase database:
+   - Create a new Supabase project
+   - Run the SQL commands from `SUPABASE_SETUP.md` to create tables
+   - Configure authentication settings as described in the setup guide
+
+5. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## 📊 Data Models
 
@@ -58,13 +113,17 @@ interface WorkoutLog {
 ```
 wrkout/
 ├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication pages
+│   └── settings/          # Settings pages
 ├── components/            # React components
-│   ├── auth/              # Authentication
+│   ├── auth/              # Authentication components
 │   ├── screens/           # Main screens
 │   └── ui/                # UI components
 ├── lib/                   # Utilities & types
 ├── hooks/                 # Custom hooks
-└── supabase/              # Database migrations
+├── supabase/              # Database migrations
+└── public/                # Static assets
 ```
 
 ## 🔐 Security
@@ -73,6 +132,7 @@ wrkout/
 - User data isolation
 - Comprehensive input validation
 - TypeScript type safety
+- Service role permissions for admin operations
 
 ## 🎨 Design
 
@@ -80,6 +140,7 @@ wrkout/
 - Adaptive light/dark themes
 - Mobile-first responsive design
 - WCAG compliant accessibility
+- Modern UI with shadcn/ui components
 
 ## 🚀 Performance
 
@@ -88,12 +149,74 @@ wrkout/
 - Strategic caching
 - Core Web Vitals optimization
 
-## Data Safety & Cascading Delete Logic Improvements Checklist
+## 🛠️ Key Features Implementation
 
-- [x] **components/screens/settings-screen.tsx**: Added confirmation dialog for deleting the last workout routine.
-- [x] **lib/supabase-data.ts**: Hardened save logic to prevent accidental mass deletion; added clear comments about cascading deletes and safety.
-- [ ] **components/workout-tracker.tsx**: (No changes needed, but logic reviewed for safety.)
-- [ ] **components/screens/workout-screen.tsx**: (No changes needed, but logic reviewed for safety.)
-- [ ] **components/reset-confirmation-modal.tsx**: (Reused for confirmation dialog.)
+### Onboarding Guide
 
-All critical logic for safe, predictable data handling and cascading deletes is now in place. See code comments for details.
+The app includes a comprehensive onboarding guide that helps new users understand and navigate the app effectively. The guide appears as a visually appealing carousel that introduces users to the key features of the app.
+
+### Username-Based Authentication
+
+A unique authentication system where users register and login using only usernames and passwords without requiring email addresses. This includes a custom password recovery implementation.
+
+### Data Safety & Cascading Delete Logic
+
+The app implements robust data safety measures including confirmation dialogs for critical operations and hardened save logic to prevent accidental mass deletion.
+
+## 📈 Development Progress
+
+This project serves as a portfolio piece tracking progress toward becoming a world-class software developer. Key milestones include:
+
+- Implementation of a comprehensive authentication system
+- Development of responsive UI with dark/light theme support
+- Creation of data visualization features for progress tracking
+- Implementation of unique username-based authentication
+- Development of onboarding experience for new users
+
+## 🚀 Deployment
+
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+
+2. Deploy to your preferred hosting platform:
+   - Vercel (recommended for Next.js apps)
+   - Netlify
+   - Self-hosted Node.js server
+
+## 📋 Troubleshooting
+
+### Authentication Issues
+
+See `SUPABASE_SETUP.md` for detailed setup instructions for Supabase authentication.
+
+### Forgot Password Issues
+
+See `FORGOT_PASSWORD_TROUBLESHOOTING.md` for solutions to common email delivery problems.
+
+### Username-Based Password Recovery
+
+See `USERNAME_BASED_PASSWORD_RECOVERY.md` for implementation details of the custom password recovery system.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Supabase](https://supabase.io/) - Backend as a service
+- [shadcn/ui](https://ui.shadcn.com/) - UI component library
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Radix UI](https://www.radix-ui.com/) - Accessible UI primitives
