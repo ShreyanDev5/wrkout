@@ -26,10 +26,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
-import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
-import { DeletionConfirmationModal } from '@/components/deletion-confirmation-modal'
-import { RestrictionConfirmationModal } from '@/components/restriction-confirmation-modal'
-import { OnboardingGuide } from '@/components/onboarding-guide'
+import { DeletionConfirmationModal } from "@/components/modals/deletion-confirmation-modal"
+import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal"
+import { RestrictionConfirmationModal } from "@/components/modals/restriction-confirmation-modal"
+import { OnboardingGuide } from "@/components/onboarding/onboarding-guide"
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRef } from "react"
@@ -60,15 +60,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const supabase = createClientComponentClient();
 
   // Add a new state to track a pending exercise open request
-  const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{workoutId: string, dayId: string} | null>(null)
+  const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{ workoutId: string, dayId: string } | null>(null)
   const [isDeleteAllWorkoutsOpen, setIsDeleteAllWorkoutsOpen] = useState(false);
   const [pendingDeleteWorkoutId, setPendingDeleteWorkoutId] = useState<string | null>(null);
   const [isDeleteWorkoutOpen, setIsDeleteWorkoutOpen] = useState(false);
-  const [workoutToDelete, setWorkoutToDelete] = useState<{id: string, name: string} | null>(null);
+  const [workoutToDelete, setWorkoutToDelete] = useState<{ id: string, name: string } | null>(null);
   const [isDeleteDayOpen, setIsDeleteDayOpen] = useState(false);
-  const [dayToDelete, setDayToDelete] = useState<{workoutId: string, id: string, name: string} | null>(null);
+  const [dayToDelete, setDayToDelete] = useState<{ workoutId: string, id: string, name: string } | null>(null);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
-  const [exerciseToDelete, setExerciseToDelete] = useState<{workoutId: string, dayId: string, id: string, name: string} | null>(null);
+  const [exerciseToDelete, setExerciseToDelete] = useState<{ workoutId: string, dayId: string, id: string, name: string } | null>(null);
   const [isDuplicateDayOpen, setIsDuplicateDayOpen] = useState(false);
   const [isMaxDaysOpen, setIsMaxDaysOpen] = useState(false);
 
@@ -158,27 +158,27 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   const confirmDeleteWorkout = async () => {
     if (!workoutToDelete || !user) return;
-    
+
     try {
       // Delete workout from database (cascading delete will remove days and exercises)
       const { error } = await supabase.from('workouts').delete().eq('id', workoutToDelete.id);
-      
+
       if (error) {
         console.error('Supabase delete error:', error);
-        toast({ 
-          title: 'Error', 
-          description: error.message, 
-          className: 'bg-[#EA4335] border-none text-white' 
+        toast({
+          title: 'Error',
+          description: error.message,
+          className: 'bg-[#EA4335] border-none text-white'
         });
         return;
       }
-      
+
       // Update local state
       onUpdateWorkoutsAndDays(
-        workouts.filter((w) => w.id !== workoutToDelete.id), 
+        workouts.filter((w) => w.id !== workoutToDelete.id),
         workoutDays.filter((d) => d.workout_id !== workoutToDelete.id)
       );
-      
+
       toast({
         title: "Workout Deleted",
         description: "The workout has been removed.",
@@ -186,10 +186,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error deleting workout:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   }
@@ -197,48 +197,48 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const handleAddDay = async () => {
     // Validate that we have required data
     if (!selectedWorkoutId || !user) return;
-    
+
     // Validate that we have a day name and ID
     if (!newDayName.trim()) {
-      toast({ 
-        title: 'Error', 
-        description: 'Please enter a day name.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'Please enter a day name.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
       return;
     }
-    
+
     if (!newDayId.trim()) {
-      toast({ 
-        title: 'Error', 
-        description: 'Please select a day ID or enter a custom one.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'Please select a day ID or enter a custom one.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
       return;
     }
-    
+
     try {
       console.log('User info:', { id: user.id, email: user.email });
       console.log('Selected workout ID:', selectedWorkoutId);
-      
+
       // Check if a day with this day_id already exists for this workout
-      const existingDay = workoutDays.find(day => 
-        day.workout_id === selectedWorkoutId && 
+      const existingDay = workoutDays.find(day =>
+        day.workout_id === selectedWorkoutId &&
         day.day_id.toLowerCase() === newDayId.toLowerCase()
       );
-      
+
       if (existingDay) {
         setIsDuplicateDayOpen(true);
         return;
       }
-      
+
       // Check if this workout already has 3 days (max limit)
       const daysForWorkout = workoutDays.filter(day => day.workout_id === selectedWorkoutId);
       if (daysForWorkout.length >= 3) {
         setIsMaxDaysOpen(true);
         return;
       }
-      
+
       const newDay = {
         id: uuidv4(),
         workout_id: selectedWorkoutId,
@@ -248,28 +248,28 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      
+
       console.log('Attempting to insert workout day:', newDay);
-      
+
       // First, let's check if the table exists by trying to query it
       const { data: tableCheck, error: tableError } = await supabase
         .from('workout_days')
         .select('id')
         .limit(1);
       console.log('Table check response:', { tableCheck, tableError });
-      
+
       const { data, error } = await supabase.from('workout_days').insert([newDay]);
       console.log('Supabase response:', { data, error });
       if (error) {
         console.error('Supabase insert error:', error);
-        toast({ 
-          title: 'Error', 
-          description: error.message || 'Failed to add workout day. Please try again.', 
-          className: 'bg-[#EA4335] border-none text-white' 
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to add workout day. Please try again.',
+          className: 'bg-[#EA4335] border-none text-white'
         });
         return;
       }
-      
+
       const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
       onUpdateWorkoutsAndDays(workouts, loadedWorkoutDays);
       setNewDayName("");
@@ -286,10 +286,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error adding workout day:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   };
@@ -301,7 +301,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   const confirmDeleteDay = async () => {
     if (!dayToDelete || !user) return;
-    
+
     try {
       const { error } = await supabase.from('workout_days').delete().eq('id', dayToDelete.id);
       if (error) {
@@ -318,10 +318,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error deleting day:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   };
@@ -360,39 +360,39 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   // Move exercise up in the list
   const moveExerciseUp = async (dayId: string, index: number) => {
     if (index === 0) return;
-    
+
     // Find the workout day to update
     const dayIndex = workoutDays.findIndex(day => day.id === dayId);
     if (dayIndex === -1 || !user) return;
-    
+
     const dayToUpdate = workoutDays[dayIndex];
-    
+
     // Create a new array with the exercises reordered
     const exercises = [...dayToUpdate.exercises];
     [exercises[index], exercises[index - 1]] = [exercises[index - 1], exercises[index]];
-    
+
     try {
       // Update the exercises in the database
       const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
       if (error) {
         console.error('Supabase update error:', error);
-        toast({ 
-          title: 'Error', 
-          description: error.message || 'Failed to move exercise. Please try again.', 
-          className: 'bg-[#EA4335] border-none text-white' 
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to move exercise. Please try again.',
+          className: 'bg-[#EA4335] border-none text-white'
         });
         return;
       }
-      
+
       // Update local state directly without reloading from database
       const updatedWorkoutDays = [...workoutDays];
       updatedWorkoutDays[dayIndex] = {
         ...dayToUpdate,
         exercises
       };
-      
+
       onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
-      
+
       toast({
         title: "Exercise Moved",
         description: "The exercise has been moved up in the list.",
@@ -400,10 +400,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error moving exercise:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   };
@@ -412,37 +412,37 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const moveExerciseDown = async (dayId: string, index: number) => {
     const dayIndex = workoutDays.findIndex(day => day.id === dayId);
     if (dayIndex === -1 || !user) return;
-    
+
     const dayToUpdate = workoutDays[dayIndex];
-    
+
     if (index === dayToUpdate.exercises.length - 1) return;
-    
+
     // Create a new array with the exercises reordered
     const exercises = [...dayToUpdate.exercises];
     [exercises[index], exercises[index + 1]] = [exercises[index + 1], exercises[index]];
-    
+
     try {
       // Update the exercises in the database
       const { error } = await updateWorkoutDayExercises(supabase, dayId, exercises);
       if (error) {
         console.error('Supabase update error:', error);
-        toast({ 
-          title: 'Error', 
-          description: error.message || 'Failed to move exercise. Please try again.', 
-          className: 'bg-[#EA4335] border-none text-white' 
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to move exercise. Please try again.',
+          className: 'bg-[#EA4335] border-none text-white'
         });
         return;
       }
-      
+
       // Update local state directly without reloading from database
       const updatedWorkoutDays = [...workoutDays];
       updatedWorkoutDays[dayIndex] = {
         ...dayToUpdate,
         exercises
       };
-      
+
       onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
-      
+
       toast({
         title: "Exercise Moved",
         description: "The exercise has been moved down in the list.",
@@ -450,22 +450,22 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error moving exercise:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   };
 
   const confirmDeleteExercise = async () => {
     if (!exerciseToDelete || !user) return;
-    
+
     try {
       // Find the workout day to update
       const dayToUpdate = workoutDays.find(day => day.id === exerciseToDelete.dayId);
       if (!dayToUpdate) return;
-      
+
       const updatedExercises = (dayToUpdate.exercises || []).filter((exercise: any) => exercise.id !== exerciseToDelete.id);
       const { error } = await updateWorkoutDayExercises(supabase, exerciseToDelete.dayId, updatedExercises);
       if (error) {
@@ -482,20 +482,20 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       });
     } catch (err) {
       console.error('Unexpected error deleting exercise:', err);
-      toast({ 
-        title: 'Error', 
-        description: 'An unexpected error occurred. Please try again.', 
-        className: 'bg-[#EA4335] border-none text-white' 
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        className: 'bg-[#EA4335] border-none text-white'
       });
     }
   }
 
   // Exercise item component for better performance
-  const ExerciseItem = useCallback(({ 
-    exercise, 
-    index, 
-    totalExercises, 
-    dayId, 
+  const ExerciseItem = useCallback(({
+    exercise,
+    index,
+    totalExercises,
+    dayId,
     workoutId,
     onMoveUp,
     onMoveDown,
@@ -636,9 +636,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       </CardHeader>
 
       <CardContent className="px-3 sm:px-4">
-        <motion.div 
-          initial="hidden" 
-          animate="visible" 
+        <motion.div
+          initial="hidden"
+          animate="visible"
           variants={containerVariants}
           className="space-y-8 sm:space-y-12"
         >
@@ -971,11 +971,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       setNewDayId("push");
                       setNewDayName("Push Day");
                     }}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
-                      newDayId === "push"
-                        ? "border-[#FBBC04] bg-[#FBBC04]/10"
-                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${newDayId === "push"
+                      ? "border-[#FBBC04] bg-[#FBBC04]/10"
+                      : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FBBC04] mb-1.5">
                       <ArrowUp className="h-4 w-4 text-zinc-900" />
@@ -988,11 +987,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       setNewDayId("pull");
                       setNewDayName("Pull Day");
                     }}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
-                      newDayId === "pull"
-                        ? "border-[#34A853] bg-[#34A853]/10"
-                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${newDayId === "pull"
+                      ? "border-[#34A853] bg-[#34A853]/10"
+                      : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#34A853] mb-1.5">
                       <ArrowDown className="h-4 w-4 text-white" />
@@ -1005,11 +1003,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       setNewDayId("leg");
                       setNewDayName("Leg Day");
                     }}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
-                      newDayId === "leg"
-                        ? "border-[#EA4335] bg-[#EA4335]/10"
-                        : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${newDayId === "leg"
+                      ? "border-[#EA4335] bg-[#EA4335]/10"
+                      : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#EA4335] mb-1.5">
                       <Footprints className="h-4 w-4 text-white" />
@@ -1094,11 +1091,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         dayColor="#EA4335"
         message={"Are you sure you want to sign out? You will need to log in again to access your workouts and progress."}
       />
-      
+
       {/* Onboarding Guide */}
-      <OnboardingGuide 
-        isOpen={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
+      <OnboardingGuide
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
 
       <ResetConfirmationModal

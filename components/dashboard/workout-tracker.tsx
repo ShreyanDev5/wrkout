@@ -7,14 +7,14 @@ import { ProgressScreen } from "@/components/screens/progress-screen"
 import { SettingsScreen } from "@/components/screens/settings-screen"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { ModernTabNavigation } from "@/components/modern-tab-navigation"
+import { TabNavigation } from "./TabNavigation"
 import { useTheme } from "@/components/theme-context"
 import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadUserWorkoutDays, saveUserWorkoutDays } from "@/lib/supabase-data"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
-import { WorkoutProgressIcon } from "@/components/workout-progress-icon"
+import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon"
 import { useAuth } from '@/lib/auth'
-import { OnboardingGuide } from "@/components/onboarding-guide"
+import { OnboardingGuide } from "@/components/onboarding/onboarding-guide"
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -126,7 +126,7 @@ export function WorkoutTracker() {
     <div className="flex flex-col min-h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
       <header className="sticky top-0 z-10 bg-background border-b dark:border-opacity-10">
         <div className="container flex items-center justify-between h-16 px-4">
-          <h1 
+          <h1
             className="text-2xl font-extrabold tracking-tight bg-[linear-gradient(to_right,#FFD700_0%,#FFD700_25%,#00FF00_45%,#00FF00_55%,#FF0000_75%,#FF0000_100%)] bg-clip-text text-transparent opacity-90 transition-all duration-300 hover:opacity-100 hover:scale-[1.02] active:scale-[0.98] cursor-default select-none"
             style={{
               textShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -172,16 +172,16 @@ export function WorkoutTracker() {
         </div>
 
         <footer className="sticky bottom-0 z-10 bg-background">
-          <ModernTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
         </footer>
       </Tabs>
 
       <Toaster />
-      
+
       {/* Onboarding Guide */}
-      <OnboardingGuide 
-        isOpen={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
+      <OnboardingGuide
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
     </div>
   )

@@ -13,7 +13,7 @@ import type { Variants } from "framer-motion"
 
 type TimeframeType = "month" | "threeMonths" | "sixMonths" | "year" | "fiveYears" | "all"
 
-interface ModernProgressChartProps {
+interface ProgressChartProps {
   logs: WorkoutLog[]
   mainFilter: string | null
   exerciseFilter: string | null
@@ -34,12 +34,12 @@ const containerVariants: Variants = {
 
 // Update chart variants for smoother revealing animation
 const chartVariants: Variants = {
-  initial: { 
+  initial: {
     opacity: 0.3,
     clipPath: "inset(0 100% 0 0)",
     filter: "blur(4px)"
   },
-  hover: { 
+  hover: {
     opacity: 1,
     clipPath: "inset(0 0% 0 0)",
     filter: "blur(0px)",
@@ -48,7 +48,7 @@ const chartVariants: Variants = {
       ease: [0.22, 1, 0.36, 1]
     }
   },
-  exit: { 
+  exit: {
     opacity: 0,
     clipPath: "inset(0 0% 0 100%)",
     filter: "blur(4px)",
@@ -59,7 +59,7 @@ const chartVariants: Variants = {
   }
 }
 
-  // Move all styles to a single constant at the top level of the component
+// Move all styles to a single constant at the top level of the component
 const chartStyles = `
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -258,7 +258,7 @@ const chartStyles = `
   }
 `
 
-export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: ModernProgressChartProps) {
+export function ProgressChart({ logs, mainFilter, exerciseFilter }: ProgressChartProps) {
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
   const [timeframe, setTimeframe] = useState<TimeframeType>("month")
@@ -337,28 +337,28 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
           const exerciseType = getExerciseWorkoutType(log.exercise_name)
           return exerciseType === mainFilter.toLowerCase()
         })
-        
+
         // Then group by exercise and find the best progression
         const exerciseGroups: Record<string, WorkoutLog[]> = {}
-        
+
         processedLogs.forEach(log => {
           if (!exerciseGroups[log.exercise_name]) {
             exerciseGroups[log.exercise_name] = []
           }
           exerciseGroups[log.exercise_name].push(log)
         })
-        
+
         // Find the exercise with the most data points or best progression
         let bestExercise = ""
         let maxDataPoints = 0
-        
+
         Object.entries(exerciseGroups).forEach(([exerciseName, logs]) => {
           if (logs.length > maxDataPoints) {
             maxDataPoints = logs.length
             bestExercise = exerciseName
           }
         })
-        
+
         if (bestExercise) {
           processedLogs = exerciseGroups[bestExercise]
         }
@@ -387,7 +387,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         const dateKey = log.performed_at
         const currentVolume = log.weight * log.avg_reps
         const existingVolume = groupedData[dateKey] ? groupedData[dateKey].weight * groupedData[dateKey].avgReps : 0
-        
+
         if (!groupedData[dateKey] || currentVolume > existingVolume) {
           groupedData[dateKey] = {
             date: dateKey,
@@ -446,7 +446,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     // Compare the latest value to the earliest value within the filtered timeframe
     const earliestWeight = chartData[0].weight;
     const latestWeight = chartData[chartData.length - 1].weight;
-    
+
     // Calculate volume (weight × reps) for more comprehensive progress tracking
     const earliestVolume = chartData[0].weight * chartData[0].avgReps;
     const latestVolume = chartData[chartData.length - 1].weight * chartData[chartData.length - 1].avgReps;
@@ -456,7 +456,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       const change = ((latestVolume - earliestVolume) / earliestVolume) * 100;
       return change.toFixed(1);
     }
-    
+
     // Fallback to weight-only calculation if volume data is incomplete
     if (earliestWeight === 0 || earliestWeight === latestWeight) return null;
 
@@ -519,13 +519,13 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
     const checkTouchDevice = () => {
       setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
     }
-    
+
     // Initial check
     checkTouchDevice()
-    
+
     // Add resize listener
     window.addEventListener('resize', checkTouchDevice)
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', checkTouchDevice)
   }, [])
@@ -565,15 +565,14 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         initial={{ opacity: 0, y: 8, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 8, scale: 0.95 }}
-        transition={{ 
+        transition={{
           type: "spring",
           stiffness: 600,
           damping: 35,
           mass: 0.7
         }}
-        className={`rounded-2xl p-2 text-sm backdrop-blur-2xl ${
-          isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
-        }`}
+        className={`rounded-2xl p-2 text-sm backdrop-blur-2xl ${isTouchDevice ? 'touch-tooltip compact-mobile-tooltip' : ''
+          }`}
         style={{
           backgroundColor: "rgba(24, 24, 24, 0.98)", // Increased opacity for better readability
           backdropFilter: "blur(20px)",
@@ -588,9 +587,9 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
         <div className="space-y-1">
           <p className="font-medium text-white text-sm truncate">{formatFullDate(label)}</p>
           <div className="flex items-center gap-2">
-            <div 
-              className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
-              style={{ 
+            <div
+              className="h-2.5 w-2.5 rounded-full flex-shrink-0"
+              style={{
                 backgroundColor: chartColor,
                 boxShadow: `0 0 8px ${chartColor}60`
               }}
@@ -635,7 +634,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       const checkMobile = () => {
         setIsMobile(window.innerWidth < 768)
       }
-      
+
       checkMobile()
       window.addEventListener('resize', checkMobile)
       return () => window.removeEventListener('resize', checkMobile)
@@ -696,7 +695,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
             }
           }
         }}
-        style={{ 
+        style={{
           cursor: isTouchDevice ? 'pointer' : 'default',
           touchAction: 'none' // Prevent default touch actions
         }}
@@ -788,7 +787,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
       onMouseEnter={() => !isTouchDevice && setIsHoveringChart(true)}
       onMouseLeave={() => !isTouchDevice && setIsHoveringChart(false)}
       onTouchStart={handleChartContainerTouch}
-      style={{ 
+      style={{
         willChange: "transform",
         background: "linear-gradient(135deg, rgba(24, 24, 24, 0.85), rgba(18, 18, 18, 0.85))", // Premium dark gradient matching tooltip
         backdropFilter: "blur(16px)",
@@ -809,72 +808,65 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                 <div className="mobile-timeframe-buttons">
                   <button
                     onClick={() => setTimeframe("month")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "month"
+                    className={`mobile-timeframe-button ${timeframe === "month"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     1M
                   </button>
                   <button
                     onClick={() => setTimeframe("threeMonths")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "threeMonths"
+                    className={`mobile-timeframe-button ${timeframe === "threeMonths"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     3M
                   </button>
                   <button
                     onClick={() => setTimeframe("sixMonths")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "sixMonths"
+                    className={`mobile-timeframe-button ${timeframe === "sixMonths"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     6M
                   </button>
                   <button
                     onClick={() => setTimeframe("year")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "year"
+                    className={`mobile-timeframe-button ${timeframe === "year"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     1Y
                   </button>
                   <button
                     onClick={() => setTimeframe("fiveYears")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "fiveYears"
+                    className={`mobile-timeframe-button ${timeframe === "fiveYears"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     5Y
                   </button>
                   <button
                     onClick={() => setTimeframe("all")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "all"
+                    className={`mobile-timeframe-button ${timeframe === "all"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     All
                   </button>
                 </div>
               </div>
-              
+
               {/* Weight change indicator - placed after timeframe selector for mobile */}
               {percentChange && (
-                <div className={`change-indicator ${
-                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                }`}>
+                <div className={`change-indicator ${Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
                   <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
                   <span>{Math.abs(Number(percentChange))}%</span>
                 </div>
@@ -887,72 +879,65 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                 <div className="mobile-timeframe-buttons">
                   <button
                     onClick={() => setTimeframe("month")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "month"
+                    className={`mobile-timeframe-button ${timeframe === "month"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     1M
                   </button>
                   <button
                     onClick={() => setTimeframe("threeMonths")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "threeMonths"
+                    className={`mobile-timeframe-button ${timeframe === "threeMonths"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     3M
                   </button>
                   <button
                     onClick={() => setTimeframe("sixMonths")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "sixMonths"
+                    className={`mobile-timeframe-button ${timeframe === "sixMonths"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     6M
                   </button>
                   <button
                     onClick={() => setTimeframe("year")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "year"
+                    className={`mobile-timeframe-button ${timeframe === "year"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     1Y
                   </button>
                   <button
                     onClick={() => setTimeframe("fiveYears")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "fiveYears"
+                    className={`mobile-timeframe-button ${timeframe === "fiveYears"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     5Y
                   </button>
                   <button
                     onClick={() => setTimeframe("all")}
-                    className={`mobile-timeframe-button ${
-                      timeframe === "all"
+                    className={`mobile-timeframe-button ${timeframe === "all"
                         ? "bg-[#2a2a2a] text-foreground border-white/10 active"
                         : "bg-[#1a1a1a] text-muted-foreground hover:bg-[#252525] border-white/5"
-                    }`}
+                      }`}
                   >
                     All
                   </button>
                 </div>
               </div>
-              
-              {/* Weight change indicator - placed after timeframe selector for mobile */}  
+
+              {/* Weight change indicator - placed after timeframe selector for mobile */}
               {percentChange && (
-                <div className={`change-indicator ${
-                    Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                }`}>
+                <div className={`change-indicator ${Number(percentChange) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
                   <ChevronUp className={`h-3 w-3 ${Number(percentChange) <= 0 && "rotate-180"}`} />
                   <span>{Math.abs(Number(percentChange))}%</span>
                 </div>
@@ -1010,11 +995,11 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                       <XAxis
                         dataKey="date"
                         tickFormatter={formatXAxis}
-                        tick={{ 
-                          fontSize: 11, 
+                        tick={{
+                          fontSize: 11,
                           fill: "#9ca3af"
                         }}
-                        axisLine={{ 
+                        axisLine={{
                           stroke: "rgba(255,255,255,0.1)"
                         }}
                         tickLine={false}
@@ -1023,8 +1008,8 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                       />
 
                       {/* Tooltip */}
-                      <Tooltip 
-                        content={<CustomTooltip />} 
+                      <Tooltip
+                        content={<CustomTooltip />}
                         cursor={false}
                       />
 
@@ -1062,7 +1047,7 @@ export function ModernProgressChart({ logs, mainFilter, exerciseFilter }: Modern
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

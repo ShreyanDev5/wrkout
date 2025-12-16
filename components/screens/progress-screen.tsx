@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { ModernProgressChart } from "@/components/modern-progress-chart"
-import { MonthlySummaryTable } from "@/components/monthly-summary-table"
+import { ProgressChart } from "@/components/charts/ProgressChart"
+import { MonthlySummaryTable } from "@/components/dashboard/monthly-summary-table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { WorkoutLog } from "@/lib/types"
@@ -23,13 +23,13 @@ interface ProgressScreenProps {
 export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
   const isMobile = useIsMobile()
-  
+
   const [mainFilter, setMainFilter] = useState<string | null>("push")
   const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isExerciseSelectorOpen, setIsExerciseSelectorOpen] = useState(false)
-  
+
   // Set loading state based on logs
   useEffect(() => {
     // Only set loading to false if we have logs or if logs is an empty array (meaning data has been loaded)
@@ -81,9 +81,9 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   useEffect(() => {
     // Only save after initial load to prevent overwriting with default values
     if (isInitialized) {
-      saveLastProgressState({ 
-        mainFilter: mainFilter || null, 
-        chartExerciseFilter: chartExerciseFilter || null 
+      saveLastProgressState({
+        mainFilter: mainFilter || null,
+        chartExerciseFilter: chartExerciseFilter || null
       }).catch((error) => {
       })
     }
@@ -117,7 +117,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         // Get the most recent log for this exercise
         const mostRecentLog = [...exerciseLogs]
           .sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime())[0]
-        
+
         return {
           name,
           lastPerformed: mostRecentLog?.performed_at,
@@ -126,7 +126,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         }
       })
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-    
+
     return validExercises
   }, [logs])
 
@@ -134,7 +134,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
   const filteredExercisesForChart = useMemo(() => {
     // If no filter is set, return all exercises (shouldn't happen with our new implementation)
     if (!mainFilter) return exercisesWithCompleteData
-    
+
     return exercisesWithCompleteData.filter(exercise => {
       const exerciseType = getExerciseWorkoutType(exercise.name)
       return exerciseType === mainFilter.toLowerCase()
@@ -175,9 +175,9 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
             </SelectItem>
             {filteredExercisesForChart.length > 0 ? (
               filteredExercisesForChart.map((exercise) => (
-                <SelectItem 
-                  key={exercise.name} 
-                  value={exercise.name} 
+                <SelectItem
+                  key={exercise.name}
+                  value={exercise.name}
                   className="rounded-lg my-1 px-4"
                 >
                   <div className="flex items-center gap-2.5 whitespace-nowrap">
@@ -201,7 +201,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
     return (
       <>
-        <div 
+        <div
           className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 px-4 flex items-center justify-between cursor-pointer"
           onClick={() => setIsExerciseSelectorOpen(true)}
         >
@@ -242,7 +242,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   <h3 className="text-lg font-semibold">Select Exercise</h3>
                 </div>
                 <div className="overflow-y-auto max-h-[calc(70vh-140px)]" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  <div 
+                  <div
                     className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => {
                       setChartExerciseFilter(null)
@@ -398,10 +398,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
       </CardHeader>
 
       <CardContent className="px-4" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <motion.div 
-          className="space-y-12" 
-          initial="hidden" 
-          animate="visible" 
+        <motion.div
+          className="space-y-12"
+          initial="hidden"
+          animate="visible"
           variants={containerVariants}
         >
           {/* Current Status Snapshot */}
@@ -416,8 +416,8 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               </div>
             </div>
 
-            <MonthlySummaryTable 
-              logs={logs} 
+            <MonthlySummaryTable
+              logs={logs}
               mainFilter={mainFilter}
             />
           </motion.div>
@@ -440,10 +440,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
             </div>
 
             <div className="pt-2">
-              <ModernProgressChart 
-                logs={logs} 
-                mainFilter={mainFilter} 
-                exerciseFilter={chartExerciseFilter} 
+              <ProgressChart
+                logs={logs}
+                mainFilter={mainFilter}
+                exerciseFilter={chartExerciseFilter}
               />
             </div>
           </motion.div>

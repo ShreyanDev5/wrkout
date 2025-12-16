@@ -5,12 +5,12 @@ import type React from "react"
 import { Dumbbell, LineChart, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface ModernTabNavigationProps {
+interface TabNavigationProps {
   activeTab: string
   onTabChange: (tab: string) => void
 }
 
-export function ModernTabNavigation({ activeTab, onTabChange }: ModernTabNavigationProps) {
+export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   const tabs = [
     {
       id: "workout",

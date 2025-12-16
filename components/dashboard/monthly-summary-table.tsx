@@ -9,7 +9,7 @@ import { useIsMobile } from "@/components/ui/use-mobile"
 import { processWorkoutData } from "@/lib/progress-data-utils"
 import { format } from "date-fns"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
-import { ExerciseSummaryCard } from "@/components/exercise-summary-card"
+import { ExerciseSummaryCard } from "@/components/dashboard/exercise-summary-card"
 
 interface MonthlySummaryTableProps {
   logs: WorkoutLog[]
@@ -23,10 +23,10 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
   // Filter logs by main filter
   const filteredLogs = useMemo(() => {
     const validLogs = logs.filter((log) => log.weight > 0 && log.avg_reps > 0)
-    
+
     // If no filter is set, return all valid logs (shouldn't happen with our new implementation)
     if (!mainFilter) return validLogs
-    
+
     return validLogs.filter((log) => {
       const exerciseType = getExerciseWorkoutType(log.exercise_name)
       return exerciseType === mainFilter.toLowerCase()
@@ -43,10 +43,10 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
     // Handle edge cases
     if (!current || !previous || previous === 0) return null
     const diff = current - previous
-    
+
     // Consider changes less than 1kg as neutral
     if (Math.abs(diff) < 1) return <Minus className="h-3.5 w-3.5 text-muted-foreground" />
-    
+
     if (diff > 0) {
       return <TrendingUp className="h-3.5 w-3.5 text-green-500" />
     } else {
@@ -89,11 +89,11 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
         ) : (
           <div className="space-y-4">
             {weeklyData.map((exercise) => (
-                              <ExerciseSummaryCard 
-                  key={exercise.exerciseName} 
-                  exercise={exercise} 
-                  weekLabels={weekLabels} 
-                />
+              <ExerciseSummaryCard
+                key={exercise.exerciseName}
+                exercise={exercise}
+                weekLabels={weekLabels}
+              />
             ))}
           </div>
         )}
@@ -141,8 +141,8 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                   <div className="font-semibold text-xs sm:text-sm text-foreground">Exercise</div>
                 </TableHead>
                 {weekLabels.map((label, index) => (
-                  <TableHead 
-                    key={label} 
+                  <TableHead
+                    key={label}
                     className="text-center w-[100px] sm:w-[140px] px-1 sm:px-3 bg-muted/30"
                   >
                     <div className="flex flex-col items-center gap-1">
@@ -157,10 +157,10 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
               {weeklyData.map((exercise) => {
                 const workoutType = getExerciseWorkoutType(exercise.exerciseName);
                 const dayColor = workoutType ? getWorkoutDayColor(workoutType, colorMode) : 'hsl(var(--muted))';
-                
+
                 return (
-                  <TableRow 
-                    key={exercise.exerciseName} 
+                  <TableRow
+                    key={exercise.exerciseName}
                     className="transition-colors group border-b border-border/40 hover:bg-muted/10"
                   >
                     <TableCell
@@ -169,8 +169,8 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                         color: dayColor,
                       }}
                     >
-                      <span 
-                        className="block text-xs sm:text-sm font-medium px-2 sm:px-4 leading-tight" 
+                      <span
+                        className="block text-xs sm:text-sm font-medium px-2 sm:px-4 leading-tight"
                         title={exercise.exerciseName}
                       >
                         {exercise.exerciseName}
@@ -180,10 +180,10 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                     {weekLabels.map((weekLabel, weekIndex) => {
                       const weekData = exercise.weeks[weekLabel]
                       const previousWorkout = exercise.previousWorkout
-                      
+
                       return (
-                        <TableCell 
-                          key={weekLabel} 
+                        <TableCell
+                          key={weekLabel}
                           className="text-center py-3 sm:py-4 px-1 sm:px-3 bg-background/95"
                         >
                           {weekData ? (
@@ -201,7 +201,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                                   </div>
                                 )}
                               </div>
-                              
+
                               {/* Reps display with trend */}
                               <div className="flex items-center justify-center space-x-1.5 mt-1">
                                 <span className="text-sm sm:text-base text-foreground font-medium">
@@ -215,7 +215,7 @@ export function MonthlySummaryTable({ logs, mainFilter }: MonthlySummaryTablePro
                                   </div>
                                 )}
                               </div>
-                              
+
                               {/* Date indicator */}
                               <div className="text-[10px] sm:text-xs text-muted-foreground/80 mt-1">
                                 {format(new Date(weekData.date), 'MMM d')}

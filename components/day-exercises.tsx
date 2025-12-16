@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Exercise, WorkoutLog } from "@/lib/types"
-import { WorkoutLogModal } from "@/components/workout-log-modal"
+import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon"
+import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
@@ -41,15 +42,15 @@ export function DayExercises({ exercises, dayId, workoutId, onLogWorkout, onExer
 
   const handleTick = (exerciseId: string, checked: boolean) => {
     setTicked((prev) => {
-      const newTicked = checked 
+      const newTicked = checked
         ? [...prev, exerciseId]
         : prev.filter((id) => id !== exerciseId)
-      
+
       // Notify parent component after state update
       setTimeout(() => {
         onExerciseToggled?.()
       }, 0)
-      
+
       return newTicked
     })
   }
@@ -71,17 +72,17 @@ export function DayExercises({ exercises, dayId, workoutId, onLogWorkout, onExer
   const handleCheckboxToggle = (exerciseId: string) => {
     const isCurrentlyTicked = ticked.includes(exerciseId)
     const newState = !isCurrentlyTicked
-    
+
     // Play tick sound when checking (not unchecking)
     if (newState && (window as any).playTickSound) {
-      ;(window as any).playTickSound()
+      ; (window as any).playTickSound()
     }
-    
+
     // Trigger haptic feedback if supported
     if (newState && "vibrate" in navigator) {
       navigator.vibrate(5) // Very subtle vibration
     }
-    
+
     handleTick(exerciseId, newState)
   }
 

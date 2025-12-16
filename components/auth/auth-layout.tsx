@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { WorkoutProgressIcon } from '@/components/workout-progress-icon';
+import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AuthLayoutProps {
@@ -50,8 +50,8 @@ export function AuthLayout({
             "text-center space-y-6",
             isMobile && "space-y-5" // Increased spacing in logo section
           )}>
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="inline-block transition-all duration-300 hover:scale-105 hover:rotate-3"
             >
               <div className={cn(

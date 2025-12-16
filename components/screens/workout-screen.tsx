@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CircularProgress } from "@/components/ui/circular-progress"
+import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
+import { WorkoutProgressRings } from "@/components/charts/workout-progress-rings"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/day-exercises"
-import { EmptyWorkoutState } from "@/components/empty-workout-state"
+import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
 import { useTheme } from "@/components/theme-context"
 import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
@@ -29,7 +31,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PlusCircle } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
-import { ResetConfirmationModal } from '@/components/reset-confirmation-modal'
+import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal"
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -49,11 +51,11 @@ export function WorkoutScreen({
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
   const [hasTickedExercises, setHasTickedExercises] = useState(false)
   const { colorMode } = useTheme()
-  
+
   // Check if there are any ticked exercises for the current day
   const checkTickedExercises = useCallback(() => {
     if (typeof window !== 'undefined' && selectedDay) {
-      const ticked = localStorage.getItem(`tickedExercises-${selectedDay}`)
+      const ticked = localStorage.getItem(`tickedExercises - ${selectedDay} `)
       setHasTickedExercises(!!ticked && JSON.parse(ticked).length > 0)
     } else {
       setHasTickedExercises(false)
@@ -63,7 +65,7 @@ export function WorkoutScreen({
   // Clear all ticked exercises for the current day
   const resetTickedExercises = useCallback(() => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(`tickedExercises-${selectedDay}`)
+      localStorage.removeItem(`tickedExercises - ${selectedDay} `)
       setTickCounter(prev => prev + 1)
       setIsResetDialogOpen(false)
       setHasTickedExercises(false)
@@ -91,7 +93,7 @@ export function WorkoutScreen({
         if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
           setSelectedDay(savedDay as "push" | "pull" | "leg")
         }
-        
+
         // Load saved workout selection
         const savedWorkout = await loadSelectedWorkout()
         if (savedWorkout && workouts.some(w => w.id === savedWorkout)) {
@@ -100,7 +102,7 @@ export function WorkoutScreen({
           // Default to first workout if none saved or saved workout not found
           setSelectedWorkout(workouts[0].id)
         }
-        
+
         setIsInitialized(true)
       } catch (error) {
         // Set default values if there's an error
@@ -110,7 +112,7 @@ export function WorkoutScreen({
         setIsInitialized(true)
       }
     }
-    
+
     // Only load saved data when workouts are available
     if (workouts.length > 0 && !selectedWorkout) {
       loadSavedData()
@@ -119,12 +121,12 @@ export function WorkoutScreen({
       setIsInitialized(true)
     }
   }, [workouts, selectedWorkout])
-  
+
   // Load ticked exercises when selectedDay changes
   const loadTickedExercises = useCallback((day: string) => {
     try {
       if (typeof window === 'undefined') return []
-      const stored = localStorage.getItem(`tickedExercises-${day}`)
+      const stored = localStorage.getItem(`tickedExercises - ${day} `)
       return stored ? JSON.parse(stored) as string[] : []
     } catch (error) {
       return []
@@ -166,11 +168,11 @@ export function WorkoutScreen({
     const ticked = loadTickedExercises(dayType)
     const totalExercises = day.exercises.length
     const completedExercises = day.exercises.filter(ex => ticked.includes(ex.id)).length
-    return totalExercises > 0 
+    return totalExercises > 0
       ? Math.min(Math.round((completedExercises / totalExercises) * 100), 100)
       : 0
   }, [currentWorkoutDays, loadTickedExercises])
-  
+
   // Calculate progress for the current day
   const activeProgress = useMemo(() => calculateProgress(selectedDay), [calculateProgress, selectedDay])
 
@@ -258,9 +260,9 @@ export function WorkoutScreen({
     <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector premium-card">
       <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
         <div className="workout-header-container">
-          <div className={`transition-all duration-200 workout-select ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'}`}>
-            <Select 
-              value={selectedWorkout} 
+          <div className={`transition - all duration - 200 workout - select ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'} `}>
+            <Select
+              value={selectedWorkout}
               onValueChange={(value) => {
                 if (workouts.some(w => w.id === value)) {
                   setSelectedWorkout(value)
@@ -268,7 +270,7 @@ export function WorkoutScreen({
                     // Error handling for saving selected workout
                   })
                 }
-              }} 
+              }}
               disabled={workouts.length === 0}
             >
               <SelectTrigger className="w-full min-touch-target">
@@ -284,9 +286,9 @@ export function WorkoutScreen({
             </Select>
           </div>
           {selectedWorkout && hasTickedExercises && (
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="reset-button-premium"
               onClick={() => setIsResetDialogOpen(true)}
               aria-label="Reset workout progress"
@@ -312,11 +314,11 @@ export function WorkoutScreen({
                 style={{
                   backgroundColor:
                     selectedDay === day
-                      ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15%, transparent)`
+                      ? `color - mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15 %, transparent)`
                       : 'transparent',
                   color: selectedDay === day ? getWorkoutDayColor(day, colorMode) : 'hsl(var(--muted-foreground))',
                   fontWeight: selectedDay === day ? 600 : 500,
-                  boxShadow: selectedDay === day ? `0 2px 8px 0 rgba(${day === 'push' ? '249,217,73' : day === 'pull' ? '76,175,80' : '244,67,54'},0.12)` : 'none',
+                  boxShadow: selectedDay === day ? `0 2px 8px 0 rgba(${day === 'push' ? '249,217,73' : day === 'pull' ? '76,175,80' : '244,67,54'}, 0.12)` : 'none',
                 }}
                 aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
               >
@@ -325,9 +327,9 @@ export function WorkoutScreen({
               </TabsTrigger>
             ))}
           </TabsList>
-          
+
           <div className="flex justify-center progress-container">
-            <CircularProgress 
+            <CircularProgress
               value={activeProgress}
               category={selectedDay}
               size="md"
@@ -338,7 +340,7 @@ export function WorkoutScreen({
             <TabsContent key={day.id} value={day.day_id} className="mt-0">
               {day.exercises.length > 0 ? (
                 <DayExercises
-                  key={`${day.id}-${tickCounter}`}
+                  key={`${day.id} -${tickCounter} `}
                   exercises={day.exercises}
                   dayId={day.day_id}
                   workoutId={day.workout_id}
@@ -362,7 +364,7 @@ export function WorkoutScreen({
         onClose={() => setIsResetDialogOpen(false)}
         onConfirm={resetTickedExercises}
         dayColor="#EA4335"
-        message={`Are you sure you want to reset all completed exercises for ${selectedDay.toUpperCase()} day? This will clear your checkmarks but will not affect your workout history.`}
+        message={`Are you sure you want to reset all completed exercises for ${selectedDay.toUpperCase()} day ? This will clear your checkmarks but will not affect your workout history.`}
       />
     </Card>
   )
