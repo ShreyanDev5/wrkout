@@ -109,7 +109,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                             {exerciseName}
                           </h3>
                         </div>
-                        {rir !== null && (
+                        {rir !== null && rir !== undefined && (
                           <div
                             className="flex flex-col items-center justify-center h-12 w-12 rounded-2xl border bg-zinc-950/40"
                             style={{ borderColor: `${dayColor}20` }}

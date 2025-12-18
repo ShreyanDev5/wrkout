@@ -37,7 +37,7 @@ export function InlineWorkoutLogger({
     const [weight, setWeight] = useState(lastValues.weight || 20)
     const [reps, setReps] = useState(lastValues.reps || 8)
     const [sets, setSets] = useState(lastValues.sets || 3)
-    const [rir, setRir] = useState(lastValues.rir ?? 2)
+    const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2 each time
     const [isSaving, setIsSaving] = useState(false)
 
     // Audio context init
@@ -64,7 +64,8 @@ export function InlineWorkoutLogger({
             ; (window as any).playTickSound()
         }
 
-        setLastUsedValues(exercise.id, { weight, reps, sets, rir })
+        // Deliberate entry: DO NOT store RIR in lastUsedValues to prevent pre-filling
+        setLastUsedValues(exercise.id, { weight, reps, sets, rir: 2 }) // Reset to neutral 2 in storage
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -93,7 +94,7 @@ export function InlineWorkoutLogger({
             setReps(lastLog.avg_reps)
             // If last log has sets, use it, else keep current (likely 3)
             if (lastLog.sets) setSets(lastLog.sets)
-            if (lastLog.rir !== undefined && lastLog.rir !== null) setRir(lastLog.rir)
+            // Deliberate entry: DO NOT recall RIR from last sessions
         }
     }
 
@@ -173,7 +174,7 @@ export function InlineWorkoutLogger({
                         >
                             <RotateCcw className="h-3.5 w-3.5 mr-2 opacity-70" />
                             <span className="truncate">
-                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps} {lastLog.rir !== null ? `(RIR ${lastLog.rir})` : ''}
+                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps}
                             </span>
                         </Button>
                     ) : (

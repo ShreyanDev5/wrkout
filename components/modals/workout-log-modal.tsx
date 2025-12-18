@@ -39,7 +39,7 @@ export function WorkoutLogModal({
 
   const [weight, setWeight] = useState(lastValues.weight || 20)
   const [reps, setReps] = useState(lastValues.reps || 8)
-  const [rir, setRir] = useState(lastValues.rir ?? 2)
+  const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2
   const [isSaving, setIsSaving] = useState(false)
 
   // If the modal is opened, reset to last used values
@@ -47,7 +47,7 @@ export function WorkoutLogModal({
     if (isOpen) {
       setWeight(lastValues.weight || 20)
       setReps(lastValues.reps || 8)
-      setRir(lastValues.rir ?? 2)
+      setRir(2) // Deliberate entry: Always reset to neutral 2 when opening
     }
   }, [isOpen, lastValues])
 
@@ -65,7 +65,8 @@ export function WorkoutLogModal({
       return
     }
     setIsSaving(true)
-    setLastUsedValues(exercise.id, { weight, reps, sets: 1, rir })
+    // Deliberate entry: Reset RIR to 2 in storage
+    setLastUsedValues(exercise.id, { weight, reps, sets: 1, rir: 2 })
     const log: WorkoutLog = {
       id: uuidv4(),
       user_id: "",
@@ -89,7 +90,7 @@ export function WorkoutLogModal({
     if (lastLog) {
       setWeight(lastLog.weight)
       setReps(lastLog.avg_reps)
-      if (lastLog.rir !== undefined && lastLog.rir !== null) setRir(lastLog.rir)
+      // Deliberate entry: DO NOT recall RIR from last sessions
     }
   }
 
@@ -174,7 +175,7 @@ export function WorkoutLogModal({
                 <div className="flex justify-between items-center mb-2.5">
                   <span className="text-xs text-muted-foreground">Last log</span>
                   <span className="text-xs font-medium text-white" style={{ color: dayColor }}>
-                    {lastLog.weight} kg × {lastLog.avg_reps} reps {lastLog.rir !== null ? `(RIR ${lastLog.rir})` : ''}
+                    {lastLog.weight} kg × {lastLog.avg_reps} reps
                   </span>
                 </div>
                 <Button
