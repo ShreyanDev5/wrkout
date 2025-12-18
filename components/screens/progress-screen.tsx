@@ -68,7 +68,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
         {/* Detailed Session Breakdown */}
         <motion.div
-          className="space-y-4"
+          className="space-y-3"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -91,53 +91,60 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   variants={itemVariants}
                   className="group"
                 >
-                  <div className="relative bg-zinc-900/50 backdrop-blur-md border border-zinc-800/80 rounded-[24px] p-5 shadow-sm transition-all hover:bg-zinc-900/70 overflow-hidden">
-                    {/* Background accent glow */}
+                  <div className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-[20px] p-4 shadow-sm transition-all hover:bg-zinc-900/60 overflow-hidden">
+                    {/* Background accent glow - subtle indicator */}
                     <div
-                      className="absolute top-0 left-0 w-1 h-full opacity-60"
+                      className="absolute top-0 left-0 w-0.5 h-full opacity-40"
                       style={{ backgroundColor: dayColor }}
                     />
 
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-3">
                       {/* Exercise Header */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs font-bold uppercase tracking-widest opacity-50 mb-0.5" style={{ color: dayColor }}>
-                            {dominantType} focus
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-40 mb-0.5" style={{ color: dayColor }}>
+                            {dominantType} day
                           </span>
-                          <h3 className="text-lg font-bold text-foreground leading-tight tracking-tight">
+                          <h3 className="text-base font-bold text-zinc-100 leading-tight tracking-tight">
                             {exerciseName}
                           </h3>
                         </div>
-                        {rir !== null && rir !== undefined && (
-                          <div
-                            className="flex flex-col items-center justify-center h-12 w-12 rounded-2xl border bg-zinc-950/40"
-                            style={{ borderColor: `${dayColor}20` }}
-                          >
-                            <span className="text-[10px] font-bold uppercase text-muted-foreground/60 leading-none mb-1">RIR</span>
-                            <span className="text-xl font-black leading-none" style={{ color: dayColor }}>{rir}</span>
-                          </div>
-                        )}
                       </div>
 
-                      {/* Primary Metrics Grid */}
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-zinc-950/30 rounded-2xl p-3 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/50 tracking-wider mb-1">Weight</span>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-foreground leading-none">{weight}</span>
-                            <span className="text-[10px] font-medium text-muted-foreground/60">kg</span>
+                      {/* Integrated Metrics Grid - 4 Columns */}
+                      <div className="grid grid-cols-4 gap-2">
+                        {/* Weight */}
+                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Weight</span>
+                          <div className="flex items-baseline gap-0.5">
+                            <span className="text-sm font-bold text-zinc-200">{weight}</span>
+                            <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
                           </div>
                         </div>
 
-                        <div className="bg-zinc-950/30 rounded-2xl p-3 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/50 tracking-wider mb-1">Reps</span>
-                          <span className="text-xl font-bold text-foreground leading-none">{reps}</span>
+                        {/* Reps */}
+                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Reps</span>
+                          <span className="text-sm font-bold text-zinc-200">{reps}</span>
                         </div>
 
-                        <div className="bg-zinc-950/30 rounded-2xl p-3 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/50 tracking-wider mb-1">Sets</span>
-                          <span className="text-xl font-bold text-foreground leading-none">{sets}</span>
+                        {/* Sets */}
+                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Sets</span>
+                          <span className="text-sm font-bold text-zinc-200">{sets}</span>
+                        </div>
+
+                        {/* RIR */}
+                        <div
+                          className={cn(
+                            "rounded-xl p-2.5 border flex flex-col items-center justify-center transition-opacity",
+                            rir !== null && rir !== undefined ? "bg-zinc-950/40 border-zinc-800/30" : "bg-transparent border-transparent opacity-20"
+                          )}
+                        >
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">RIR</span>
+                          <span className="text-sm font-bold" style={{ color: rir !== null && rir !== undefined ? dayColor : 'inherit' }}>
+                            {rir !== null && rir !== undefined ? rir : '—'}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -146,11 +153,11 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               )
             })
           ) : (
-            <div className="text-center py-20 px-8 rounded-[32px] border border-dashed border-zinc-800/50 bg-zinc-900/20">
-              <div className="w-16 h-16 rounded-full bg-zinc-800/30 flex items-center justify-center mx-auto mb-5">
-                <Dumbbell className="h-7 w-7 text-muted-foreground opacity-30" />
+            <div className="text-center py-16 px-8 rounded-[32px] border border-dashed border-zinc-800/50 bg-zinc-900/10">
+              <div className="w-12 h-12 rounded-full bg-zinc-800/20 flex items-center justify-center mx-auto mb-4">
+                <Dumbbell className="h-6 w-6 text-muted-foreground opacity-30" />
               </div>
-              <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-[200px] mx-auto opacity-60">
+              <p className="text-muted-foreground font-medium text-xs leading-relaxed max-w-[180px] mx-auto opacity-50">
                 Log some exercises today to see your progress bloom.
               </p>
             </div>
