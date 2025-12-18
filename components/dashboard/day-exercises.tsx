@@ -49,20 +49,16 @@ export function DayExercises({
 
   const handleCheckboxToggle = (exercise: Exercise) => {
     const isCompleted = completedExerciseNames.has(exercise.name)
-    const newState = !isCompleted
 
-    // Play tick sound/haptics
-    if (newState && (window as any).playTickSound) {
-      ; (window as any).playTickSound()
-    }
-
-    if (newState) {
-      haptic("success")
+    if (!isCompleted) {
+      // UX Improvement: Tapping checkmark opens logger for "Quick Complete" or detailed logging.
+      // No sound/haptics here - defer to the actual "Save" action.
+      setExpandedExerciseId(exercise.id)
     } else {
+      // Uncheck flow (keep existing logic)
       haptic("light")
+      onToggleExercise(exercise.name, false)
     }
-
-    onToggleExercise(exercise.name, newState)
   }
 
   return (

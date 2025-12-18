@@ -57,6 +57,10 @@ export function InlineWorkoutLogger({
 
         setIsSaving(true)
         haptic("success")
+        // Play tick sound for satisfaction
+        if ((window as any).playTickSound) {
+            ; (window as any).playTickSound()
+        }
 
         setLastUsedValues(exercise.id, { weight, reps, sets })
 
