@@ -652,7 +652,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               </div>
               <div>
                 <h2 className="text-base font-semibold text-foreground">
-                  Workout Routines
+                  Routines
                 </h2>
               </div>
               <span className="px-2 py-0.5 rounded-full bg-zinc-800/50 text-[10px] font-medium text-zinc-400 mr-3">
