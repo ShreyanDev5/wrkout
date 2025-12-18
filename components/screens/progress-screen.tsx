@@ -91,12 +91,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   variants={itemVariants}
                   className="group"
                 >
-                  <div className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50">
-                    {/* Subtle left accent border instead of wide bar */}
-                    <div
-                      className="absolute top-0 left-0 w-[2px] h-full opacity-80"
-                      style={{ backgroundColor: dayColor }}
-                    />
+                  <div
+                    className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 border-l-[4px] rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50"
+                    style={{ borderLeftColor: dayColor }}
+                  >
 
                     {/* Very faint background tint for premium feel */}
                     <div
