@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
 
-import { supabase } from "@/lib/supabase"
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +62,7 @@ export function WorkoutScreen({
 
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const { colorMode } = useTheme()
+  const supabase = createClientComponentClient()
 
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")

@@ -102,7 +102,7 @@ export function WorkoutTracker() {
     try {
       await saveWorkoutLog(supabase, logToSave, user.id)
       setWorkoutLogs((prev) => [logToSave, ...prev]) // Add new log to the top
-      toast({ title: "Workout logged!" })
+
     } catch (error) {
       toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
     }
