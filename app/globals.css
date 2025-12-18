@@ -227,23 +227,12 @@
   transition: transform 0.3s ease;
 }
 
+/* Enhanced tab icon - clean matte style */
 .tab-icon-active {
-  animation: gentle-pulse 3s infinite;
+  opacity: 1;
 }
 
-@keyframes gentle-pulse {
-  0% {
-    filter: drop-shadow(0 0 2px var(--tab-color));
-  }
-
-  50% {
-    filter: drop-shadow(0 0 4px var(--tab-color));
-  }
-
-  100% {
-    filter: drop-shadow(0 0 2px var(--tab-color));
-  }
-}
+/* Removed glow animation for premium matte aesthetic */
 
 /* Premium card styles */
 /* Premium card styles - Refined for "Apple-like" subtly */

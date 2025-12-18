@@ -6,7 +6,7 @@ import type { WorkoutLog } from "@/lib/types"
 import { getWorkoutDayColor, getExerciseWorkoutType, formatDate } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { motion } from "framer-motion"
-import { BarChart3, Dumbbell } from "lucide-react"
+import { TrendingUp, Dumbbell } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ProgressScreenProps {
@@ -111,8 +111,8 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 shadow-sm">
-            <BarChart3 className="h-5 w-5 text-indigo-400" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800/90 to-zinc-900/90 border border-zinc-700/40 shadow-lg shadow-zinc-900/50">
+            <TrendingUp className="h-5 w-5" strokeWidth={2.5} style={{ color: '#4caf50' }} />
           </div>
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Recent Sessions</h2>
@@ -150,9 +150,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                     }}
                   >
                     <div className="flex items-center gap-4">
+                      {/* Solid matte bar - premium finish */}
                       <span
-                        className="h-10 w-1 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: dayColor, boxShadow: `0 0 8px ${dayColor}` }}
+                        className="h-10 w-1.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: dayColor }}
                       />
 
                       <div className="flex flex-col">

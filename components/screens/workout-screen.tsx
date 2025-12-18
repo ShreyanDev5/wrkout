@@ -335,8 +335,8 @@ export function WorkoutScreen({
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pt-0 pb-2">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <div className="workout-tabs-container mb-6 mx-auto max-w-[500px]">
-            <TabsList className="flex flex-nowrap w-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 p-1 md:p-1.5 rounded-full shadow-sm gap-1.5 sm:gap-2">
+          <div className="mb-6 mx-auto max-w-[500px]">
+            <TabsList className="flex flex-nowrap w-full bg-zinc-900/60 border border-zinc-800/50 p-1.5 rounded-full gap-1.5 sm:gap-2">
               {['push', 'pull', 'leg'].map((day) => {
                 const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
 
@@ -345,14 +345,14 @@ export function WorkoutScreen({
                     key={day}
                     value={day}
                     className={cn(
-                      'flex-1 rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-1.5 md:py-2.5 px-2 transition-all',
+                      'flex-1 rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-3 transition-all',
                       'text-xs md:text-sm font-medium',
                       selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
                     )}
                     style={{
                       backgroundColor:
                         selectedDay === day
-                          ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 25%, transparent)`
+                          ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 20%, transparent)`
                           : undefined,
                       boxShadow: 'none',
                     }}

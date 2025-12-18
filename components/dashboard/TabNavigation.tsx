@@ -36,7 +36,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   ]
 
   return (
-    <div className="grid grid-cols-3 w-full h-16 border-t dark:border-opacity-10 bg-background">
+    <div className="grid grid-cols-3 w-full h-16 border-t border-zinc-800/50 bg-zinc-950/95 backdrop-blur-sm">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
         return (
@@ -46,7 +46,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             role="tab"
             className={cn(
               "flex flex-col items-center justify-center relative transition-all duration-200",
-              isActive ? "tab-active" : "tab-inactive hover:tab-hover",
+              isActive ? "tab-active" : "tab-inactive",
             )}
             style={
               {
@@ -61,10 +61,11 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
               {tab.icon && (
                 <tab.icon
                   className={cn(
-                    "h-5 w-5 modern-icon transition-all duration-200",
-                    isActive ? "tab-icon-active" : "tab-icon-inactive",
+                    "h-5 w-5 transition-all duration-200",
+                    isActive ? "tab-icon-active" : "tab-icon-inactive opacity-50",
                   )}
                   aria-hidden="true"
+                  strokeWidth={isActive ? 2 : 1.5}
                   style={{
                     stroke: isActive ? tab.color : "currentColor",
                   }}
@@ -72,8 +73,8 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
               )}
               <span
                 className={cn(
-                  "text-xs font-medium transition-all duration-200",
-                  isActive ? "text-white" : "text-gray-400",
+                  "text-[11px] font-medium tracking-wide transition-all duration-200",
+                  isActive ? "opacity-100" : "opacity-40",
                 )}
                 style={{
                   color: isActive ? tab.color : undefined,
@@ -84,7 +85,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             </div>
             {isActive && (
               <div
-                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-1 w-10 rounded-t-full transition-all duration-300"
+                className="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 h-0.5 w-8 rounded-full transition-all duration-300"
                 style={{ backgroundColor: tab.color }}
               />
             )}

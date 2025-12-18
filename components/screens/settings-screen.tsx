@@ -13,6 +13,7 @@ import {
   Footprints,
   Sparkles,
   GripVertical,
+  Settings,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
@@ -509,33 +510,30 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <li
         className={`flex items-center justify-between p-1.5 sm:p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-colors group/item`}
       >
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className="flex flex-col items-center gap-0.5 sm:gap-1 pr-1">
-            <GripVertical className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-          </div>
-          <div className="flex flex-col gap-0.5 sm:gap-1">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <div className="flex flex-col gap-0.5">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onMoveUp(dayId, index)}
               disabled={index === 0}
-              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
               aria-label={`Move ${exercise.name} up`}
             >
-              <ArrowUp className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
+              <ArrowUp className="h-2.5 w-2.5" aria-hidden="true" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onMoveDown(dayId, index)}
               disabled={index === totalExercises - 1}
-              className="h-6 w-6 sm:h-5 sm:w-5 p-0 rounded-full transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-30"
+              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
               aria-label={`Move ${exercise.name} down`}
             >
-              <ArrowDown className="h-3 w-3 sm:h-2.5 sm:w-2.5" aria-hidden="true" />
+              <ArrowDown className="h-2.5 w-2.5" aria-hidden="true" />
             </Button>
           </div>
-          <span className={`text-xs sm:text-sm text-foreground truncate`} title={exercise.name}>
+          <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1" title={exercise.name}>
             {exercise.name}
           </span>
         </div>
@@ -616,13 +614,18 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   return (
     <div className="w-full max-w-2xl mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex flex-col gap-2 mb-8 sm:mb-12 pt-4 sm:pt-8">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Settings
-        </h1>
-        <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
-          Manage your workout routines, schedule, and preferences in one place.
-        </p>
+      <div className="flex items-center gap-3 mb-8 sm:mb-10 pt-4 sm:pt-6">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800/90 to-zinc-900/90 border border-zinc-700/40 shadow-lg shadow-zinc-900/50">
+          <Settings className="h-5 w-5" strokeWidth={2.5} style={{ color: '#EA4335' }} />
+        </div>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+            Settings
+          </h1>
+          <p className="text-xs text-muted-foreground font-medium">
+            Manage routines & preferences
+          </p>
+        </div>
       </div>
 
       <motion.div
@@ -632,24 +635,29 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         className="space-y-10"
       >
         {/* Workouts Section */}
-        <section className="space-y-4">
+        <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                Workout Routines
-              </h2>
-              <span className="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+                <Dumbbell className="h-4 w-4" style={{ color: '#4caf50' }} />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">
+                  Workout Routines
+                </h2>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-zinc-800/50 text-[10px] font-medium text-zinc-400 mr-3">
                 {workouts.length}
               </span>
             </div>
             <Button
               onClick={() => setIsAddWorkoutOpen(true)}
               size="sm"
-              variant="outline"
-              className="h-9 px-4 rounded-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 transition-all shadow-sm hover:shadow text-xs sm:text-sm font-medium"
+              variant="ghost"
+              className="h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
             >
-              <Plus className="h-4 w-4 mr-1.5" />
-              New Routine
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              New
             </Button>
           </div>
 
@@ -664,10 +672,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     key={workout.id}
                     variants={itemVariants}
                     layout
-                    className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${isExpanded
-                      ? "bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 shadow-sm"
-                      : "bg-white/50 dark:bg-zinc-900/20 border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900"
-                      }`}
+                    className={`group relative bg-zinc-800/60 hover:bg-zinc-800/80 border border-zinc-700/50 rounded-xl transition-all duration-300 overflow-hidden`}
                   >
                     <div
                       className="flex items-center justify-between p-4 cursor-pointer"
@@ -738,21 +743,25 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                     return (
                                       <div
                                         key={dayKey}
-                                        className="relative rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20 overflow-hidden"
+                                        className="relative rounded-xl border border-zinc-700/50 bg-zinc-800/40 overflow-hidden"
+                                        style={{
+                                          borderLeftWidth: '3px',
+                                          borderLeftColor: day.day_id === 'push' ? '#f9d949' : day.day_id === 'pull' ? '#4caf50' : day.day_id === 'leg' ? '#EA4335' : '#71717a'
+                                        }}
                                       >
                                         <div
-                                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-zinc-100/80 dark:hover:bg-zinc-800/40 transition-colors"
+                                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-zinc-700/40 transition-colors"
                                           onClick={() => toggleDayExpanded(dayKey)}
                                         >
-                                          <div className="flex items-center gap-3">
-                                            <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${color} shadow-sm`}>
+                                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${color} shadow-sm flex-shrink-0`}>
                                               <div className={`${textColor} [&>svg]:h-4 [&>svg]:w-4`}>{icon}</div>
                                             </div>
-                                            <div>
-                                              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                                            <div className="min-w-0 flex-1">
+                                              <p className="text-sm font-semibold text-zinc-100 break-words leading-tight">
                                                 {day.name}
                                               </p>
-                                              <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                                              <p className="text-xs text-zinc-500 mt-0.5">
                                                 {day.exercises?.length || 0} Exercises
                                               </p>
                                             </div>
@@ -872,28 +881,36 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         </section>
 
         {/* Account Actions */}
-        <section className="pt-6 border-t border-zinc-100 dark:border-zinc-800">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800/50">
-            <div>
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm mb-1">Account & Guide</h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">Need help or want to switch accounts?</p>
-            </div>
-            <div className="flex gap-3 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                className="flex-1 sm:flex-none border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                onClick={() => setShowOnboarding(true)}
-              >
-                <Sparkles className="h-4 w-4 mr-2 text-amber-500" />
-                Guide
-              </Button>
-              <Button
-                variant="ghost"
-                className="flex-1 sm:flex-none text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
-                onClick={() => setIsSignOutOpen(true)}
-              >
-                Sign Out
-              </Button>
+        <section className="pt-6">
+          <div className="relative bg-zinc-800/60 border border-zinc-700/50 rounded-2xl p-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+                  <Sparkles className="h-4 w-4" style={{ color: '#f9d949' }} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm">Account & Guide</h3>
+                  <p className="text-xs text-muted-foreground">Need help or switching accounts?</p>
+                </div>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
+                  onClick={() => setShowOnboarding(true)}
+                >
+                  View Guide
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-900/20 transition-all text-xs font-medium"
+                  onClick={() => setIsSignOutOpen(true)}
+                >
+                  Sign Out
+                </Button>
+              </div>
             </div>
           </div>
         </section>
