@@ -70,6 +70,7 @@ export interface Database {
           exercise_name: string
           weight: number
           avg_reps: number
+          sets: number // Added column
           performed_at: string // ISO date string (YYYY-MM-DD)
           created_at: string
           updated_at: string
@@ -82,6 +83,7 @@ export interface Database {
           exercise_name: string
           weight: number
           avg_reps: number
+          sets?: number // Added column (optional in insert if default exists, but good to have)
           performed_at?: string
           created_at?: string
           updated_at?: string
@@ -94,6 +96,7 @@ export interface Database {
           exercise_name?: string
           weight?: number
           avg_reps?: number
+          sets?: number // Added column
           performed_at?: string
           created_at?: string
           updated_at?: string

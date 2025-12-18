@@ -102,7 +102,15 @@ export function WorkoutScreen({
   /* -------------------------------------------------------------------------
    *  SESSION & STATE MANAGEMENT (SUPABASE)
    * ------------------------------------------------------------------------- */
-  const [completedExerciseNames, setCompletedExerciseNames] = useState<Set<string>>(new Set())
+  // Use a Map to store full log details for local "significance" checks
+  const [completedLogs, setCompletedLogs] = useState<Map<string, WorkoutLog>>(new Map())
+  const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
+
+  // Derived Set for easy "is checked" lookups by children
+  const completedExerciseNames = useMemo(() => {
+    return new Set(completedLogs.keys())
+  }, [completedLogs])
+
   const [activeProgress, setActiveProgress] = useState(0)
 
   // Fetch today's logs for the selected workout to populate "completed" state
@@ -113,7 +121,7 @@ export function WorkoutScreen({
       const today = new Date().toISOString().split('T')[0]
       const { data, error } = await supabase
         .from('workout_logs')
-        .select('exercise_name')
+        .select('*') // Query all fields to check for significant data (weight, etc.)
         .eq('workout_id', selectedWorkout)
         .eq('performed_at', today)
 
@@ -122,8 +130,13 @@ export function WorkoutScreen({
         return
       }
 
-      const completedSet = new Set(data?.map(log => log.exercise_name) || [])
-      setCompletedExerciseNames(completedSet)
+      if (data) {
+        // @ts-ignore - Supabase types might be slighty off compared to internal types, but we trust the DB schema
+        const logsMap = new Map<string, WorkoutLog>(data.map(log => [log.exercise_name, log]))
+        setCompletedLogs(logsMap)
+      } else {
+        setCompletedLogs(new Map())
+      }
     } catch (err) {
       console.error('Failed to fetch session logs:', err)
     }
@@ -168,48 +181,93 @@ export function WorkoutScreen({
   }, [selectedDay, currentWorkoutDays, completedExerciseNames])
 
 
+
   // Toggle Exercise (DB Operation)
   const handleToggleExercise = async (exerciseName: string, isCompleted: boolean) => {
-    // 1. Optimistic Update
-    setCompletedExerciseNames(prev => {
-      const next = new Set(prev)
-      if (isCompleted) next.add(exerciseName)
-      else next.delete(exerciseName)
+    // 1. Uncheck Flow (Potential Data Loss)
+    if (!isCompleted) {
+      const log = completedLogs.get(exerciseName)
+      // Check if log is "significant" (has user entered values)
+      // We consider "0" weight and "0" reps as "placeholder" (insignificant)
+      const isSignificant = log && (log.weight > 0 || log.avg_reps > 0 || (log.sets && log.sets > 0));
+
+      if (isSignificant) {
+        // Trigger Confirmation Dialog
+        setExerciseToDelete(exerciseName)
+        return // Stop here, wait for user confirmation
+      } else {
+        // Safe to delete immediately
+        await performDeleteLog(exerciseName)
+        return
+      }
+    }
+
+    // 2. Check Flow (Mark as Done - Create Placeholder)
+    // Only insert if not already present (prevent overwriting if race condition)
+    if (completedLogs.has(exerciseName)) return
+
+    // Optimistic Update
+    setCompletedLogs(prev => {
+      const next = new Map(prev)
+      // Create a temporary placeholder log for UI state
+      // @ts-ignore
+      next.set(exerciseName, { weight: 0, avg_reps: 0, sets: 0, exercise_name: exerciseName })
       return next
     })
 
-    // 2. DB Operation
     try {
       const today = new Date().toISOString().split('T')[0]
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      if (isCompleted) {
-        // Create a log entry (Simplified "Checkmark" log)
-        // Note: If you want to log real weight, user should use the "+" button. 
-        // This is the "Quick Check" feature. We'll verify if we want to use last weights or just a placeholder.
-        // For now, we'll insert a placeholder record to mark completion.
-        await supabase.from('workout_logs').upsert({
-          user_id: user.id,
-          workout_id: selectedWorkout,
-          exercise_name: exerciseName,
-          weight: 0, // Placeholder
-          avg_reps: 0, // Placeholder
-          performed_at: today,
-        }, { onConflict: 'user_id, exercise_name, performed_at' })
-      } else {
-        // Delete the log entry
-        await supabase.from('workout_logs')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('workout_id', selectedWorkout)
-          .eq('exercise_name', exerciseName)
-          .eq('performed_at', today)
-      }
+      // Upsert placeholder
+      const { error } = await supabase.from('workout_logs').upsert({
+        user_id: user.id,
+        workout_id: selectedWorkout,
+        exercise_name: exerciseName,
+        weight: 0,
+        avg_reps: 0,
+        sets: 0,
+        performed_at: today,
+      }, { onConflict: 'user_id, exercise_name, performed_at' })
+
+      if (error) throw error
+
+      // Refresh to get the real ID and data
+      fetchSessionLogs()
+
     } catch (error) {
       console.error('Error toggling exercise:', error)
-      // Revert if error (optional, but good practice)
       fetchSessionLogs() // Re-sync
+    }
+  }
+
+  const performDeleteLog = async (exerciseName: string) => {
+    // Optimistic Update
+    setCompletedLogs(prev => {
+      const next = new Map(prev)
+      next.delete(exerciseName)
+      return next
+    })
+    setExerciseToDelete(null) // Close dialog if open
+
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { error } = await supabase.from('workout_logs')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('workout_id', selectedWorkout)
+        .eq('exercise_name', exerciseName)
+        .eq('performed_at', today)
+
+      if (error) throw error
+
+    } catch (error) {
+      console.error('Error deleting log:', error)
+      fetchSessionLogs() // Revert
     }
   }
 
@@ -302,118 +360,140 @@ export function WorkoutScreen({
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-4xl mx-auto w-full workout-selector premium-card">
-      <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
-        <div className="workout-header-container">
-          <div className="w-full workout-select">
-            <Select
-              value={selectedWorkout}
-              onValueChange={(value) => {
-                if (workouts.some(w => w.id === value)) {
-                  setSelectedWorkout(value)
-                  saveSelectedWorkout(value).catch((error) => {
-                    // Error handling
-                  })
-                }
-              }}
-              disabled={workouts.length === 0}
-            >
-              <SelectTrigger className="w-full min-touch-target border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
-                <SelectValue placeholder="Select Workout" className="truncate font-medium tracking-tight" />
-              </SelectTrigger>
-              <SelectContent>
-                {workouts.map((workout) => (
-                  <SelectItem
-                    key={workout.id}
-                    value={workout.id}
-                    className="pl-3 pr-3 py-3 [&>span.absolute]:hidden data-[state=checked]:font-semibold data-[state=checked]:bg-white/10 data-[state=checked]:text-primary focus:bg-white/5 focus:text-primary-foreground cursor-pointer transition-colors"
-                  >
-                    {workout.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-        </div>
-      </CardHeader>
-      <CardContent className="px-3 sm:px-4 pt-0 pb-2">
-        <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <div className="mb-6 mx-auto max-w-[500px]">
-            <TabsList className="flex flex-nowrap w-full bg-zinc-900/60 border border-zinc-800/50 p-1.5 rounded-full gap-1.5 sm:gap-2">
-              {['push', 'pull', 'leg'].map((day) => {
-                const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
-
-                return (
-                  <TabsTrigger
-                    key={day}
-                    value={day}
-                    className={cn(
-                      'flex-1 rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-3 transition-all',
-                      'text-xs md:text-sm font-medium',
-                      selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
-                    )}
-                    style={{
-                      backgroundColor:
-                        selectedDay === day
-                          ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 20%, transparent)`
-                          : undefined,
-                      boxShadow: 'none',
-                    }}
-                    aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
-                  >
-                    {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5 md:h-4 md:w-4')}
-                    <span className="hidden xs:inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-                  </TabsTrigger>
-                )
-              })}
-            </TabsList>
-          </div>
-
-          {/* Progress Header - Minimalist Session Only */}
-          {activeProgress > 0 && (
-            <div className="mb-6 px-1">
-              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                <span className="font-medium tracking-tight">Session Progress</span>
-                <span className="font-mono tracking-tighter">{activeProgress}%</span>
-              </div>
-              <div className="h-1 w-full bg-secondary/30 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{
-                    width: `${activeProgress}%`,
-                    backgroundColor: getWorkoutDayColor(selectedDay, colorMode)
-                  }}
-                />
-              </div>
+    <>
+      <Card className="border-0 shadow-none dark:bg-background max-w-4xl mx-auto w-full workout-selector premium-card">
+        <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
+          <div className="workout-header-container">
+            <div className="w-full workout-select">
+              <Select
+                value={selectedWorkout}
+                onValueChange={(value) => {
+                  if (workouts.some(w => w.id === value)) {
+                    setSelectedWorkout(value)
+                    saveSelectedWorkout(value).catch((error) => {
+                      // Error handling
+                    })
+                  }
+                }}
+                disabled={workouts.length === 0}
+              >
+                <SelectTrigger className="w-full min-touch-target border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                  <SelectValue placeholder="Select Workout" className="truncate font-medium tracking-tight" />
+                </SelectTrigger>
+                <SelectContent>
+                  {workouts.map((workout) => (
+                    <SelectItem
+                      key={workout.id}
+                      value={workout.id}
+                      className="pl-3 pr-3 py-3 [&>span.absolute]:hidden data-[state=checked]:font-semibold data-[state=checked]:bg-white/10 data-[state=checked]:text-primary focus:bg-white/5 focus:text-primary-foreground cursor-pointer transition-colors"
+                    >
+                      {workout.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
 
-          {currentWorkoutDays.map((day) => (
-            <TabsContent key={day.id} value={day.day_id} className="mt-0">
-              {day.exercises.length > 0 ? (
-                <DayExercises
-                  key={day.id}
-                  exercises={day.exercises}
-                  dayId={day.day_id}
-                  workoutId={day.workout_id}
-                  completedExerciseNames={completedExerciseNames}
-                  onLogWorkout={async (log) => {
-                    await onAddWorkoutLog({ ...log, workout_day_id: day.id })
-                    fetchSessionLogs() // Refresh logs after adding one
-                  }}
-                  onToggleExercise={handleToggleExercise}
-                  dayColor={getWorkoutDayColor(day.day_id, colorMode)}
-                />
-              ) : (
-                <EmptyWorkoutState dayId={day.day_id} onStart={startWorkout} />
-              )}
-            </TabsContent>
-          ))}
-        </Tabs>
-      </CardContent>
+          </div>
+        </CardHeader>
+        <CardContent className="px-3 sm:px-4 pt-0 pb-2">
+          <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
+            <div className="mb-6 mx-auto max-w-[500px]">
+              <TabsList className="flex flex-nowrap w-full bg-zinc-900/60 border border-zinc-800/50 p-1.5 rounded-full gap-1.5 sm:gap-2">
+                {['push', 'pull', 'leg'].map((day) => {
+                  const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
+
+                  return (
+                    <TabsTrigger
+                      key={day}
+                      value={day}
+                      className={cn(
+                        'flex-1 rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-2.5 px-3 transition-all',
+                        'text-xs md:text-sm font-medium',
+                        selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
+                      )}
+                      style={{
+                        backgroundColor:
+                          selectedDay === day
+                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 20%, transparent)`
+                            : undefined,
+                        boxShadow: 'none',
+                      }}
+                      aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
+                    >
+                      {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5 md:h-4 md:w-4')}
+                      <span className="hidden xs:inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                    </TabsTrigger>
+                  )
+                })}
+              </TabsList>
+            </div>
+
+            {/* Progress Header - Minimalist Session Only */}
+            {activeProgress > 0 && (
+              <div className="mb-6 px-1">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span className="font-medium tracking-tight">Session Progress</span>
+                  <span className="font-mono tracking-tighter">{activeProgress}%</span>
+                </div>
+                <div className="h-1 w-full bg-secondary/30 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                      width: `${activeProgress}%`,
+                      backgroundColor: getWorkoutDayColor(selectedDay, colorMode)
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {currentWorkoutDays.map((day) => (
+              <TabsContent key={day.id} value={day.day_id} className="mt-0">
+                {day.exercises.length > 0 ? (
+                  <DayExercises
+                    key={day.id}
+                    exercises={day.exercises}
+                    dayId={day.day_id}
+                    workoutId={day.workout_id}
+                    completedExerciseNames={completedExerciseNames}
+                    onLogWorkout={async (log) => {
+                      await onAddWorkoutLog({ ...log, workout_day_id: day.id })
+                      fetchSessionLogs() // Refresh logs after adding one
+                    }}
+                    onToggleExercise={handleToggleExercise}
+                    dayColor={getWorkoutDayColor(day.day_id, colorMode)}
+                  />
+                ) : (
+                  <EmptyWorkoutState dayId={day.day_id} onStart={startWorkout} />
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
 
 
-    </Card>
+      </Card>
+
+      <AlertDialog open={!!exerciseToDelete} onOpenChange={(open) => !open && setExerciseToDelete(null)}>
+        <AlertDialogContent className="max-w-[320px] rounded-xl dark:bg-zinc-950 dark:border-zinc-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-semibold">Delete log?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              This exercise has logged data. Unchecking it will delete this data efficiently.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="mt-0 h-9 text-xs rounded-lg border-opacity-10 bg-secondary/50 hover:bg-secondary border-none">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => exerciseToDelete && performDeleteLog(exerciseToDelete)}
+              className="h-9 text-xs rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 shadow-none"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
