@@ -45,6 +45,16 @@ export function InlineWorkoutLogger({
 
     const handleSave = () => {
         if (isSaving) return
+
+        // Input validation: Prevent saving meaningless data
+        // At least weight OR reps must have a meaningful value
+        if (weight <= 0 && reps <= 0) {
+            haptic("warning")
+            // Silently cancel - user hasn't entered meaningful data
+            onCancel()
+            return
+        }
+
         setIsSaving(true)
         haptic("success")
 

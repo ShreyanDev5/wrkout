@@ -15,6 +15,7 @@ import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
 import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon"
 import { useAuth } from '@/lib/auth'
 import { OnboardingGuide } from "@/components/onboarding/onboarding-guide"
+import { ErrorBoundary } from "@/components/error-boundary"
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -152,24 +153,30 @@ export function WorkoutTracker() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col min-h-0 flex-1">
         <div className="flex-1 container px-4 py-6 md:py-8" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
-            <WorkoutScreen
-              workouts={appData.workouts}
-              workoutDays={appData.workoutDays}
-              onAddWorkoutLog={addWorkoutLog}
-              onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
-            />
+            <ErrorBoundary>
+              <WorkoutScreen
+                workouts={appData.workouts}
+                workoutDays={appData.workoutDays}
+                onAddWorkoutLog={addWorkoutLog}
+                onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
+              />
+            </ErrorBoundary>
           </TabsContent>
 
           <TabsContent value="progress" className="mt-0 p-0" id="progress-tab">
-            <ProgressScreen logs={workoutLogs} />
+            <ErrorBoundary>
+              <ProgressScreen logs={workoutLogs} />
+            </ErrorBoundary>
           </TabsContent>
 
           <TabsContent value="settings" className="mt-0 p-0" id="settings-tab">
-            <SettingsScreen
-              workouts={appData.workouts}
-              workoutDays={appData.workoutDays}
-              onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
-            />
+            <ErrorBoundary>
+              <SettingsScreen
+                workouts={appData.workouts}
+                workoutDays={appData.workoutDays}
+                onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
+              />
+            </ErrorBoundary>
           </TabsContent>
         </div>
 
