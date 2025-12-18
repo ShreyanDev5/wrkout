@@ -92,7 +92,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   className="group"
                 >
                   <div
-                    className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 border-l-[4px] rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50"
+                    className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 border-l-[3px] rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50"
                     style={{ borderLeftColor: dayColor }}
                   >
 
