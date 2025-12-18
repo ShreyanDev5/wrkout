@@ -16,27 +16,31 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
       id: "workout",
       label: "Workout",
       icon: Dumbbell,
-      ariaLabel: "Workout tab",
+      ariaLabel: "Navigate to Workout tab",
       color: "#f9d949", // Yellow for workout
     },
     {
       id: "progress",
       label: "Progress",
       icon: LineChart,
-      ariaLabel: "Progress tab",
+      ariaLabel: "Navigate to Progress tab",
       color: "#4caf50", // Green for progress
     },
     {
       id: "settings",
       label: "Settings",
       icon: Settings,
-      ariaLabel: "Settings tab",
+      ariaLabel: "Navigate to Settings tab",
       color: "#EA4335", // Red for settings
     },
   ]
 
   return (
-    <div className="grid grid-cols-3 w-full h-16 border-t border-zinc-800/50 bg-zinc-950/95 backdrop-blur-sm">
+    <nav
+      className="grid grid-cols-3 w-full h-[60px] border-t border-zinc-800/40 bg-[#1a1a1a]"
+      role="tablist"
+      aria-label="Main navigation"
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
         return (
@@ -45,8 +49,10 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             onClick={() => onTabChange(tab.id)}
             role="tab"
             className={cn(
-              "flex flex-col items-center justify-center relative transition-all duration-200",
-              isActive ? "tab-active" : "tab-inactive",
+              "flex flex-col items-center justify-center gap-1 relative",
+              "transition-all duration-200 ease-out",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]",
+              isActive ? "focus-visible:ring-current" : "focus-visible:ring-zinc-500",
             )}
             style={
               {
@@ -55,43 +61,36 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             }
             aria-label={tab.ariaLabel}
             aria-selected={isActive}
-            aria-controls={`${tab.id}-tab`}
+            aria-controls={`${tab.id}-panel`}
+            tabIndex={isActive ? 0 : -1}
           >
-            <div className="tab-container">
-              {tab.icon && (
-                <tab.icon
-                  className={cn(
-                    "h-5 w-5 transition-all duration-200",
-                    isActive ? "tab-icon-active" : "tab-icon-inactive opacity-50",
-                  )}
-                  aria-hidden="true"
-                  strokeWidth={isActive ? 2 : 1.5}
-                  style={{
-                    stroke: isActive ? tab.color : "currentColor",
-                  }}
-                />
-              )}
-              <span
+            {tab.icon && (
+              <tab.icon
                 className={cn(
-                  "text-[11px] font-medium tracking-wide transition-all duration-200",
-                  isActive ? "opacity-100" : "opacity-40",
+                  "h-[22px] w-[22px] transition-all duration-200",
+                  isActive ? "opacity-100" : "opacity-45",
                 )}
+                aria-hidden="true"
+                strokeWidth={isActive ? 2.25 : 1.75}
                 style={{
-                  color: isActive ? tab.color : undefined,
+                  color: isActive ? tab.color : "currentColor",
                 }}
-              >
-                {tab.label}
-              </span>
-            </div>
-            {isActive && (
-              <div
-                className="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 h-0.5 w-8 rounded-full transition-all duration-300"
-                style={{ backgroundColor: tab.color }}
               />
             )}
+            <span
+              className={cn(
+                "text-[10px] font-semibold tracking-wide transition-all duration-200",
+                isActive ? "opacity-100" : "opacity-45",
+              )}
+              style={{
+                color: isActive ? tab.color : undefined,
+              }}
+            >
+              {tab.label}
+            </span>
           </button>
         )
       })}
-    </div>
+    </nav>
   )
 }

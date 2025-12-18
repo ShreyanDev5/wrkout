@@ -62,7 +62,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "welcome",
     title: "Welcome to wrkout",
     subtitle: "Your minimalist strength companion",
-    description: "Designed for progressive overload training with clean, distraction-free tracking based on the PPL (Push, Pull, Legs) split.",
+    description: "A premium workout tracker designed for progressive overload training. Clean, focused, and built around the PPL split.",
     icon: Sparkles,
     color: "from-violet-500 to-purple-600",
     content: (
@@ -164,8 +164,8 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: "ppl-philosophy",
     title: "Push • Pull • Legs",
-    subtitle: "One of the most time-tested systems",
-    description: "Built on the proven PPL split with three organizational layers for flexible workout planning.",
+    subtitle: "The proven training split",
+    description: "Organize your training into Routines → Sessions (Push/Pull/Legs) → Exercises. Simple and effective.",
     icon: Target,
     color: "from-blue-500 to-cyan-600",
     content: (
@@ -301,8 +301,8 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: "progressive-overload",
     title: "Progressive Overload",
-    subtitle: "The key to growth",
-    description: "Gradually increase weight or reps to continuously challenge your muscles.",
+    subtitle: "The key to muscle growth",
+    description: "Track your weights and reps over time. Aim to do slightly more each session.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
     content: (
@@ -437,9 +437,9 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: "logging-workflow",
-    title: "Smart Logging",
-    subtitle: "Track what matters",
-    description: "Log weights and average reps for simplicity.",
+    title: "Quick Logging",
+    subtitle: "Track in seconds",
+    description: "Tap to mark exercises done. Log weights inline or use the modal for detailed entry.",
     icon: Zap,
     color: "from-orange-500 to-red-600",
     content: (
@@ -567,9 +567,9 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: "progress-visualization",
-    title: "Progress Charts",
+    title: "Track Progress",
     subtitle: "See your growth",
-    description: "Clean, touch-friendly charts showing strength progression over time.",
+    description: "View recent sessions and strength trends in the Progress tab. Simple, visual, effective.",
     icon: BarChart3,
     color: "from-purple-500 to-pink-600",
     content: (
@@ -799,9 +799,9 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: "get-started",
-    title: "You're All Set!",
-    subtitle: "Ready to crush your fitness goals?",
-    description: "Your fitness journey starts now. Track, improve, and celebrate your progress with every rep.",
+    title: "You're Ready!",
+    subtitle: "Start tracking today",
+    description: "Go to Settings to customize your routine, then head to Workout to begin logging.",
     icon: CheckCircle,
     color: "from-emerald-500 to-teal-600",
     content: (
