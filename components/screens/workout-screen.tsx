@@ -32,6 +32,7 @@ import { Label } from "@/components/ui/label"
 import { PlusCircle } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
 import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal"
+import { useToast } from "@/components/ui/use-toast"
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -196,30 +197,59 @@ export function WorkoutScreen({
   }
 
 
+
+
+  // ... inside component ...
+  const { toast } = useToast()
+
   // Reset Session (Delete all today's logs for this day)
   const resetSession = async () => {
     try {
       const today = new Date().toISOString().split('T')[0]
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) {
+        toast({ title: "Error", description: "You must be signed in to reset.", variant: "destructive" })
+        return
+      }
+
+      // Optimistically clear IMMEDIATELY to give user feedback
+      setCompletedExerciseNames(new Set())
+      setActiveProgress(0)
 
       // Find exercises for current day
       const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
-      if (!day) return
+      if (!day) {
+        // Just close dialog if no day found, but we already cleared UI above as fallback
+        setIsResetDialogOpen(false)
+        return
+      }
 
       const names = day.exercises.map(ex => ex.name)
 
-      await supabase.from('workout_logs')
+      // Perform DB Deletion in background
+      const { error } = await supabase.from('workout_logs')
         .delete()
         .eq('user_id', user.id)
         .eq('performed_at', today)
         .in('exercise_name', names)
 
-      // Refresh
-      fetchSessionLogs()
+      if (error) {
+        console.error('Failed to reset session', error)
+        toast({ title: "Error", description: "Failed to sync reset with database.", variant: "destructive" })
+        // Don't revert optimistic set here to not confuse user, but maybe refetch?
+        fetchSessionLogs()
+        return
+      }
+
+      // Success
       setIsResetDialogOpen(false)
+      toast({ title: "Session Reset", description: "Your workout has been reset." })
+
+      // Delay fetch slightly to ensure DB propagation or just skip one cycle
+      setTimeout(() => fetchSessionLogs(), 500)
     } catch (err) {
       console.error('Failed to reset session', err)
+      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" })
     }
   }
 
@@ -304,7 +334,7 @@ export function WorkoutScreen({
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector premium-card">
+    <Card className="border-0 shadow-none dark:bg-background max-w-4xl mx-auto w-full workout-selector premium-card">
       <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
         <div className="workout-header-container">
           <div className={`transition-all duration-200 workout-select ${selectedWorkout && activeProgress > 0 ? 'flex-1' : 'w-full'}`}>
@@ -424,7 +454,8 @@ export function WorkoutScreen({
         onClose={() => setIsResetDialogOpen(false)}
         onConfirm={resetSession}
         dayColor={getWorkoutDayColor(selectedDay, colorMode)}
-        message={`Start fresh on ${selectedDay.toUpperCase()} day? This will clear your current session.`}
+        intent="start_new"
+        message="Are you sure you want to start a new workout? This will clear all your visual progress checklists for this session."
       />
     </Card>
   )

@@ -52,42 +52,42 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
 
   return (
     <div className={cn("space-y-2 w-full", className)}>
-      <div className="flex items-center justify-between bg-background/30 backdrop-blur-sm rounded-xl p-1.5 border border-white/10">
+      <div className="flex items-center justify-between px-1">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "h-8 w-8 rounded-lg bg-background/50 border-white/10 text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 stepper-control",
-            isPlaying && "bg-accent/20 border-accent/30 stepper-active"
+            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Decrease weight"
         >
-          <Minus className="h-3.5 w-3.5" />
+          <Minus className="h-4 w-4" />
         </Button>
-        
+
         <div className="flex flex-col items-center">
-          <span className="text-lg font-semibold text-white" style={{ color: dayColor }}>
+          <span className="text-lg font-medium tracking-tight" style={{ color: dayColor }}>
             {value}
           </span>
-          <span className="text-xs text-muted-foreground -mt-0.5">kg</span>
+          <span className="text-[10px] uppercase font-semibold text-muted-foreground/70">kg</span>
         </div>
-        
+
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={increment}
           disabled={value >= max}
           className={cn(
-            "h-8 w-8 rounded-lg bg-background/50 border-white/10 text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 stepper-control",
-            isPlaying && "bg-accent/20 border-accent/30 stepper-active"
+            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Increase weight"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
     </div>

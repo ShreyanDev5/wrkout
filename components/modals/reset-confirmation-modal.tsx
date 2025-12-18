@@ -10,31 +10,53 @@ interface ResetConfirmationModalProps {
   onConfirm: () => void
   dayColor: string
   message?: string
+  intent?: 'reset' | 'start_new' | 'sign_out' | 'delete'
 }
 
-export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, message }: ResetConfirmationModalProps) {
-  // Determine heading and button label based on message
+export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, message, intent = 'reset' }: ResetConfirmationModalProps) {
+  // Determine heading and button label based on intent
   let heading = 'Reset Workout Session';
   let buttonLabel = 'Reset';
   let cancelAria = 'Cancel reset';
   let confirmAria = 'Confirm reset';
 
-  if (message) {
-    if (message.startsWith('Are you sure you want to delete your last workout routine?')) {
+  if (intent === 'start_new') {
+    heading = 'Start New Workout';
+    buttonLabel = 'Start';
+    cancelAria = 'Cancel start workout';
+    confirmAria = 'Confirm start new workout';
+  } else if (intent === 'sign_out') {
+    heading = 'Sign Out';
+    buttonLabel = 'Sign Out';
+    cancelAria = 'Cancel sign out';
+    confirmAria = 'Confirm sign out';
+  } else if (intent === 'delete') {
+    heading = 'Delete Workout Routine';
+    buttonLabel = 'Delete';
+    cancelAria = 'Cancel delete';
+    confirmAria = 'Confirm delete';
+  }
+  // Fallback to message matching if intent is generic 'reset'
+  else if (message?.toLowerCase().includes('delete') && intent === 'reset') {
+    heading = 'Delete Workout Routine';
+    buttonLabel = 'Delete';
+  } else if (message?.toLowerCase().includes('start a new workout') && intent === 'reset') {
+    heading = 'Start New Workout';
+    buttonLabel = 'Start';
+  }
+
+  if (message && intent === 'reset' && buttonLabel === 'Reset') {
+    // Legacy generic fallback
+    if (message.startsWith('Are you sure you want to delete')) {
       heading = 'Delete Workout Routine';
       buttonLabel = 'Delete';
-      cancelAria = 'Cancel delete';
-      confirmAria = 'Confirm delete';
-    } else if (message.toLowerCase().includes('reset all completed exercises')) {
-      heading = 'Reset Workout Progress';
-      buttonLabel = 'Reset';
-      cancelAria = 'Cancel reset';
-      confirmAria = 'Confirm reset';
-    } else {
+    } else if (message.includes('start a new workout')) {
+      heading = 'Start New Workout';
+      buttonLabel = 'Start';
+    } else if (!message.includes('reset')) {
+      // if it doesn't say "reset", it might be sign out
       heading = 'Sign Out';
       buttonLabel = 'Sign Out';
-      cancelAria = 'Cancel sign out';
-      confirmAria = 'Confirm sign out';
     }
   }
 

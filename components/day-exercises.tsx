@@ -136,7 +136,7 @@ export function DayExercises({
             {/* Inline Logger */}
             <AnimatePresence>
               {isExpanded && (
-                <div className="px-3 pb-3">
+                <div className="px-2 pb-3">
                   <InlineWorkoutLogger
                     exercise={exercise}
                     workoutId={workoutId}

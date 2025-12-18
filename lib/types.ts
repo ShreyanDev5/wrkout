@@ -31,6 +31,8 @@ export interface WorkoutLog {
   workout_day_id: string | null
   exercise_name: string
   weight: number
+  reps: number
+  sets?: number
   avg_reps: number
   performed_at: string // ISO date string
   created_at: string

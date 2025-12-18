@@ -32,8 +32,10 @@ export function InlineWorkoutLogger({
     const lastLog = getLastLog(exercise.id)
     const { trigger: haptic } = useHaptics()
 
+    // Default sets to 3 if not found
     const [weight, setWeight] = useState(lastValues.weight || 20)
     const [reps, setReps] = useState(lastValues.reps || 8)
+    const [sets, setSets] = useState(lastValues.sets || 3)
     const [isSaving, setIsSaving] = useState(false)
 
     // Audio context init
@@ -46,7 +48,7 @@ export function InlineWorkoutLogger({
         setIsSaving(true)
         haptic("success")
 
-        setLastUsedValues(exercise.id, { weight, reps, sets: 1 })
+        setLastUsedValues(exercise.id, { weight, reps, sets })
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -56,7 +58,9 @@ export function InlineWorkoutLogger({
             workout_day_id: null,
             exercise_name: exercise.name,
             weight,
+            reps,
             avg_reps: reps,
+            sets,
             performed_at: new Date().toISOString().split("T")[0],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -71,6 +75,8 @@ export function InlineWorkoutLogger({
         if (lastLog) {
             setWeight(lastLog.weight)
             setReps(lastLog.avg_reps)
+            // If last log has sets, use it, else keep current (likely 3)
+            if (lastLog.sets) setSets(lastLog.sets)
         }
     }
 
@@ -83,11 +89,11 @@ export function InlineWorkoutLogger({
             className="overflow-hidden"
         >
             <div className="pt-2 pb-4 px-1 space-y-4">
-                {/* Controls Container */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* Controls Container - Balanced Grid */}
+                <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3">
                     {/* Weight */}
                     <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground ml-1">Weight</span>
+                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Weight</span>
                         <WeightStepper
                             value={weight}
                             onChange={setWeight}
@@ -98,9 +104,22 @@ export function InlineWorkoutLogger({
                         />
                     </div>
 
+                    {/* Sets */}
+                    <div className="space-y-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Sets</span>
+                        <NumberStepper
+                            value={sets}
+                            onChange={setSets}
+                            min={1}
+                            max={20}
+                            className="w-full"
+                            dayColor={dayColor}
+                        />
+                    </div>
+
                     {/* Reps */}
                     <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground ml-1">Reps</span>
+                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Reps</span>
                         <NumberStepper
                             value={reps}
                             onChange={setReps}
@@ -113,28 +132,31 @@ export function InlineWorkoutLogger({
                 </div>
 
                 {/* Actions Row */}
-                <div className="flex items-center gap-2">
-                    {/* Last Log Recall Button */}
-                    {lastLog && (
+                <div className="flex items-center gap-3">
+                    {/* Last Log Recall Button - Left Aligned */}
+                    {lastLog ? (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleRecallLastLog}
-                            className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg flex-1 border border-transparent mr-auto"
+                            className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg flex-[1.5] border border-transparent mr-auto justify-start"
                         >
-                            <RotateCcw className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                            <RotateCcw className="h-3.5 w-3.5 mr-2 opacity-70" />
                             <span className="truncate">
-                                Last: {lastLog.weight}kg × {lastLog.avg_reps}
+                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps}
                             </span>
                         </Button>
+                    ) : (
+                        <div className="flex-[1.5]" /> // Spacer to balance if no log
                     )}
 
-                    <div className="flex items-center gap-2 ml-auto">
+                    {/* Actions - Right Aligned & Symmetrical */}
+                    <div className="flex items-center gap-2 flex-1 justify-end">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={onCancel}
-                            className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
                         >
                             <X className="h-5 w-5" />
                         </Button>
@@ -142,7 +164,7 @@ export function InlineWorkoutLogger({
                         <Button
                             onClick={handleSave}
                             style={{ backgroundColor: dayColor }}
-                            className="h-10 px-6 rounded-full text-white shadow-sm hover:brightness-110 transition-all active:scale-95"
+                            className="h-10 w-14 rounded-full text-white shadow-sm hover:brightness-110 transition-all active:scale-95 shrink-0"
                             disabled={isSaving}
                         >
                             {isSaving ? (
