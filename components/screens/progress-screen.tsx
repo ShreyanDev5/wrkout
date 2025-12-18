@@ -1,454 +1,187 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { ProgressChart } from "@/components/charts/ProgressChart"
-import { MonthlySummaryTable } from "@/components/dashboard/monthly-summary-table"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useMemo } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import type { WorkoutLog } from "@/lib/types"
-import { getWorkoutDayColor, getExerciseWorkoutType } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType, formatDate } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
-import { ArrowUp, ArrowDown, Footprints, BarChart3 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { saveLastProgressState, loadLastProgressState } from "@/lib/storage"
-import { useIsMobile } from "@/components/ui/use-mobile"
-import { ChevronDown, Check } from "lucide-react"
-
+import { motion } from "framer-motion"
+import { BarChart3, Dumbbell } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface ProgressScreenProps {
   logs: WorkoutLog[]
 }
 
+interface Session {
+  id: string // Date string
+  date: Date
+  workoutType: string // 'push', 'pull', 'leg' or 'mixed'
+  exerciseCount: number
+}
+
 export function ProgressScreen({ logs }: ProgressScreenProps) {
   const { colorMode } = useTheme()
-  const isMobile = useIsMobile()
 
-  const [mainFilter, setMainFilter] = useState<string | null>("push")
-  const [chartExerciseFilter, setChartExerciseFilter] = useState<string | null>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isExerciseSelectorOpen, setIsExerciseSelectorOpen] = useState(false)
-
-  // Set loading state based on logs
-  useEffect(() => {
-    // Only set loading to false if we have logs or if logs is an empty array (meaning data has been loaded)
-    if (logs !== undefined) {
-      setIsLoading(false)
+  // Process logs into sessions (Optimized: recent 7 only)
+  const sessions = useMemo(() => {
+    if (!logs || logs.length === 0) {
+      return []
     }
-  }, [logs])
 
-  // Handle escape key for closing mobile selector
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isExerciseSelectorOpen) {
-        setIsExerciseSelectorOpen(false)
+    // 1. Group logs by date (YYYY-MM-DD)
+    // We only need to iterate once to group
+    const groups: Map<string, WorkoutLog[]> = new Map()
+
+    for (const log of logs) {
+      const dateKey = new Date(log.performed_at).toDateString()
+      if (!groups.has(dateKey)) {
+        groups.set(dateKey, [])
       }
+      groups.get(dateKey)!.push(log)
     }
 
-    if (isExerciseSelectorOpen) {
-      document.addEventListener('keydown', handleEscape)
-      // Prevent background scrolling when modal is open
-      document.body.style.overflow = 'hidden'
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isExerciseSelectorOpen])
-
-  // Load the last progress state from localStorage on component mount
-  useEffect(() => {
-    const loadSavedState = async () => {
-      try {
-        const savedState = await loadLastProgressState()
-        // Set to saved filter or default to "push"
-        setMainFilter(savedState?.mainFilter || "push")
-        setChartExerciseFilter(savedState?.chartExerciseFilter || null)
-        setIsInitialized(true)
-      } catch (error) {
-        // Default to "push" if there's an error loading saved state
-        setMainFilter("push")
-        setIsInitialized(true)
-      }
-    }
-
-    loadSavedState()
-  }, [])
-
-  // Save the progress state to localStorage whenever it changes
-  useEffect(() => {
-    // Only save after initial load to prevent overwriting with default values
-    if (isInitialized) {
-      saveLastProgressState({
-        mainFilter: mainFilter || null,
-        chartExerciseFilter: chartExerciseFilter || null
-      }).catch((error) => {
-      })
-    }
-  }, [mainFilter, chartExerciseFilter, isInitialized])
-
-  // Reset secondary filters when main filter changes
-  useEffect(() => {
-    setChartExerciseFilter(null)
-  }, [mainFilter])
-
-  // Group logs by exercise_name
-  const exercisesWithCompleteData = useMemo(() => {
-    if (!logs || logs.length === 0) return []
-
-    // Group logs by exercise_name
-    const exerciseGroups: Record<string, WorkoutLog[]> = {}
-
-    logs.forEach((log) => {
-      if (!exerciseGroups[log.exercise_name]) {
-        exerciseGroups[log.exercise_name] = []
-      }
-      exerciseGroups[log.exercise_name].push(log)
-    })
-
-    // Get exercises with valid data (both weight and reps)
-    const validExercises = Object.entries(exerciseGroups)
-      .filter(([_, exerciseLogs]) => {
-        return exerciseLogs.some((log) => log.weight > 0 && log.avg_reps > 0)
-      })
-      .map(([name, exerciseLogs]) => {
-        // Get the most recent log for this exercise
-        const mostRecentLog = [...exerciseLogs]
-          .sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime())[0]
-
-        return {
-          name,
-          lastPerformed: mostRecentLog?.performed_at,
-          maxWeight: Math.max(...exerciseLogs.map(log => log.weight)),
-          maxReps: Math.max(...exerciseLogs.map(log => log.avg_reps)),
-        }
-      })
-      .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-
-    return validExercises
-  }, [logs])
-
-  // Filter exercises by main filter for chart
-  const filteredExercisesForChart = useMemo(() => {
-    // If no filter is set, return all exercises (shouldn't happen with our new implementation)
-    if (!mainFilter) return exercisesWithCompleteData
-
-    return exercisesWithCompleteData.filter(exercise => {
-      const exerciseType = getExerciseWorkoutType(exercise.name)
-      return exerciseType === mainFilter.toLowerCase()
-    })
-  }, [exercisesWithCompleteData, mainFilter])
-
-  // Get icon for workout type
-  const getWorkoutIcon = (type: string) => {
-    switch (type) {
-      case "push":
-        return <ArrowUp className="h-4 w-4 md:h-5 md:w-5" />
-      case "pull":
-        return <ArrowDown className="h-4 w-4 md:h-5 md:w-5" />
-      case "leg":
-        return <Footprints className="h-4 w-4 md:h-5 md:w-5" />
-      default:
-        return <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
-    }
-  }
-
-  // Custom Mobile Exercise Selector Component
-  const MobileExerciseSelector = () => {
-    if (!isMobile) {
-      return (
-        <Select
-          value={chartExerciseFilter || "all"}
-          onValueChange={(value) => {
-            const exerciseName = value === "all" ? null : value
-            setChartExerciseFilter(exerciseName)
-          }}
-        >
-          <SelectTrigger className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border-zinc-700/30 px-4">
-            <SelectValue placeholder="All exercises" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl border-zinc-700/30 backdrop-blur-sm bg-zinc-800/90 min-w-[240px]">
-            <SelectItem value="all" className="rounded-lg my-1 px-4">
-              All exercises
-            </SelectItem>
-            {filteredExercisesForChart.length > 0 ? (
-              filteredExercisesForChart.map((exercise) => (
-                <SelectItem
-                  key={exercise.name}
-                  value={exercise.name}
-                  className="rounded-lg my-1 px-4"
-                >
-                  <div className="flex items-center gap-2.5 whitespace-nowrap">
-                    <span
-                      className="h-2 w-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
-                    ></span>
-                    <span className="truncate">{exercise.name}</span>
-                  </div>
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="none" disabled className="rounded-lg my-1 px-4">
-                No exercises available
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-      )
-    }
-
-    return (
-      <>
-        <div
-          className="w-full sm:w-[240px] h-10 min-touch-target rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 px-4 flex items-center justify-between cursor-pointer"
-          onClick={() => setIsExerciseSelectorOpen(true)}
-        >
-          <div className="flex items-center gap-2.5">
-            {chartExerciseFilter ? (
-              <>
-                <span
-                  className="h-2 w-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(chartExerciseFilter) || "push", colorMode) }}
-                ></span>
-                <span className="truncate text-sm">{chartExerciseFilter}</span>
-              </>
-            ) : (
-              <span className="text-sm text-muted-foreground">All exercises</span>
-            )}
-          </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        </div>
-
-        <AnimatePresence>
-          {isExerciseSelectorOpen && (
-            <>
-              <motion.div
-                className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsExerciseSelectorOpen(false)}
-              />
-              <motion.div
-                className="fixed bottom-8 left-0 right-0 bg-background border border-border rounded-2xl z-50 max-h-[70vh] mx-4 shadow-2xl"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              >
-                <div className="p-4 border-b border-border">
-                  <h3 className="text-lg font-semibold">Select Exercise</h3>
-                </div>
-                <div className="overflow-y-auto max-h-[calc(70vh-140px)]" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  <div
-                    className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => {
-                      setChartExerciseFilter(null)
-                      setIsExerciseSelectorOpen(false)
-                    }}
-                  >
-                    <span className="font-medium">All exercises</span>
-                    {!chartExerciseFilter && <Check className="h-5 w-5 text-primary" />}
-                  </div>
-                  {filteredExercisesForChart.length > 0 ? (
-                    filteredExercisesForChart.map((exercise, index) => (
-                      <motion.div
-                        key={exercise.name}
-                        className="px-4 py-3 flex items-center justify-between hover:bg-muted/50 cursor-pointer transition-colors"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.02 }}
-                        onClick={() => {
-                          setChartExerciseFilter(exercise.name)
-                          setIsExerciseSelectorOpen(false)
-                        }}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className="h-2 w-2 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: getWorkoutDayColor(getExerciseWorkoutType(exercise.name) || "push", colorMode) }}
-                          ></span>
-                          <span className="text-sm">{exercise.name}</span>
-                        </div>
-                        {chartExerciseFilter === exercise.name && <Check className="h-4 w-4 text-primary" />}
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-6 text-center text-muted-foreground text-sm">
-                      No exercises available
-                    </div>
-                  )}
-                </div>
-                <div className="p-3 border-t border-border">
-                  <button
-                    className="w-full py-3 rounded-xl bg-muted font-medium text-sm active:scale-[0.98] transition-transform"
-                    onClick={() => setIsExerciseSelectorOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </>
+    // 2. Get keys and sort descending (Newest first)
+    // Converting map keys to array and sorting
+    const sortedDateKeys = Array.from(groups.keys()).sort((a, b) =>
+      new Date(b).getTime() - new Date(a).getTime()
     )
-  }
+
+    // 3. Slice top 7
+    const recentSessionKeys = sortedDateKeys.slice(0, 7)
+
+    // 4. Process ONLY these 7 sessions
+    return recentSessionKeys.map(dateKey => {
+      const sessionLogs = groups.get(dateKey)!
+      const date = new Date(sessionLogs[0].performed_at)
+
+      // Determine workout type based on majority of exercises
+      const typeCounts: Record<string, number> = { push: 0, pull: 0, leg: 0, other: 0 }
+
+      // Track unique exercises to count "checked off" correctly
+      const uniqueExercises = new Set<string>()
+
+      for (const log of sessionLogs) {
+        uniqueExercises.add(log.exercise_name)
+
+        const type = getExerciseWorkoutType(log.exercise_name)?.toLowerCase()
+        if (type && type in typeCounts) {
+          typeCounts[type]++
+        } else {
+          typeCounts.other++
+        }
+      }
+
+      // Find dominant type
+      let dominantType = 'mixed'
+      let maxCount = 0
+      for (const [type, count] of Object.entries(typeCounts)) {
+        if (type !== 'other' && count > maxCount) {
+          maxCount = count
+          dominantType = type
+        }
+      }
+
+      return {
+        id: dateKey,
+        date,
+        workoutType: dominantType,
+        exerciseCount: uniqueExercises.size
+      }
+    })
+  }, [logs])
 
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-      },
-    },
+      transition: { staggerChildren: 0.05 } // Faster stagger for list
+    }
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
+    hidden: { opacity: 0, y: 10 }, // Subtle movement
+    visible: { opacity: 1, y: 0 }
   }
 
   return (
     <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-      <CardHeader className="px-4">
-        <div className="space-y-6 sm:space-y-8">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#34A853] shadow-sm">
-              <BarChart3 className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground">Progress</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Track your workout.</p>
-            </div>
-          </div>
+      <CardContent className="px-4 pt-6 pb-20 space-y-6">
 
-          {/* Tabs Section */}
-          <div className="w-full">
-            <Tabs
-              value={mainFilter || "push"}
-              onValueChange={(value) => setMainFilter(value)}
-              className="w-full"
-            >
-              <TabsList className="grid grid-cols-3 w-full rounded-full p-1.5 md:p-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 shadow-sm">
-                <TabsTrigger
-                  value="push"
-                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ${mainFilter === "push" ? 'text-push-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
-                  style={{
-                    backgroundColor: mainFilter === "push"
-                      ? `color-mix(in srgb, ${getWorkoutDayColor("push", colorMode)} 15%, transparent)`
-                      : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("push")}
-                  <span>Push</span>
-                  {mainFilter === "push" && (
-                    <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-push-dark/10 text-push-dark">
-                      {filteredExercisesForChart.length}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pull"
-                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ml-1 md:ml-1.5 ${mainFilter === "pull" ? 'text-pull-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
-                  style={{
-                    backgroundColor: mainFilter === "pull"
-                      ? `color-mix(in srgb, ${getWorkoutDayColor("pull", colorMode)} 15%, transparent)`
-                      : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("pull")}
-                  <span>Pull</span>
-                  {mainFilter === "pull" && (
-                    <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-pull-dark/10 text-pull-dark">
-                      {filteredExercisesForChart.length}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="leg"
-                  className={`rounded-full flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-2.5 px-2 md:px-4 text-xs md:text-base font-medium transition-all ml-1.5 md:ml-2 ${mainFilter === "leg" ? 'text-leg-dark' : 'text-muted-foreground hover:text-foreground/80'}`}
-                  style={{
-                    backgroundColor: mainFilter === "leg"
-                      ? `color-mix(in srgb, ${getWorkoutDayColor("leg", colorMode)} 15%, transparent)`
-                      : undefined,
-                  }}
-                >
-                  {getWorkoutIcon("leg")}
-                  <span>Legs</span>
-                  {mainFilter === "leg" && (
-                    <span className="ml-1.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-leg-dark/10 text-leg-dark">
-                      {filteredExercisesForChart.length}
-                    </span>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 shadow-sm">
+            <BarChart3 className="h-5 w-5 text-indigo-400" />
+          </div>
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Recent Sessions</h2>
+            <p className="text-xs text-muted-foreground font-medium">Last 7 workouts</p>
           </div>
         </div>
-      </CardHeader>
 
-      <CardContent className="px-4" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {/* Recent Sessions List */}
         <motion.div
-          className="space-y-12"
+          className="space-y-3"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          {/* Current Status Snapshot */}
-          <motion.div className="space-y-4" variants={itemVariants}>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <h3 className="text-lg font-medium flex items-center gap-2">
-                <span className="inline-block h-6 w-1 bg-gradient-to-b from-push-dark to-pull-dark rounded-full"></span>
-                Current Status
-              </h3>
-              <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                Most recent performance
-              </div>
-            </div>
+          {sessions.length > 0 ? (
+            sessions.map((session) => {
+              const dayColor = getWorkoutDayColor(session.workoutType, colorMode || 'dark')
 
-            <MonthlySummaryTable
-              logs={logs}
-              mainFilter={mainFilter}
-            />
-          </motion.div>
+              return (
+                <motion.div
+                  key={session.id}
+                  variants={itemVariants}
+                  className="group relative"
+                >
+                  <div
+                    className={cn(
+                      "relative bg-zinc-900/40 hover:bg-zinc-800/50 border border-zinc-800/60 rounded-2xl p-4 transition-all duration-300 backdrop-blur-sm cursor-default flex items-center justify-between",
+                      // Subtle glow effect
+                      "after:absolute after:inset-0 after:rounded-2xl after:opacity-0 after:transition-opacity hover:after:opacity-100 after:pointer-events-none"
+                    )}
+                    style={{
+                      boxShadow: 'none',
+                      // @ts-ignore
+                      "--glow-color": dayColor
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span
+                        className="h-10 w-1 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: dayColor, boxShadow: `0 0 8px ${dayColor}` }}
+                      />
 
-          {/* Detailed Progress Analysis */}
-          <motion.div className="space-y-6" variants={itemVariants}>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <h3 className="text-lg font-medium flex items-center gap-2 whitespace-nowrap">
-                <span className="inline-block h-6 w-1 bg-gradient-to-b from-pull-dark to-leg-dark rounded-full"></span>
-                Progress Analysis
-              </h3>
-              <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                Historical view over time
-              </div>
-            </div>
+                      <div className="flex flex-col">
+                        <span className="text-base font-semibold capitalize text-foreground">
+                          {session.workoutType} Day
+                        </span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {formatDate(session.date.toISOString())}
+                        </span>
+                      </div>
+                    </div>
 
-            {/* Chart Exercise Filter - Moved to be directly beneath Progress Analysis section */}
-            <div className="pt-2">
-              <MobileExerciseSelector />
+                    <div className="text-right flex items-center gap-2 bg-zinc-800/50 px-3 py-1.5 rounded-full border border-zinc-700/30">
+                      <Dumbbell className="h-3.5 w-3.5 text-zinc-400" />
+                      <span className="text-sm font-semibold text-foreground/90">{session.exerciseCount}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })
+          ) : (
+            <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-zinc-800">
+              <Dumbbell className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <p className="text-muted-foreground text-sm">No sessions recorded yet.</p>
             </div>
-
-            <div className="pt-2">
-              <ProgressChart
-                logs={logs}
-                mainFilter={mainFilter}
-                exerciseFilter={chartExerciseFilter}
-              />
-            </div>
-          </motion.div>
+          )}
         </motion.div>
       </CardContent>
     </Card>
   )
 }
+
