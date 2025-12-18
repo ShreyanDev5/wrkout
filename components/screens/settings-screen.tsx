@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import {
   PlusCircle,
@@ -26,11 +26,81 @@ import { useAuth } from '@/lib/auth/auth-context'
 import { DeletionConfirmationModal } from "@/components/modals/deletion-confirmation-modal"
 import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal" // Re-trigger import check
 import { RestrictionConfirmationModal } from "@/components/modals/restriction-confirmation-modal"
-import { OnboardingGuide } from "@/components/onboarding/onboarding-guide"
+import { updateWorkoutDayExercises, loadUserWorkoutDays } from '@/lib/supabase-data'
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRef } from "react"
-import { updateWorkoutDayExercises, loadUserWorkoutDays } from '@/lib/supabase-data'
+import dynamic from 'next/dynamic'
+
+const OnboardingGuide = dynamic(() => import("@/components/onboarding/onboarding-guide").then(mod => mod.OnboardingGuide), {
+  loading: () => null,
+  ssr: false
+})
+
+interface ExerciseItemProps {
+  exercise: any;
+  index: number;
+  totalExercises: number;
+  dayId: string;
+  workoutId: string;
+  onMoveUp: (dayId: string, index: number) => void;
+  onMoveDown: (dayId: string, index: number) => void;
+  onDelete: (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => void;
+}
+
+const ExerciseItem = memo(({
+  exercise,
+  index,
+  totalExercises,
+  dayId,
+  workoutId,
+  onMoveUp,
+  onMoveDown,
+  onDelete
+}: ExerciseItemProps) => {
+  return (
+    <li
+      className={`flex items-center justify-between p-1.5 sm:p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-colors group/item`}
+    >
+      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+        <div className="flex flex-col gap-0.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMoveUp(dayId, index)}
+            disabled={index === 0}
+            className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
+            aria-label={`Move ${exercise.name} up`}
+          >
+            <ArrowUp className="h-2.5 w-2.5" aria-hidden="true" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMoveDown(dayId, index)}
+            disabled={index === totalExercises - 1}
+            className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
+            aria-label={`Move ${exercise.name} down`}
+          >
+            <ArrowDown className="h-2.5 w-2.5" aria-hidden="true" />
+          </Button>
+        </div>
+        <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1" title={exercise.name}>
+          {exercise.name}
+        </span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
+        className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+        aria-label={`Delete ${exercise.name} exercise`}
+      >
+        <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
+      </Button>
+    </li>
+  );
+})
+ExerciseItem.displayName = "ExerciseItem"
 
 interface SettingsScreenProps {
   workouts: Workout[]
@@ -486,69 +556,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }
   }
 
-  // Exercise item component for better performance
-  const ExerciseItem = useCallback(({
-    exercise,
-    index,
-    totalExercises,
-    dayId,
-    workoutId,
-    onMoveUp,
-    onMoveDown,
-    onDelete
-  }: {
-    exercise: any;
-    index: number;
-    totalExercises: number;
-    dayId: string;
-    workoutId: string;
-    onMoveUp: (dayId: string, index: number) => void;
-    onMoveDown: (dayId: string, index: number) => void;
-    onDelete: (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => void;
-  }) => {
-    return (
-      <li
-        className={`flex items-center justify-between p-1.5 sm:p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-colors group/item`}
-      >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <div className="flex flex-col gap-0.5">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onMoveUp(dayId, index)}
-              disabled={index === 0}
-              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
-              aria-label={`Move ${exercise.name} up`}
-            >
-              <ArrowUp className="h-2.5 w-2.5" aria-hidden="true" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onMoveDown(dayId, index)}
-              disabled={index === totalExercises - 1}
-              className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
-              aria-label={`Move ${exercise.name} down`}
-            >
-              <ArrowDown className="h-2.5 w-2.5" aria-hidden="true" />
-            </Button>
-          </div>
-          <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1" title={exercise.name}>
-            {exercise.name}
-          </span>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
-          className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-          aria-label={`Delete ${exercise.name} exercise`}
-        >
-          <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
-        </Button>
-      </li>
-    );
-  }, []);
+  // ExerciseItem moved outside component for performance
+
 
   // Get day icon and color based on day ID
   const getDayIconAndColor = (dayId: string) => {
