@@ -130,11 +130,12 @@ export function WorkoutTracker() {
             className="text-2xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none flex items-baseline"
           >
             wrkout
-            <div className="flex gap-[2px] ml-0.5 mb-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FBBC04]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#34A853]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#EA4335]" />
-            </div>
+            <span
+              className="ml-1 h-2 w-2 rounded-full"
+              style={{
+                background: 'conic-gradient(from 0deg, #FBBC04 0deg 120deg, #34A853 120deg 240deg, #EA4335 240deg 360deg)',
+              }}
+            />
           </h1>
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
