@@ -66,7 +66,7 @@ export function DayExercises({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5">
       {exercises.map((exercise) => {
         const completed = completedExerciseNames.has(exercise.name)
         const isExpanded = expandedExerciseId === exercise.id
@@ -83,7 +83,7 @@ export function DayExercises({
           >
             <div
               className={cn(
-                "relative py-3 px-3 flex items-center gap-3 cursor-pointer select-none",
+                "relative py-3.5 px-3 flex items-center gap-3 cursor-pointer select-none",
               )}
               onClick={() => handleToggleExpand(exercise.id)}
             >
@@ -154,11 +154,13 @@ export function DayExercises({
         )
       })}
 
-      {exercises.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground/50 text-sm">
-          <p>No exercises for this day.</p>
-        </div>
-      )}
-    </div>
+      {
+        exercises.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground/50 text-sm">
+            <p>No exercises for this day.</p>
+          </div>
+        )
+      }
+    </div >
   )
 }

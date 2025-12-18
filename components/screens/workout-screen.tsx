@@ -305,7 +305,7 @@ export function WorkoutScreen({
     <Card className="border-0 shadow-none dark:bg-background max-w-4xl mx-auto w-full workout-selector premium-card">
       <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
         <div className="workout-header-container">
-          <div className={`transition-all duration-200 workout-select ${selectedWorkout && activeProgress > 0 ? 'flex-1' : 'w-full'}`}>
+          <div className="w-full workout-select">
             <Select
               value={selectedWorkout}
               onValueChange={(value) => {
