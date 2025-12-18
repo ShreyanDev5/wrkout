@@ -6,36 +6,43 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+/**
+ * Database types generated from Supabase schema.
+ * Last updated: 2025-12-18
+ */
 export interface Database {
   public: {
     Tables: {
       workouts: {
         Row: {
           id: string
+          user_id: string | null
+          name: string
           created_at: string
           updated_at: string
-          user_id: string
-          name: string
+          last_sync_time: string | null
         }
         Insert: {
           id?: string
+          user_id?: string | null
+          name: string
           created_at?: string
           updated_at?: string
-          user_id: string
-          name: string
+          last_sync_time?: string | null
         }
         Update: {
           id?: string
+          user_id?: string | null
+          name?: string
           created_at?: string
           updated_at?: string
-          user_id?: string
-          name?: string
+          last_sync_time?: string | null
         }
-      },
+      }
       workout_days: {
         Row: {
           id: string
-          workout_id: string
+          workout_id: string | null
           day_id: string
           name: string
           exercises: Json
@@ -44,7 +51,7 @@ export interface Database {
         }
         Insert: {
           id?: string
-          workout_id: string
+          workout_id?: string | null
           day_id: string
           name: string
           exercises?: Json
@@ -53,53 +60,85 @@ export interface Database {
         }
         Update: {
           id?: string
-          workout_id?: string
+          workout_id?: string | null
           day_id?: string
           name?: string
           exercises?: Json
           created_at?: string
           updated_at?: string
         }
-      },
+      }
       workout_logs: {
         Row: {
           id: string
-          user_id: string
-          workout_id: string
+          user_id: string | null
+          workout_id: string | null
           workout_day_id: string | null
           exercise_name: string
           weight: number
           avg_reps: number
-          sets: number // Added column
-          performed_at: string // ISO date string (YYYY-MM-DD)
+          sets: number
+          performed_at: string
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
-          user_id: string
-          workout_id: string
+          user_id?: string | null
+          workout_id?: string | null
           workout_day_id?: string | null
           exercise_name: string
           weight: number
           avg_reps: number
-          sets?: number // Added column (optional in insert if default exists, but good to have)
+          sets?: number // Default: 1
           performed_at?: string
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          user_id?: string
-          workout_id?: string
+          user_id?: string | null
+          workout_id?: string | null
           workout_day_id?: string | null
           exercise_name?: string
           weight?: number
           avg_reps?: number
-          sets?: number // Added column
+          sets?: number
           performed_at?: string
           created_at?: string
           updated_at?: string
+        }
+      }
+      daily_summaries: {
+        Row: {
+          id: string
+          user_id: string | null
+          date: string
+          workout_name: string | null
+          total_exercises: number
+          completed_exercises: number
+          summary_stats: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          date?: string
+          workout_name?: string | null
+          total_exercises?: number
+          completed_exercises?: number
+          summary_stats?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          date?: string
+          workout_name?: string | null
+          total_exercises?: number
+          completed_exercises?: number
+          summary_stats?: Json
+          created_at?: string
         }
       }
     }
@@ -113,4 +152,4 @@ export interface Database {
       [_ in never]: never
     }
   }
-} 
+}

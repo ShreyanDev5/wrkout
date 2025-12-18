@@ -58,8 +58,7 @@ export function InlineWorkoutLogger({
             workout_day_id: null,
             exercise_name: exercise.name,
             weight,
-            reps,
-            avg_reps: reps,
+            avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB
             sets,
             performed_at: new Date().toISOString().split("T")[0],
             created_at: new Date().toISOString(),

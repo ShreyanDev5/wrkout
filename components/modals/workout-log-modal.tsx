@@ -71,8 +71,8 @@ export function WorkoutLogModal({
       workout_day_id: null,
       exercise_name: exercise.name,
       weight,
-      reps: reps,
       avg_reps: reps,
+      sets: 1, // Default to 1 set for modal (matches DB default)
       performed_at: new Date().toISOString().split("T")[0],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

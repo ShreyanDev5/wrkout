@@ -29,10 +29,6 @@ export class AuthenticationError extends Error {
 
 // Enhanced error handling function
 export const handleSupabaseError = (error: unknown) => {
-  try {
-  } catch (e) {
-  }
-
   if (error instanceof PostgrestError) {
     switch (error.code) {
       case '23505': // unique_violation

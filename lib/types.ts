@@ -23,7 +23,7 @@ export interface Workout {
   updated_at: string
 }
 
-// New type matching the workout_logs table
+// Type matching the workout_logs table in Supabase
 export interface WorkoutLog {
   id: string // UUID
   user_id: string
@@ -31,10 +31,9 @@ export interface WorkoutLog {
   workout_day_id: string | null
   exercise_name: string
   weight: number
-  reps: number
-  sets?: number
-  avg_reps: number
-  performed_at: string // ISO date string
+  avg_reps: number // Renamed from 'reps' to match DB schema
+  sets: number // Default 1 in DB
+  performed_at: string // ISO date string (YYYY-MM-DD)
   created_at: string
   updated_at: string
 }
