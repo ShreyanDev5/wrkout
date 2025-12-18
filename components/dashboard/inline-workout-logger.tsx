@@ -37,6 +37,7 @@ export function InlineWorkoutLogger({
     const [weight, setWeight] = useState(lastValues.weight || 20)
     const [reps, setReps] = useState(lastValues.reps || 8)
     const [sets, setSets] = useState(lastValues.sets || 3)
+    const [rir, setRir] = useState(lastValues.rir ?? 2)
     const [isSaving, setIsSaving] = useState(false)
 
     // Audio context init
@@ -63,7 +64,7 @@ export function InlineWorkoutLogger({
             ; (window as any).playTickSound()
         }
 
-        setLastUsedValues(exercise.id, { weight, reps, sets })
+        setLastUsedValues(exercise.id, { weight, reps, sets, rir })
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -75,6 +76,7 @@ export function InlineWorkoutLogger({
             weight,
             avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB
             sets,
+            rir,
             performed_at: getLocalDateYYYYMMDD(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -91,6 +93,7 @@ export function InlineWorkoutLogger({
             setReps(lastLog.avg_reps)
             // If last log has sets, use it, else keep current (likely 3)
             if (lastLog.sets) setSets(lastLog.sets)
+            if (lastLog.rir !== undefined && lastLog.rir !== null) setRir(lastLog.rir)
         }
     }
 
@@ -102,12 +105,12 @@ export function InlineWorkoutLogger({
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
         >
-            <div className="pt-2 pb-4 px-1 space-y-4">
-                {/* Controls Container - Balanced Grid */}
-                <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3">
+            <div className="pt-3 pb-5 px-1 space-y-5">
+                {/* Controls Container - Responsive Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-3">
                     {/* Weight */}
-                    <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Weight</span>
+                    <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Weight</span>
                         <WeightStepper
                             value={weight}
                             onChange={setWeight}
@@ -119,8 +122,8 @@ export function InlineWorkoutLogger({
                     </div>
 
                     {/* Sets */}
-                    <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Sets</span>
+                    <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Sets</span>
                         <NumberStepper
                             value={sets}
                             onChange={setSets}
@@ -132,8 +135,8 @@ export function InlineWorkoutLogger({
                     </div>
 
                     {/* Reps */}
-                    <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block text-center w-full">Reps</span>
+                    <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Reps</span>
                         <NumberStepper
                             value={reps}
                             onChange={setReps}
@@ -143,21 +146,34 @@ export function InlineWorkoutLogger({
                             dayColor={dayColor}
                         />
                     </div>
+
+                    {/* RIR */}
+                    <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">RIR</span>
+                        <NumberStepper
+                            value={rir}
+                            onChange={setRir}
+                            min={0}
+                            max={5}
+                            className="w-full"
+                            dayColor={dayColor}
+                        />
+                    </div>
                 </div>
 
                 {/* Actions Row */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 pt-1">
                     {/* Last Log Recall Button - Left Aligned */}
                     {lastLog ? (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleRecallLastLog}
-                            className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg flex-[1.5] border border-transparent mr-auto justify-start"
+                            className="h-11 px-4 text-xs text-muted-foreground hover:text-foreground hover:bg-zinc-800/50 rounded-xl flex-[1.5] border border-zinc-800/50 mr-auto justify-start transition-all"
                         >
                             <RotateCcw className="h-3.5 w-3.5 mr-2 opacity-70" />
                             <span className="truncate">
-                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps}
+                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps} {lastLog.rir !== null ? `(RIR ${lastLog.rir})` : ''}
                             </span>
                         </Button>
                     ) : (
@@ -165,12 +181,12 @@ export function InlineWorkoutLogger({
                     )}
 
                     {/* Actions - Right Aligned & Symmetrical */}
-                    <div className="flex items-center gap-2 flex-1 justify-end">
+                    <div className="flex items-center gap-2.5 flex-1 justify-end">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={onCancel}
-                            className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+                            className="h-11 w-11 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
                         >
                             <X className="h-5 w-5" />
                         </Button>
@@ -178,13 +194,13 @@ export function InlineWorkoutLogger({
                         <Button
                             onClick={handleSave}
                             style={{ backgroundColor: dayColor }}
-                            className="h-10 w-14 rounded-full text-white shadow-sm hover:brightness-110 transition-all active:scale-95 shrink-0"
+                            className="h-11 w-16 rounded-full text-white shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0 border-none"
                             disabled={isSaving}
                         >
                             {isSaving ? (
                                 <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                             ) : (
-                                <Check className="h-5 w-5" />
+                                <Check className="h-6 w-6 stroke-[2.5]" />
                             )}
                         </Button>
                     </div>

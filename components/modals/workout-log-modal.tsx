@@ -39,6 +39,7 @@ export function WorkoutLogModal({
 
   const [weight, setWeight] = useState(lastValues.weight || 20)
   const [reps, setReps] = useState(lastValues.reps || 8)
+  const [rir, setRir] = useState(lastValues.rir ?? 2)
   const [isSaving, setIsSaving] = useState(false)
 
   // If the modal is opened, reset to last used values
@@ -46,6 +47,7 @@ export function WorkoutLogModal({
     if (isOpen) {
       setWeight(lastValues.weight || 20)
       setReps(lastValues.reps || 8)
+      setRir(lastValues.rir ?? 2)
     }
   }, [isOpen, lastValues])
 
@@ -63,7 +65,7 @@ export function WorkoutLogModal({
       return
     }
     setIsSaving(true)
-    setLastUsedValues(exercise.id, { weight, reps, sets: 1 })
+    setLastUsedValues(exercise.id, { weight, reps, sets: 1, rir })
     const log: WorkoutLog = {
       id: uuidv4(),
       user_id: "",
@@ -73,6 +75,7 @@ export function WorkoutLogModal({
       weight,
       avg_reps: reps,
       sets: 1, // Default to 1 set for modal (matches DB default)
+      rir,
       performed_at: new Date().toISOString().split("T")[0],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -86,6 +89,7 @@ export function WorkoutLogModal({
     if (lastLog) {
       setWeight(lastLog.weight)
       setReps(lastLog.avg_reps)
+      if (lastLog.rir !== undefined && lastLog.rir !== null) setRir(lastLog.rir)
     }
   }
 
@@ -120,35 +124,48 @@ export function WorkoutLogModal({
         {/* Main content */}
         <div className="flex flex-col items-center py-5 px-5">
           <div className="w-full space-y-6">
-            {/* Weight Section */}
-            <div className="space-y-2.5">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-medium text-white/80">Weight</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Weight Section */}
+              <div className="space-y-2.5">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Weight</h3>
+                <WeightStepper
+                  value={weight}
+                  onChange={setWeight}
+                  min={0}
+                  max={250}
+                  step={2.5}
+                  className="w-full"
+                  dayColor={dayColor}
+                />
               </div>
-              <WeightStepper
-                value={weight}
-                onChange={setWeight}
-                min={0}
-                max={250}
-                step={2.5}
-                className="w-full"
-                dayColor={dayColor}
-              />
+
+              {/* Reps Section */}
+              <div className="space-y-2.5">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Reps</h3>
+                <NumberStepper
+                  value={reps}
+                  onChange={setReps}
+                  min={0}
+                  max={30}
+                  className="w-full"
+                  dayColor={dayColor}
+                />
+              </div>
             </div>
 
-            {/* Reps Section */}
-            <div className="space-y-2.5">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-medium text-white/80">Reps</h3>
+            {/* RIR Section */}
+            <div className="space-y-2.5 pt-2 border-t border-white/5">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Reps in Reserve (RIR)</h3>
+              <div className="max-w-[200px] mx-auto">
+                <NumberStepper
+                  value={rir}
+                  onChange={setRir}
+                  min={0}
+                  max={5}
+                  className="w-full"
+                  dayColor={dayColor}
+                />
               </div>
-              <NumberStepper
-                value={reps}
-                onChange={setReps}
-                min={0}
-                max={30}
-                className="w-full"
-                dayColor={dayColor}
-              />
             </div>
 
             {/* Last Log Section */}
@@ -157,7 +174,7 @@ export function WorkoutLogModal({
                 <div className="flex justify-between items-center mb-2.5">
                   <span className="text-xs text-muted-foreground">Last log</span>
                   <span className="text-xs font-medium text-white" style={{ color: dayColor }}>
-                    {lastLog.weight} kg × {lastLog.avg_reps} reps
+                    {lastLog.weight} kg × {lastLog.avg_reps} reps {lastLog.rir !== null ? `(RIR ${lastLog.rir})` : ''}
                   </span>
                 </div>
                 <Button
@@ -189,7 +206,7 @@ export function WorkoutLogModal({
             type="button"
             onClick={handleSave}
             style={{ backgroundColor: dayColor }}
-            className="h-12 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:brightness-110"
+            className="h-12 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:brightness-110 border-none"
             disabled={isSaving}
           >
             {isSaving ? (
