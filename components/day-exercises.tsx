@@ -1,158 +1,163 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Exercise, WorkoutLog } from "@/lib/types"
-import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon"
-import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
+import { WorkoutLogModal } from "@/components/modals/workout-log-modal" // Keep for fallback if needed, or remove if unused.
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
+import { InlineWorkoutLogger } from "@/components/inline-workout-logger"
+import { AnimatePresence } from "framer-motion"
+import { useHaptics } from "@/hooks/use-haptics"
 
 interface DayExercisesProps {
   exercises: Exercise[]
   dayId: string
   workoutId: string
+  completedExerciseNames: Set<string>
   onLogWorkout: (log: WorkoutLog) => void | Promise<void>
-  onExerciseToggled?: () => void
+  onToggleExercise: (exerciseName: string, isCompleted: boolean) => void
   dayColor: string
 }
 
-function getTickStorageKey(dayId: string) {
-  return `tickedExercises-${dayId}`
-}
+export function DayExercises({
+  exercises,
+  dayId,
+  workoutId,
+  completedExerciseNames,
+  onLogWorkout,
+  onToggleExercise,
+  dayColor
+}: DayExercisesProps) {
+  /* -------------------------------------------------------------------------
+   *  INLINE EXPANSION STATE
+   * ------------------------------------------------------------------------- */
+  const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null)
 
-export function DayExercises({ exercises, dayId, workoutId, onLogWorkout, onExerciseToggled, dayColor }: DayExercisesProps) {
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [ticked, setTicked] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(getTickStorageKey(dayId))
-      return stored ? JSON.parse(stored) : []
-    }
-    return []
-  })
+  /* -------------------------------------------------------------------------
+   *  HAPTICS
+   * ------------------------------------------------------------------------- */
+  const { trigger: haptic } = useHaptics()
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(getTickStorageKey(dayId), JSON.stringify(ticked))
-    }
-  }, [ticked, dayId])
-
-  const handleTick = (exerciseId: string, checked: boolean) => {
-    setTicked((prev) => {
-      const newTicked = checked
-        ? [...prev, exerciseId]
-        : prev.filter((id) => id !== exerciseId)
-
-      // Notify parent component after state update
-      setTimeout(() => {
-        onExerciseToggled?.()
-      }, 0)
-
-      return newTicked
-    })
+  // Handlers
+  const handleToggleExpand = (exerciseId: string) => {
+    haptic("light")
+    setExpandedExerciseId(prev => (prev === exerciseId ? null : exerciseId))
   }
 
-  const handleOpenLogging = (exercise: Exercise) => {
-    setSelectedExercise(exercise)
-    setIsModalOpen(true)
-  }
+  const handleCheckboxToggle = (exercise: Exercise) => {
+    const isCompleted = completedExerciseNames.has(exercise.name)
+    const newState = !isCompleted
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-  }
-
-  const handleLogWorkout = (log: WorkoutLog) => {
-    onLogWorkout(log)
-    setIsModalOpen(false)
-  }
-
-  const handleCheckboxToggle = (exerciseId: string) => {
-    const isCurrentlyTicked = ticked.includes(exerciseId)
-    const newState = !isCurrentlyTicked
-
-    // Play tick sound when checking (not unchecking)
+    // Play tick sound/haptics
     if (newState && (window as any).playTickSound) {
       ; (window as any).playTickSound()
     }
 
-    // Trigger haptic feedback if supported
-    if (newState && "vibrate" in navigator) {
-      navigator.vibrate(5) // Very subtle vibration
+    if (newState) {
+      haptic("success")
+    } else {
+      haptic("light")
     }
 
-    handleTick(exerciseId, newState)
+    onToggleExercise(exercise.name, newState)
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {exercises.map((exercise) => {
-        const completed = ticked.includes(exercise.id)
+        const completed = completedExerciseNames.has(exercise.name)
+        const isExpanded = expandedExerciseId === exercise.id
+
         return (
           <div
             key={exercise.id}
             className={cn(
-              "exercise-card relative py-2.5 px-4 rounded-xl border border-border/30 transition-all duration-200 flex items-center gap-3",
-              completed && "exercise-item-checked"
+              "rounded-2xl transition-all duration-300 ease-in-out border",
+              isExpanded
+                ? "bg-secondary/10 border-border/50 shadow-sm"
+                : "bg-transparent border-transparent hover:bg-secondary/5"
             )}
           >
-            <AnimatedCheckbox
-              checked={completed}
-              dayColor={dayColor}
-              className="mr-2 flex-shrink-0"
-              onClick={() => handleCheckboxToggle(exercise.id)}
-              aria-label={completed ? `Completed ${exercise.name}` : `Mark ${exercise.name} as completed`}
-            />
-            <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
-              <div className="min-w-0 flex-1">
+            <div
+              className={cn(
+                "relative py-3 px-3 flex items-center gap-3 cursor-pointer select-none",
+              )}
+              onClick={() => handleToggleExpand(exercise.id)}
+            >
+              <div onClick={(e) => e.stopPropagation()}>
+                <AnimatedCheckbox
+                  checked={completed}
+                  dayColor={dayColor}
+                  className="mr-1 flex-shrink-0"
+                  onClick={() => handleCheckboxToggle(exercise)}
+                  aria-label={completed ? `Completed ${exercise.name}` : `Mark ${exercise.name} as completed`}
+                />
+              </div>
+
+              <div className="flex-1 min-w-0">
                 <Label
                   className={cn(
-                    "text-sm font-medium truncate block leading-tight",
+                    "text-base font-medium truncate block leading-tight cursor-pointer",
                     "text-foreground",
-                    completed && "exercise-label-checked"
+                    completed && "exercise-label-checked opacity-50"
                   )}
                   title={exercise.name}
                 >
                   {exercise.name}
                 </Label>
                 {exercise.description && (
-                  <p className="text-xs text-muted-foreground truncate mt-0.5" title={exercise.description}>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5 opacity-80" title={exercise.description}>
                     {exercise.description}
                   </p>
                 )}
               </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "h-8 w-8 rounded-full p-0 flex items-center justify-center transition-all duration-300",
+                  isExpanded ? "bg-secondary text-foreground rotate-90" : "text-muted-foreground hover:bg-secondary/50"
+                )}
+                aria-label={isExpanded ? "Close logger" : "Log session"}
+              >
+                <PlusCircle
+                  className={cn(
+                    "h-5 w-5 transition-transform duration-300",
+                    isExpanded && "rotate-45"
+                  )}
+                />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-muted-foreground hover:text-foreground focus-visible-ring flex-shrink-0 h-8 px-2.5"
-              onClick={() => handleOpenLogging(exercise)}
-              aria-label={`Log session for ${exercise.name}`}
-            >
-              <PlusCircle className="h-3.5 w-3.5" aria-hidden="true" />
-            </Button>
+
+            {/* Inline Logger */}
+            <AnimatePresence>
+              {isExpanded && (
+                <div className="px-3 pb-3">
+                  <InlineWorkoutLogger
+                    exercise={exercise}
+                    workoutId={workoutId}
+                    onSave={(log) => {
+                      onLogWorkout(log)
+                      setExpandedExerciseId(null) // Close on save
+                    }}
+                    onCancel={() => setExpandedExerciseId(null)}
+                    dayColor={dayColor}
+                  />
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         )
       })}
 
       {exercises.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">No exercises added for this day yet.</div>
-      )}
-
-      {selectedExercise && (
-        <WorkoutLogModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          exercise={selectedExercise}
-          workoutId={workoutId}
-          dayId={dayId}
-          workoutName="Current Workout"
-          dayName={dayId.toUpperCase()}
-          dayColor={dayColor}
-          onSave={handleLogWorkout}
-        />
+        <div className="text-center py-12 text-muted-foreground/50 text-sm">
+          <p>No exercises for this day.</p>
+        </div>
       )}
     </div>
   )

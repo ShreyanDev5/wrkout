@@ -3,10 +3,8 @@
 @tailwind utilities;
 
 @layer utilities {
-  @variants responsive {
-    .xs\:inline {
-      display: inline;
-    }
+  .xs\:inline {
+    display: inline;
   }
 }
 
@@ -34,17 +32,26 @@
     --radius: 0.5rem;
 
     /* Workout day colors - Light Mode */
-    --push-light: 50 100% 50%; /* Bright Yellow */
-    --push-dark: 45 100% 50%; /* Soft Gold */
-    --push-color: #f9d949; /* Yellow for progress rings */
+    --push-light: 50 100% 50%;
+    /* Bright Yellow */
+    --push-dark: 45 100% 50%;
+    /* Soft Gold */
+    --push-color: #f9d949;
+    /* Yellow for progress rings */
 
-    --pull-light: 142 72% 50%; /* Bright Green */
-    --pull-dark: 142 50% 45%; /* Darker Green */
-    --pull-color: #4caf50; /* Green for progress rings */
+    --pull-light: 142 72% 50%;
+    /* Bright Green */
+    --pull-dark: 142 50% 45%;
+    /* Darker Green */
+    --pull-color: #4caf50;
+    /* Green for progress rings */
 
-    --leg-light: 0 74% 58%; /* Bright Red (replacing purple) */
-    --leg-dark: 0 65% 52%; /* Darker Red (replacing purple) */
-    --leg-color: #f44336; /* Red for progress rings */
+    --leg-light: 0 74% 58%;
+    /* Bright Red (replacing purple) */
+    --leg-dark: 0 65% 52%;
+    /* Darker Red (replacing purple) */
+    --leg-color: #f44336;
+    /* Red for progress rings */
 
     /* Track color for progress rings */
     --track-color: #e5e7eb;
@@ -61,44 +68,54 @@
   }
 
   .dark {
-    --background: 0 0% 9.4%; /* #181818 */
-    --foreground: 0 0% 90%; /* Soft white for primary text */
+    --background: 0 0% 10%;
+    /* #1A1A1A - Premium Dark Background */
+    --foreground: 0 0% 93%;
+    /* #EDEDED - Soft White Text */
 
-    --card: 0 0% 9.4%; /* #181818 for cards */
-    --card-foreground: 0 0% 90%; /* Soft white for card text */
+    --card: 0 0% 14%;
+    /* #242424 - Premium Card Surface */
+    --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 11%; /* Slightly lighter than background for popovers */
-    --popover-foreground: 0 0% 90%; /* Soft white for popover text */
+    --popover: 0 0% 14%;
+    /* Match card surface */
+    --popover-foreground: 0 0% 93%;
 
-    --primary: 0 0% 90%; /* Soft white for primary elements */
-    --primary-foreground: 0 0% 9.4%; /* #181818 for text on primary elements */
+    --primary: 0 0% 93%;
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 0 0% 13%; /* Dark gray for secondary elements */
-    --secondary-foreground: 0 0% 90%; /* Soft white for text on secondary elements */
+    --secondary: 0 0% 18%;
+    /* Slightly lighter than card for interactions */
+    --secondary-foreground: 0 0% 93%;
 
-    --muted: 0 0% 13%; /* Dark gray for muted elements */
-    --muted-foreground: 0 0% 67%; /* Muted gray (#AAAAAA) for secondary text */
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 63%;
+    /* #A1A1A1 - Accessible Muted Text */
 
-    --accent: 0 0% 13%; /* Dark gray for accent elements */
-    --accent-foreground: 0 0% 90%; /* Soft white for text on accent elements */
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 93%;
 
-    --destructive: 0 62.8% 30.6%; /* Keep destructive color similar */
-    --destructive-foreground: 0 0% 90%; /* Soft white for text on destructive elements */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 93%;
 
-    --border: 0 0% 15%; /* Dark gray for borders */
-    --input: 0 0% 15%; /* Dark gray for input borders */
-    --ring: 0 0% 25%; /* Medium gray for focus rings */
+    --border: 0 0% 18%;
+    /* Subtle borders */
+    --input: 0 0% 18%;
+    --ring: 0 0% 25%;
 
     /* Tab navigation colors */
-    --tab-inactive: 0 0% 60%;
-    --tab-active-bg: 0 0% 11%;
-    --tab-hover-bg: 0 0% 15%;
+    --tab-inactive: 0 0% 63%;
+    --tab-active-bg: 0 0% 18%;
+    --tab-hover-bg: 0 0% 20%;
 
     /* Progress ring colors for dark mode */
     --track-color: #333333;
-    --push-color: #f9d949; /* Keep yellow for dark mode */
-    --pull-color: #4caf50; /* Keep green for dark mode */
-    --leg-color: #f44336; /* Keep red for dark mode */
+    --push-color: #F9D949;
+    /* Keep yellow */
+    --pull-color: #81C784;
+    /* Sage Green - More premium than #4caf50 */
+    --leg-color: #E57373;
+    /* Coral Red - More premium than #f44336 */
   }
 }
 
@@ -106,24 +123,30 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature_settings: "rlig" 1, "calt" 1;
     font-family: var(--font-inter, Inter, system-ui, sans-serif);
-    background-color: #181818; /* fallback for dark mode */
-    color: #e5e5e5; /* fallback for foreground */
+    background-color: #181818;
+    /* fallback for dark mode */
+    color: #e5e5e5;
+    /* fallback for foreground */
     /* Enable momentum scrolling on iOS */
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Optimize scrolling performance on mobile devices */
-  html, body {
+  html,
+  body {
     /* Enable momentum scrolling on iOS */
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Optimize scrolling for all scrollable elements */
-  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-auto {
     -webkit-overflow-scrolling: touch;
   }
 }
@@ -212,9 +235,11 @@
   0% {
     filter: drop-shadow(0 0 2px var(--tab-color));
   }
+
   50% {
     filter: drop-shadow(0 0 4px var(--tab-color));
   }
+
   100% {
     filter: drop-shadow(0 0 2px var(--tab-color));
   }
@@ -222,7 +247,7 @@
 
 /* Premium card styles */
 .premium-card {
-  background: #1a1a1a !important;
+  background: #242424 !important;
   border-radius: 20px !important;
   border: 1px solid #2d2d2d !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
@@ -319,36 +344,36 @@
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   }
-  
+
   .workout-tab-button:not([data-state="active"]):hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
   }
-  
+
   .workout-tab-button[data-state="active"] {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)) !important;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
   }
-  
+
   .workout-tab-button span {
     font-size: 0.875rem !important;
     font-weight: 600;
   }
-  
+
   /* Premium color scheme for active buttons */
   .workout-tab-button[data-state="active"][aria-label*="Push"] {
     background: linear-gradient(135deg, rgba(249, 217, 73, 0.2), rgba(249, 217, 73, 0.1)) !important;
     border: 1px solid rgba(249, 217, 73, 0.3) !important;
     color: #f9d949 !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Pull"] {
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)) !important;
     border: 1px solid rgba(76, 175, 80, 0.3) !important;
     color: #4caf50 !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Leg"] {
     background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(244, 67, 54, 0.1)) !important;
     border: 1px solid rgba(244, 67, 54, 0.3) !important;
@@ -358,6 +383,7 @@
 
 /* Ensure mobile styles override desktop styles */
 @media (max-width: 768px) {
+
   .workout-tab-button,
   [data-state="active"] .workout-tab-button,
   [data-state="inactive"] .workout-tab-button,
@@ -368,18 +394,18 @@
     background: transparent;
     backdrop-filter: none;
   }
-  
+
   .workout-tab-button span {
     font-size: 0.75rem !important;
   }
-  
+
   /* Restore premium color scheme for mobile active buttons */
   .workout-tab-button[data-state="active"] {
     background: rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
-  
+
   /* Premium color scheme for active buttons on mobile */
   .workout-tab-button[data-state="active"][aria-label*="Push"] {
     background: rgba(249, 217, 73, 0.2) !important;
@@ -387,14 +413,14 @@
     color: #f9d949 !important;
     box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Pull"] {
     background: rgba(76, 175, 80, 0.2) !important;
     border: 1px solid rgba(76, 175, 80, 0.3) !important;
     color: #4caf50 !important;
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Leg"] {
     background: rgba(244, 67, 54, 0.2) !important;
     border: 1px solid rgba(244, 67, 54, 0.3) !important;
@@ -404,6 +430,7 @@
 }
 
 @media (max-width: 480px) {
+
   .workout-tab-button,
   [data-state="active"] .workout-tab-button,
   [data-state="inactive"] .workout-tab-button,
@@ -412,16 +439,16 @@
     padding: 0 10px !important;
     gap: 0.25rem !important;
   }
-  
+
   .workout-tab-button span {
     font-size: 0.75rem !important;
   }
-  
+
   .workout-tab-button .modern-icon {
     width: 14px !important;
     height: 14px !important;
   }
-  
+
   /* Maintain premium color scheme on smaller screens */
   .workout-tab-button[data-state="active"][aria-label*="Push"] {
     background: rgba(249, 217, 73, 0.2) !important;
@@ -429,14 +456,14 @@
     color: #f9d949 !important;
     box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Pull"] {
     background: rgba(76, 175, 80, 0.2) !important;
     border: 1px solid rgba(76, 175, 80, 0.3) !important;
     color: #4caf50 !important;
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Leg"] {
     background: rgba(244, 67, 54, 0.2) !important;
     border: 1px solid rgba(244, 67, 54, 0.3) !important;
@@ -447,6 +474,7 @@
 
 /* Extra compact styles for very small screens */
 @media (max-width: 360px) {
+
   .workout-tab-button,
   [data-state="active"] .workout-tab-button,
   [data-state="inactive"] .workout-tab-button,
@@ -455,16 +483,16 @@
     padding: 0 8px !important;
     gap: 0.2rem !important;
   }
-  
+
   .workout-tab-button span {
     font-size: 0.75rem !important;
   }
-  
+
   .workout-tab-button .modern-icon {
     width: 12px !important;
     height: 12px !important;
   }
-  
+
   /* Maintain premium color scheme on very small screens */
   .workout-tab-button[data-state="active"][aria-label*="Push"] {
     background: rgba(249, 217, 73, 0.2) !important;
@@ -472,14 +500,14 @@
     color: #f9d949 !important;
     box-shadow: 0 4px 12px rgba(249, 217, 73, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Pull"] {
     background: rgba(76, 175, 80, 0.2) !important;
     border: 1px solid rgba(76, 175, 80, 0.3) !important;
     color: #4caf50 !important;
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15) !important;
   }
-  
+
   .workout-tab-button[data-state="active"][aria-label*="Leg"] {
     background: rgba(244, 67, 54, 0.2) !important;
     border: 1px solid rgba(244, 67, 54, 0.3) !important;
@@ -507,7 +535,7 @@
   padding: 0.75rem 1rem !important;
   border-radius: 12px !important;
   border: 1px solid #2d2d2d !important;
-  background: #1e1e1e !important;
+  background: #242424 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
   transition: all 0.2s ease !important;
 }
@@ -530,7 +558,7 @@
   width: 36px !important;
   border-radius: 12px !important;
   border: 1px solid #2d2d2d !important;
-  background: #1e1e1e !important;
+  background: #242424 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
   transition: all 0.2s ease !important;
 }
@@ -551,12 +579,14 @@
   display: flex;
   justify-content: center;
   margin: 1.5rem auto 2rem;
-  padding: 1rem 1.5rem; /* Balanced padding for premium appearance */
-  background: #1f1f1f;
+  padding: 1rem 1.5rem;
+  /* Balanced padding for premium appearance */
+  background: #242424;
   border-radius: 16px;
   border: 1px solid #2a2a2a;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  max-width: fit-content; /* Constrain width to content */
+  max-width: fit-content;
+  /* Constrain width to content */
 }
 
 
@@ -574,9 +604,11 @@
   0% {
     filter: drop-shadow(0 0 1px currentColor);
   }
+
   50% {
     filter: drop-shadow(0 0 3px currentColor);
   }
+
   100% {
     filter: drop-shadow(0 0 1px currentColor);
   }
@@ -662,9 +694,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -677,7 +711,8 @@
 /* Exercise card styles */
 .exercise-card {
   @apply transition-all duration-200;
-  min-height: 48px; /* Ensure consistent minimum height for touch targets */
+  min-height: 48px;
+  /* Ensure consistent minimum height for touch targets */
 }
 
 .exercise-card:hover {
@@ -687,7 +722,8 @@
 /* Mobile optimization for exercise cards */
 @media (max-width: 640px) {
   .exercise-card {
-    min-height: 52px; /* Slightly larger touch targets on mobile */
+    min-height: 52px;
+    /* Slightly larger touch targets on mobile */
   }
 }
 
@@ -728,26 +764,32 @@
 /* Mobile optimization for exercise cards */
 @media (max-width: 640px) {
   .exercise-card {
-    min-height: 52px; /* Slightly larger touch targets on mobile */
+    min-height: 52px;
+    /* Slightly larger touch targets on mobile */
   }
-  
+
   .exercise-card:hover {
-    transform: none; /* Disable hover effects on mobile */
+    transform: none;
+    /* Disable hover effects on mobile */
   }
 }
 
 /* Premium checkbox styles */
 .checkbox-premium {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid hsl(var(--border)); /* visible outline for unchecked state */
+  border: 2px solid hsl(var(--border));
+  /* visible outline for unchecked state */
   background-color: transparent;
-  border-radius: 6px; /* smoother, modern look */
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04); /* subtle shadow for depth */
+  border-radius: 6px;
+  /* smoother, modern look */
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
+  /* subtle shadow for depth */
 }
 
 .checkbox-premium:checked {
   box-shadow: 0 0 0 1px currentColor, 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 2px solid currentColor; /* keep border for checked state, match fill color */
+  border: 2px solid currentColor;
+  /* keep border for checked state, match fill color */
 }
 
 /* Touch target optimization */
@@ -795,6 +837,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -821,9 +864,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
+
   100% {
     opacity: 1;
   }
@@ -889,7 +934,8 @@
 [role='listbox'] {
   width: 100% !important;
   min-width: unset !important;
-  max-width: calc(100vw - 2rem) !important; /* Account for padding */
+  max-width: calc(100vw - 2rem) !important;
+  /* Account for padding */
 }
 
 [role='option'] {
@@ -962,6 +1008,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 /* Apple Fitness-inspired styles */
 .fitness-gradient-bg {
   background: linear-gradient(135deg, rgba(249, 217, 73, 0.1), rgba(76, 175, 80, 0.1), rgba(244, 67, 54, 0.1));
@@ -1102,7 +1149,7 @@
   .mobile-chart-spacing {
     margin-top: 1.5rem;
   }
-  
+
   .mobile-chart-header {
     padding: 0.75rem 1rem;
   }
@@ -1391,6 +1438,7 @@
 }
 
 @media (max-width: 640px) {
+
   button.compact-mobile-tab,
   .compact-mobile-tab {
     height: 32px !important;
@@ -1465,9 +1513,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -1475,16 +1525,19 @@
 
 /* Mobile scroll optimization */
 @media (max-width: 768px) {
+
   /* Enable momentum scrolling for all overflow containers on mobile */
-  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-auto {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Optimize scrolling containers with custom scrollbars */
   .scroll-container {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Optimize tab content areas */
   .TabsContent {
     -webkit-overflow-scrolling: touch;

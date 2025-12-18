@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CircularProgress } from "@/components/ui/circular-progress"
 import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
-import { WorkoutProgressRings } from "@/components/charts/workout-progress-rings"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
@@ -16,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
 import { RotateCcw } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,135 +46,182 @@ export function WorkoutScreen({
   onUpdateWorkoutsAndDays, // <-- Add this prop
 }: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
   const [selectedWorkout, setSelectedWorkout] = useState("")
-  const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
-  const [tickCounter, setTickCounter] = useState(0) // Force re-render when exercises are toggled
-  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
-  const [hasTickedExercises, setHasTickedExercises] = useState(false)
-  const { colorMode } = useTheme()
-
-  // Check if there are any ticked exercises for the current day
-  const checkTickedExercises = useCallback(() => {
-    if (typeof window !== 'undefined' && selectedDay) {
-      const ticked = localStorage.getItem(`tickedExercises - ${selectedDay} `)
-      setHasTickedExercises(!!ticked && JSON.parse(ticked).length > 0)
-    } else {
-      setHasTickedExercises(false)
-    }
-  }, [selectedDay])
-
-  // Clear all ticked exercises for the current day
-  const resetTickedExercises = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(`tickedExercises - ${selectedDay} `)
-      setTickCounter(prev => prev + 1)
-      setIsResetDialogOpen(false)
-      setHasTickedExercises(false)
-    }
-  }, [selectedDay])
-
-  // Check for ticked exercises when selectedDay changes
-  useEffect(() => {
-    checkTickedExercises()
-  }, [checkTickedExercises, tickCounter])
-
-  // Force a re-render when exercises are toggled
-  const handleExerciseToggled = useCallback(() => {
-    setTickCounter(prev => prev + 1)
-  }, [])
-
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
-  const [newWorkoutName, setNewWorkoutName] = useState("")
-  useEffect(() => {
-    const loadSavedData = async () => {
-      try {
-        // Load saved workout section (push/pull/leg)
-        const savedDay = await loadLastWorkoutSection()
-        if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
-          setSelectedDay(savedDay as "push" | "pull" | "leg")
-        }
-
-        // Load saved workout selection
-        const savedWorkout = await loadSelectedWorkout()
-        if (savedWorkout && workouts.some(w => w.id === savedWorkout)) {
-          setSelectedWorkout(savedWorkout)
-        } else if (workouts.length > 0) {
-          // Default to first workout if none saved or saved workout not found
-          setSelectedWorkout(workouts[0].id)
-        }
-
-        setIsInitialized(true)
-      } catch (error) {
-        // Set default values if there's an error
-        if (workouts.length > 0 && !selectedWorkout) {
-          setSelectedWorkout(workouts[0].id)
-        }
-        setIsInitialized(true)
-      }
-    }
-
-    // Only load saved data when workouts are available
-    if (workouts.length > 0 && !selectedWorkout) {
-      loadSavedData()
-    } else if (workouts.length > 0 && selectedWorkout) {
-      // Already initialized
-      setIsInitialized(true)
-    }
-  }, [workouts, selectedWorkout])
-
-  // Load ticked exercises when selectedDay changes
-  const loadTickedExercises = useCallback((day: string) => {
-    try {
-      if (typeof window === 'undefined') return []
-      const stored = localStorage.getItem(`tickedExercises - ${day} `)
-      return stored ? JSON.parse(stored) as string[] : []
-    } catch (error) {
-      return []
-    }
-  }, [])
-
-  // Save the selected workout section to localStorage whenever it changes
-  useEffect(() => {
-    // Only save after initial load to prevent overwriting with default value
-    if (isInitialized) {
-      saveLastWorkoutSection(selectedDay).catch((error) => {
-      })
-    }
-  }, [selectedDay, isInitialized])
-
-  // Handle workout day selection
-  const handleDayChange = (day: string) => {
-    if (day === "push" || day === "pull" || day === "leg") {
-      setSelectedDay(day)
-    }
-  }
-
-  // Start a workout (for empty state)
-  const startWorkout = useCallback(() => {
-    // This function is used by EmptyWorkoutState component
-    // In a real app, you might want to do something specific when starting a workout
-  }, [])
 
   // Get the current workout data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
   // Get the days for the current workout
   const currentWorkoutDays = workoutDays.filter((d) => d.workout_id === selectedWorkout)
 
-  // Calculate progress for the current day
-  const calculateProgress = useCallback((dayType: string) => {
-    const day = currentWorkoutDays.find(d => d.day_id === dayType)
-    if (!day || !day.exercises?.length) return 0
-    // Force dependency on tickCounter to recalculate when exercises are toggled
-    const ticked = loadTickedExercises(dayType)
-    const totalExercises = day.exercises.length
-    const completedExercises = day.exercises.filter(ex => ticked.includes(ex.id)).length
-    return totalExercises > 0
-      ? Math.min(Math.round((completedExercises / totalExercises) * 100), 100)
-      : 0
-  }, [currentWorkoutDays, loadTickedExercises])
+  const handleDayChange = (val: string) => {
+    setSelectedDay(val as "push" | "pull" | "leg")
+    // Optional: Save to local storage or URL state
+    saveLastWorkoutSection(val)
+  }
 
-  // Calculate progress for the current day
-  const activeProgress = useMemo(() => calculateProgress(selectedDay), [calculateProgress, selectedDay])
+
+  const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
+  const { colorMode } = useTheme()
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
+  const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
+  const [newWorkoutName, setNewWorkoutName] = useState("")
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Start a workout (for empty state)
+  const startWorkout = useCallback(() => {
+    // Placeholder for specific start workout logic
+  }, [])
+
+  // Load saved data
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const savedDay = await loadLastWorkoutSection()
+        if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
+          setSelectedDay(savedDay as "push" | "pull" | "leg")
+        }
+        const savedWorkout = await loadSelectedWorkout()
+        if (savedWorkout && workouts.some(w => w.id === savedWorkout)) {
+          setSelectedWorkout(savedWorkout)
+        } else if (workouts.length > 0) {
+          setSelectedWorkout(workouts[0].id)
+        }
+        setIsInitialized(true)
+      } catch (error) {
+        if (workouts.length > 0 && !selectedWorkout) {
+          setSelectedWorkout(workouts[0].id)
+        }
+        setIsInitialized(true)
+      }
+    }
+    if (workouts.length > 0 && !selectedWorkout) {
+      loadSavedData()
+    }
+  }, [workouts, selectedWorkout])
+
+  /* -------------------------------------------------------------------------
+   *  SESSION & STATE MANAGEMENT (SUPABASE)
+   * ------------------------------------------------------------------------- */
+  const [completedExerciseNames, setCompletedExerciseNames] = useState<Set<string>>(new Set())
+  const [activeProgress, setActiveProgress] = useState(0)
+
+  // Fetch today's logs for the selected workout to populate "completed" state
+  const fetchSessionLogs = useCallback(async () => {
+    if (!selectedWorkout) return
+
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const { data, error } = await supabase
+        .from('workout_logs')
+        .select('exercise_name')
+        .eq('workout_id', selectedWorkout)
+        .eq('performed_at', today)
+
+      if (error) {
+        console.error('Error fetching session logs:', error)
+        return
+      }
+
+      const completedSet = new Set(data?.map(log => log.exercise_name) || [])
+      setCompletedExerciseNames(completedSet)
+    } catch (err) {
+      console.error('Failed to fetch session logs:', err)
+    }
+  }, [selectedWorkout])
+
+  // Initial Fetch on changes
+  useEffect(() => {
+    fetchSessionLogs()
+  }, [fetchSessionLogs])
+
+
+  // Calculate Progress based on DB State (not localStorage)
+  useEffect(() => {
+    const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
+    if (!day || !day.exercises?.length) {
+      setActiveProgress(0)
+      return
+    }
+    const total = day.exercises.length
+    const completed = day.exercises.filter(ex => completedExerciseNames.has(ex.name)).length
+
+    // Smooth progress calculation
+    const progress = Math.round((completed / total) * 100)
+    setActiveProgress(progress)
+  }, [selectedDay, currentWorkoutDays, completedExerciseNames])
+
+
+  // Toggle Exercise (DB Operation)
+  const handleToggleExercise = async (exerciseName: string, isCompleted: boolean) => {
+    // 1. Optimistic Update
+    setCompletedExerciseNames(prev => {
+      const next = new Set(prev)
+      if (isCompleted) next.add(exerciseName)
+      else next.delete(exerciseName)
+      return next
+    })
+
+    // 2. DB Operation
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      if (isCompleted) {
+        // Create a log entry (Simplified "Checkmark" log)
+        // Note: If you want to log real weight, user should use the "+" button. 
+        // This is the "Quick Check" feature. We'll verify if we want to use last weights or just a placeholder.
+        // For now, we'll insert a placeholder record to mark completion.
+        await supabase.from('workout_logs').upsert({
+          user_id: user.id,
+          workout_id: selectedWorkout,
+          exercise_name: exerciseName,
+          weight: 0, // Placeholder
+          avg_reps: 0, // Placeholder
+          performed_at: today,
+        }, { onConflict: 'user_id, exercise_name, performed_at' })
+      } else {
+        // Delete the log entry
+        await supabase.from('workout_logs')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('workout_id', selectedWorkout)
+          .eq('exercise_name', exerciseName)
+          .eq('performed_at', today)
+      }
+    } catch (error) {
+      console.error('Error toggling exercise:', error)
+      // Revert if error (optional, but good practice)
+      fetchSessionLogs() // Re-sync
+    }
+  }
+
+
+  // Reset Session (Delete all today's logs for this day)
+  const resetSession = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Find exercises for current day
+      const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
+      if (!day) return
+
+      const names = day.exercises.map(ex => ex.name)
+
+      await supabase.from('workout_logs')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('performed_at', today)
+        .in('exercise_name', names)
+
+      // Refresh
+      fetchSessionLogs()
+      setIsResetDialogOpen(false)
+    } catch (err) {
+      console.error('Failed to reset session', err)
+    }
+  }
 
   if (workouts.length === 0) {
     return (
@@ -260,14 +307,14 @@ export function WorkoutScreen({
     <Card className="border-0 shadow-none dark:bg-background max-w-3xl mx-auto w-full workout-selector premium-card">
       <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
         <div className="workout-header-container">
-          <div className={`transition - all duration - 200 workout - select ${selectedWorkout && hasTickedExercises ? 'flex-1' : 'w-full'} `}>
+          <div className={`transition-all duration-200 workout-select ${selectedWorkout && activeProgress > 0 ? 'flex-1' : 'w-full'}`}>
             <Select
               value={selectedWorkout}
               onValueChange={(value) => {
                 if (workouts.some(w => w.id === value)) {
                   setSelectedWorkout(value)
                   saveSelectedWorkout(value).catch((error) => {
-                    // Error handling for saving selected workout
+                    // Error handling
                   })
                 }
               }}
@@ -285,7 +332,7 @@ export function WorkoutScreen({
               </SelectContent>
             </Select>
           </div>
-          {selectedWorkout && hasTickedExercises && (
+          {selectedWorkout && activeProgress > 0 && (
             <Button
               variant="outline"
               size="icon"
@@ -300,7 +347,7 @@ export function WorkoutScreen({
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pt-0 pb-2">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="flex flex-nowrap justify-center mb-3 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-2 w-full md:justify-center md:gap-3">
+          <TabsList className="flex flex-nowrap justify-center mb-6 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-2 w-full md:justify-center md:gap-3">
             {['push', 'pull', 'leg'].map((day) => (
               <TabsTrigger
                 key={day}
@@ -314,7 +361,7 @@ export function WorkoutScreen({
                 style={{
                   backgroundColor:
                     selectedDay === day
-                      ? `color - mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15 %, transparent)`
+                      ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15%, transparent)`
                       : 'transparent',
                   color: selectedDay === day ? getWorkoutDayColor(day, colorMode) : 'hsl(var(--muted-foreground))',
                   fontWeight: selectedDay === day ? 600 : 500,
@@ -328,26 +375,39 @@ export function WorkoutScreen({
             ))}
           </TabsList>
 
-          <div className="flex justify-center progress-container">
-            <CircularProgress
-              value={activeProgress}
-              category={selectedDay}
-              size="md"
-              showLabel={false}
-            />
-          </div>
+          {/* Progress Header - Minimalist Session Only */}
+          {activeProgress > 0 && (
+            <div className="mb-6 px-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                <span>Session Progress</span>
+                <span>{activeProgress}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-secondary/50 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${activeProgress}%`,
+                    backgroundColor: getWorkoutDayColor(selectedDay, colorMode)
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           {currentWorkoutDays.map((day) => (
             <TabsContent key={day.id} value={day.day_id} className="mt-0">
               {day.exercises.length > 0 ? (
                 <DayExercises
-                  key={`${day.id} -${tickCounter} `}
+                  key={day.id}
                   exercises={day.exercises}
                   dayId={day.day_id}
                   workoutId={day.workout_id}
-                  onLogWorkout={(log) => {
-                    onAddWorkoutLog({ ...log, workout_day_id: day.id })
+                  completedExerciseNames={completedExerciseNames}
+                  onLogWorkout={async (log) => {
+                    await onAddWorkoutLog({ ...log, workout_day_id: day.id })
+                    fetchSessionLogs() // Refresh logs after adding one
                   }}
-                  onExerciseToggled={handleExerciseToggled}
+                  onToggleExercise={handleToggleExercise}
                   dayColor={getWorkoutDayColor(day.day_id, colorMode)}
                 />
               ) : (
@@ -362,9 +422,9 @@ export function WorkoutScreen({
       <ResetConfirmationModal
         isOpen={isResetDialogOpen}
         onClose={() => setIsResetDialogOpen(false)}
-        onConfirm={resetTickedExercises}
-        dayColor="#EA4335"
-        message={`Are you sure you want to reset all completed exercises for ${selectedDay.toUpperCase()} day ? This will clear your checkmarks but will not affect your workout history.`}
+        onConfirm={resetSession}
+        dayColor={getWorkoutDayColor(selectedDay, colorMode)}
+        message={`Start fresh on ${selectedDay.toUpperCase()} day? This will clear your current session.`}
       />
     </Card>
   )
