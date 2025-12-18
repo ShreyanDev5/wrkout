@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Check, X, RotateCcw } from "lucide-react"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { useHaptics } from "@/hooks/use-haptics"
+import { getLocalDateYYYYMMDD } from "@/lib/utils"
 
 interface InlineWorkoutLoggerProps {
     exercise: Exercise
@@ -74,7 +75,7 @@ export function InlineWorkoutLogger({
             weight,
             avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB
             sets,
-            performed_at: new Date().toISOString().split("T")[0],
+            performed_at: getLocalDateYYYYMMDD(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         }

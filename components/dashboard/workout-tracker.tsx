@@ -108,6 +108,32 @@ export function WorkoutTracker() {
     }
   }
 
+  // Delete workout log (only for logged-in users)
+  const deleteWorkoutLog = async (logId: string) => {
+    if (!user?.id) return
+
+    // Optimistic delete
+    const logToDelete = workoutLogs.find(l => l.id === logId)
+    setWorkoutLogs((prev) => prev.filter((l) => l.id !== logId))
+
+    try {
+      const { error } = await supabase
+        .from('workout_logs')
+        .delete()
+        .eq('id', logId)
+        .eq('user_id', user.id)
+
+      if (error) throw error
+    } catch (error) {
+      console.error('Error deleting log:', error)
+      toast({ title: "Failed to delete log", description: String(error), variant: "destructive" })
+      // Revert optimism if fail
+      if (logToDelete) {
+        setWorkoutLogs(prev => [...prev, logToDelete].sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime()))
+      }
+    }
+  }
+
   // Update workouts and workoutDays
   const updateWorkoutsAndDays = (workouts: Workout[], workoutDays: WorkoutDay[]) => {
     setAppData((prev: any) => ({
@@ -159,6 +185,8 @@ export function WorkoutTracker() {
                 workoutDays={appData.workoutDays}
                 onAddWorkoutLog={addWorkoutLog}
                 onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
+                logs={workoutLogs}
+                onDeleteWorkoutLog={deleteWorkoutLog}
               />
             </ErrorBoundary>
           </TabsContent>

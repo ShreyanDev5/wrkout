@@ -7,6 +7,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getLocalDateYYYYMMDD(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function formatDate(dateString: string): string {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat("en-US", {
@@ -46,7 +54,7 @@ export function getWorkoutDayIcon(dayId: string, modern = false, size = "h-5 w-5
 
 export function getExerciseWorkoutType(exerciseName: string): string | null {
   const name = exerciseName.toLowerCase()
-  
+
   // Handle special cases for ambiguous exercises first
   // These exercises could be classified differently based on context
   const specialCases: { [key: string]: string } = {
@@ -67,14 +75,14 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'lying leg curl': 'leg',
     'seated leg curl': 'leg'
   }
-  
+
   // Check special cases first
   for (const [specialExercise, type] of Object.entries(specialCases)) {
     if (name.includes(specialExercise)) {
       return type
     }
   }
-  
+
   // Leg exercises (check first to avoid conflicts with generic terms)
   // Add new leg exercises here. Include both singular and plural forms if needed.
   const legKeywords = [
@@ -97,13 +105,13 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'sumo deadlift', 'deadlift sumo', // Sumo Deadlift
     'front squat', 'squat front', // Front Squat
     'bulgarian split squat', 'split squat bulgarian', // Bulgarian Split Squat
-    'bulgarian', 'hip thrust', 'seated calf', 'standing calf', 
-    'hip abduction', 'abduction hip', 'hip adduction', 'adduction hip', 
+    'bulgarian', 'hip thrust', 'seated calf', 'standing calf',
+    'hip abduction', 'abduction hip', 'hip adduction', 'adduction hip',
     'step[- ]?up', 'step[- ]?down',
     'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge',
     'calf raise', 'leg curl machine', 'leg curl'
   ]
-  
+
   // Push exercises (chest, shoulders, triceps)
   // Add new push exercises here. Include both singular and plural forms if needed.
   const pushKeywords = [
@@ -148,7 +156,7 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'overhead rope extension', 'rope triceps extension',
     'dumbbell flyes', 'flyes'
   ]
-  
+
   // Pull exercises (back, biceps, rear delts, traps, core)
   // Add new pull exercises here. Include both singular and plural forms if needed.
   const pullKeywords = [
@@ -186,12 +194,12 @@ export function getExerciseWorkoutType(exerciseName: string): string | null {
     'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'pull[- ]?up', 'chin[- ]?up',
     'face pull', 'rear delt', 'rack pull', 't-bar', 't bar'
   ]
-  
+
   // Match full phrase first for pull, then push, then leg
   // Order matters to avoid conflicts with generic terms
   if (pullKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'pull'
   if (pushKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'push'
   if (legKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`).test(name))) return 'leg'
-  
+
   return null
 }

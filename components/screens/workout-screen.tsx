@@ -10,7 +10,7 @@ import { DayExercises } from "@/components/dashboard/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
 import { useTheme } from "@/components/theme-context"
 import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
-import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
+import { getWorkoutDayColor, getWorkoutDayIcon, getLocalDateYYYYMMDD } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,8 @@ interface WorkoutScreenProps {
   workouts: Workout[]
   workoutDays: WorkoutDay[]
   onAddWorkoutLog: (log: WorkoutLog) => void | Promise<void>
+  logs: WorkoutLog[]
+  onDeleteWorkoutLog: (logId: string) => void | Promise<void>
 }
 
 export function WorkoutScreen({
@@ -45,6 +47,8 @@ export function WorkoutScreen({
   workoutDays,
   onAddWorkoutLog,
   onUpdateWorkoutsAndDays, // <-- Add this prop
+  logs,
+  onDeleteWorkoutLog,
 }: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
   const [selectedWorkout, setSelectedWorkout] = useState("")
 
@@ -101,69 +105,73 @@ export function WorkoutScreen({
   }, [workouts, selectedWorkout])
 
   /* -------------------------------------------------------------------------
+   *  DATE & RESET LOGIC
+   * ------------------------------------------------------------------------- */
+  // Use local date state to trigger re-renders when the day changes
+  const [today, setToday] = useState(getLocalDateYYYYMMDD())
+
+  // Check for day change when app comes into foreground
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const currentDate = getLocalDateYYYYMMDD()
+        if (currentDate !== today) {
+          setToday(currentDate)
+        }
+      }
+    }
+
+    // Also set up an interval to check every minute if the app is open across midnight
+    const interval = setInterval(() => {
+      const currentDate = getLocalDateYYYYMMDD()
+      if (currentDate !== today) {
+        setToday(currentDate)
+      }
+    }, 60000)
+
+    window.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleVisibilityChange)
+      clearInterval(interval)
+    }
+  }, [today])
+
+  /* -------------------------------------------------------------------------
    *  SESSION & STATE MANAGEMENT (SUPABASE)
    * ------------------------------------------------------------------------- */
   // Use a Map to store full log details for local "significance" checks
-  const [completedLogs, setCompletedLogs] = useState<Map<string, WorkoutLog>>(new Map())
   const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
 
   // Derived Set for easy "is checked" lookups by children
+  // Performance Fix: Derive directly from props to ensure instant updates on tab switch
+  const completedLogs = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]
+    const logsMap = new Map<string, WorkoutLog>()
+
+    // Filter logs for today and current workout
+    const todaysLogs = logs.filter(log =>
+      log.workout_id === selectedWorkout &&
+      log.performed_at === today
+    )
+
+    todaysLogs.forEach(log => {
+      logsMap.set(log.exercise_name, log)
+    })
+
+    return logsMap
+  }, [logs, selectedWorkout, today])
+
   const completedExerciseNames = useMemo(() => {
     return new Set(completedLogs.keys())
   }, [completedLogs])
 
   const [activeProgress, setActiveProgress] = useState(0)
 
-  // Fetch today's logs for the selected workout to populate "completed" state
-  const fetchSessionLogs = useCallback(async () => {
-    if (!selectedWorkout) return
-
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const { data, error } = await supabase
-        .from('workout_logs')
-        .select('*') // Query all fields to check for significant data (weight, etc.)
-        .eq('workout_id', selectedWorkout)
-        .eq('performed_at', today)
-
-      if (error) {
-        console.error('Error fetching session logs:', error)
-        return
-      }
-
-      if (data) {
-        // @ts-ignore - Supabase types might be slighty off compared to internal types, but we trust the DB schema
-        const logsMap = new Map<string, WorkoutLog>(data.map(log => [log.exercise_name, log]))
-        setCompletedLogs(logsMap)
-      } else {
-        setCompletedLogs(new Map())
-      }
-    } catch (err) {
-      console.error('Failed to fetch session logs:', err)
-    }
-  }, [selectedWorkout])
-
-  // Initial Fetch on changes
-  useEffect(() => {
-    fetchSessionLogs()
-  }, [fetchSessionLogs])
-
-  // Refetch logs when app comes into foreground to handle day changes
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchSessionLogs()
-      }
-    }
-
-    window.addEventListener('visibilitychange', handleVisibilityChange)
-    window.addEventListener('focus', fetchSessionLogs)
-
-    return () => {
-      window.removeEventListener('visibilitychange', handleVisibilityChange)
-      window.removeEventListener('focus', fetchSessionLogs)
-    }
-  }, [fetchSessionLogs])
+  // Removed internal fetchSessionLogs and visibility effects 
+  // State is now fully controlled by parent WorkoutTracker
 
 
   // Calculate Progress based on DB State (not localStorage)
@@ -207,17 +215,8 @@ export function WorkoutScreen({
     // Only insert if not already present (prevent overwriting if race condition)
     if (completedLogs.has(exerciseName)) return
 
-    // Optimistic Update
-    setCompletedLogs(prev => {
-      const next = new Map(prev)
-      // Create a temporary placeholder log for UI state
-      // @ts-ignore
-      next.set(exerciseName, { weight: 0, avg_reps: 0, sets: 0, exercise_name: exerciseName })
-      return next
-    })
 
     try {
-      const today = new Date().toISOString().split('T')[0]
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
@@ -235,41 +234,20 @@ export function WorkoutScreen({
       if (error) throw error
 
       // Refresh to get the real ID and data
-      fetchSessionLogs()
+      // fetchSessionLogs() // Managed by parent state update
 
     } catch (error) {
       console.error('Error toggling exercise:', error)
-      fetchSessionLogs() // Re-sync
+      // fetchSessionLogs() // Re-sync
     }
   }
 
   const performDeleteLog = async (exerciseName: string) => {
-    // Optimistic Update
-    setCompletedLogs(prev => {
-      const next = new Map(prev)
-      next.delete(exerciseName)
-      return next
-    })
+    const log = completedLogs.get(exerciseName)
+    if (!log) return
+
     setExerciseToDelete(null) // Close dialog if open
-
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { error } = await supabase.from('workout_logs')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('workout_id', selectedWorkout)
-        .eq('exercise_name', exerciseName)
-        .eq('performed_at', today)
-
-      if (error) throw error
-
-    } catch (error) {
-      console.error('Error deleting log:', error)
-      fetchSessionLogs() // Revert
-    }
+    await onDeleteWorkoutLog(log.id)
   }
 
 
@@ -460,7 +438,6 @@ export function WorkoutScreen({
                     completedExerciseNames={completedExerciseNames}
                     onLogWorkout={async (log) => {
                       await onAddWorkoutLog({ ...log, workout_day_id: day.id })
-                      fetchSessionLogs() // Refresh logs after adding one
                     }}
                     onToggleExercise={handleToggleExercise}
                     dayColor={getWorkoutDayColor(day.day_id, colorMode)}
