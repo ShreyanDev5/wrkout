@@ -323,7 +323,11 @@ export function WorkoutScreen({
               </SelectTrigger>
               <SelectContent>
                 {workouts.map((workout) => (
-                  <SelectItem key={workout.id} value={workout.id}>
+                  <SelectItem
+                    key={workout.id}
+                    value={workout.id}
+                    className="pl-3 pr-3 py-3 [&>span.absolute]:hidden data-[state=checked]:font-semibold data-[state=checked]:bg-white/10 data-[state=checked]:text-primary focus:bg-white/5 focus:text-primary-foreground cursor-pointer transition-colors"
+                  >
                     {workout.name}
                   </SelectItem>
                 ))}

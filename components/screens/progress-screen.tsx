@@ -139,36 +139,34 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 >
                   <div
                     className={cn(
-                      "relative bg-zinc-900/40 hover:bg-zinc-800/50 border border-zinc-800/60 rounded-2xl p-4 transition-all duration-300 backdrop-blur-sm cursor-default flex items-center justify-between",
-                      // Subtle glow effect
-                      "after:absolute after:inset-0 after:rounded-2xl after:opacity-0 after:transition-opacity hover:after:opacity-100 after:pointer-events-none"
+                      "relative bg-zinc-900/40 border border-zinc-700/50 rounded-xl p-3.5 transition-all duration-300 backdrop-blur-sm cursor-default flex items-center justify-between",
+                      // Subtle premium hover effect with better contrast
+                      "hover:bg-zinc-800/60 hover:border-zinc-600/50"
                     )}
-                    style={{
-                      boxShadow: 'none',
-                      // @ts-ignore
-                      "--glow-color": dayColor
-                    }}
                   >
-                    <div className="flex items-center gap-4">
-                      {/* Solid matte bar - premium finish */}
+                    <div className="flex items-center gap-3">
+                      {/* Refined indicator */}
                       <span
-                        className="h-10 w-1.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: dayColor }}
+                        className="h-9 w-1 rounded-full flex-shrink-0 opacity-90 shadow-[0_0_8px_-2px_var(--indicator-color)]"
+                        style={{ backgroundColor: dayColor, '--indicator-color': dayColor } as any}
                       />
 
-                      <div className="flex flex-col">
-                        <span className="text-base font-semibold capitalize text-foreground">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-semibold capitalize text-foreground tracking-wide">
                           {session.workoutType} Day
                         </span>
-                        <span className="text-xs font-medium text-muted-foreground">
+                        <span className="text-[11px] font-medium text-muted-foreground/80 uppercase tracking-wider">
                           {formatDate(session.date.toISOString())}
                         </span>
                       </div>
                     </div>
 
-                    <div className="text-right flex items-center gap-2 bg-zinc-800/50 px-3 py-1.5 rounded-full border border-zinc-700/30">
-                      <Dumbbell className="h-3.5 w-3.5 text-zinc-400" />
-                      <span className="text-sm font-semibold text-foreground/90">{session.exerciseCount}</span>
+                    {/* Minimalist count badge */}
+                    <div className="flex items-center gap-2 pr-1">
+                      <span className="text-xs font-medium text-muted-foreground/60 mr-1">Exercises</span>
+                      <div className="flex items-center justify-center bg-zinc-800/80 border border-zinc-700/50 min-w-[28px] h-7 rounded-md shadow-sm">
+                        <span className="text-sm font-bold text-foreground">{session.exerciseCount}</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

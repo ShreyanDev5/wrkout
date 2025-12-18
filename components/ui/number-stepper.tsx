@@ -60,7 +60,7 @@ export function NumberStepper({ value, onChange, min, max, step = 1, className, 
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Decrease value"
@@ -79,7 +79,7 @@ export function NumberStepper({ value, onChange, min, max, step = 1, className, 
           onClick={increment}
           disabled={value >= max}
           className={cn(
-            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Increase value"
