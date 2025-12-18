@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CircularProgress } from "@/components/ui/circular-progress"
 import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DayExercises } from "@/components/day-exercises"
+import { DayExercises } from "@/components/dashboard/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
 import { useTheme } from "@/components/theme-context"
 import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label"
 import { PlusCircle } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
 
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 interface WorkoutScreenProps {
   workouts: Workout[]

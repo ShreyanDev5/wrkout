@@ -15,7 +15,7 @@ import {
   GripVertical,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { formatDate } from "@/lib/utils"
 import type { Workout, WorkoutDay } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
@@ -214,8 +214,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }
 
     try {
-      console.log('User info:', { id: user.id, email: user.email });
-      console.log('Selected workout ID:', selectedWorkoutId);
+
 
       // Check if a day with this day_id already exists for this workout
       const existingDay = workoutDays.find(day =>
@@ -245,17 +244,17 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         updated_at: new Date().toISOString()
       };
 
-      console.log('Attempting to insert workout day:', newDay);
+
 
       // First, let's check if the table exists by trying to query it
       const { data: tableCheck, error: tableError } = await supabase
         .from('workout_days')
         .select('id')
         .limit(1);
-      console.log('Table check response:', { tableCheck, tableError });
+
 
       const { data, error } = await supabase.from('workout_days').insert([newDay]);
-      console.log('Supabase response:', { data, error });
+
       if (error) {
         console.error('Supabase insert error:', error);
         toast({

@@ -8,7 +8,7 @@ import { WorkoutLogModal } from "@/components/modals/workout-log-modal" // Keep 
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
-import { InlineWorkoutLogger } from "@/components/inline-workout-logger"
+import { InlineWorkoutLogger } from "@/components/dashboard/inline-workout-logger"
 import { AnimatePresence } from "framer-motion"
 import { useHaptics } from "@/hooks/use-haptics"
 
