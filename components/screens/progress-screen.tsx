@@ -91,7 +91,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   variants={itemVariants}
                   className="group"
                 >
-                  <div className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-[20px] p-3 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50">
+                  <div className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50">
                     {/* Subtle left accent border instead of wide bar */}
                     <div
                       className="absolute top-0 left-0 w-[2px] h-full opacity-80"
@@ -104,54 +104,54 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       style={{ backgroundColor: dayColor }}
                     />
 
-                    <div className="flex flex-col gap-2.5 pl-2">
+                    <div className="flex flex-col gap-2 pl-2">
                       {/* Exercise Header - Compact */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <div className="flex items-center gap-2 mb-0.5">
+                          <div className="flex items-center gap-2 mb-0">
                             <span className="text-[9px] font-bold uppercase tracking-[0.15em] opacity-90" style={{ color: dayColor }}>
                               {dominantType}
                             </span>
                             <div className="h-[1px] flex-1 bg-gradient-to-r from-zinc-800 to-transparent opacity-50" />
                           </div>
-                          <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">
+                          <h3 className="text-sm font-bold text-zinc-100 leading-none tracking-tight py-0.5">
                             {exerciseName}
                           </h3>
                         </div>
                       </div>
 
                       {/* Integrated Metrics Grid - 4 Columns */}
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 gap-1.5">
                         {/* Weight */}
-                        <div className="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Weight</span>
+                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
                           <div className="flex items-baseline gap-0.5">
-                            <span className="text-base font-bold text-zinc-100">{weight}</span>
+                            <span className="text-sm font-bold text-zinc-100">{weight}</span>
                             <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
                           </div>
                         </div>
 
                         {/* Reps */}
-                        <div className="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Reps</span>
-                          <span className="text-base font-bold text-zinc-100">{reps}</span>
+                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
+                          <span className="text-sm font-bold text-zinc-100">{reps}</span>
                         </div>
 
                         {/* Sets */}
-                        <div className="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Sets</span>
-                          <span className="text-base font-bold text-zinc-100">{sets}</span>
+                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
+                          <span className="text-sm font-bold text-zinc-100">{sets}</span>
                         </div>
 
                         {/* RIR */}
                         <div
                           className={cn(
-                            "rounded-xl p-2.5 border flex flex-col items-center justify-center transition-opacity",
+                            "rounded-lg p-1.5 border flex flex-col items-center justify-center transition-opacity",
                             rir !== null && rir !== undefined ? "bg-zinc-950/60 border-zinc-800/50" : "bg-transparent border-transparent opacity-20"
                           )}
                         >
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">RIR</span>
-                          <span className="text-base font-bold text-zinc-100">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">RIR</span>
+                          <span className="text-sm font-bold text-zinc-100">
                             {rir !== null && rir !== undefined ? rir : '—'}
                           </span>
                         </div>
