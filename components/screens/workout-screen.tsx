@@ -148,7 +148,6 @@ export function WorkoutScreen({
   // Derived Set for easy "is checked" lookups by children
   // Performance Fix: Derive directly from props to ensure instant updates on tab switch
   const completedLogs = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0]
     const logsMap = new Map<string, WorkoutLog>()
 
     // Filter logs for today and current workout
