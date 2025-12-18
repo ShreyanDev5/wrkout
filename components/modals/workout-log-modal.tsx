@@ -52,7 +52,7 @@ export function WorkoutLogModal({
   // Ensure audio context is running when the modal opens
   useEffect(() => {
     if (isOpen) {
-      ensureAudioContextRunning().catch(() => {})
+      ensureAudioContextRunning().catch(() => { })
     }
   }, [isOpen])
 
@@ -71,6 +71,7 @@ export function WorkoutLogModal({
       workout_day_id: null,
       exercise_name: exercise.name,
       weight,
+      reps: reps,
       avg_reps: reps,
       performed_at: new Date().toISOString().split("T")[0],
       created_at: new Date().toISOString(),
@@ -90,14 +91,14 @@ export function WorkoutLogModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
+      <DialogContent
         className="w-full max-w-sm sm:max-w-md mobile-narrow-modal dark:bg-background/90 dark:border-opacity-10 rounded-2xl mx-auto border-none shadow-2xl backdrop-blur-xl overflow-hidden"
         hideCloseButton={true}
       >
         {/* Header with gradient background */}
-        <div 
+        <div
           className="relative pt-5 pb-6 px-6 rounded-t-2xl"
-          style={{ 
+          style={{
             background: `linear-gradient(135deg, ${dayColor}20 0%, ${dayColor}10 100%)`,
             borderBottom: `1px solid ${dayColor}20`
           }}
@@ -140,11 +141,11 @@ export function WorkoutLogModal({
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-medium text-white/80">Reps</h3>
               </div>
-              <NumberStepper 
-                value={reps} 
-                onChange={setReps} 
-                min={0} 
-                max={30} 
+              <NumberStepper
+                value={reps}
+                onChange={setReps}
+                min={0}
+                max={30}
                 className="w-full"
                 dayColor={dayColor}
               />
