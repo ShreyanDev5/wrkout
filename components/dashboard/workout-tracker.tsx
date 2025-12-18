@@ -167,7 +167,7 @@ export function WorkoutTracker() {
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo_1.0.png"
+              src="/logo_1.0.png?v=2"
               alt="wrkout logo"
               className="h-12 w-12 rounded-xl shadow-lg border border-border/50 bg-background/50 backdrop-blur-sm object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
               style={{ minHeight: 48, minWidth: 48 }}
