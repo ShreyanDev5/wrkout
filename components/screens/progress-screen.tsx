@@ -94,18 +94,18 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                   <div className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-[20px] p-4 shadow-sm transition-all hover:bg-zinc-900/60 overflow-hidden">
                     {/* Background accent glow - subtle indicator */}
                     <div
-                      className="absolute top-0 left-0 w-0.5 h-full opacity-40"
+                      className="absolute top-0 left-0 w-[3px] h-full opacity-100"
                       style={{ backgroundColor: dayColor }}
                     />
 
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 pl-2">
                       {/* Exercise Header */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-40 mb-0.5" style={{ color: dayColor }}>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-80 mb-1" style={{ color: dayColor }}>
                             {dominantType} day
                           </span>
-                          <h3 className="text-base font-bold text-zinc-100 leading-tight tracking-tight">
+                          <h3 className="text-lg font-bold text-zinc-100 leading-tight tracking-tight">
                             {exerciseName}
                           </h3>
                         </div>
@@ -114,35 +114,35 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                       {/* Integrated Metrics Grid - 4 Columns */}
                       <div className="grid grid-cols-4 gap-2">
                         {/* Weight */}
-                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Weight</span>
+                        <div className="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800/40 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Weight</span>
                           <div className="flex items-baseline gap-0.5">
-                            <span className="text-sm font-bold text-zinc-200">{weight}</span>
+                            <span className="text-base font-bold text-zinc-100">{weight}</span>
                             <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
                           </div>
                         </div>
 
                         {/* Reps */}
-                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Reps</span>
-                          <span className="text-sm font-bold text-zinc-200">{reps}</span>
+                        <div className="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800/40 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Reps</span>
+                          <span className="text-base font-bold text-zinc-100">{reps}</span>
                         </div>
 
                         {/* Sets */}
-                        <div className="bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/30 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">Sets</span>
-                          <span className="text-sm font-bold text-zinc-200">{sets}</span>
+                        <div className="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800/40 flex flex-col items-center justify-center">
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">Sets</span>
+                          <span className="text-base font-bold text-zinc-100">{sets}</span>
                         </div>
 
                         {/* RIR */}
                         <div
                           className={cn(
-                            "rounded-xl p-2.5 border flex flex-col items-center justify-center transition-opacity",
-                            rir !== null && rir !== undefined ? "bg-zinc-950/40 border-zinc-800/30" : "bg-transparent border-transparent opacity-20"
+                            "rounded-xl p-3 border flex flex-col items-center justify-center transition-opacity",
+                            rir !== null && rir !== undefined ? "bg-zinc-950/60 border-zinc-800/40" : "bg-transparent border-transparent opacity-20"
                           )}
                         >
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/40 tracking-wider mb-0.5">RIR</span>
-                          <span className="text-sm font-bold" style={{ color: rir !== null && rir !== undefined ? dayColor : 'inherit' }}>
+                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider mb-0.5">RIR</span>
+                          <span className="text-base font-bold" style={{ color: rir !== null && rir !== undefined ? dayColor : 'inherit' }}>
                             {rir !== null && rir !== undefined ? rir : '—'}
                           </span>
                         </div>
