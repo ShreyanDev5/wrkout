@@ -14,7 +14,7 @@ import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
-import { RotateCcw } from "lucide-react"
+
 import { supabase } from "@/lib/supabase"
 import {
   AlertDialog,
@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PlusCircle } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
-import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal"
+
 import { useToast } from "@/components/ui/use-toast"
 
 interface WorkoutScreenProps {
@@ -62,7 +62,7 @@ export function WorkoutScreen({
 
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const { colorMode } = useTheme()
-  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
+
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
   const [isInitialized, setIsInitialized] = useState(false)
@@ -134,6 +134,23 @@ export function WorkoutScreen({
     fetchSessionLogs()
   }, [fetchSessionLogs])
 
+  // Refetch logs when app comes into foreground to handle day changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchSessionLogs()
+      }
+    }
+
+    window.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', fetchSessionLogs)
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', fetchSessionLogs)
+    }
+  }, [fetchSessionLogs])
+
 
   // Calculate Progress based on DB State (not localStorage)
   useEffect(() => {
@@ -202,56 +219,7 @@ export function WorkoutScreen({
   // ... inside component ...
   const { toast } = useToast()
 
-  // Reset Session (Delete all today's logs for this day)
-  const resetSession = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        toast({ title: "Error", description: "You must be signed in to reset.", variant: "destructive" })
-        return
-      }
 
-      // Optimistically clear IMMEDIATELY to give user feedback
-      setCompletedExerciseNames(new Set())
-      setActiveProgress(0)
-
-      // Find exercises for current day
-      const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
-      if (!day) {
-        // Just close dialog if no day found, but we already cleared UI above as fallback
-        setIsResetDialogOpen(false)
-        return
-      }
-
-      const names = day.exercises.map(ex => ex.name)
-
-      // Perform DB Deletion in background
-      const { error } = await supabase.from('workout_logs')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('performed_at', today)
-        .in('exercise_name', names)
-
-      if (error) {
-        console.error('Failed to reset session', error)
-        toast({ title: "Error", description: "Failed to sync reset with database.", variant: "destructive" })
-        // Don't revert optimistic set here to not confuse user, but maybe refetch?
-        fetchSessionLogs()
-        return
-      }
-
-      // Success
-      setIsResetDialogOpen(false)
-      toast({ title: "Session Reset", description: "Your workout has been reset." })
-
-      // Delay fetch slightly to ensure DB propagation or just skip one cycle
-      setTimeout(() => fetchSessionLogs(), 500)
-    } catch (err) {
-      console.error('Failed to reset session', err)
-      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" })
-    }
-  }
 
   if (workouts.length === 0) {
     return (
@@ -362,17 +330,7 @@ export function WorkoutScreen({
               </SelectContent>
             </Select>
           </div>
-          {selectedWorkout && activeProgress > 0 && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="reset-button-premium"
-              onClick={() => setIsResetDialogOpen(true)}
-              aria-label="Reset workout progress"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          )}
+
         </div>
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pt-0 pb-2">
@@ -448,15 +406,7 @@ export function WorkoutScreen({
         </Tabs>
       </CardContent>
 
-      {/* Reset Confirmation Dialog */}
-      <ResetConfirmationModal
-        isOpen={isResetDialogOpen}
-        onClose={() => setIsResetDialogOpen(false)}
-        onConfirm={resetSession}
-        dayColor={getWorkoutDayColor(selectedDay, colorMode)}
-        intent="start_new"
-        message="Are you sure you want to start a new workout? This will clear all your visual progress checklists for this session."
-      />
+
     </Card>
   )
 }
