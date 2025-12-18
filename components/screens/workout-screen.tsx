@@ -318,8 +318,8 @@ export function WorkoutScreen({
               }}
               disabled={workouts.length === 0}
             >
-              <SelectTrigger className="w-full min-touch-target">
-                <SelectValue placeholder="Select Workout" className="truncate" />
+              <SelectTrigger className="w-full min-touch-target border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <SelectValue placeholder="Select Workout" className="truncate font-medium tracking-tight" />
               </SelectTrigger>
               <SelectContent>
                 {workouts.map((workout) => (
@@ -335,42 +335,45 @@ export function WorkoutScreen({
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pt-0 pb-2">
         <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="flex flex-nowrap justify-center mb-6 rounded-full bg-secondary/30 backdrop-blur-sm border border-border/50 h-auto p-1 gap-2 w-full md:justify-center md:gap-3">
-            {['push', 'pull', 'leg'].map((day) => (
-              <TabsTrigger
-                key={day}
-                value={day}
-                className={cn(
-                  'flex-1 text-xs whitespace-nowrap',
-                  'flex items-center justify-center gap-1 focus-visible-ring modern-tab-trigger workout-tab-button rounded-full transition-all duration-200 data-[state=active]:shadow-sm',
-                  'py-1.5 px-2 xs:py-2 xs:px-2.5 sm:py-2 sm:px-3 md:py-2 md:px-4 lg:py-2.5 lg:px-5',
-                  'md:flex-none md:w-auto md:min-w-[100px] lg:min-w-[120px]'
-                )}
-                style={{
-                  backgroundColor:
-                    selectedDay === day
-                      ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15%, transparent)`
-                      : 'transparent',
-                  color: selectedDay === day ? getWorkoutDayColor(day, colorMode) : 'hsl(var(--muted-foreground))',
-                  fontWeight: selectedDay === day ? 600 : 500,
-                  boxShadow: selectedDay === day ? `0 2px 8px 0 rgba(${day === 'push' ? '249,217,73' : day === 'pull' ? '76,175,80' : '244,67,54'}, 0.12)` : 'none',
-                }}
-                aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
-              >
-                {getWorkoutDayIcon(day, true, 'h-4 w-4 xs:h-4 xs:w-4 sm:h-4 sm:w-4 md:h-5 md:w-5')}
-                <span className="hidden xs:inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="workout-tabs-container mb-6 mx-auto max-w-[500px]">
+            <TabsList className="flex flex-nowrap w-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/30 p-1 md:p-1.5 rounded-full shadow-sm gap-1.5 sm:gap-2">
+              {['push', 'pull', 'leg'].map((day) => {
+                const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
+
+                return (
+                  <TabsTrigger
+                    key={day}
+                    value={day}
+                    className={cn(
+                      'flex-1 rounded-full flex items-center justify-center gap-1.5 md:gap-2 py-1.5 md:py-2.5 px-2 transition-all',
+                      'text-xs md:text-sm font-medium',
+                      selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
+                    )}
+                    style={{
+                      backgroundColor:
+                        selectedDay === day
+                          ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 25%, transparent)`
+                          : undefined,
+                      boxShadow: 'none',
+                    }}
+                    aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
+                  >
+                    {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5 md:h-4 md:w-4')}
+                    <span className="hidden xs:inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
+          </div>
 
           {/* Progress Header - Minimalist Session Only */}
           {activeProgress > 0 && (
             <div className="mb-6 px-1">
               <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                <span>Session Progress</span>
-                <span>{activeProgress}%</span>
+                <span className="font-medium tracking-tight">Session Progress</span>
+                <span className="font-mono tracking-tighter">{activeProgress}%</span>
               </div>
-              <div className="h-1.5 w-full bg-secondary/50 rounded-full overflow-hidden">
+              <div className="h-1 w-full bg-secondary/30 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{

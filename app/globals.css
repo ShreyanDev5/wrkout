@@ -246,11 +246,12 @@
 }
 
 /* Premium card styles */
+/* Premium card styles - Refined for "Apple-like" subtly */
 .premium-card {
   background: #242424 !important;
-  border-radius: 20px !important;
-  border: 1px solid #2d2d2d !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
   overflow: hidden;
 }
 
@@ -263,13 +264,15 @@
 }
 
 /* Enhanced workout tab container with pill shape */
+/* Enhanced workout tab container */
 .workout-tabs-container {
   border-radius: 9999px;
-  background: linear-gradient(135deg, #1e1e1e, #1a1a1a);
-  border: 1px solid #2d2d2d;
+  background: rgba(36, 36, 36, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 4px;
   margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Desktop-specific enhancements for premium look */
@@ -319,11 +322,12 @@
 }
 
 .workout-tab-button[data-state="active"] {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transform: translateY(0);
+  /* Remove jumpiness */
 }
 
 .workout-tab-button span {

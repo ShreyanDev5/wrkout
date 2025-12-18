@@ -83,7 +83,7 @@ export function DayExercises({
           >
             <div
               className={cn(
-                "relative py-3.5 px-3 flex items-center gap-3 cursor-pointer select-none",
+                "relative py-4 px-4 flex items-center gap-4 cursor-pointer select-none",
               )}
               onClick={() => handleToggleExpand(exercise.id)}
             >
@@ -100,16 +100,16 @@ export function DayExercises({
               <div className="flex-1 min-w-0">
                 <Label
                   className={cn(
-                    "text-base font-medium truncate block leading-tight cursor-pointer",
+                    "text-[0.9375rem] font-semibold truncate block leading-tight cursor-pointer tracking-tight",
                     "text-foreground",
-                    completed && "exercise-label-checked opacity-50"
+                    completed && "exercise-label-checked opacity-40 font-medium"
                   )}
                   title={exercise.name}
                 >
                   {exercise.name}
                 </Label>
                 {exercise.description && (
-                  <p className="text-xs text-muted-foreground truncate mt-0.5 opacity-80" title={exercise.description}>
+                  <p className="text-[0.75rem] text-muted-foreground/70 truncate mt-1 tracking-normal font-medium" title={exercise.description}>
                     {exercise.description}
                   </p>
                 )}
