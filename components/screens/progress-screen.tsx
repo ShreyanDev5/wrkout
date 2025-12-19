@@ -75,7 +75,10 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
         >
           {groupedLogs.length > 0 ? (
             groupedLogs.map(([exerciseName, logs]) => {
-              const dominantType = getExerciseWorkoutType(exerciseName)?.toLowerCase() || 'mixed'
+              const types = getExerciseWorkoutType(exerciseName)
+              const dominantType = types[0] || 'mixed'
+              const displayType = types.join(' / ').toUpperCase()
+
               const dayColor = getWorkoutDayColor(dominantType, colorMode || 'dark')
 
               // Get the most recent log for this exercise to display RIR
@@ -108,7 +111,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2 mb-0">
                             <span className="text-[9px] font-bold uppercase tracking-[0.15em] opacity-90" style={{ color: dayColor }}>
-                              {dominantType}
+                              {displayType}
                             </span>
                             <div className="h-[1px] flex-1 bg-gradient-to-r from-zinc-800 to-transparent opacity-50" />
                           </div>
