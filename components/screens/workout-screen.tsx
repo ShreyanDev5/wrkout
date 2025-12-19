@@ -409,7 +409,7 @@ export function WorkoutScreen({
 
             {/* Progress Header - Minimalist Session Only */}
             {activeProgress > 0 && (
-              <div className="mb-6 px-1">
+              <div className="mb-6 px-1 mx-auto max-w-[95%]">
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
                   <span className="font-medium tracking-tight">Session Progress</span>
                   <span className="font-mono tracking-tighter">{activeProgress}%</span>
