@@ -13,9 +13,10 @@ interface WeightStepperProps {
   step?: number
   className?: string
   dayColor?: string
+  size?: "default" | "large"
 }
 
-export function WeightStepper({ value, onChange, min, max, step = 2.5, className, dayColor }: WeightStepperProps) {
+export function WeightStepper({ value, onChange, min, max, step = 2.5, className, dayColor, size = "default" }: WeightStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -60,19 +61,25 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            size === "large" ? "h-8 w-8" : "h-7 w-7",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Decrease weight"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
         </Button>
 
-        <div className="flex flex-col items-center">
-          <span className="text-lg font-medium tracking-tight" style={{ color: dayColor }}>
+        <div className="flex flex-col items-center justify-center">
+          <span
+            className={cn(
+              "font-medium tracking-tight transition-all",
+              size === "large" ? "text-2xl" : "text-lg"
+            )}
+            style={{ color: dayColor }}
+          >
             {value}
           </span>
-          <span className="text-[10px] uppercase font-semibold text-muted-foreground/70">kg</span>
         </div>
 
         <Button
@@ -82,12 +89,13 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           onClick={increment}
           disabled={value >= max}
           className={cn(
-            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            size === "large" ? "h-8 w-8" : "h-7 w-7",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Increase weight"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
         </Button>
       </div>
     </div>

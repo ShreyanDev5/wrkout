@@ -35,7 +35,7 @@ export function InlineWorkoutLogger({
 
     // Default sets to 3 if not found
     const [weight, setWeight] = useState(lastValues.weight || 20)
-    const [reps, setReps] = useState(lastValues.reps || 8)
+    const [reps, setReps] = useState(lastValues.reps || 10)
     const [sets, setSets] = useState(lastValues.sets || 3)
     const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2 each time
     const [isSaving, setIsSaving] = useState(false)
@@ -108,10 +108,10 @@ export function InlineWorkoutLogger({
         >
             <div className="pt-3 pb-5 px-1 space-y-5">
                 {/* Controls Container - Responsive Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-3">
-                    {/* Weight */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-4">
+                    {/* Weight (Primary) */}
                     <div className="space-y-2">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Weight</span>
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Weight (KG)</span>
                         <WeightStepper
                             value={weight}
                             onChange={setWeight}
@@ -119,10 +119,25 @@ export function InlineWorkoutLogger({
                             max={300}
                             className="w-full"
                             dayColor={dayColor}
+                            size="large"
                         />
                     </div>
 
-                    {/* Sets */}
+                    {/* Reps (Primary) */}
+                    <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Reps</span>
+                        <NumberStepper
+                            value={reps}
+                            onChange={setReps}
+                            min={0}
+                            max={100}
+                            className="w-full"
+                            dayColor={dayColor}
+                            size="large"
+                        />
+                    </div>
+
+                    {/* Sets (Secondary) */}
                     <div className="space-y-2">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Sets</span>
                         <NumberStepper
@@ -135,20 +150,7 @@ export function InlineWorkoutLogger({
                         />
                     </div>
 
-                    {/* Reps */}
-                    <div className="space-y-2">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Reps</span>
-                        <NumberStepper
-                            value={reps}
-                            onChange={setReps}
-                            min={0}
-                            max={100}
-                            className="w-full"
-                            dayColor={dayColor}
-                        />
-                    </div>
-
-                    {/* RIR */}
+                    {/* RIR (Secondary) */}
                     <div className="space-y-2">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">RIR</span>
                         <NumberStepper
@@ -170,15 +172,15 @@ export function InlineWorkoutLogger({
                             variant="ghost"
                             size="sm"
                             onClick={handleRecallLastLog}
-                            className="h-11 px-4 text-xs text-muted-foreground hover:text-foreground hover:bg-zinc-800/50 rounded-xl flex-[1.5] border border-zinc-800/50 mr-auto justify-start transition-all"
+                            className="h-11 px-4 text-xs text-muted-foreground hover:text-foreground hover:bg-zinc-800/50 rounded-xl w-auto max-w-[180px] sm:max-w-[220px] border border-zinc-800/50 mr-auto justify-start transition-all"
                         >
-                            <RotateCcw className="h-3.5 w-3.5 mr-2 opacity-70" />
+                            <RotateCcw className="h-3.5 w-3.5 mr-1.5 opacity-70 shrink-0" />
                             <span className="truncate">
                                 Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps}
                             </span>
                         </Button>
                     ) : (
-                        <div className="flex-[1.5]" /> // Spacer to balance if no log
+                        <div className="flex-1" /> // Unused spacer
                     )}
 
                     {/* Actions - Right Aligned & Symmetrical */}

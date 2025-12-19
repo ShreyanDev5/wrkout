@@ -13,9 +13,10 @@ interface NumberStepperProps {
   step?: number
   className?: string
   dayColor?: string
+  size?: "default" | "large"
 }
 
-export function NumberStepper({ value, onChange, min, max, step = 1, className, dayColor }: NumberStepperProps) {
+export function NumberStepper({ value, onChange, min, max, step = 1, className, dayColor, size = "default" }: NumberStepperProps) {
   const { playSound, isPlaying } = useAudioFeedback({ debounceMs: 100 })
   const lastValueRef = useRef(value)
 
@@ -60,15 +61,22 @@ export function NumberStepper({ value, onChange, min, max, step = 1, className, 
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            size === "large" ? "h-8 w-8" : "h-7 w-7",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Decrease value"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
         </Button>
 
-        <span className="text-lg font-medium tracking-tight" style={{ color: dayColor }}>
+        <span
+          className={cn(
+            "font-medium tracking-tight transition-all",
+            size === "large" ? "text-2xl" : "text-lg"
+          )}
+          style={{ color: dayColor }}
+        >
           {value}
         </span>
 
@@ -79,12 +87,13 @@ export function NumberStepper({ value, onChange, min, max, step = 1, className, 
           onClick={increment}
           disabled={value >= max}
           className={cn(
-            "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            size === "large" ? "h-8 w-8" : "h-7 w-7",
             isPlaying && "bg-accent/20 text-accent"
           )}
           aria-label="Increase value"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
         </Button>
       </div>
     </div>
