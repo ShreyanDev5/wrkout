@@ -97,14 +97,48 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
   if (workoutDays.length === 0 && !allowDeleteAll) {
     throw new Error('Attempted to delete all workout days. This action requires explicit confirmation.');
   }
-  // Find all workout_ids for this user
-  const { data: workouts, error: workoutFetchError } = await supabase.from('workouts').select('id').eq('user_id', userId);
+
+  // 1. Get all workout_ids for this user to scope the deletion check
+  const { data: workouts, error: workoutFetchError } = await supabase
+    .from('workouts')
+    .select('id')
+    .eq('user_id', userId);
+
   if (workoutFetchError) {
     console.error('Failed to fetch workouts for workoutDays upsert:', workoutFetchError);
     throw workoutFetchError;
   }
+
   const userWorkoutIds = (workouts || []).map((w: any) => w.id);
-  // Only upsert (insert/update) workout days
+
+  // 2. Load current workout days from DB (IDs only)
+  // We need to know what exists to know what to delete
+  const { data: currentDays, error: loadError } = await supabase
+    .from('workout_days')
+    .select('id')
+    .in('workout_id', userWorkoutIds);
+
+  if (loadError) {
+    console.error('Failed to load current workout days:', loadError);
+    throw loadError;
+  }
+
+  const currentIds = (currentDays || []).map((d: any) => d.id);
+  const newIds = workoutDays.map(d => d.id);
+
+  // 3. Find days to delete (present in DB, not in newDays)
+  const toDelete = currentIds.filter((id: string) => !newIds.includes(id));
+
+  // 4. Delete only those days
+  if (toDelete.length > 0) {
+    const { error: deleteError } = await supabase.from('workout_days').delete().in('id', toDelete);
+    if (deleteError) {
+      console.error('Failed to delete workout days:', deleteError);
+      throw deleteError;
+    }
+  }
+
+  // 5. Upsert new/updated workout days
   if (workoutDays.length > 0) {
     // Use upsert to avoid duplicate key errors
     const { error: insertError } = await supabase.from('workout_days').upsert(

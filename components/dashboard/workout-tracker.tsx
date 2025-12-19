@@ -99,12 +99,17 @@ export function WorkoutTracker() {
       created_at: now,
       updated_at: now
     }
+
+    // Optimistic Update: Update UI immediately
+    setWorkoutLogs((prev) => [logToSave, ...prev])
+
     try {
       await saveWorkoutLog(supabase, logToSave, user.id)
-      setWorkoutLogs((prev) => [logToSave, ...prev]) // Add new log to the top
-
     } catch (error) {
+      console.error('Error logging workout:', error)
       toast({ title: "Failed to log workout", description: String(error), variant: "destructive" })
+      // Revert optimistic update
+      setWorkoutLogs((prev) => prev.filter(l => l.id !== logToSave.id))
     }
   }
 
@@ -127,6 +132,7 @@ export function WorkoutTracker() {
     } catch (error) {
       console.error('Error deleting log:', error)
       toast({ title: "Failed to delete log", description: String(error), variant: "destructive" })
+      
       // Revert optimism if fail
       if (logToDelete) {
         setWorkoutLogs(prev => [...prev, logToDelete].sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime()))
