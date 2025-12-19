@@ -20,7 +20,7 @@ export interface Database {
           name: string
           created_at: string
           updated_at: string
-          last_sync_time: string | null
+
         }
         Insert: {
           id?: string
@@ -28,7 +28,7 @@ export interface Database {
           name: string
           created_at?: string
           updated_at?: string
-          last_sync_time?: string | null
+
         }
         Update: {
           id?: string
@@ -36,7 +36,7 @@ export interface Database {
           name?: string
           created_at?: string
           updated_at?: string
-          last_sync_time?: string | null
+
         }
       }
       workout_days: {
@@ -78,6 +78,7 @@ export interface Database {
           weight: number
           avg_reps: number
           sets: number
+          rir: number | null
           performed_at: string
           created_at: string
           updated_at: string
@@ -91,6 +92,7 @@ export interface Database {
           weight: number
           avg_reps: number
           sets?: number // Default: 1
+          rir?: number | null
           performed_at?: string
           created_at?: string
           updated_at?: string
@@ -104,6 +106,7 @@ export interface Database {
           weight?: number
           avg_reps?: number
           sets?: number
+          rir?: number | null
           performed_at?: string
           created_at?: string
           updated_at?: string
