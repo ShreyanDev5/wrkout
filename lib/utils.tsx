@@ -60,61 +60,105 @@ interface ExerciseConfig {
 }
 
 // Define the configuration with specific rules first (priority order)
+// Define the configuration with specific rules first (priority order)
+// This list works as a priority cascade. The first matching block determines the type.
 const EXERCISE_CONFIG: ExerciseConfig[] = [
-  // 1. Dual-Type Exercises (Abs/Core often done on Pull or Leg days)
+  // 1. COMPLEX DUAL-TYPE / SPECIFIC OVERRIDES
+  // These must come first to prevent partial matches (e.g., 'hanging leg raises' catching 'leg' -> 'leg')
   {
-    keywords: ['cable crunch', 'hanging leg raises', 'hanging knee raises'],
+    keywords: [
+      'hanging leg raises', 'hanging knee raises', 'hanging raise',
+      'cable crunch', 'woodchopper', 'cable chop', 'medicine ball slam'
+    ],
     types: ['pull', 'leg']
   },
 
-  // 2. Forearms (Mapped to Leg days per user requirement)
+  // 2. FOREARMS (User Preference: Mapped to Leg)
   {
     keywords: [
-      'wrist curl', 'wrist extension', 'farmer', 'forearm',
-      'reverse curl' // Often hits forearms significantly
+      'wrist curl', 'wrist extension', 'forearm', 'farmer', 'plate pinch',
+      'grip', 'reverse curl', 'zottman'
     ],
     types: ['leg']
   },
 
-  // 3. Special Context Overrides (Ambiguous terms)
+  // 3. SPECIFIC PULL OVERRIDES (Correcting potential Push/Leg misclassifications)
   {
-    keywords: ['deadlift', 'back squat', 'leg press', 'leg curl', 'calf'],
-    types: ['leg']
-  },
-  {
-    keywords: ['barbell row', 'shrug', 'crunch', 'sit up', 'leg raise'],
+    keywords: [
+      'face pull', 'rear delt', 'reverse fly', 'band pull', 'pull apart',
+      'back extension', 'hyperextension', 'rack pull',
+      'shrug', 'upright row', 'clean', 'snatch', 'high pull' // Olympic/Traps often Pull
+    ],
     types: ['pull']
   },
+  // Note: Deadlift is tricky. User had it as LEG. It is handled in LEG block below.
+
+  // 4. SPECIFIC PUSH OVERRIDES (Ambiguous names)
   {
-    keywords: ['cable fly', 'lateral raise', 'front raise', 'chest fly', 'pec fly', 'flyes'],
+    keywords: [
+      'close grip bench', 'jm press', 'tate press', 'spoto press', 'floor press',
+      'arnold press', 'landmine press', 'viking press', 'svend press',
+      'muscle up' // Push/Pull, but often push dominant at lock out? or Pull. Let's leave mixed if generic, but usually 'Push' day skill.
+    ],
     types: ['push']
   },
 
-  // 4. Standard Leg Exercises
+  // 5. SPECIFIC LEG OVERRIDES
   {
     keywords: [
-      'squat', 'leg', 'calf', 'thigh', 'hamstring', 'glute', 'quad', 'lunge',
-      'hip thrust', 'step up', 'step down', 'bulgarian', 'abduction', 'adduction',
-      'kickback', 'rdl', 'stiff leg', 'good morning'
+      'leg press', 'leg curl', 'leg extension', 'calf press',
+      'hack squat', 'goblet squat', 'sissy squat', 'safety bar', 'box squat',
+      'split squat', 'bulgarian', 'nordic', 'ghr', 'glute ham',
+      'hip thrust', 'hip abduction', 'hip adduction', 'bridge',
+      'deadlift', 'romanian', 'rdl', 'stiff leg', 'good morning', 'sumo', 'trap bar', 'hex bar'
     ],
     types: ['leg']
   },
 
-  // 5. Standard Push Exercises (Chest, Shoulders, Triceps)
+  // 6. CORE / ABS (Mapped to PULL based on user precedent calling 'crunch' -> 'pull')
   {
     keywords: [
-      'bench', 'press', 'push', 'chest', 'shoulder', 'tricep', 'incline', 'decline',
-      'dip', 'overhead', 'ohp', 'lateral', 'front raise', 'skull', 'extension', 'pushdown',
-      'arnold', 'military', 'pec deck', 'crossover'
+      'crunch', 'sit up', 'situp', 'plank', 'russian twist', 'leg raise', 'ab wheel',
+      'rollout', 'toes to bar', 'v-up', 'hollow', 'dragon flag', 'flutter kick',
+      'scissor kick', 'cocoon', 'vacuum', 'oblique', 'core'
+    ],
+    types: ['pull']
+  },
+
+  // 7. CARDIO (Mapped to Generic/Cardio - will show as muted/gray unless colored)
+  {
+    keywords: [
+      'run', 'jog', 'treadmill', 'elliptical', 'bike', 'cycle', 'cycling',
+      'swim', 'rowing', 'ski erg', 'assault bike', 'jump rope', 'skipping', 'burpee'
+    ],
+    types: ['cardio']
+  },
+
+  // 8. BROAD MATCH: LEGS
+  {
+    keywords: [
+      'squat', 'leg', 'calf', 'calves', 'thigh', 'quad', 'hamstring', 'glute',
+      'lunge', 'step up', 'step down', 'jump', 'plyo', 'tibialis'
+    ],
+    types: ['leg']
+  },
+
+  // 9. BROAD MATCH: PUSH (Chest, Shoulders, Triceps)
+  {
+    keywords: [
+      'bench', 'press', 'push', 'chest', 'pec', 'fly', 'flyes', 'crossover',
+      'shoulder', 'deltoid', 'delt', 'lateral', 'front raise',
+      'tricep', 'skull', 'extension', 'dip', 'kickback'
+      // 'extension' is risky but 'leg extension' & 'back extension' are caught above.
     ],
     types: ['push']
   },
 
-  // 6. Standard Pull Exercises (Back, Biceps, Rear Delts, Traps)
+  // 10. BROAD MATCH: PULL (Back, Biceps)
   {
     keywords: [
-      'row', 'pull', 'curl', 'back', 'bicep', 'trap', 'lat', 'chin',
-      'face pull', 'rear delt', 'rack pull', 't-bar', 't bar'
+      'row', 'pull', 'lat', 'back', 'trap', 'rhomboid', 'erector',
+      'chin', 'bicep', 'curl' // 'leg curl' caught above
     ],
     types: ['pull']
   }
