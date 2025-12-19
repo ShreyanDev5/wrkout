@@ -75,9 +75,9 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: "method",
-    title: "Progressive Overload",
-    subtitle: "The Method",
-    description: "Log faster than ever with our quick inline system—enter weights, sets, and reps seamlessly in one flow.",
+    title: "Smart Average Logging",
+    subtitle: "The Precision",
+    description: "Logged reps represent your average across the entire workout. This ensures we track distinct performance, not just peak sets.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
     content: (
@@ -118,38 +118,107 @@ const onboardingSteps: OnboardingStep[] = [
     )
   },
   {
+    id: "rir",
+    title: "Reps in Reserve",
+    subtitle: "The Intensity",
+    description: "RIR tracks how many reps you had left in the tank. 0 means you hit failure, while 2 means you had 2 reps left.",
+    icon: Zap,
+    color: "from-amber-400 to-orange-500",
+    content: (
+      <div className="pt-2 max-w-[300px] mx-auto">
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-4 space-y-4">
+          <div className="space-y-1">
+            <h4 className="text-xs font-bold text-white leading-tight">The RIR Progression Rule</h4>
+            <p className="text-[10px] text-zinc-400 font-medium">Your Weekly Decision Maker</p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { rir: "3+", action: "Increase weight", desc: "Too easy", color: "text-blue-400", dot: "bg-blue-500" },
+              { rir: "1-2", action: "Add 1 rep", desc: "Optimal zone", color: "text-emerald-400", dot: "bg-emerald-500" },
+              { rir: "0", action: "Keep same weight", desc: "Failure hit", color: "text-red-400", dot: "bg-red-500" },
+            ].map((rule, i) => (
+              <div key={i} className="flex gap-3">
+                <div className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${rule.dot}`} />
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-zinc-300">RIR {rule.rir}</span>
+                    <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
+                    <span className={`text-[10px] font-bold ${rule.color}`}>{rule.action}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-2 border-t border-white/5">
+            <p className="text-[10px] text-zinc-500 italic leading-snug">
+              "How many more good reps could I have done?"
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
     id: "insight",
-    title: "Visual Clarity",
-    subtitle: "The Reward",
-    description: "For utmost simplicity, we display only your last 7 sessions in a clean, elegant list showing dates and completed exercises.",
+    title: "Daily Focus",
+    subtitle: "The Momentum",
+    description: "Your Progress page displays detailed insights for today's workout only, keeping you focused on the session at hand.",
     icon: List,
     color: "from-purple-500 to-indigo-600",
     content: (
-      <div className="pt-3 max-w-[280px] mx-auto relative cursor-default select-none space-y-2">
-        {[
-          { date: "Today", type: "Push Day", count: 6, color: "bg-amber-400" },
-          { date: "Yesterday", type: "Pull Day", count: 7, color: "bg-emerald-400" },
-          { date: "Dec 16", type: "Leg Day", count: 5, color: "bg-red-400" }
-        ].map((session, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.15 + 0.2 }}
-            className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/40 border border-white/5"
-          >
-            <div className="flex items-center gap-3">
-              <div className={`h-8 w-1 rounded-full ${session.color}`} />
-              <div>
-                <div className="text-[10px] font-bold text-foreground">{session.date}</div>
-                <div className="text-[9px] text-muted-foreground font-medium">{session.type}</div>
+      <div className="pt-2 max-w-[280px] mx-auto relative cursor-default select-none">
+
+        {/* Header Mock */}
+        <div className="flex items-center gap-2 mb-2 px-1">
+          <div className="h-6 w-6 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-white">Today's Focus</div>
+            <div className="text-[8px] font-bold text-zinc-500 tracking-wider">DEC 19, 2025</div>
+          </div>
+        </div>
+
+        {/* Cards Mock */}
+        <div className="space-y-1.5">
+          {[
+            { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", rir: "2", bar: "bg-amber-500", text: "text-amber-500" }
+          ].map((card, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="relative overflow-hidden rounded-lg bg-zinc-900 border border-white/5 p-2 pl-3"
+            >
+              {/* Colored Bar */}
+              <div className={`absolute left-0 top-0 bottom-0 w-1 ${card.bar}`} />
+
+              <div className="flex flex-col gap-1.5">
+                <div>
+                  <span className={`text-[7px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
+                  <h4 className="text-[11px] font-bold text-white truncate">{card.name}</h4>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1">
+                  {[
+                    { l: "WEIGHT", v: card.w },
+                    { l: "REPS", v: card.r },
+                    { l: "SETS", v: card.s },
+                    { l: "RIR", v: card.rir }
+                  ].map((stat, j) => (
+                    <div key={j} className="bg-zinc-950 rounded py-0.5 px-0.5 flex flex-col items-center">
+                      <span className="text-[6px] text-zinc-600 font-bold uppercase">{stat.l}</span>
+                      <span className="text-[9px] font-bold text-zinc-300">{stat.v}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="px-2 py-1 rounded-md bg-white/5 border border-white/5 text-[9px] font-semibold text-zinc-300">
-              {session.count} Exercises
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
     )
   },
@@ -159,7 +228,7 @@ const onboardingSteps: OnboardingStep[] = [
     subtitle: "Ready",
     description: "Customize your routine in Settings, or dive straight into your first Push workflow.",
     icon: Sparkles,
-    color: "from-amber-400 to-orange-500",
+    color: "from-emerald-500 to-green-600",
     iconColor: "text-white",
     content: (
       <div className="flex flex-col items-center justify-center pt-8 pb-4">
