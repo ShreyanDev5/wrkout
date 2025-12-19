@@ -132,7 +132,7 @@ export function WorkoutTracker() {
     } catch (error) {
       console.error('Error deleting log:', error)
       toast({ title: "Failed to delete log", description: String(error), variant: "destructive" })
-      
+
       // Revert optimism if fail
       if (logToDelete) {
         setWorkoutLogs(prev => [...prev, logToDelete].sort((a, b) => new Date(b.performed_at).getTime() - new Date(a.performed_at).getTime()))
@@ -199,7 +199,10 @@ export function WorkoutTracker() {
 
           <TabsContent value="progress" className="mt-0 p-0" id="progress-tab">
             <ErrorBoundary>
-              <ProgressScreen logs={workoutLogs} />
+              <ProgressScreen
+                logs={workoutLogs}
+                workoutDays={appData.workoutDays}
+              />
             </ErrorBoundary>
           </TabsContent>
 

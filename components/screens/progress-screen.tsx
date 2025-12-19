@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import type { WorkoutLog } from "@/lib/types"
+import type { WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { motion } from "framer-motion"
@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils"
 
 interface ProgressScreenProps {
   logs: WorkoutLog[]
+  workoutDays?: WorkoutDay[]
 }
 
-export function ProgressScreen({ logs }: ProgressScreenProps) {
+export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
   const { colorMode } = useTheme()
   const today = getLocalDateYYYYMMDD()
 
@@ -22,6 +23,19 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
     if (!logs || logs.length === 0) return []
     return logs.filter(log => log.performed_at === today)
   }, [logs, today])
+
+  // Map workout_day_id to day_id (e.g., "UUID" -> "leg")
+  const dayIdMap = useMemo(() => {
+    const map = new Map<string, string>()
+    if (workoutDays) {
+      workoutDays.forEach(day => {
+        if (day.id && day.day_id) {
+          map.set(day.id, day.day_id.toLowerCase())
+        }
+      })
+    }
+    return map
+  }, [workoutDays])
 
   // Group logs by exercise to show aggregated stats if multiple sets are logged
   const groupedLogs = useMemo(() => {
@@ -79,10 +93,19 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
               const dominantType = types[0] || 'mixed'
               const displayType = types.join(' / ').toUpperCase()
 
-              const dayColor = getWorkoutDayColor(dominantType, colorMode || 'dark')
-
-              // Get the most recent log for this exercise to display RIR
+              // Detect the implicit day color from the session context
+              // Use the latest log to determine context (usually all logs for one exercise are in one session)
               const latestLog = logs[logs.length - 1]
+
+              let effectiveDayType = dominantType
+              if (latestLog?.workout_day_id) {
+                const sessionDayType = dayIdMap.get(latestLog.workout_day_id)
+                if (sessionDayType) {
+                  effectiveDayType = sessionDayType
+                }
+              }
+
+              const dayColor = getWorkoutDayColor(effectiveDayType, colorMode || 'dark')
               const sets = latestLog.sets || logs.length
               const weight = latestLog.weight
               const reps = latestLog.avg_reps
@@ -177,4 +200,3 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
     </Card>
   )
 }
-
