@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 export async function POST(request: NextRequest) {
   try {
     const { username, recoveryEmail } = await request.json();
-    
+
     if (!username || !recoveryEmail) {
       return NextResponse.json(
         { error: 'Username and recovery email are required' },
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Construct the pseudo-email
     const pseudoEmail = `${username}@wrkout.app`;
-    
+
     // Create a service role client for admin operations
     const { createClient } = await import('@supabase/supabase-js');
     const serviceRoleSupabase = createClient(
@@ -42,14 +42,14 @@ export async function POST(request: NextRequest) {
 
     // Use the same method as frontend: try to sign in with dummy password
     let user = null;
-    
+
     try {
       // Try to sign in with dummy password to check if user exists
       const { data: { user: foundUser }, error: signInError } = await serviceRoleSupabase.auth.signInWithPassword({
         email: pseudoEmail,
         password: 'dummy-password-to-check-existence'
       });
-      
+
       if (foundUser) {
         user = foundUser;
       } else if (signInError) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         if (signInError.message.includes('Invalid login credentials')) {
           // We need to get the user details, so let's use listUsers as fallback
           const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
-          
+
           if (listError) {
             console.error('❌ Error fetching users:', listError);
             return NextResponse.json(
@@ -65,19 +65,19 @@ export async function POST(request: NextRequest) {
               { status: 500 }
             );
           }
-          
+
           user = users?.find(u => u.email === pseudoEmail);
         } else if (signInError.message.includes('User not found')) {
-          // console.log('❌ User not found'); // Removed
+
         } else {
-          // console.log('⚠️ Unexpected signIn error:', signInError.message); // Removed
+
         }
       }
     } catch (err) {
-      // console.log('⚠️ SignIn method failed, using listUsers fallback:', err); // Removed
+
       // Fallback to listUsers
       const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
-      
+
       if (listError) {
         console.error('❌ Error fetching users:', listError);
         return NextResponse.json(
@@ -85,10 +85,10 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-      
+
       user = users?.find(u => u.email === pseudoEmail);
     }
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'No account found with this username' },
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // Send password reset email to the recovery email
     const redirectUrl = `${request.nextUrl.origin}/auth/reset-password`;
-    
+
     const { error: resetError } = await serviceRoleSupabase.auth.admin.generateLink({
       type: 'recovery',
       email: recoveryEmail,
