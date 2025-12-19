@@ -55,12 +55,12 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
 
         {/* Header - Today's Focus */}
         <div className="flex items-center gap-4 mb-2">
-          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl">
-            <TrendingUp className="h-6 w-6 text-[#4caf50]" strokeWidth={2.5} />
+          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl">
+            <TrendingUp className="h-5 w-5 text-[#4caf50]" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-2xl font-bold text-foreground tracking-tight leading-none mb-1">Today's Focus</h2>
-            <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest">
+            <h2 className="text-xl font-bold text-foreground tracking-tight leading-none mb-1">Today's Focus</h2>
+            <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
               {formatDate(new Date().toISOString())}
             </p>
           </div>
@@ -165,7 +165,7 @@ export function ProgressScreen({ logs }: ProgressScreenProps) {
                 <Dumbbell className="h-6 w-6 text-muted-foreground opacity-30" />
               </div>
               <p className="text-muted-foreground font-medium text-xs leading-relaxed max-w-[180px] mx-auto opacity-50">
-                Log some exercises today to see your progress bloom.
+                Log a workout today to build your progress momentum!
               </p>
             </div>
           )}

@@ -628,11 +628,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           <Settings className="h-5 w-5" strokeWidth={2.5} style={{ color: '#EA4335' }} />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+          <h1 className="text-xl font-bold text-foreground tracking-tight">
             Settings
           </h1>
-          <p className="text-xs text-muted-foreground font-medium">
-            Manage routines & preferences
+          <p className="text-[10px] text-muted-foreground font-medium">
+            Manage routines
           </p>
         </div>
       </div>
