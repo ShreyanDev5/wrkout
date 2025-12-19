@@ -21,7 +21,11 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
   // Process logs for TODAY ONLY
   const todayLogs = useMemo(() => {
     if (!logs || logs.length === 0) return []
-    return logs.filter(log => log.performed_at === today)
+    // Filter for today's logs and sort by creation time (Oldest -> Newest)
+    // This ensures workouts appear in the strict order they were performed/logged
+    return logs
+      .filter(log => log.performed_at === today)
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))
   }, [logs, today])
 
   // Map workout_day_id to day_id (e.g., "UUID" -> "leg")
