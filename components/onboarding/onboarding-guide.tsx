@@ -22,6 +22,7 @@ import {
   Zap,
 } from "lucide-react"
 import { LucideProps } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface OnboardingStep {
   id: string
@@ -134,9 +135,9 @@ const onboardingSteps: OnboardingStep[] = [
 
           <div className="space-y-3">
             {[
-              { rir: "3+", action: "Increase weight", desc: "Too easy", color: "text-blue-400", dot: "bg-blue-500" },
-              { rir: "1-2", action: "Add 1 rep", desc: "Optimal zone", color: "text-emerald-400", dot: "bg-emerald-500" },
-              { rir: "0", action: "Keep same weight", desc: "Failure hit", color: "text-red-400", dot: "bg-red-500" },
+              { rir: "3+", action: "Increase weight", desc: "Too easy", color: "text-emerald-500", dot: "bg-emerald-500" },
+              { rir: "1-2", action: "Add 1 rep", desc: "Optimal zone", color: "text-amber-500", dot: "bg-amber-500" },
+              { rir: "0", action: "Keep same weight", desc: "Failure hit", color: "text-red-500", dot: "bg-red-500" },
             ].map((rule, i) => (
               <div key={i} className="flex gap-3">
                 <div className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${rule.dot}`} />
@@ -168,23 +169,23 @@ const onboardingSteps: OnboardingStep[] = [
     icon: List,
     color: "from-purple-500 to-indigo-600",
     content: (
-      <div className="pt-2 max-w-[280px] mx-auto relative cursor-default select-none">
+      <div className="pt-2 max-w-[300px] mx-auto relative cursor-default select-none">
 
         {/* Header Mock */}
         <div className="flex items-center gap-2 mb-2 px-1">
-          <div className="h-6 w-6 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+          <div className="h-8 w-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
           </div>
           <div>
-            <div className="text-xs font-bold text-white">Today's Focus</div>
-            <div className="text-[8px] font-bold text-zinc-500 tracking-wider">DEC 19, 2025</div>
+            <div className="text-sm font-bold text-white">Today's Focus</div>
+            <div className="text-[10px] font-bold text-zinc-500 tracking-wider">DEC 19, 2025</div>
           </div>
         </div>
 
         {/* Cards Mock */}
         <div className="space-y-1.5">
           {[
-            { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", rir: "2", bar: "bg-amber-500", text: "text-amber-500" }
+            { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", rir: "3", bar: "bg-amber-500", text: "text-amber-500" }
           ].map((card, i) => (
             <motion.div
               key={i}
@@ -198,8 +199,8 @@ const onboardingSteps: OnboardingStep[] = [
 
               <div className="flex flex-col gap-1.5">
                 <div>
-                  <span className={`text-[7px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
-                  <h4 className="text-[11px] font-bold text-white truncate">{card.name}</h4>
+                  <span className={`text-[8px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
+                  <h4 className="text-[13px] font-bold text-white truncate">{card.name}</h4>
                 </div>
 
                 <div className="grid grid-cols-4 gap-1">
@@ -210,8 +211,8 @@ const onboardingSteps: OnboardingStep[] = [
                     { l: "RIR", v: card.rir }
                   ].map((stat, j) => (
                     <div key={j} className="bg-zinc-950 rounded py-0.5 px-0.5 flex flex-col items-center">
-                      <span className="text-[6px] text-zinc-600 font-bold uppercase">{stat.l}</span>
-                      <span className="text-[9px] font-bold text-zinc-300">{stat.v}</span>
+                      <span className="text-[8px] text-zinc-600 font-bold uppercase">{stat.l}</span>
+                      <span className={cn("text-[11px] font-bold text-zinc-300", stat.l === "RIR" && "text-emerald-500")}>{stat.v}</span>
                     </div>
                   ))}
                 </div>

@@ -132,17 +132,17 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       style={{ backgroundColor: dayColor }}
                     />
 
-                    <div className="flex flex-col gap-2 pl-2">
+                  <div className="flex flex-col gap-2 pl-2">
                       {/* Exercise Header - Compact */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2 mb-0">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.15em] opacity-90" style={{ color: dayColor }}>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-90" style={{ color: dayColor }}>
                               {displayType}
                             </span>
                             <div className="h-[1px] flex-1 bg-gradient-to-r from-zinc-800 to-transparent opacity-50" />
                           </div>
-                          <h3 className="text-sm font-bold text-zinc-100 leading-none tracking-tight py-0.5">
+                          <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">
                             {exerciseName}
                           </h3>
                         </div>
@@ -152,23 +152,23 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       <div className="grid grid-cols-4 gap-1.5">
                         {/* Weight */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
                           <div className="flex items-baseline gap-0.5">
-                            <span className="text-sm font-bold text-zinc-100">{weight}</span>
+                            <span className="text-[15px] font-bold text-zinc-100">{weight}</span>
                             <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
                           </div>
                         </div>
 
                         {/* Reps */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
-                          <span className="text-sm font-bold text-zinc-100">{reps}</span>
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
+                          <span className="text-[15px] font-bold text-zinc-100">{reps}</span>
                         </div>
 
                         {/* Sets */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
-                          <span className="text-sm font-bold text-zinc-100">{sets}</span>
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
+                          <span className="text-[15px] font-bold text-zinc-100">{sets}</span>
                         </div>
 
                         {/* RIR */}
@@ -178,8 +178,15 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                             rir !== null && rir !== undefined ? "bg-zinc-950/60 border-zinc-800/50" : "bg-transparent border-transparent opacity-20"
                           )}
                         >
-                          <span className="text-[9px] uppercase font-bold text-muted-foreground/60 tracking-wider">RIR</span>
-                          <span className="text-sm font-bold text-zinc-100">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">RIR</span>
+                          <span className={cn(
+                            "text-[15px] font-bold",
+                            rir !== null && rir !== undefined ? (
+                              rir === 0 ? "text-red-500/90" : 
+                              rir <= 2 ? "text-amber-500/90" : 
+                              "text-emerald-500/90"
+                            ) : "text-zinc-100"
+                          )}>
                             {rir !== null && rir !== undefined ? rir : '—'}
                           </span>
                         </div>
