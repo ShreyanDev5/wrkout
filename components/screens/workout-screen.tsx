@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CircularProgress } from "@/components/ui/circular-progress"
@@ -13,6 +13,7 @@ import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon, getLocalDateYYYYMMDD } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
+import { triggerWorkoutCompletionConfetti } from "@/lib/confetti"
 import { Button } from "@/components/ui/button"
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -67,6 +68,10 @@ export function WorkoutScreen({
   const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
   const { colorMode } = useTheme()
   const supabase = createClientComponentClient()
+
+  // Track if we have already celebrated this session to prevent re-triggering on remounts/refreshes
+  // unless the user intentionally completes it again in this session view.
+  const hasCelebratedRef = useRef(false)
 
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
@@ -186,6 +191,15 @@ export function WorkoutScreen({
     // Smooth progress calculation
     const progress = Math.round((completed / total) * 100)
     setActiveProgress(progress)
+
+    // Trigger celebration if progress hits 100% and we haven't celebrated yet for this specific instance
+    if (progress === 100 && !hasCelebratedRef.current) {
+      triggerWorkoutCompletionConfetti()
+      hasCelebratedRef.current = true
+    } else if (progress < 100) {
+      // Reset celebration flag if they untick something, so they can celebrate again if they complete it again.
+      hasCelebratedRef.current = false
+    }
   }, [selectedDay, currentWorkoutDays, completedExerciseNames])
 
 
@@ -213,6 +227,27 @@ export function WorkoutScreen({
     // 2. Check Flow (Mark as Done - Create Placeholder)
     // Only insert if not already present (prevent overwriting if race condition)
     if (completedLogs.has(exerciseName)) return
+
+    // OPTIMISTIC CELEBRATION TRIGGER
+    // Check if this new check makes the session 100% complete
+    const currentDayData = currentWorkoutDays.find(d => d.day_id === selectedDay)
+    if (currentDayData && currentDayData.exercises.length > 0) {
+      const totalExercises = currentDayData.exercises.length
+
+      // Calculate how many of *today's* exercises are already finished
+      // We explicitly filter to match the progress calculation logic exactly
+      const currentCompletedCount = currentDayData.exercises.filter(ex =>
+        completedExerciseNames.has(ex.name)
+      ).length
+
+      // If we are adding one (which we are), will it be full?
+      if (currentCompletedCount + 1 === totalExercises) {
+        if (!hasCelebratedRef.current) {
+          triggerWorkoutCompletionConfetti()
+          hasCelebratedRef.current = true
+        }
+      }
+    }
 
 
     try {
