@@ -44,8 +44,3 @@ export interface AppData {
   lastSyncTime: string | null
 }
 
-export interface WeeklyWorkoutData {
-  exerciseName: string
-  weeks: Record<string, { reps: number; weight: number; date: string } | null>
-  previousWorkout: { reps: number; weight: number; date: string } | null
-}

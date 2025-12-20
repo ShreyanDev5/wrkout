@@ -74,11 +74,14 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           <span
             className={cn(
               "font-medium tracking-tight transition-all",
-              size === "large" ? "text-2xl" : "text-lg"
-            )}
+              size === "large"
+                ? (value === 0 ? "text-xl tracking-normal" : "text-2xl")
+                : (value === 0 ? "text-base tracking-normal" : "text-lg")
+            )
+            }
             style={{ color: dayColor }}
           >
-            {value}
+            {value === 0 ? "B.W." : value}
           </span>
         </div>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { WeightStepper } from "@/components/ui/weight-stepper"
 import { NumberStepper } from "@/components/ui/number-stepper"
@@ -33,8 +33,22 @@ export function InlineWorkoutLogger({
     const lastLog = getLastLog(exercise.id)
     const { trigger: haptic } = useHaptics()
 
+    // List of common bodyweight exercises that should default to 0kg (B.W.) if no history exists
+    const isBodyweightExercise = useMemo(() => {
+        const name = exercise.name.toLowerCase()
+        const bwKeywords = [
+            'pull up', 'chin up', 'dip', 'hanging leg raise', 'push up',
+            'sit up', 'crunch', 'plank', 'muscle up', 'burpee',
+            'lunge', 'squat', 'glute bridge', 'air squat', 'jump squat',
+            'calf raise', 'step up', 'mountain climber', 'box jump', 'jumping jack',
+            'hollow body', 'v-up', 'flutter kick', 'russian twist', 'superman',
+            'inverted row', 'pistol squat', 'nordic', 'bicycle crunch', 'toes to bar'
+        ]
+        return bwKeywords.some(k => name.includes(k))
+    }, [exercise.name])
+
     // Default sets to 3 if not found
-    const [weight, setWeight] = useState(lastValues.weight || 20)
+    const [weight, setWeight] = useState(lastValues.weight ?? (isBodyweightExercise ? 0 : 20))
     const [reps, setReps] = useState(lastValues.reps || 10)
     const [sets, setSets] = useState(lastValues.sets || 3)
     const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2 each time
