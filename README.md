@@ -183,12 +183,14 @@ interface WorkoutLog {
 ## 🛠️ Key Components
 
 ### Onboarding Guide
-A 6-step interactive carousel introducing new users to:
-1. App philosophy and PPL methodology
-2. Progressive overload concepts
-3. Smart logging workflow
-4. Progress visualization features
-5. Getting started tips
+A 7-step interactive carousel introducing new users to:
+1. PPL (Push/Pull/Legs) split methodology
+2. Smart logging workflow and flexibility
+3. Progressive overload and weekly volume concepts
+4. Training blueprint with experience-level guidance
+5. RIR (Reps in Reserve) and safety guidelines
+6. Daily progress visualization
+7. Getting started with personalization disclaimer
 
 ### Modal System
 Polished modal dialogs for:

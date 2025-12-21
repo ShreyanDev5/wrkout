@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { useAuth } from "@/lib/auth"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"
 import {
   TrendingUp,
   Target,
@@ -20,6 +20,8 @@ import {
   Dumbbell,
   List,
   Zap,
+  AlertTriangle,
+  Users,
 } from "lucide-react"
 import { LucideProps } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -52,7 +54,7 @@ const onboardingSteps: OnboardingStep[] = [
       <div className="space-y-2.5 pt-2 max-w-[260px] mx-auto">
         {[
           { label: "PUSH", desc: "Chest • Shoulders • Triceps", color: "from-amber-400 to-orange-500", icon: Dumbbell },
-          { label: "PULL", desc: "Back • Biceps • Rear Delt", color: "from-emerald-400 to-teal-500", icon: Target },
+          { label: "PULL", desc: "Back • Biceps • Traps", color: "from-emerald-400 to-teal-500", icon: Target },
           { label: "LEGS", desc: "Quads • Hamstrings • Calves", color: "from-red-400 to-rose-500", icon: TrendingUp },
         ].map((item, i) => (
           <motion.div
@@ -67,7 +69,7 @@ const onboardingSteps: OnboardingStep[] = [
             </div>
             <div>
               <h4 className="font-bold text-xs tracking-wide text-foreground">{item.label}</h4>
-              <p className="text-[9px] uppercase tracking-wider font-medium text-muted-foreground">{item.desc}</p>
+              <p className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground">{item.desc}</p>
             </div>
           </motion.div>
         ))}
@@ -78,7 +80,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "method",
     title: "The Golden Rule",
     subtitle: "Smart Logging",
-    description: "This app is uniquely designed to log only your final set. This captures your true failure point and averages performance across all sets.",
+    description: "By default, log your final working set. You can also enter a rough average of your sets based on your judgment.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
     content: (
@@ -90,24 +92,24 @@ const onboardingSteps: OnboardingStep[] = [
           <div className="flex justify-center mb-4">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
               <Zap className="h-3 w-3 text-emerald-400" />
-              <span className="text-[10px] font-bold text-emerald-200 uppercase tracking-wide">Last Set Only</span>
+              <span className="text-[10px] font-bold text-emerald-200 uppercase tracking-wide">Quick Entry</span>
             </div>
           </div>
 
           {/* Inline Input Visualization */}
           <div className="flex items-center gap-2 mb-4">
             <div className="flex-1 bg-zinc-900/80 rounded-lg p-2 border border-white/5 flex flex-col items-center">
-              <span className="text-[9px] text-muted-foreground uppercase">Weight</span>
+              <span className="text-[10px] text-muted-foreground uppercase">Weight</span>
               <span className="text-sm font-bold text-emerald-400">52.5</span>
             </div>
             <div className="flex-1 bg-zinc-900/80 rounded-lg p-2 border border-white/5 flex flex-col items-center">
-              <span className="text-[9px] text-muted-foreground uppercase">Reps</span>
+              <span className="text-[10px] text-muted-foreground uppercase">Reps</span>
               <span className="text-sm font-bold text-white">8</span>
             </div>
           </div>
 
-          <p className="text-[10px] text-center text-zinc-400 leading-snug">
-            "If my last set was 52.5kg for 8 reps, that's what I log."
+          <p className="text-[11px] text-center text-zinc-400 leading-snug">
+            Example: If your sets were 9, 9, 8 reps — log 8 or 9 based on feel.
           </p>
         </div>
       </div>
@@ -126,7 +128,7 @@ const onboardingSteps: OnboardingStep[] = [
           {
             title: "Progressive Overload",
             meta: "Get Stronger",
-            desc: "Add weight or reps every single month.",
+            desc: "Aim to add weight or reps over time as your body adapts.",
             icon: TrendingUp,
             color: "text-emerald-400",
             bg: "bg-emerald-500/10",
@@ -134,8 +136,8 @@ const onboardingSteps: OnboardingStep[] = [
           },
           {
             title: "Weekly Volume",
-            meta: "12-15 Hard Sets",
-            desc: "Per muscle group, per week. The growth sweet spot.",
+            meta: "Working Sets",
+            desc: "10-20 working sets (not warm-ups) per muscle/week. Start lower, build up.",
             icon: BarChart3,
             color: "text-blue-400",
             bg: "bg-blue-500/10",
@@ -155,9 +157,9 @@ const onboardingSteps: OnboardingStep[] = [
             <div>
               <div className="flex items-center gap-2 mb-0.5">
                 <h4 className="text-xs font-bold text-white">{item.title}</h4>
-                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/30 ${item.color} uppercase`}>{item.meta}</span>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/30 ${item.color} uppercase`}>{item.meta}</span>
               </div>
-              <p className="text-[10px] text-zinc-400 leading-snug">{item.desc}</p>
+              <p className="text-[11px] text-zinc-400 leading-snug">{item.desc}</p>
             </div>
           </motion.div>
         ))}
@@ -168,57 +170,90 @@ const onboardingSteps: OnboardingStep[] = [
     id: "blueprint",
     title: "The Blueprint",
     subtitle: "Rules of Engagement",
-    description: "Follow these volume and progression standards to ensure consistent gains.",
+    description: "General guidelines for intermediate trainers. Adjust based on your experience level.",
     icon: List,
     color: "from-violet-500 to-fuchsia-500",
     content: (
-      <div className="pt-2 max-w-[300px] mx-auto">
-        <div className="bg-zinc-900/50 rounded-xl border border-white/5 overflow-hidden">
+      <div className="pt-2 max-w-[300px] mx-auto space-y-3">
 
-          {/* Monthly Goal */}
-          <div className="p-3 bg-white/5 border-b border-white/5">
-            <div className="flex items-center gap-2 mb-1">
-              <Calendar className="h-3 w-3 text-fuchsia-400" />
-              <h4 className="text-[10px] font-bold text-fuchsia-100 uppercase tracking-wide">Monthly Goal</h4>
+        {/* Progression Goal Card */}
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3.5">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-6 w-6 rounded-lg bg-fuchsia-500/20 flex items-center justify-center">
+              <Calendar className="h-3.5 w-3.5 text-fuchsia-400" />
             </div>
-            <p className="text-[11px] text-zinc-300">
-              Add <span className="text-white font-bold">+2-5kg</span> OR <span className="text-white font-bold">+1-2 reps</span>
-            </p>
+            <h4 className="text-[11px] font-bold text-fuchsia-100 uppercase tracking-wide">Progression Goal</h4>
           </div>
-
-          {/* Rep Ranges Grid */}
-          <div className="p-3 grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <span className="text-[9px] text-zinc-500 uppercase font-bold">Compounds</span>
-              <div className="text-lg font-bold text-white">6-10 <span className="text-[10px] font-medium text-zinc-400">reps</span></div>
-              <p className="text-[9px] text-zinc-500 leading-tight">Chest, Back, Legs</p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-[9px] text-zinc-500 uppercase font-bold">Isolation</span>
-              <div className="text-lg font-bold text-white">10-15 <span className="text-[10px] font-medium text-zinc-400">reps</span></div>
-              <p className="text-[9px] text-zinc-500 leading-tight">Arms, Delts, Abs</p>
-            </div>
-          </div>
-
-          {/* Volume Footer */}
-          <div className="px-3 py-2 bg-black/20 border-t border-white/5 flex justify-between items-center">
-            <span className="text-[9px] text-zinc-400">Volume Ramp</span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono text-zinc-500">2 sets</span>
-              <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
-              <span className="text-[10px] font-bold text-white">3-5 sets</span>
-            </div>
-          </div>
-
+          <p className="text-[12px] text-zinc-300 leading-relaxed">
+            Aim for <span className="text-white font-bold">+1-2.5kg</span> OR <span className="text-white font-bold">+1-2 reps</span> when ready
+          </p>
         </div>
+
+        {/* Rep Ranges Grid */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 text-center">
+            <span className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Compounds</span>
+            <div className="text-xl font-bold text-white">6-10</div>
+            <span className="text-[10px] font-medium text-zinc-500">reps</span>
+            <p className="text-[10px] text-zinc-600 mt-1.5">Chest, Back, Legs</p>
+          </div>
+          <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 text-center">
+            <span className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Isolation</span>
+            <div className="text-xl font-bold text-white">10-15</div>
+            <span className="text-[10px] font-medium text-zinc-500">reps</span>
+            <p className="text-[10px] text-zinc-600 mt-1.5">Arms, Delts, Calves</p>
+          </div>
+        </div>
+
+        {/* Volume by Experience - Redesigned */}
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3.5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-6 w-6 rounded-lg bg-violet-500/20 flex items-center justify-center">
+              <Users className="h-3.5 w-3.5 text-violet-400" />
+            </div>
+            <h4 className="text-[11px] font-bold text-violet-100 uppercase tracking-wide">Sets per Muscle / Week</h4>
+          </div>
+
+          <div className="space-y-2">
+            {[
+              { level: "Beginner", sets: "6-10", desc: "Build work capacity", color: "text-emerald-400", bg: "bg-emerald-500/10", active: false },
+              { level: "Intermediate", sets: "12-15", desc: "Growth sweet spot", color: "text-amber-400", bg: "bg-amber-500/15", active: true },
+              { level: "Advanced", sets: "18-22", desc: "High volume phase", color: "text-red-400", bg: "bg-red-500/10", active: false },
+            ].map((tier, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center justify-between p-2.5 rounded-lg transition-all",
+                  tier.active ? `${tier.bg} border border-amber-500/20` : "bg-zinc-800/30"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className={cn(
+                    "text-[11px] font-bold w-20",
+                    tier.active ? tier.color : "text-zinc-500"
+                  )}>{tier.level}</span>
+                  <span className={cn(
+                    "text-[10px]",
+                    tier.active ? "text-zinc-300" : "text-zinc-600"
+                  )}>{tier.desc}</span>
+                </div>
+                <span className={cn(
+                  "text-[12px] font-bold tabular-nums",
+                  tier.active ? "text-white" : "text-zinc-500"
+                )}>{tier.sets}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     )
   },
   {
     id: "rir",
-    title: "Intensity & Safety",
+    title: "RIR & Safety",
     subtitle: "The Guardrails",
-    description: "Manage your fatigue. Push hard on safe movements, but stay smart on big lifts.",
+    description: "RIR = Reps in Reserve (how many reps you could still do). Manage fatigue smartly.",
     icon: Zap,
     color: "from-amber-400 to-orange-500",
     content: (
@@ -226,32 +261,32 @@ const onboardingSteps: OnboardingStep[] = [
         <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-3">
 
           {/* Safety Rule */}
-          <div className="flex items-start gap-2.5 p-2 rounded-lg bg-red-500/10 border border-red-500/10">
-            <div className="mt-0.5 h-4 w-4 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-              <span className="text-[10px] font-bold text-red-500">!</span>
+          <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/10">
+            <div className="mt-0.5 h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-3 w-3 text-amber-500" />
             </div>
             <div>
-              <h4 className="text-[10px] font-bold text-red-200 uppercase mb-0.5">Safety First</h4>
-              <p className="text-[10px] text-red-200/70 leading-snug">
-                Never train to failure on big compounds (Squat, Deadlift, Bench). Keep 1 rep in the tank.
+              <h4 className="text-[11px] font-bold text-amber-200 uppercase mb-0.5">Be Cautious</h4>
+              <p className="text-[11px] text-amber-200/70 leading-snug">
+                For heavy compounds without a spotter, consider keeping 1-2 reps in reserve. Go to failure safely on machines and isolation.
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
             {[
-              { rir: "3+", action: "↑ Weight", desc: "Too easy", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-              { rir: "1-2", action: "+1 Rep", desc: "Optimal Zone", color: "text-amber-500", bg: "bg-amber-500/10" },
-              { rir: "0", action: "Repeat", desc: "Failure Hit", color: "text-zinc-400", bg: "bg-zinc-500/10" },
+              { rir: "3+", action: "Consider ↑ Weight", desc: "Room to grow", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+              { rir: "1-2", action: "Maintain or +1 Rep", desc: "Effective effort", color: "text-amber-500", bg: "bg-amber-500/10" },
+              { rir: "0", action: "Repeat weight", desc: "Maximal effort", color: "text-red-400", bg: "bg-red-500/10" },
             ].map((rule, i) => (
-              <div key={i} className={`flex items-center justify-between p-2 rounded ${rule.bg}`}>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-zinc-300 w-12">RIR {rule.rir}</span>
+              <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg ${rule.bg}`}>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-[11px] font-bold text-zinc-300 w-12">RIR {rule.rir}</span>
                   <span className="text-[10px] text-zinc-500">{rule.desc}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
-                  <span className={`text-[10px] font-bold ${rule.color}`}>{rule.action}</span>
+                  <span className={`text-[11px] font-bold ${rule.color}`}>{rule.action}</span>
                 </div>
               </div>
             ))}
@@ -277,7 +312,7 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
           <div>
             <div className="text-sm font-bold text-white">Today's Focus</div>
-            <div className="text-[10px] font-bold text-zinc-500 tracking-wider">DEC 19, 2025</div>
+            <div className="text-[10px] font-bold text-zinc-500 tracking-wider uppercase">Today</div>
           </div>
         </div>
 
@@ -298,7 +333,7 @@ const onboardingSteps: OnboardingStep[] = [
 
               <div className="flex flex-col gap-1.5">
                 <div>
-                  <span className={`text-[8px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
                   <h4 className="text-[13px] font-bold text-white truncate">{card.name}</h4>
                 </div>
 
@@ -310,7 +345,7 @@ const onboardingSteps: OnboardingStep[] = [
                     { l: "RIR", v: card.rir }
                   ].map((stat, j) => (
                     <div key={j} className="bg-zinc-950 rounded py-0.5 px-0.5 flex flex-col items-center">
-                      <span className="text-[8px] text-zinc-600 font-bold uppercase">{stat.l}</span>
+                      <span className="text-[9px] text-zinc-600 font-bold uppercase">{stat.l}</span>
                       <span className={cn("text-[11px] font-bold text-zinc-300", stat.l === "RIR" && "text-emerald-500")}>{stat.v}</span>
                     </div>
                   ))}
@@ -326,12 +361,12 @@ const onboardingSteps: OnboardingStep[] = [
     id: "begin",
     title: "Your Journey Begins",
     subtitle: "Ready",
-    description: "Customize your routine in Settings, or dive straight into your first Push workflow.",
+    description: "Customize your routine in Settings, or dive straight into your first Push workout.",
     icon: Sparkles,
     color: "from-emerald-500 to-green-600",
     iconColor: "text-white",
     content: (
-      <div className="flex flex-col items-center justify-center pt-8 pb-4">
+      <div className="flex flex-col items-center justify-center pt-4 pb-2">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -339,8 +374,8 @@ const onboardingSteps: OnboardingStep[] = [
           className="relative"
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-violet-500 to-fuchsia-500 blur-3xl opacity-20 rounded-full" />
-          <div className="relative h-24 w-24 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center shadow-2xl">
-            <CheckCircle className="h-10 w-10 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]" strokeWidth={1.5} />
+          <div className="relative h-20 w-20 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center shadow-2xl">
+            <CheckCircle className="h-9 w-9 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]" strokeWidth={1.5} />
           </div>
         </motion.div>
 
@@ -348,10 +383,25 @@ const onboardingSteps: OnboardingStep[] = [
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-6 text-center"
+          className="mt-4 text-center"
         >
           <p className="text-sm text-foreground/90 font-medium">Everything is set.</p>
           <p className="text-xs text-muted-foreground mt-1">Make today count.</p>
+        </motion.div>
+
+        {/* Disclaimer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-4 px-3 py-2.5 rounded-lg bg-zinc-800/50 border border-white/5 max-w-[280px]"
+        >
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-[10px] text-zinc-400 leading-relaxed">
+              <span className="text-zinc-300 font-medium">Disclaimer:</span> These guidelines are personal recommendations and a starting point only. Do your own research, consult professionals, and adapt to your needs and health conditions.
+            </p>
+          </div>
         </motion.div>
       </div>
     )
@@ -362,9 +412,22 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const { user } = useAuth()
 
+  // Touch/swipe support with visual feedback
+  const touchStartX = useRef<number | null>(null)
+  const touchEndX = useRef<number | null>(null)
+  const minSwipeDistance = 50
+  const dragX = useMotionValue(0)
+  const dragOpacity = useTransform(dragX, [-100, 0, 100], [0.5, 1, 0.5])
+
   useEffect(() => {
     if (isOpen) setCurrentStep(0)
   }, [isOpen])
+
+  const handlePrev = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1)
+    }
+  }, [currentStep])
 
   const handleNext = useCallback(() => {
     if (currentStep < onboardingSteps.length - 1) {
@@ -381,8 +444,45 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
     onClose()
   }, [user?.id, onClose])
 
+  const handleDotClick = useCallback((index: number) => {
+    setCurrentStep(index)
+  }, [])
+
+  // Touch handlers for swipe support
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEndX.current = null
+    touchStartX.current = e.targetTouches[0].clientX
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX
+    // Update drag value for visual feedback
+    if (touchStartX.current) {
+      const diff = touchEndX.current - touchStartX.current
+      dragX.set(diff)
+    }
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return
+
+    const distance = touchStartX.current - touchEndX.current
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      handleNext()
+    } else if (isRightSwipe) {
+      handlePrev()
+    }
+
+    // Reset drag value
+    dragX.set(0)
+  }
+
   const currentData = onboardingSteps[currentStep]
   const isLast = currentStep === onboardingSteps.length - 1
+  const isFirst = currentStep === 0
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -392,17 +492,23 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
       >
         <DialogTitle className="sr-only">Onboarding</DialogTitle>
 
-        {/* Progress System */}
+        {/* Progress System - Color matches current slide */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-white/5 z-10">
           <motion.div
-            className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-emerald-500"
+            className={`h-full bg-gradient-to-r ${currentData.color}`}
             animate={{ width: `${((currentStep + 1) / onboardingSteps.length) * 100}%` }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
           />
         </div>
 
-        {/* Compact height */}
-        <div className="flex flex-col h-[540px]">
+        {/* Increased height with more breathing room */}
+        <motion.div
+          className="flex flex-col min-h-[560px] max-h-[88vh]"
+          style={{ opacity: dragOpacity }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           {/* Header Section */}
           <div className="px-6 pt-10 pb-2 text-center relative z-10">
             <motion.div
@@ -421,7 +527,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 mb-1.5">{currentData.subtitle}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 mb-1.5">{currentData.subtitle}</p>
                 <h2 className="text-xl font-bold tracking-tight text-white mb-2">{currentData.title}</h2>
                 <p className="text-xs text-zinc-400 leading-relaxed max-w-[280px] mx-auto min-h-[40px] flex items-center justify-center">
                   {currentData.description}
@@ -431,14 +537,14 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
           </div>
 
           {/* Dynamic Content Area - Centered & Spaced */}
-          <div className="flex-1 px-6 relative flex flex-col justify-center">
+          <div className="flex-1 px-6 relative flex flex-col justify-center overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="w-full"
               >
                 {currentData.content}
@@ -446,24 +552,43 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
             </AnimatePresence>
           </div>
 
-          {/* Footer / Navigation - Compact Grid */}
-          <div className="px-5 pt-2 pb-6">
+          {/* Footer / Navigation - Increased spacing above */}
+          <div className="px-5 pt-6 pb-6">
             <div className="grid grid-cols-[80px_1fr_80px] items-center">
-              {/* Left: Skip Button */}
-              <button
-                onClick={handleComplete}
-                className="justify-self-start text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-2 -ml-2 rounded-lg hover:bg-white/5"
-              >
-                Skip
-              </button>
+              {/* Left: Back Button (or Skip on first slide) */}
+              {isFirst ? (
+                <button
+                  onClick={handleComplete}
+                  className="justify-self-start text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-2 -ml-2 rounded-lg hover:bg-white/5"
+                >
+                  Skip
+                </button>
+              ) : (
+                <motion.button
+                  onClick={handlePrev}
+                  whileTap={{ scale: 0.95 }}
+                  className="justify-self-start h-10 w-10 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-zinc-700 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </motion.button>
+              )}
 
-              {/* Center: Dots */}
-              <div className="flex gap-1.5 justify-center">
+              {/* Center: Clickable Dots with larger touch targets */}
+              <div className="flex gap-2 justify-center">
                 {onboardingSteps.map((_, i) => (
-                  <div
+                  <button
                     key={i}
-                    className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${i === currentStep ? "bg-white scale-110" : "bg-white/10"}`}
-                  />
+                    onClick={() => handleDotClick(i)}
+                    className="p-1.5 -m-1 group"
+                    aria-label={`Go to step ${i + 1}`}
+                  >
+                    <span
+                      className={cn(
+                        "block h-2 w-2 rounded-full transition-all duration-300 group-hover:scale-125",
+                        i === currentStep ? "bg-white scale-110" : "bg-white/20 group-hover:bg-white/40"
+                      )}
+                    />
+                  </button>
                 ))}
               </div>
 
@@ -478,7 +603,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
               </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </DialogContent>
     </Dialog>
