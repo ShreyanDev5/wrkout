@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Exercise, WorkoutLog } from "@/lib/types"
@@ -41,6 +41,22 @@ export function DayExercises({
    * ------------------------------------------------------------------------- */
   const { trigger: haptic } = useHaptics()
 
+  /* -------------------------------------------------------------------------
+   *  AUTO-SCROLL EFFECT
+   * ------------------------------------------------------------------------- */
+  useEffect(() => {
+    if (expandedExerciseId) {
+      // Small timeout to allow the expansion animation to start/layout to update
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`exercise-${expandedExerciseId}`)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100) // 100ms delay to ensure DOM update
+      return () => clearTimeout(timer)
+    }
+  }, [expandedExerciseId])
+
   // Handlers
   const handleToggleExpand = (exerciseId: string) => {
     haptic("light")
@@ -70,6 +86,7 @@ export function DayExercises({
         return (
           <div
             key={exercise.id}
+            id={`exercise-${exercise.id}`}
             className={cn(
               "rounded-2xl transition-all duration-300 ease-in-out border",
               isExpanded
@@ -96,8 +113,9 @@ export function DayExercises({
               <div className="flex-1 min-w-0">
                 <Label
                   className={cn(
-                    "text-[0.9375rem] font-semibold truncate block leading-tight cursor-pointer tracking-tight",
+                    "text-[0.9375rem] font-semibold block leading-tight cursor-pointer tracking-tight",
                     "text-foreground",
+                    isExpanded ? "whitespace-normal" : "truncate",
                     completed && "exercise-label-checked opacity-40 font-medium"
                   )}
                   title={exercise.name}
@@ -105,7 +123,10 @@ export function DayExercises({
                   {exercise.name}
                 </Label>
                 {exercise.description && (
-                  <p className="text-[0.75rem] text-muted-foreground/70 truncate mt-1 tracking-normal font-medium" title={exercise.description}>
+                  <p className={cn(
+                    "text-[0.75rem] text-muted-foreground/70 mt-1 tracking-normal font-medium",
+                    isExpanded ? "whitespace-normal" : "truncate"
+                  )} title={exercise.description}>
                     {exercise.description}
                   </p>
                 )}
@@ -157,6 +178,13 @@ export function DayExercises({
           </div>
         )
       }
+
+      {/* Dynamic Spacer to ensure last item can be scrolled to center */}
+      <div
+        className="transition-all duration-300 ease-in-out"
+        style={{ height: expandedExerciseId ? '45vh' : '0px' }}
+        aria-hidden="true"
+      />
     </div >
   )
 }

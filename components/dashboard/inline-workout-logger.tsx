@@ -117,7 +117,7 @@ export function InlineWorkoutLogger({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
         >
             <div className="pt-3 pb-5 px-1 space-y-5">
