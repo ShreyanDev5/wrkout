@@ -132,21 +132,12 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       style={{ backgroundColor: dayColor }}
                     />
 
-                  <div className="flex flex-col gap-2 pl-2">
+                    <div className="flex flex-col gap-2 pl-2">
                       {/* Exercise Header - Compact */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-2 mb-0">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-90" style={{ color: dayColor }}>
-                              {displayType}
-                            </span>
-                            <div className="h-[1px] flex-1 bg-gradient-to-r from-zinc-800 to-transparent opacity-50" />
-                          </div>
-                          <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">
-                            {exerciseName}
-                          </h3>
-                        </div>
-                      </div>
+
+                      <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">
+                        {exerciseName}
+                      </h3>
 
                       {/* Integrated Metrics Grid - 4 Columns */}
                       <div className="grid grid-cols-4 gap-1.5">
@@ -182,9 +173,9 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                           <span className={cn(
                             "text-[15px] font-bold",
                             rir !== null && rir !== undefined ? (
-                              rir === 0 ? "text-red-500/90" : 
-                              rir <= 2 ? "text-amber-500/90" : 
-                              "text-emerald-500/90"
+                              rir === 0 ? "text-red-500/90" :
+                                rir <= 2 ? "text-amber-500/90" :
+                                  "text-emerald-500/90"
                             ) : "text-zinc-100"
                           )}>
                             {rir !== null && rir !== undefined ? rir : '—'}
@@ -207,7 +198,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
             </div>
           )}
         </motion.div>
-      </CardContent>
-    </Card>
+      </CardContent >
+    </Card >
   )
 }

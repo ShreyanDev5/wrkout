@@ -375,7 +375,7 @@ export function WorkoutScreen({
   return (
     <>
       <Card className="border-0 shadow-none dark:bg-background max-w-4xl mx-auto w-full workout-selector premium-card">
-        <CardHeader className="px-4 sm:px-5 pt-5 pb-3">
+        <CardHeader className="px-4 sm:px-5 pt-2 pb-3">
           <div className="workout-header-container">
             <div className="w-full workout-select">
               <Select
