@@ -76,15 +76,23 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: "method",
-    title: "Smart Average Logging",
-    subtitle: "The Precision",
-    description: "Logged reps represent your average across the entire workout. This ensures we track distinct performance, not just peak sets.",
+    title: "The Golden Rule",
+    subtitle: "Smart Logging",
+    description: "This app is uniquely designed to log only your final set. This captures your true failure point and averages performance across all sets.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
     content: (
       <div className="pt-4 max-w-[280px] mx-auto">
         <div className="relative rounded-2xl border border-white/5 bg-zinc-900/50 p-4 overflow-hidden shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent" />
+
+          {/* Badge */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <Zap className="h-3 w-3 text-emerald-400" />
+              <span className="text-[10px] font-bold text-emerald-200 uppercase tracking-wide">Last Set Only</span>
+            </div>
+          </div>
 
           {/* Inline Input Visualization */}
           <div className="flex items-center gap-2 mb-4">
@@ -96,66 +104,157 @@ const onboardingSteps: OnboardingStep[] = [
               <span className="text-[9px] text-muted-foreground uppercase">Reps</span>
               <span className="text-sm font-bold text-white">8</span>
             </div>
-            <div className="h-full flex items-center justify-center p-2">
-              <Zap className="h-5 w-5 text-amber-400 fill-amber-400/20" />
+          </div>
+
+          <p className="text-[10px] text-center text-zinc-400 leading-snug">
+            "If my last set was 52.5kg for 8 reps, that's what I log."
+          </p>
+        </div>
+      </div>
+    )
+  },
+  {
+    id: "pillars",
+    title: "The Two Pillars",
+    subtitle: "Core Philosophy",
+    description: "Everything you do in the gym should serve these two primary goals. Ignore the noise.",
+    icon: Target,
+    color: "from-blue-500 to-cyan-500",
+    content: (
+      <div className="pt-2 max-w-[300px] mx-auto space-y-3">
+        {[
+          {
+            title: "Progressive Overload",
+            meta: "Get Stronger",
+            desc: "Add weight or reps every single month.",
+            icon: TrendingUp,
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+            border: "border-emerald-500/20"
+          },
+          {
+            title: "Weekly Volume",
+            meta: "12-15 Hard Sets",
+            desc: "Per muscle group, per week. The growth sweet spot.",
+            icon: BarChart3,
+            color: "text-blue-400",
+            bg: "bg-blue-500/10",
+            border: "border-blue-500/20"
+          }
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.2 + 0.2 }}
+            className={`p-3 rounded-xl border ${item.border} ${item.bg} flex gap-3`}
+          >
+            <div className={`mt-0.5 h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-black/20`}>
+              <item.icon className={`h-4 w-4 ${item.color}`} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <h4 className="text-xs font-bold text-white">{item.title}</h4>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/30 ${item.color} uppercase`}>{item.meta}</span>
+              </div>
+              <p className="text-[10px] text-zinc-400 leading-snug">{item.desc}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    )
+  },
+  {
+    id: "blueprint",
+    title: "The Blueprint",
+    subtitle: "Rules of Engagement",
+    description: "Follow these volume and progression standards to ensure consistent gains.",
+    icon: List,
+    color: "from-violet-500 to-fuchsia-500",
+    content: (
+      <div className="pt-2 max-w-[300px] mx-auto">
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 overflow-hidden">
+
+          {/* Monthly Goal */}
+          <div className="p-3 bg-white/5 border-b border-white/5">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar className="h-3 w-3 text-fuchsia-400" />
+              <h4 className="text-[10px] font-bold text-fuchsia-100 uppercase tracking-wide">Monthly Goal</h4>
+            </div>
+            <p className="text-[11px] text-zinc-300">
+              Add <span className="text-white font-bold">+2-5kg</span> OR <span className="text-white font-bold">+1-2 reps</span>
+            </p>
+          </div>
+
+          {/* Rep Ranges Grid */}
+          <div className="p-3 grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <span className="text-[9px] text-zinc-500 uppercase font-bold">Compounds</span>
+              <div className="text-lg font-bold text-white">6-10 <span className="text-[10px] font-medium text-zinc-400">reps</span></div>
+              <p className="text-[9px] text-zinc-500 leading-tight">Chest, Back, Legs</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[9px] text-zinc-500 uppercase font-bold">Isolation</span>
+              <div className="text-lg font-bold text-white">10-15 <span className="text-[10px] font-medium text-zinc-400">reps</span></div>
+              <p className="text-[9px] text-zinc-500 leading-tight">Arms, Delts, Abs</p>
             </div>
           </div>
 
-          {/* Comparison */}
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/10"
-          >
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="text-[10px] font-medium text-emerald-100/80">Beating Last Session</span>
+          {/* Volume Footer */}
+          <div className="px-3 py-2 bg-black/20 border-t border-white/5 flex justify-between items-center">
+            <span className="text-[9px] text-zinc-400">Volume Ramp</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-zinc-500">2 sets</span>
+              <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
+              <span className="text-[10px] font-bold text-white">3-5 sets</span>
             </div>
-            <span className="text-[10px] font-mono text-emerald-400 opacity-80 decoration-emerald-500/30 line-through">50kg</span>
-          </motion.div>
+          </div>
+
         </div>
       </div>
     )
   },
   {
     id: "rir",
-    title: "Reps in Reserve",
-    subtitle: "The Intensity",
-    description: "RIR tracks how many reps you had left in the tank. 0 means you hit failure, while 2 means you had 2 reps left.",
+    title: "Intensity & Safety",
+    subtitle: "The Guardrails",
+    description: "Manage your fatigue. Push hard on safe movements, but stay smart on big lifts.",
     icon: Zap,
     color: "from-amber-400 to-orange-500",
     content: (
-      <div className="pt-2 max-w-[300px] mx-auto">
-        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-4 space-y-4">
-          <div className="space-y-1">
-            <h4 className="text-xs font-bold text-white leading-tight">The RIR Progression Rule</h4>
-            <p className="text-[10px] text-zinc-400 font-medium">Your Weekly Decision Maker</p>
+      <div className="pt-1 max-w-[300px] mx-auto">
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-3">
+
+          {/* Safety Rule */}
+          <div className="flex items-start gap-2.5 p-2 rounded-lg bg-red-500/10 border border-red-500/10">
+            <div className="mt-0.5 h-4 w-4 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-bold text-red-500">!</span>
+            </div>
+            <div>
+              <h4 className="text-[10px] font-bold text-red-200 uppercase mb-0.5">Safety First</h4>
+              <p className="text-[10px] text-red-200/70 leading-snug">
+                Never train to failure on big compounds (Squat, Deadlift, Bench). Keep 1 rep in the tank.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[
-              { rir: "3+", action: "Increase weight", desc: "Too easy", color: "text-emerald-500", dot: "bg-emerald-500" },
-              { rir: "1-2", action: "Add 1 rep", desc: "Optimal zone", color: "text-amber-500", dot: "bg-amber-500" },
-              { rir: "0", action: "Keep same weight", desc: "Failure hit", color: "text-red-500", dot: "bg-red-500" },
+              { rir: "3+", action: "↑ Weight", desc: "Too easy", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+              { rir: "1-2", action: "+1 Rep", desc: "Optimal Zone", color: "text-amber-500", bg: "bg-amber-500/10" },
+              { rir: "0", action: "Repeat", desc: "Failure Hit", color: "text-zinc-400", bg: "bg-zinc-500/10" },
             ].map((rule, i) => (
-              <div key={i} className="flex gap-3">
-                <div className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${rule.dot}`} />
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-zinc-300">RIR {rule.rir}</span>
-                    <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
-                    <span className={`text-[10px] font-bold ${rule.color}`}>{rule.action}</span>
-                  </div>
+              <div key={i} className={`flex items-center justify-between p-2 rounded ${rule.bg}`}>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-zinc-300 w-12">RIR {rule.rir}</span>
+                  <span className="text-[10px] text-zinc-500">{rule.desc}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
+                  <span className={`text-[10px] font-bold ${rule.color}`}>{rule.action}</span>
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="pt-2 border-t border-white/5">
-            <p className="text-[10px] text-zinc-500 italic leading-snug">
-              "How many more good reps could I have done?"
-            </p>
           </div>
         </div>
       </div>
