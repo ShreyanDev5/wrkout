@@ -205,16 +205,28 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
         </div>
 
-        {/* Volume by Experience - Redesigned */}
-        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3.5">
-          <div className="flex items-center gap-2 mb-3">
+      </div>
+    )
+  },
+  {
+    id: "volume",
+    title: "Training Volume",
+    subtitle: "Smart Scaling",
+    description: "Match your volume to your experience. Start conservative and build up as you adapt.",
+    icon: Users,
+    color: "from-violet-500 to-fuchsia-500",
+    content: (
+      <div className="pt-1 max-w-[280px] mx-auto">
+        {/* Volume by Experience */}
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3">
+          <div className="flex items-center gap-2 mb-2.5">
             <div className="h-6 w-6 rounded-lg bg-violet-500/20 flex items-center justify-center">
-              <Users className="h-3.5 w-3.5 text-violet-400" />
+              <BarChart3 className="h-3.5 w-3.5 text-violet-400" />
             </div>
             <h4 className="text-[11px] font-bold text-violet-100 uppercase tracking-wide">Sets per Muscle / Week</h4>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {[
               { level: "Beginner", sets: "6-10", desc: "Build work capacity", color: "text-emerald-400", bg: "bg-emerald-500/10", active: false },
               { level: "Intermediate", sets: "12-15", desc: "Growth sweet spot", color: "text-amber-400", bg: "bg-amber-500/15", active: true },
@@ -223,11 +235,11 @@ const onboardingSteps: OnboardingStep[] = [
               <div
                 key={i}
                 className={cn(
-                  "flex items-center justify-between p-2.5 rounded-lg transition-all",
+                  "flex items-center justify-between p-2 rounded-lg transition-all",
                   tier.active ? `${tier.bg} border border-amber-500/20` : "bg-zinc-800/30"
                 )}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2">
                   <span className={cn(
                     "text-[11px] font-bold w-20",
                     tier.active ? tier.color : "text-zinc-500"
@@ -238,14 +250,13 @@ const onboardingSteps: OnboardingStep[] = [
                   )}>{tier.desc}</span>
                 </div>
                 <span className={cn(
-                  "text-[12px] font-bold tabular-nums",
+                  "text-[11px] font-bold tabular-nums",
                   tier.active ? "text-white" : "text-zinc-500"
                 )}>{tier.sets}</span>
               </div>
             ))}
           </div>
         </div>
-
       </div>
     )
   },
@@ -303,16 +314,16 @@ const onboardingSteps: OnboardingStep[] = [
     icon: List,
     color: "from-purple-500 to-indigo-600",
     content: (
-      <div className="pt-2 max-w-[300px] mx-auto relative cursor-default select-none">
+      <div className="pt-1 max-w-[280px] mx-auto relative cursor-default select-none">
 
         {/* Header Mock */}
         <div className="flex items-center gap-2 mb-2 px-1">
-          <div className="h-8 w-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+          <div className="h-7 w-7 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
           </div>
           <div>
-            <div className="text-sm font-bold text-white">Today's Focus</div>
-            <div className="text-[10px] font-bold text-zinc-500 tracking-wider uppercase">Today</div>
+            <div className="text-[13px] font-bold text-white">Today's Focus</div>
+            <div className="text-[9px] font-bold text-zinc-500 tracking-wider uppercase">Today</div>
           </div>
         </div>
 
@@ -321,11 +332,8 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", rir: "3", bar: "bg-amber-500", text: "text-amber-500" }
           ].map((card, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
               className="relative overflow-hidden rounded-lg bg-zinc-900 border border-white/5 p-2 pl-3"
             >
               {/* Colored Bar */}
@@ -334,7 +342,7 @@ const onboardingSteps: OnboardingStep[] = [
               <div className="flex flex-col gap-1.5">
                 <div>
                   <span className={`text-[9px] font-bold uppercase tracking-wider ${card.text}`}>{card.label}</span>
-                  <h4 className="text-[13px] font-bold text-white truncate">{card.name}</h4>
+                  <h4 className="text-[12px] font-bold text-white truncate">{card.name}</h4>
                 </div>
 
                 <div className="grid grid-cols-4 gap-1">
@@ -345,13 +353,13 @@ const onboardingSteps: OnboardingStep[] = [
                     { l: "RIR", v: card.rir }
                   ].map((stat, j) => (
                     <div key={j} className="bg-zinc-950 rounded py-0.5 px-0.5 flex flex-col items-center">
-                      <span className="text-[9px] text-zinc-600 font-bold uppercase">{stat.l}</span>
-                      <span className={cn("text-[11px] font-bold text-zinc-300", stat.l === "RIR" && "text-emerald-500")}>{stat.v}</span>
+                      <span className="text-[8px] text-zinc-600 font-bold uppercase">{stat.l}</span>
+                      <span className={cn("text-[10px] font-bold text-zinc-300", stat.l === "RIR" && "text-emerald-500")}>{stat.v}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -362,47 +370,26 @@ const onboardingSteps: OnboardingStep[] = [
     title: "Your Journey Begins",
     subtitle: "Ready",
     description: "Customize your routine in Settings, or dive straight into your first Push workout.",
-    icon: Sparkles,
+    icon: CheckCircle,
     color: "from-emerald-500 to-green-600",
     iconColor: "text-white",
     content: (
-      <div className="flex flex-col items-center justify-center pt-4 pb-2">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", bounce: 0.5 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-tr from-violet-500 to-fuchsia-500 blur-3xl opacity-20 rounded-full" />
-          <div className="relative h-20 w-20 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center shadow-2xl">
-            <CheckCircle className="h-9 w-9 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]" strokeWidth={1.5} />
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-4 text-center"
-        >
-          <p className="text-sm text-foreground/90 font-medium">Everything is set.</p>
-          <p className="text-xs text-muted-foreground mt-1">Make today count.</p>
-        </motion.div>
+      <div className="pt-1 max-w-[280px] mx-auto">
+        {/* Motivational text */}
+        <div className="text-center mb-3">
+          <p className="text-[13px] text-foreground/90 font-medium">Everything is set.</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Make today count.</p>
+        </div>
 
         {/* Disclaimer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-4 px-3 py-2.5 rounded-lg bg-zinc-800/50 border border-white/5 max-w-[280px]"
-        >
+        <div className="px-3 py-2.5 rounded-lg bg-zinc-800/50 border border-white/5">
           <div className="flex items-start gap-2">
             <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
             <p className="text-[10px] text-zinc-400 leading-relaxed">
               <span className="text-zinc-300 font-medium">Disclaimer:</span> These guidelines are personal recommendations and a starting point only. Do your own research, consult professionals, and adapt to your needs and health conditions.
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     )
   }
@@ -537,15 +524,16 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
           </div>
 
           {/* Dynamic Content Area - Centered & Spaced */}
-          <div className="flex-1 px-6 relative flex flex-col justify-center overflow-y-auto">
-            <AnimatePresence mode="wait">
+          <div className="flex-1 px-6 relative flex flex-col justify-center overflow-y-auto min-h-[200px]">
+            <AnimatePresence mode="popLayout" initial={false}>
               <motion.div
                 key={currentStep}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 className="w-full"
+                layout="position"
               >
                 {currentData.content}
               </motion.div>
@@ -554,12 +542,23 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
 
           {/* Footer / Navigation - Increased spacing above */}
           <div className="px-5 pt-6 pb-6">
-            <div className="grid grid-cols-[80px_1fr_80px] items-center">
+            {/* Swipe hint on first slide */}
+            {isFirst && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5 }}
+                className="text-[10px] text-zinc-600 text-center mb-3"
+              >
+                Swipe or tap to navigate
+              </motion.p>
+            )}
+            <div className="grid grid-cols-[72px_1fr_90px] items-center">
               {/* Left: Back Button (or Skip on first slide) */}
               {isFirst ? (
                 <button
                   onClick={handleComplete}
-                  className="justify-self-start text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-2 -ml-2 rounded-lg hover:bg-white/5"
+                  className="justify-self-start text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-2 -ml-1 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 border border-white/5"
                 >
                   Skip
                 </button>
@@ -573,8 +572,8 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                 </motion.button>
               )}
 
-              {/* Center: Clickable Dots with larger touch targets */}
-              <div className="flex gap-2 justify-center">
+              {/* Center: Clickable Dots - smaller and more compact */}
+              <div className="flex gap-1.5 justify-center">
                 {onboardingSteps.map((_, i) => (
                   <button
                     key={i}
@@ -584,8 +583,10 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                   >
                     <span
                       className={cn(
-                        "block h-2 w-2 rounded-full transition-all duration-300 group-hover:scale-125",
-                        i === currentStep ? "bg-white scale-110" : "bg-white/20 group-hover:bg-white/40"
+                        "block h-1.5 w-1.5 rounded-full transition-all duration-300 group-hover:scale-125",
+                        i === currentStep
+                          ? "bg-white scale-125 shadow-[0_0_6px_2px_rgba(255,255,255,0.3)]"
+                          : "bg-white/20 group-hover:bg-white/40"
                       )}
                     />
                   </button>
