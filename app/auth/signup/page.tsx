@@ -14,7 +14,7 @@ export default function SignUpPage() {
     >
       <SignUpForm />
       <div className="mt-4 text-center">
-        <a href="/privacy" className="text-xs text-muted-foreground underline hover:text-primary/80">Privacy Policy</a>
+        <a href="/privacy" className="text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors duration-200">Privacy Policy</a>
       </div>
     </AuthLayout>
   );

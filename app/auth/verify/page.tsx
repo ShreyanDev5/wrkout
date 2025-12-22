@@ -73,7 +73,10 @@ function VerifyEmailHandler() {
       )}
 
       {status !== 'loading' && (
-        <Button onClick={handleSignIn} className="w-full">
+        <Button
+          onClick={handleSignIn}
+          className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold shadow-lg shadow-yellow-400/20 transition-all duration-200 hover:shadow-xl hover:shadow-yellow-400/30 h-11"
+        >
           Go to Sign In
         </Button>
       )}

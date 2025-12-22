@@ -31,7 +31,7 @@ export default function SignInPage() {
       </Suspense>
       <SignInForm />
       <div className="mt-4 text-center">
-        <a href="/auth/forgot-password" className="text-sm text-primary underline hover:text-primary/80">Forgot password?</a>
+        <a href="/auth/forgot-password" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Forgot password?</a>
       </div>
     </AuthLayout>
   );

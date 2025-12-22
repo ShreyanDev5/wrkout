@@ -30,11 +30,11 @@ export function AuthLayout({
       "min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/95 to-background/90 relative overflow-hidden",
       isMobile && "py-6" // Slightly reduced padding to accommodate larger elements
     )}>
-      {/* Background decorative elements */}
+      {/* Background decorative elements - subtle for premium look */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-yellow-400/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-400/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-400/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-yellow-400/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-400/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-400/[0.03] rounded-full blur-3xl" />
       </div>
 
       <div className={cn(
@@ -79,9 +79,9 @@ export function AuthLayout({
 
           {/* Form Card */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-green-400/20 to-red-500/20 rounded-2xl blur-xl" />
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-green-400/10 to-red-500/10 rounded-2xl blur-xl" />
             <div className={cn(
-              "relative bg-card/50 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-xl",
+              "relative bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-8 shadow-2xl",
               isMobile && "p-7" // Increased padding slightly
             )}>
               {children}
@@ -96,7 +96,7 @@ export function AuthLayout({
             {footerText}{' '}
             <Link
               href={footerLink}
-              className="font-medium text-primary hover:text-primary/90 transition-colors"
+              className="font-medium text-foreground hover:text-yellow-400 transition-colors duration-200"
             >
               {footerLinkText}
             </Link>

@@ -66,7 +66,7 @@ export function AuthPopup() {
           <Button
             onClick={handleSignUp}
             variant="outline"
-            className="w-full border-2 hover:bg-accent py-2 rounded-md"
+            className="w-full border border-zinc-700/50 hover:bg-zinc-800/50 hover:border-zinc-600/50 text-foreground py-2 rounded-md transition-all duration-200"
           >
             Create Account
           </Button>
