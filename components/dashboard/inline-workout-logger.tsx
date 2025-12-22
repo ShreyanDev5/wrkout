@@ -114,11 +114,17 @@ export function InlineWorkoutLogger({
 
     return (
         <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, height: 0, scale: 0.98 }}
+            animate={{ opacity: 1, height: "auto", scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0.96 }}
+            transition={{
+                duration: 0.35,
+                ease: [0.4, 0, 0.2, 1],
+                opacity: { duration: 0.25 },
+                scale: { duration: 0.3 },
+                height: { duration: 0.35 }
+            }}
+            className="overflow-hidden origin-top"
         >
             <div className="pt-3 pb-5 px-1 space-y-5">
                 {/* Controls Container - Responsive Grid */}

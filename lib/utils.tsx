@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ArrowUp, ArrowDown, Dumbbell, Footprints } from "lucide-react"
+import { Hand, BicepsFlexed, Dumbbell, Footprints } from "lucide-react"
 import { ReactNode } from "react"
 
 export function cn(...inputs: ClassValue[]) {
@@ -42,9 +42,9 @@ export function getWorkoutDayIcon(dayId: string, modern = false, size = "h-5 w-5
 
   switch (dayId.toLowerCase()) {
     case "push":
-      return <ArrowUp className={`${size} ${iconClass}`} aria-hidden="true" />
+      return <Hand className={`${size} ${iconClass}`} aria-hidden="true" />
     case "pull":
-      return <ArrowDown className={`${size} ${iconClass}`} aria-hidden="true" />
+      return <BicepsFlexed className={`${size} ${iconClass}`} aria-hidden="true" />
     case "leg":
       return <Footprints className={`${size} ${iconClass}`} aria-hidden="true" />
     default:

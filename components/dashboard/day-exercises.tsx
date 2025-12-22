@@ -91,7 +91,7 @@ export function DayExercises({
               "rounded-2xl transition-all duration-300 ease-in-out border",
               isExpanded
                 ? "bg-secondary/10 border-border/50 shadow-sm"
-                : "bg-transparent border-transparent hover:bg-secondary/5"
+                : "bg-secondary/5 border-border/20 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:bg-secondary/10 hover:border-border/30 hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)]"
             )}
           >
             <div
