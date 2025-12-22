@@ -2,8 +2,8 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AuthLayoutProps {
@@ -58,7 +58,14 @@ export function AuthLayout({
                 "relative w-16 h-16 mx-auto bg-background/50 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border/50",
                 isMobile && "w-15 h-15" // Increased logo size slightly
               )}>
-                <WorkoutProgressIcon size={40} className="w-full h-full" />
+                <Image
+                  src="/android-chrome-512x512.png"
+                  alt="Wrkout Logo"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-contain"
+                  priority
+                />
               </div>
             </Link>
             <div className="space-y-2">
@@ -102,7 +109,7 @@ export function AuthLayout({
             </Link>
           </p>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 } 
