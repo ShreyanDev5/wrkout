@@ -73,6 +73,12 @@ export function WorkoutScreen({
   // unless the user intentionally completes it again in this session view.
   const hasCelebratedRef = useRef(false)
 
+  // Track previous progress to detect genuine transitions to 100%
+  const previousProgressRef = useRef<number | null>(null)
+
+  // Track if this is the initial data load (to skip confetti on refresh with completed data)
+  const isInitialMountRef = useRef(true)
+
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
   const [isInitialized, setIsInitialized] = useState(false)
@@ -183,6 +189,7 @@ export function WorkoutScreen({
     const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
     if (!day || !day.exercises?.length) {
       setActiveProgress(0)
+      previousProgressRef.current = 0
       return
     }
     const total = day.exercises.length
@@ -192,15 +199,60 @@ export function WorkoutScreen({
     const progress = Math.round((completed / total) * 100)
     setActiveProgress(progress)
 
-    // Trigger celebration if progress hits 100% and we haven't celebrated yet for this specific instance
-    if (progress === 100 && !hasCelebratedRef.current) {
+    // CRITICAL: Don't run celebration logic until selectedWorkout is properly initialized
+    // This prevents checking the wrong localStorage key on page refresh
+    if (!selectedWorkout) {
+      previousProgressRef.current = progress
+      return
+    }
+
+    // Trigger celebration if progress hits 100% - but only once per day per session
+    const celebrationKey = `confetti-celebrated-${selectedWorkout}-${selectedDay}-${today}`
+
+    // Wrap localStorage access in try-catch for mobile browser safety
+    let alreadyCelebrated = false
+    try {
+      alreadyCelebrated = localStorage.getItem(celebrationKey) === 'true'
+    } catch (e) {
+      // localStorage not available (private browsing, etc.)
+      console.warn('localStorage not available for confetti tracking')
+    }
+
+    // Sync the ref with localStorage on mount to prevent race conditions
+    if (alreadyCelebrated && !hasCelebratedRef.current) {
+      hasCelebratedRef.current = true
+    }
+
+    // KEY FIX: Only trigger confetti on GENUINE transition to 100%
+    // NOT on initial mount/refresh when data loads already at 100%
+    const previousProgress = previousProgressRef.current
+    const isGenuineCompletion = previousProgress !== null && previousProgress < 100 && progress === 100
+    const isInitialLoad = isInitialMountRef.current
+
+    if (progress === 100 && isGenuineCompletion && !isInitialLoad && !hasCelebratedRef.current && !alreadyCelebrated) {
       triggerWorkoutCompletionConfetti()
       hasCelebratedRef.current = true
+      try {
+        localStorage.setItem(celebrationKey, 'true')
+      } catch (e) {
+        // localStorage not available
+      }
     } else if (progress < 100) {
-      // Reset celebration flag if they untick something, so they can celebrate again if they complete it again.
+      // Reset flags if they untick something, so they can celebrate again if they complete it again.
       hasCelebratedRef.current = false
+      try {
+        localStorage.removeItem(celebrationKey)
+      } catch (e) {
+        // localStorage not available
+      }
     }
-  }, [selectedDay, currentWorkoutDays, completedExerciseNames])
+
+    // Update tracking refs
+    previousProgressRef.current = progress
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false
+    }
+  }, [selectedDay, currentWorkoutDays, completedExerciseNames, selectedWorkout, today])
 
 
 
@@ -242,9 +294,22 @@ export function WorkoutScreen({
 
       // If we are adding one (which we are), will it be full?
       if (currentCompletedCount + 1 === totalExercises) {
-        if (!hasCelebratedRef.current) {
+        const celebrationKey = `confetti-celebrated-${selectedWorkout}-${selectedDay}-${today}`
+        let alreadyCelebrated = false
+        try {
+          alreadyCelebrated = localStorage.getItem(celebrationKey) === 'true'
+        } catch (e) {
+          // localStorage not available
+        }
+
+        if (!hasCelebratedRef.current && !alreadyCelebrated) {
           triggerWorkoutCompletionConfetti()
           hasCelebratedRef.current = true
+          try {
+            localStorage.setItem(celebrationKey, 'true')
+          } catch (e) {
+            // localStorage not available
+          }
         }
       }
     }
