@@ -8,7 +8,7 @@ import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { v4 as uuidv4 } from 'uuid'
 import { motion, AnimatePresence } from "framer-motion"
-import { Check, X, RotateCcw } from "lucide-react"
+import { Check, X, RefreshCw, TrendingUp, ArrowUp } from "lucide-react"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { useHaptics } from "@/hooks/use-haptics"
 import { getLocalDateYYYYMMDD } from "@/lib/utils"
@@ -47,12 +47,48 @@ export function InlineWorkoutLogger({
         return bwKeywords.some(k => name.includes(k))
     }, [exercise.name])
 
-    // Default sets to 3 if not found
+    // Pre-fill weight, reps, sets from last session - RIR always defaults to 1 (neutral)
     const [weight, setWeight] = useState(lastValues.weight ?? (isBodyweightExercise ? 0 : 20))
     const [reps, setReps] = useState(lastValues.reps || 10)
     const [sets, setSets] = useState(lastValues.sets || 3)
-    const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2 each time
+    const [rir, setRir] = useState(1) // Deliberate entry: Default to neutral 1 each time
     const [isSaving, setIsSaving] = useState(false)
+
+    // Smart guidance based on last log's RIR - with colors matching Progress screen
+    const guidance = useMemo(() => {
+        if (!lastLog || lastLog.rir === undefined || lastLog.rir === null) return null
+
+        const lastRir = lastLog.rir
+        if (lastRir === 0) {
+            // RIR 0: At limit, repeat same weight/reps - Red accent
+            return {
+                type: 'repeat',
+                text: 'Repeat',
+                icon: RefreshCw,
+                colorClass: 'text-red-500',
+                bgClass: 'bg-red-500/10 border-red-500/20'
+            }
+        } else if (lastRir <= 2) {
+            // RIR 1-2: Room for 1 more rep - Amber accent
+            return {
+                type: 'add-rep',
+                text: 'Rep',
+                icon: TrendingUp,
+                colorClass: 'text-amber-500',
+                bgClass: 'bg-amber-500/10 border-amber-500/20'
+            }
+        } else {
+            // RIR 3+: Ready to increase weight - Emerald accent
+            return {
+                type: 'add-weight',
+                text: 'Weight',
+                icon: ArrowUp,
+                colorClass: 'text-emerald-500',
+                bgClass: 'bg-emerald-500/10 border-emerald-500/20'
+            }
+        }
+    }, [lastLog])
+
 
     // Audio context init
     useEffect(() => {
@@ -79,7 +115,7 @@ export function InlineWorkoutLogger({
         }
 
         // Deliberate entry: DO NOT store RIR in lastUsedValues to prevent pre-filling
-        setLastUsedValues(exercise.id, { weight, reps, sets, rir: 2 }) // Reset to neutral 2 in storage
+        setLastUsedValues(exercise.id, { weight, reps, sets, rir: 1 }) // Reset to neutral 1 in storage
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -100,16 +136,6 @@ export function InlineWorkoutLogger({
         setLastLog(exercise.id, log)
         onSave(log)
         // Parent handles closing
-    }
-
-    const handleRecallLastLog = () => {
-        if (lastLog) {
-            setWeight(lastLog.weight)
-            setReps(lastLog.avg_reps)
-            // If last log has sets, use it, else keep current (likely 3)
-            if (lastLog.sets) setSets(lastLog.sets)
-            // Deliberate entry: DO NOT recall RIR from last sessions
-        }
     }
 
     return (
@@ -186,34 +212,29 @@ export function InlineWorkoutLogger({
 
                 {/* Actions Row */}
                 <div className="flex items-center gap-3 pt-1">
-                    {/* Last Log Recall Button - Left Aligned */}
-                    {lastLog ? (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleRecallLastLog}
-                            className="h-11 px-4 text-xs text-muted-foreground hover:text-foreground hover:bg-zinc-800/50 rounded-xl w-auto max-w-[180px] sm:max-w-[220px] border border-zinc-800/50 mr-auto justify-start transition-all"
-                        >
-                            <RotateCcw className="h-3.5 w-3.5 mr-1.5 opacity-70 shrink-0" />
-                            <span className="truncate">
-                                Last: {lastLog.weight}kg · {lastLog.sets || 3}×{lastLog.avg_reps}
-                            </span>
-                        </Button>
+                    {/* Smart Guidance Indicator - Premium minimal with RIR colors */}
+                    {guidance ? (
+                        <div className={`flex items-center gap-2.5 h-11 px-4 rounded-full border mr-auto select-none ${guidance.bgClass}`}>
+                            <guidance.icon className={`h-[18px] w-[18px] shrink-0 ${guidance.colorClass}`} strokeWidth={2.5} />
+                            <span className={`text-sm font-semibold tracking-tight ${guidance.colorClass}`}>{guidance.text}</span>
+                        </div>
                     ) : (
                         <div className="flex-1" /> // Unused spacer
                     )}
 
                     {/* Actions - Right Aligned & Symmetrical */}
                     <div className="flex items-center gap-2.5 flex-1 justify-end">
+                        {/* Cancel Button - Matches Done button styling with neutral colors */}
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={onCancel}
-                            className="h-11 w-11 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+                            className="h-11 w-11 rounded-full bg-zinc-700/40 hover:bg-zinc-600/50 text-zinc-300 transition-colors shrink-0 border-none"
                         >
                             <X className="h-5 w-5" />
                         </Button>
 
+                        {/* Done Button */}
                         <Button
                             onClick={handleSave}
                             style={{ backgroundColor: dayColor }}
@@ -232,3 +253,4 @@ export function InlineWorkoutLogger({
         </motion.div>
     )
 }
+
