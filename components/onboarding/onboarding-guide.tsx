@@ -22,6 +22,8 @@ import {
   Zap,
   AlertTriangle,
   Users,
+  RefreshCw,
+  ArrowUp,
 } from "lucide-react"
 import { LucideProps } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -269,39 +271,60 @@ const onboardingSteps: OnboardingStep[] = [
     color: "from-amber-400 to-orange-500",
     content: (
       <div className="pt-1 max-w-[300px] mx-auto">
-        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-3">
+        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-4">
 
-          {/* Safety Rule */}
-          <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/10">
-            <div className="mt-0.5 h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-              <AlertTriangle className="h-3 w-3 text-amber-500" />
-            </div>
-            <div>
-              <h4 className="text-[11px] font-bold text-amber-200 uppercase mb-0.5">Be Cautious</h4>
-              <p className="text-[11px] text-amber-200/70 leading-snug">
-                For heavy compounds without a spotter, consider keeping 1-2 reps in reserve. Go to failure safely on machines and isolation.
-              </p>
-            </div>
+          {/* Context Helper */}
+          <div className="text-center px-2">
+            <p className="text-[11px] text-zinc-400 leading-snug">
+              Smart indicators appear while logging, based on your <span className="text-zinc-200 font-medium">previous session's RIR</span>.
+            </p>
           </div>
 
           <div className="space-y-2">
             {[
-              { rir: "3+", action: "Consider ↑ Weight", desc: "Room to grow", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-              { rir: "1-2", action: "Maintain or +1 Rep", desc: "Effective effort", color: "text-amber-500", bg: "bg-amber-500/10" },
-              { rir: "0", action: "Repeat weight", desc: "Maximal effort", color: "text-red-400", bg: "bg-red-500/10" },
-            ].map((rule, i) => (
-              <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg ${rule.bg}`}>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[11px] font-bold text-zinc-300 w-12">RIR {rule.rir}</span>
-                  <span className="text-[10px] text-zinc-500">{rule.desc}</span>
+              {
+                text: "Repeat",
+                sub: "Hit limit (RIR 0)",
+                icon: RefreshCw,
+                color: "text-red-500",
+                bg: "bg-red-500/10 border-red-500/20"
+              },
+              {
+                text: "Rep",
+                sub: "Add 1 Rep (RIR 1-2)",
+                icon: TrendingUp,
+                color: "text-amber-500",
+                bg: "bg-amber-500/10 border-amber-500/20"
+              },
+              {
+                text: "Weight",
+                sub: "Increase Load (RIR 3+)",
+                icon: ArrowUp,
+                color: "text-emerald-500",
+                bg: "bg-emerald-500/10 border-emerald-500/20"
+              },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between group">
+                {/* The Pill Visual */}
+                <div className={`flex items-center gap-2 h-9 px-3 rounded-full border ${item.bg}`}>
+                  <item.icon className={`h-4 w-4 ${item.color}`} strokeWidth={2.5} />
+                  <span className={`text-[11px] font-bold tracking-tight ${item.color}`}>{item.text}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <ArrowRight className="h-2.5 w-2.5 text-zinc-600" />
-                  <span className={`text-[11px] font-bold ${rule.color}`}>{rule.action}</span>
-                </div>
+
+                {/* Explanation */}
+                <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide">{item.sub}</span>
               </div>
             ))}
           </div>
+
+          {/* Safety Rule - Compact */}
+          <div className="flex items-center gap-2.5 pt-2 border-t border-white/5 mx-1">
+            <AlertTriangle className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+            <p className="text-[10px] text-zinc-500 leading-tight">
+              Honest logging = accurate guidance.
+            </p>
+          </div>
+
         </div>
       </div>
     )
