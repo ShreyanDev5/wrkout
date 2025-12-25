@@ -62,7 +62,7 @@ export function InlineWorkoutLogger({
         const lastReps = lastLog.avg_reps
         const isCompound = isCompoundExercise(exercise.name)
 
-        // New specific conditions for compound exercises (target: 10 reps)
+        // New specific conditions for compound exercises (target: 11 reps)
         if (isCompound) {
             if (lastReps === 11 && lastRir >= 1) {
                 // Compound: Hit 11 reps with RIR >= 1 → Ready to increase weight
@@ -74,8 +74,8 @@ export function InlineWorkoutLogger({
                     bgClass: 'bg-emerald-500/10 border-emerald-500/20'
                 }
             }
-            if (lastReps === 10 && lastRir === 0) {
-                // Compound: Hit 10 reps at failure → Add 1 rep next time
+            if (lastReps === 11 && lastRir === 0) {
+                // Compound: Hit 11 reps at failure → Add 1 rep next time
                 return {
                     type: 'add-rep',
                     text: 'Rep',
@@ -86,7 +86,7 @@ export function InlineWorkoutLogger({
             }
         }
 
-        // New specific conditions for isolation exercises (target: 15 reps)
+        // New specific conditions for isolation exercises (target: 16 reps)
         if (!isCompound) {
             if (lastReps === 16 && lastRir >= 1) {
                 // Isolation: Hit 16 reps with RIR >= 1 → Ready to increase weight
@@ -98,8 +98,8 @@ export function InlineWorkoutLogger({
                     bgClass: 'bg-emerald-500/10 border-emerald-500/20'
                 }
             }
-            if (lastReps === 15 && lastRir === 0) {
-                // Isolation: Hit 15 reps at failure → Add 1 rep next time
+            if (lastReps === 16 && lastRir === 0) {
+                // Isolation: Hit 16 reps at failure → Add 1 rep next time
                 return {
                     type: 'add-rep',
                     text: 'Rep',
