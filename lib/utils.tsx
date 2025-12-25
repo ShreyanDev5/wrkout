@@ -208,7 +208,7 @@ export function isCompoundExercise(exerciseName: string): boolean {
     'hip thrust', 'romanian', 'rdl', 'good morning', 'step up',
     'hack squat', 'goblet squat', 'front squat', 'back squat',
     // Full body compounds
-    'clean', 'snatch', 'thruster', 'muscle up', 'burpee'
+    'clean', 'snatch', 'thruster', 'muscle up', 'burpee', 'farmer'
   ]
 
   // Isolation exercises: single-joint movements (returns false)
@@ -218,14 +218,18 @@ export function isCompoundExercise(exerciseName: string): boolean {
     // Triceps isolation
     'tricep extension', 'skull crusher', 'kickback', 'pushdown',
     // Shoulder isolation
-    'lateral raise', 'front raise', 'rear delt', 'reverse fly', 'face pull',
+    'lateral raise', 'side raise', 'front raise', 'rear delt', 'reverse fly', 'face pull', 'shrug',
     // Chest isolation
     'fly', 'flye', 'crossover', 'pec deck',
     // Leg isolation
-    'leg curl', 'leg extension', 'calf raise', 'calf press',
-    'hip abduction', 'hip adduction', 'glute bridge',
+    'leg curl', 'leg extension', 'calf', 'calves', // Covers 'calf raise', 'calf press'
+    'hip abduction', 'hip adduction', 'adductor', 'abductor', 'glute bridge',
     // Back isolation
-    'pullover', 'straight arm'
+    'pullover', 'straight arm', 'back extension', 'hyperextension',
+    // Core / Abs (High rep targets)
+    'crunch', 'sit up', 'situp', 'plank', 'russian twist', 'leg raise', 'ab wheel',
+    'rollout', 'toes to bar', 'v-up', 'hollow', 'dragon flag', 'flutter kick',
+    'scissor kick', 'cocoon', 'vacuum', 'oblique', 'core', 'woodchopper', 'cable chop', 'twist'
   ]
 
   // Check isolation first (more specific matches)
