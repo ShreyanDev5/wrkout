@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Check, X, RefreshCw, TrendingUp, ArrowUp } from "lucide-react"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { useHaptics } from "@/hooks/use-haptics"
-import { getLocalDateYYYYMMDD } from "@/lib/utils"
+import { getLocalDateYYYYMMDD, isCompoundExercise } from "@/lib/utils"
 
 interface InlineWorkoutLoggerProps {
     exercise: Exercise
@@ -54,11 +54,63 @@ export function InlineWorkoutLogger({
     const [rir, setRir] = useState(1) // Deliberate entry: Default to neutral 1 each time
     const [isSaving, setIsSaving] = useState(false)
 
-    // Smart guidance based on last log's RIR - with colors matching Progress screen
+    // Smart guidance based on last log's RIR and reps - with colors matching Progress screen
     const guidance = useMemo(() => {
         if (!lastLog || lastLog.rir === undefined || lastLog.rir === null) return null
 
         const lastRir = lastLog.rir
+        const lastReps = lastLog.avg_reps
+        const isCompound = isCompoundExercise(exercise.name)
+
+        // New specific conditions for compound exercises (target: 10 reps)
+        if (isCompound) {
+            if (lastReps === 11 && lastRir >= 1) {
+                // Compound: Hit 11 reps with RIR >= 1 → Ready to increase weight
+                return {
+                    type: 'add-weight',
+                    text: 'Weight',
+                    icon: ArrowUp,
+                    colorClass: 'text-emerald-500',
+                    bgClass: 'bg-emerald-500/10 border-emerald-500/20'
+                }
+            }
+            if (lastReps === 10 && lastRir === 0) {
+                // Compound: Hit 10 reps at failure → Add 1 rep next time
+                return {
+                    type: 'add-rep',
+                    text: 'Rep',
+                    icon: TrendingUp,
+                    colorClass: 'text-amber-500',
+                    bgClass: 'bg-amber-500/10 border-amber-500/20'
+                }
+            }
+        }
+
+        // New specific conditions for isolation exercises (target: 15 reps)
+        if (!isCompound) {
+            if (lastReps === 16 && lastRir >= 1) {
+                // Isolation: Hit 16 reps with RIR >= 1 → Ready to increase weight
+                return {
+                    type: 'add-weight',
+                    text: 'Weight',
+                    icon: ArrowUp,
+                    colorClass: 'text-emerald-500',
+                    bgClass: 'bg-emerald-500/10 border-emerald-500/20'
+                }
+            }
+            if (lastReps === 15 && lastRir === 0) {
+                // Isolation: Hit 15 reps at failure → Add 1 rep next time
+                return {
+                    type: 'add-rep',
+                    text: 'Rep',
+                    icon: TrendingUp,
+                    colorClass: 'text-amber-500',
+                    bgClass: 'bg-amber-500/10 border-amber-500/20'
+                }
+            }
+        }
+
+        // Existing fallback logic based on RIR only
         if (lastRir === 0) {
             // RIR 0: At limit, repeat same weight/reps - Red accent
             return {
@@ -87,7 +139,7 @@ export function InlineWorkoutLogger({
                 bgClass: 'bg-emerald-500/10 border-emerald-500/20'
             }
         }
-    }, [lastLog])
+    }, [lastLog, exercise.name])
 
 
     // Audio context init

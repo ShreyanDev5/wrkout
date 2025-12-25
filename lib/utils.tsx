@@ -184,3 +184,64 @@ export function getExerciseWorkoutType(exerciseName: string): string[] {
   // Default fallback if no match found
   return ['mixed']
 }
+
+/**
+ * Determines if an exercise is a compound (multi-joint) movement.
+ * Compound exercises typically involve multiple muscle groups and joints.
+ * Used for smart progression logic with different rep thresholds.
+ */
+export function isCompoundExercise(exerciseName: string): boolean {
+  const name = exerciseName.toLowerCase()
+
+  // Compound exercises: multi-joint movements
+  const compoundKeywords = [
+    // Chest compounds
+    'bench press', 'bench', 'push up', 'pushup', 'dip',
+    // Back compounds
+    'row', 'pull up', 'pullup', 'chin up', 'chinup', 'lat pulldown', 'deadlift',
+    'rack pull', 'barbell row', 'pendlay', 't-bar',
+    // Shoulder compounds
+    'overhead press', 'ohp', 'military press', 'shoulder press', 'push press',
+    'arnold press', 'landmine press', 'viking press',
+    // Leg compounds
+    'squat', 'leg press', 'lunge', 'split squat', 'bulgarian',
+    'hip thrust', 'romanian', 'rdl', 'good morning', 'step up',
+    'hack squat', 'goblet squat', 'front squat', 'back squat',
+    // Full body compounds
+    'clean', 'snatch', 'thruster', 'muscle up', 'burpee'
+  ]
+
+  // Isolation exercises: single-joint movements (returns false)
+  const isolationKeywords = [
+    // Biceps isolation
+    'curl', 'bicep',
+    // Triceps isolation
+    'tricep extension', 'skull crusher', 'kickback', 'pushdown',
+    // Shoulder isolation
+    'lateral raise', 'front raise', 'rear delt', 'reverse fly', 'face pull',
+    // Chest isolation
+    'fly', 'flye', 'crossover', 'pec deck',
+    // Leg isolation
+    'leg curl', 'leg extension', 'calf raise', 'calf press',
+    'hip abduction', 'hip adduction', 'glute bridge',
+    // Back isolation
+    'pullover', 'straight arm'
+  ]
+
+  // Check isolation first (more specific matches)
+  for (const keyword of isolationKeywords) {
+    if (name.includes(keyword)) {
+      return false
+    }
+  }
+
+  // Check compound keywords
+  for (const keyword of compoundKeywords) {
+    if (name.includes(keyword)) {
+      return true
+    }
+  }
+
+  // Default: treat as compound (safer for progression)
+  return true
+}
