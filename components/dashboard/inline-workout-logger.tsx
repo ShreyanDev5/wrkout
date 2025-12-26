@@ -55,89 +55,60 @@ export function InlineWorkoutLogger({
     const [isSaving, setIsSaving] = useState(false)
 
     // Smart guidance based on last log's RIR and reps - with colors matching Progress screen
+    const getProgressionAdvice = (isCompound: boolean, reps: number, rir: number) => {
+        // 1. Override Logic: High Rep Thresholds (Force Weight Increase)
+        if (isCompound && reps >= 12) return 'increase-weight'
+        if (!isCompound && reps >= 17) return 'increase-weight'
+
+        // 2. Special Cases: Visual Indicator Only (No Automatic Rep Increment)
+        if (isCompound && reps === 11 && rir === 0) return 'visual-increase-rep'
+        if (!isCompound && reps === 16 && rir === 0) return 'visual-increase-rep'
+
+        // 3. Standard Logic
+        if (isCompound) {
+            if (reps === 11 && rir >= 1) return 'increase-weight'
+        }
+        if (!isCompound) {
+            if (reps === 16 && rir >= 1) return 'increase-weight'
+        }
+
+        // 4. Fallback Logic
+        if (rir === 0) return 'repeat'
+        if (rir <= 2) return 'increase-rep'
+        return 'increase-weight'
+    }
+
     const guidance = useMemo(() => {
         if (!lastLog || lastLog.rir === undefined || lastLog.rir === null) return null
 
-        const lastRir = lastLog.rir
-        const lastReps = lastLog.avg_reps
         const isCompound = isCompoundExercise(exercise.name)
+        const advice = getProgressionAdvice(isCompound, lastLog.avg_reps, lastLog.rir)
 
-        // New specific conditions for compound exercises (target: 11 reps)
-        if (isCompound) {
-            if (lastReps === 11 && lastRir >= 1) {
-                // Compound: Hit 11 reps with RIR >= 1 → Ready to increase weight
+        switch (advice) {
+            case 'increase-weight':
                 return {
-                    type: 'add-weight',
                     text: 'Weight',
                     icon: ArrowUp,
                     colorClass: 'text-emerald-500',
                     bgClass: 'bg-emerald-500/10 border-emerald-500/20'
                 }
-            }
-            if (lastReps === 11 && lastRir === 0) {
-                // Compound: Hit 11 reps at failure → Add 1 rep next time
+            case 'increase-rep':
+            case 'visual-increase-rep': // Visual only: Shows "Rep" but logic handles data differently
                 return {
-                    type: 'add-rep',
                     text: 'Rep',
                     icon: TrendingUp,
                     colorClass: 'text-amber-500',
                     bgClass: 'bg-amber-500/10 border-amber-500/20'
                 }
-            }
-        }
-
-        // New specific conditions for isolation exercises (target: 16 reps)
-        if (!isCompound) {
-            if (lastReps === 16 && lastRir >= 1) {
-                // Isolation: Hit 16 reps with RIR >= 1 → Ready to increase weight
+            case 'repeat':
                 return {
-                    type: 'add-weight',
-                    text: 'Weight',
-                    icon: ArrowUp,
-                    colorClass: 'text-emerald-500',
-                    bgClass: 'bg-emerald-500/10 border-emerald-500/20'
+                    text: 'Repeat',
+                    icon: RefreshCw,
+                    colorClass: 'text-red-500',
+                    bgClass: 'bg-red-500/10 border-red-500/20'
                 }
-            }
-            if (lastReps === 16 && lastRir === 0) {
-                // Isolation: Hit 16 reps at failure → Add 1 rep next time
-                return {
-                    type: 'add-rep',
-                    text: 'Rep',
-                    icon: TrendingUp,
-                    colorClass: 'text-amber-500',
-                    bgClass: 'bg-amber-500/10 border-amber-500/20'
-                }
-            }
-        }
-
-        // Existing fallback logic based on RIR only
-        if (lastRir === 0) {
-            // RIR 0: At limit, repeat same weight/reps - Red accent
-            return {
-                type: 'repeat',
-                text: 'Repeat',
-                icon: RefreshCw,
-                colorClass: 'text-red-500',
-                bgClass: 'bg-red-500/10 border-red-500/20'
-            }
-        } else if (lastRir <= 2) {
-            // RIR 1-2: Room for 1 more rep - Amber accent
-            return {
-                type: 'add-rep',
-                text: 'Rep',
-                icon: TrendingUp,
-                colorClass: 'text-amber-500',
-                bgClass: 'bg-amber-500/10 border-amber-500/20'
-            }
-        } else {
-            // RIR 3+: Ready to increase weight - Emerald accent
-            return {
-                type: 'add-weight',
-                text: 'Weight',
-                icon: ArrowUp,
-                colorClass: 'text-emerald-500',
-                bgClass: 'bg-emerald-500/10 border-emerald-500/20'
-            }
+            default:
+                return null
         }
     }, [lastLog, exercise.name])
 
@@ -166,8 +137,22 @@ export function InlineWorkoutLogger({
             ; (window as any).playTickSound()
         }
 
-        // Deliberate entry: DO NOT store RIR in lastUsedValues to prevent pre-filling
-        setLastUsedValues(exercise.id, { weight, reps, sets, rir: 1 }) // Reset to neutral 1 in storage
+        // Calculate next session's values based on THIS session's performance
+        let nextWeight = weight
+        let nextReps = reps
+        const isCompound = isCompoundExercise(exercise.name)
+        const progression = getProgressionAdvice(isCompound, reps, rir)
+
+        if (progression === 'increase-weight') {
+            nextWeight += 5
+        } else if (progression === 'increase-rep') {
+            nextReps += 1
+        }
+        // if 'repeat' or 'visual-increase-rep', values stay the same
+
+        // Deliberate entry: DO NOT store RIR in lastUsedValues to prevent pre-filling (reset to 1)
+        // Store the PROGRESSIVE values for the next session
+        setLastUsedValues(exercise.id, { weight: nextWeight, reps: nextReps, sets, rir: 1 })
 
         // Optimistic Save
         const log: WorkoutLog = {
