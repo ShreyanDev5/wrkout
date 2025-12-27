@@ -51,7 +51,7 @@ export function InlineWorkoutLogger({
     const [weight, setWeight] = useState(lastValues.weight ?? (isBodyweightExercise ? 0 : 20))
     const [reps, setReps] = useState(lastValues.reps || 10)
     const [sets, setSets] = useState(lastValues.sets || 3)
-    const [rir, setRir] = useState(1) // Deliberate entry: Default to neutral 1 each time
+    const [rir, setRir] = useState(0) // Deliberate entry: Default to neutral 0 each time
     const [isSaving, setIsSaving] = useState(false)
 
     // Smart guidance based on last log's RIR and reps - with colors matching Progress screen
