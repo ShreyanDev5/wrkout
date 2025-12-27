@@ -82,7 +82,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "method",
     title: "The Golden Rule",
     subtitle: "Smart Logging",
-    description: "By default, log your final working set. You can also enter a rough average of your sets based on your judgment.",
+    description: "Log your final working set—or an approximate average based on feel.",
     icon: TrendingUp,
     color: "from-emerald-500 to-teal-600",
     content: (
@@ -139,7 +139,7 @@ const onboardingSteps: OnboardingStep[] = [
           {
             title: "Weekly Volume",
             meta: "Working Sets",
-            desc: "10-20 working sets (not warm-ups) per muscle/week. Start lower, build up.",
+            desc: "10-22 working sets per muscle group/week. For all levels.",
             icon: BarChart3,
             color: "text-blue-400",
             bg: "bg-blue-500/10",
@@ -171,8 +171,8 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: "blueprint",
     title: "The Blueprint",
-    subtitle: "Rules of Engagement",
-    description: "General guidelines for intermediate trainers. Adjust based on your experience level.",
+    subtitle: "Rep Ranges",
+    description: "Aim for these rep ranges. Add weight or reps over time.",
     icon: List,
     color: "from-violet-500 to-fuchsia-500",
     content: (
@@ -187,7 +187,7 @@ const onboardingSteps: OnboardingStep[] = [
             <h4 className="text-[11px] font-bold text-fuchsia-100 uppercase tracking-wide">Progression Goal</h4>
           </div>
           <p className="text-[12px] text-zinc-300 leading-relaxed">
-            Aim for <span className="text-white font-bold">+1-2.5kg</span> OR <span className="text-white font-bold">+1-2 reps</span> when ready
+            Aim for <span className="text-white font-bold">+5kg</span> OR <span className="text-white font-bold">+1-2 reps</span> when ready
           </p>
         </div>
 
@@ -225,14 +225,14 @@ const onboardingSteps: OnboardingStep[] = [
             <div className="h-6 w-6 rounded-lg bg-violet-500/20 flex items-center justify-center">
               <BarChart3 className="h-3.5 w-3.5 text-violet-400" />
             </div>
-            <h4 className="text-[11px] font-bold text-violet-100 uppercase tracking-wide">Sets per Muscle / Week</h4>
+            <h4 className="text-[11px] font-bold text-violet-100 uppercase tracking-wide">Sets per Muscle Group / Week</h4>
           </div>
 
           <div className="space-y-1.5">
             {[
-              { level: "Beginner", sets: "6-10", desc: "Build work capacity", color: "text-emerald-400", bg: "bg-emerald-500/10", active: false },
-              { level: "Intermediate", sets: "12-15", desc: "Growth sweet spot", color: "text-amber-400", bg: "bg-amber-500/15", active: true },
-              { level: "Advanced", sets: "18-22", desc: "High volume phase", color: "text-red-400", bg: "bg-red-500/10", active: false },
+              { level: "Beginner", sets: "8-12", desc: "Build work capacity", color: "text-emerald-400", bg: "bg-emerald-500/10", active: false },
+              { level: "Intermediate", sets: "12-16", desc: "Growth sweet spot", color: "text-amber-400", bg: "bg-amber-500/15", active: true },
+              { level: "Advanced", sets: "16-22", desc: "High volume phase", color: "text-red-400", bg: "bg-red-500/10", active: false },
             ].map((tier, i) => (
               <div
                 key={i}
@@ -266,17 +266,25 @@ const onboardingSteps: OnboardingStep[] = [
     id: "rir",
     title: "RIR & Safety",
     subtitle: "The Guardrails",
-    description: "RIR = Reps in Reserve (how many reps you could still do). Manage fatigue smartly.",
+    description: "RIR = how many good reps you could still do after the set. Manage fatigue smartly.",
     icon: Zap,
     color: "from-amber-400 to-orange-500",
     content: (
       <div className="pt-1 max-w-[300px] mx-auto">
         <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-4">
 
+          {/* Smart Pre-Fill Feature Badge */}
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20">
+              <Zap className="h-3 w-3 text-violet-400" />
+              <span className="text-[9px] font-bold text-violet-200 uppercase tracking-wide">Smart Pre-Fill</span>
+            </div>
+          </div>
+
           {/* Context Helper */}
           <div className="text-center px-2">
-            <p className="text-[11px] text-zinc-400 leading-snug">
-              Smart indicators appear while logging, based on your <span className="text-zinc-200 font-medium">previous session's RIR</span>.
+            <p className="text-[10px] text-zinc-400 leading-snug">
+              Next session auto-adjusts based on RIR. At rep limits (12+ compound, 17+ isolation), weight increases trigger automatically.
             </p>
           </div>
 
