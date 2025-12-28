@@ -185,7 +185,7 @@ export async function saveWorkoutLog(supabase: any, log: WorkoutLog, userId: str
       updated_at: log.updated_at
     }
   ], {
-    onConflict: 'user_id,exercise_name,performed_at'
+    onConflict: 'user_id,exercise_name,performed_at,workout_day_id'
   });
 }
 

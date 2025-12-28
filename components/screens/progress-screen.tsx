@@ -101,8 +101,10 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
               // Use the latest log to determine context (usually all logs for one exercise are in one session)
               const latestLog = logs[logs.length - 1]
 
-              let effectiveDayType = dominantType
+              let effectiveDayType = dominantType // Fallback to keyword matching
+
               if (latestLog?.workout_day_id) {
+                // If we have a robust DB link to the day, use it!
                 const sessionDayType = dayIdMap.get(latestLog.workout_day_id)
                 if (sessionDayType) {
                   effectiveDayType = sessionDayType

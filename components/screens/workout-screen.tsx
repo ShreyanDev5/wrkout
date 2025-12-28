@@ -161,10 +161,17 @@ export function WorkoutScreen({
   const completedLogs = useMemo(() => {
     const logsMap = new Map<string, WorkoutLog>()
 
-    // Filter logs for today and current workout
+    // Get current day ID to scope the checks
+    // This ensures checking "Leg Raises" on Pull Day doesn't check it on Leg Day
+    const currentDay = workoutDays.find(d => d.day_id === selectedDay && d.workout_id === selectedWorkout)
+
+    // Filter logs for today and current workout AND current day
     const todaysLogs = logs.filter(log =>
       log.workout_id === selectedWorkout &&
-      log.performed_at === today
+      log.performed_at === today &&
+      // STRICT CHECK: Log must belong to this specific day (routine)
+      // We handle legacy/null logs gracefully (though they might not show as checked, which is safer than false positives)
+      (currentDay ? log.workout_day_id === currentDay.id : true)
     )
 
     todaysLogs.forEach(log => {
@@ -172,7 +179,7 @@ export function WorkoutScreen({
     })
 
     return logsMap
-  }, [logs, selectedWorkout, today])
+  }, [logs, selectedWorkout, today, selectedDay, workoutDays])
 
   const completedExerciseNames = useMemo(() => {
     return new Set(completedLogs.keys())
