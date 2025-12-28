@@ -145,6 +145,13 @@ export function InlineWorkoutLogger({
 
         if (progression === 'increase-weight') {
             nextWeight += 5
+
+            // Universal rule: Always reset reps when increasing weight
+            if (isCompound) {
+                nextReps = 6
+            } else {
+                nextReps = 10
+            }
         } else if (progression === 'increase-rep') {
             nextReps += 1
         }
