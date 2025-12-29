@@ -124,8 +124,14 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                   className="group"
                 >
                   <div
-                    className="relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 border-l-[3px] rounded-[18px] p-2.5 shadow-md transition-all hover:bg-zinc-900/60 overflow-hidden group-hover:border-zinc-700/50"
-                    style={{ borderLeftColor: dayColor }}
+                    className="relative bg-zinc-900/40 backdrop-blur-md rounded-[18px] px-2.5 py-3.5 transition-all hover:bg-zinc-900/60 overflow-hidden"
+                    style={{
+                      borderLeft: `3px solid ${dayColor}`,
+                      borderTop: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
+                      borderRight: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
+                      borderBottom: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
+                      boxShadow: `0 1px 8px -4px color-mix(in srgb, ${dayColor} 8%, transparent), 0 1px 2px rgba(0,0,0,0.1)`
+                    }}
                   >
 
                     {/* Very faint background tint for premium feel */}
@@ -134,7 +140,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       style={{ backgroundColor: dayColor }}
                     />
 
-                    <div className="flex flex-col gap-2 pl-2">
+                    <div className="flex flex-col gap-2.5 pl-2">
                       {/* Exercise Header - Compact */}
 
                       <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">

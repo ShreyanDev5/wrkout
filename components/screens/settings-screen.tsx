@@ -777,7 +777,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
         {/* Account Actions */}
         <section className="pt-6">
-          <div className="relative bg-zinc-800/60 border border-zinc-700/50 rounded-2xl p-4">
+          <div className="relative border border-zinc-700/50 rounded-2xl p-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
@@ -800,7 +800,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-900/20 transition-all text-xs font-medium"
+                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
                   onClick={() => setIsSignOutOpen(true)}
                 >
                   Sign Out
