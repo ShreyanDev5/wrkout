@@ -177,6 +177,10 @@ export function isCompoundExercise(exerciseName: string): boolean {
     'hip abduction', 'hip adduction', 'adductor', 'abductor', 'glute bridge',
     // Back isolation
     'pullover', 'straight arm', 'back extension', 'hyperextension',
+    // Forearm / Wrist isolation
+    'wrist', 'forearm',
+    // Neck isolation
+    'neck',
     // Core / Abs (High rep targets)
     'crunch', 'sit up', 'situp', 'plank', 'russian twist', 'leg raise', 'ab wheel',
     'rollout', 'toes to bar', 'v-up', 'hollow', 'dragon flag', 'flutter kick',
