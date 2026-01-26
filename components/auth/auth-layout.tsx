@@ -55,8 +55,7 @@ export function AuthLayout({
               className="inline-block transition-all duration-300 hover:scale-105 hover:rotate-3"
             >
               <div className={cn(
-                "relative w-16 h-16 mx-auto bg-background/50 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border/50",
-                isMobile && "w-15 h-15" // Increased logo size slightly
+                "relative w-14 h-14 mx-auto bg-background/50 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border/50"
               )}>
                 <Image
                   src="/android-chrome-512x512.png"

@@ -225,19 +225,17 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                   className="group"
                 >
                   <div
-                    className="relative bg-zinc-900/40 backdrop-blur-md rounded-[18px] px-2.5 py-3.5 transition-all hover:bg-zinc-900/60 overflow-hidden"
+                    className="relative bg-zinc-900/30 backdrop-blur-md rounded-[18px] px-2.5 py-3.5 transition-all duration-300 overflow-hidden hover:bg-zinc-900/50 hover:!border-[var(--day-color)] hover:shadow-[0_4px_24px_-8px_var(--day-color)]"
                     style={{
-                      borderLeft: `3px solid ${dayColor}`,
-                      borderTop: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
-                      borderRight: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
-                      borderBottom: `0.5px solid color-mix(in srgb, ${dayColor} 70%, transparent)`,
-                      boxShadow: `0 1px 8px -4px color-mix(in srgb, ${dayColor} 8%, transparent), 0 1px 2px rgba(0,0,0,0.1)`
-                    }}
+                      '--day-color': dayColor,
+                      border: `1px solid color-mix(in srgb, ${dayColor} 50%, transparent)`,
+                      boxShadow: `0 0 0 1px color-mix(in srgb, ${dayColor} 30%, transparent)`
+                    } as React.CSSProperties}
                   >
 
                     {/* Very faint background tint for premium feel */}
                     <div
-                      className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                      className="absolute inset-0 opacity-[0.04] pointer-events-none"
                       style={{ backgroundColor: dayColor }}
                     />
 
