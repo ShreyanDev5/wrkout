@@ -38,29 +38,38 @@ export function WorkoutTracker() {
 
   // Main effect: load user data for logged-in users only
   useEffect(() => {
+    let isMounted = true;
     const initializeApp = async () => {
       if (!user) return;
       try {
-        // Logged in: load workouts and workout days from Supabase
-        let workouts = await loadUserWorkouts(supabase, user.id)
-        let workoutDays: WorkoutDay[] = await loadUserWorkoutDays(supabase, user.id)
-        // Remove all logic that auto-creates a default 'My Workouts' routine
-        setAppData({ workouts, workoutDays })
-        const logs = await loadWorkoutLogs(supabase, user.id)
-        setWorkoutLogs(logs)
-        // Check if this is the user's first time (onboarding not completed)
-        const onboardingCompleted = localStorage.getItem(`onboarding-completed-${user.id}`)
-        if (!onboardingCompleted) {
-          // Show onboarding after a short delay to ensure the app is loaded
-          setTimeout(() => {
-            setShowOnboarding(true)
-          }, 1000)
+        // Parallel data fetching for better performance
+        // Only fetch the last 100 logs initially to prevent data overloading
+        const [workouts, workoutDaysData, logs] = await Promise.all([
+          loadUserWorkouts(supabase, user.id),
+          loadUserWorkoutDays(supabase, user.id),
+          loadWorkoutLogs(supabase, user.id, 100) // Limit to 100 logs
+        ]);
+
+        if (isMounted) {
+          setAppData({ workouts, workoutDays: workoutDaysData })
+          setWorkoutLogs(logs)
+
+          // Check if this is the user's first time (onboarding not completed)
+          const onboardingCompleted = localStorage.getItem(`onboarding-completed-${user.id}`)
+          if (!onboardingCompleted) {
+            // Show onboarding after a short delay to ensure the app is loaded
+            setTimeout(() => {
+              setShowOnboarding(true)
+            }, 1000)
+          }
         }
       } catch (err) {
         console.error('Error initializing app data:', err)
       }
     }
     initializeApp()
+    return () => { isMounted = false }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 

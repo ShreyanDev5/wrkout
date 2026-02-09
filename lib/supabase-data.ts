@@ -162,14 +162,24 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
   }
 }
 
-// Load all workout logs for a user
-export async function loadWorkoutLogs(supabase: any, userId: string): Promise<WorkoutLog[]> {
+// Load workout logs for a user with pagination
+export async function loadWorkoutLogs(
+  supabase: any, 
+  userId: string, 
+  limit: number = 50,
+  offset: number = 0
+): Promise<WorkoutLog[]> {
   const { data, error } = await supabase
     .from('workout_logs')
     .select('*')
     .eq('user_id', userId)
-    .order('performed_at', { ascending: false });
-  if (error) return [];
+    .order('performed_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+  
+  if (error) {
+    console.error('Error loading workout logs:', error);
+    return [];
+  }
   return data || [];
 }
 
