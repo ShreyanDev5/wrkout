@@ -52,7 +52,7 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
   }
 
   return (
-    <div className={cn("space-y-2 w-full", className)}>
+    <div className={cn("space-y-2 w-full bg-secondary/20 rounded-2xl py-1.5 px-0.5 border border-white/5", className)}>
       <div className="flex items-center justify-between px-1">
         <Button
           type="button"

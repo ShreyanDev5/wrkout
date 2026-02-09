@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
 import { triggerWorkoutCompletionConfetti } from "@/lib/confetti"
 import { Button } from "@/components/ui/button"
+import { useWorkoutLogic } from "@/hooks/use-workout-logic"
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import {
@@ -153,180 +154,56 @@ export function WorkoutScreen({
   /* -------------------------------------------------------------------------
    *  SESSION & STATE MANAGEMENT (SUPABASE)
    * ------------------------------------------------------------------------- */
-  // Use a Map to store full log details for local "significance" checks
-  const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
-
-  // Derived Set for easy "is checked" lookups by children
-  // Performance Fix: Derive directly from props to ensure instant updates on tab switch
-  const completedLogs = useMemo(() => {
-    const logsMap = new Map<string, WorkoutLog>()
-
-    // Get current day ID to scope the checks
-    // This ensures checking "Leg Raises" on Pull Day doesn't check it on Leg Day
-    const currentDay = workoutDays.find(d => d.day_id === selectedDay && d.workout_id === selectedWorkout)
-
-    // Filter logs for today and current workout AND current day
-    const todaysLogs = logs.filter(log =>
-      log.workout_id === selectedWorkout &&
-      log.performed_at === today &&
-      // STRICT CHECK: Log must belong to this specific day (routine)
-      // We handle legacy/null logs gracefully (though they might not show as checked, which is safer than false positives)
-      (currentDay ? log.workout_day_id === currentDay.id : true)
-    )
-
-    todaysLogs.forEach(log => {
-      logsMap.set(log.exercise_name, log)
-    })
-
-    return logsMap
-  }, [logs, selectedWorkout, today, selectedDay, workoutDays])
-
-  const completedExerciseNames = useMemo(() => {
-    return new Set(completedLogs.keys())
-  }, [completedLogs])
-
-  const [activeProgress, setActiveProgress] = useState(0)
-
-  // Removed internal fetchSessionLogs and visibility effects 
-  // State is now fully controlled by parent WorkoutTracker
-
-
-  // Calculate Progress based on DB State (not localStorage)
-  useEffect(() => {
-    const day = currentWorkoutDays.find(d => d.day_id === selectedDay)
-    if (!day || !day.exercises?.length) {
-      setActiveProgress(0)
-      previousProgressRef.current = 0
-      return
-    }
-    const total = day.exercises.length
-    const completed = day.exercises.filter(ex => completedExerciseNames.has(ex.name)).length
-
-    // Smooth progress calculation
-    const progress = Math.round((completed / total) * 100)
-    setActiveProgress(progress)
-
-    // CRITICAL: Don't run celebration logic until selectedWorkout is properly initialized
-    // This prevents checking the wrong localStorage key on page refresh
-    if (!selectedWorkout) {
-      previousProgressRef.current = progress
-      return
-    }
-
-    // Trigger celebration if progress hits 100% - but only once per day per session
-    const celebrationKey = `confetti-celebrated-${selectedWorkout}-${selectedDay}-${today}`
-
-    // Wrap localStorage access in try-catch for mobile browser safety
-    let alreadyCelebrated = false
-    try {
-      alreadyCelebrated = localStorage.getItem(celebrationKey) === 'true'
-    } catch (e) {
-      // localStorage not available (private browsing, etc.)
-      console.warn('localStorage not available for confetti tracking')
-    }
-
-    // Sync the ref with localStorage on mount to prevent race conditions
-    if (alreadyCelebrated && !hasCelebratedRef.current) {
-      hasCelebratedRef.current = true
-    }
-
-    // KEY FIX: Only trigger confetti on GENUINE transition to 100%
-    // NOT on initial mount/refresh when data loads already at 100%
-    const previousProgress = previousProgressRef.current
-    const isGenuineCompletion = previousProgress !== null && previousProgress < 100 && progress === 100
-    const isInitialLoad = isInitialMountRef.current
-
-    if (progress === 100 && isGenuineCompletion && !isInitialLoad && !hasCelebratedRef.current && !alreadyCelebrated) {
-      triggerWorkoutCompletionConfetti()
-      hasCelebratedRef.current = true
-      try {
-        localStorage.setItem(celebrationKey, 'true')
-      } catch (e) {
-        // localStorage not available
-      }
-    } else if (progress < 100) {
-      // Reset flags if they untick something, so they can celebrate again if they complete it again.
-      hasCelebratedRef.current = false
-      try {
-        localStorage.removeItem(celebrationKey)
-      } catch (e) {
-        // localStorage not available
-      }
-    }
-
-    // Update tracking refs
-    previousProgressRef.current = progress
-    if (isInitialMountRef.current) {
-      isInitialMountRef.current = false
-    }
-  }, [selectedDay, currentWorkoutDays, completedExerciseNames, selectedWorkout, today])
-
-
+  /* -------------------------------------------------------------------------
+   *  SESSION & STATE MANAGEMENT (SUPABASE)
+   * ------------------------------------------------------------------------- */
+  // Use custom hook for logic extraction
+  const { completedLogs, completedExerciseNames, activeProgress } = useWorkoutLogic({
+    workoutId: selectedWorkout,
+    dayId: selectedDay,
+    logs,
+    workoutDays
+  })
 
   // Toggle Exercise (DB Operation)
   const handleToggleExercise = async (exerciseName: string, isCompleted: boolean) => {
-    // 1. Uncheck Flow (Potential Data Loss)
     if (!isCompleted) {
+      // 1. Uncheck Flow (Delete Log) - NON-BLOCKING "Undo" Pattern
       const log = completedLogs.get(exerciseName)
-      // Check if log is "significant" (has user entered values)
-      // We consider "0" weight and "0" reps as "placeholder" (insignificant)
-      const isSignificant = log && (log.weight > 0 || log.avg_reps > 0 || (log.sets && log.sets > 0));
+      if (!log) return
 
-      if (isSignificant) {
-        // Trigger Confirmation Dialog
-        setExerciseToDelete(exerciseName)
-        return // Stop here, wait for user confirmation
-      } else {
-        // Safe to delete immediately
-        await performDeleteLog(exerciseName)
-        return
-      }
+      // Optimistic delete handled by parent/props, but we need to trigger the actual delete
+      // We will delete immediately and show a toast to undo
+      await onDeleteWorkoutLog(log.id)
+
+      toast({
+        title: "Log deleted",
+        description: `${exerciseName} unchecked`,
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onAddWorkoutLog(log)} // Restore the exact log
+            className="border-none shadow-none bg-accent hover:bg-accent/80"
+          >
+            Undo
+          </Button>
+        ),
+        duration: 4000,
+      })
+      return
     }
 
     // 2. Check Flow (Mark as Done - Create Placeholder)
-    // Only insert if not already present (prevent overwriting if race condition)
+    // Only insert if not already present
     if (completedLogs.has(exerciseName)) return
 
-    // OPTIMISTIC CELEBRATION TRIGGER
-    // Check if this new check makes the session 100% complete
-    const currentDayData = currentWorkoutDays.find(d => d.day_id === selectedDay)
-    if (currentDayData && currentDayData.exercises.length > 0) {
-      const totalExercises = currentDayData.exercises.length
-
-      // Calculate how many of *today's* exercises are already finished
-      // We explicitly filter to match the progress calculation logic exactly
-      const currentCompletedCount = currentDayData.exercises.filter(ex =>
-        completedExerciseNames.has(ex.name)
-      ).length
-
-      // If we are adding one (which we are), will it be full?
-      if (currentCompletedCount + 1 === totalExercises) {
-        const celebrationKey = `confetti-celebrated-${selectedWorkout}-${selectedDay}-${today}`
-        let alreadyCelebrated = false
-        try {
-          alreadyCelebrated = localStorage.getItem(celebrationKey) === 'true'
-        } catch (e) {
-          // localStorage not available
-        }
-
-        if (!hasCelebratedRef.current && !alreadyCelebrated) {
-          triggerWorkoutCompletionConfetti()
-          hasCelebratedRef.current = true
-          try {
-            localStorage.setItem(celebrationKey, 'true')
-          } catch (e) {
-            // localStorage not available
-          }
-        }
-      }
-    }
-
-
+    // Celebration logic handled by the hook's effect on activeProgress change
+    // We just need to persist the data
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Upsert placeholder
       const { error } = await supabase.from('workout_logs').upsert({
         user_id: user.id,
         workout_id: selectedWorkout,
@@ -335,26 +212,21 @@ export function WorkoutScreen({
         avg_reps: 0,
         sets: 0,
         performed_at: today,
-      }, { onConflict: 'user_id, exercise_name, performed_at' })
+        workout_day_id: currentWorkoutDays.find(d => d.day_id === selectedDay)?.id
+      }, { onConflict: 'user_id, exercise_name, performed_at, workout_day_id' })
 
       if (error) throw error
-
-      // Refresh to get the real ID and data
-      // fetchSessionLogs() // Managed by parent state update
-
     } catch (error) {
       console.error('Error toggling exercise:', error)
-      // fetchSessionLogs() // Re-sync
+      toast({ title: "Failed to save log", variant: "destructive" })
     }
   }
 
-  const performDeleteLog = async (exerciseName: string) => {
-    const log = completedLogs.get(exerciseName)
-    if (!log) return
 
-    setExerciseToDelete(null) // Close dialog if open
-    await onDeleteWorkoutLog(log.id)
-  }
+
+
+
+
 
 
 
@@ -484,7 +356,7 @@ export function WorkoutScreen({
         <CardContent className="px-3 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
             <div className="mb-6 mx-auto max-w-[500px]">
-              <TabsList className="flex flex-nowrap w-full bg-zinc-900/60 border border-zinc-800/50 p-1.5 rounded-full gap-1.5 sm:gap-2">
+              <TabsList className="flex flex-nowrap w-full bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/50 p-1.5 rounded-full gap-1.5 sm:gap-2">
                 {['push', 'pull', 'leg'].map((day) => {
                   const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
 
@@ -559,25 +431,7 @@ export function WorkoutScreen({
 
       </Card>
 
-      <AlertDialog open={!!exerciseToDelete} onOpenChange={(open) => !open && setExerciseToDelete(null)}>
-        <AlertDialogContent className="max-w-[320px] rounded-xl dark:bg-zinc-950 dark:border-zinc-800">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base font-semibold">Delete log?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              This exercise has logged data. Unchecking it will delete this data efficiently.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="mt-0 h-9 text-xs rounded-lg border-opacity-10 bg-secondary/50 hover:bg-secondary border-none">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => exerciseToDelete && performDeleteLog(exerciseToDelete)}
-              className="h-9 text-xs rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 shadow-none"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
     </>
   )
 }
