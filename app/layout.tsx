@@ -13,14 +13,14 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Wrkout - Progressive Overload Tracker",
+  title: "wrkout",
   description: "Track your workouts and progressive overload journey",
   generator: 'Next.js',
-  applicationName: 'Wrkout',
+  applicationName: 'wrkout',
   keywords: ['workout', 'fitness', 'progressive overload', 'PPL', 'strength training'],
-  authors: [{ name: 'Wrkout Team' }],
-  creator: 'Wrkout Team',
-  publisher: 'Wrkout',
+  authors: [{ name: 'wrkout team' }],
+  creator: 'wrkout team',
+  publisher: 'wrkout',
   formatDetection: {
     telephone: false,
   },

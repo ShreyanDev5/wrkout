@@ -59,7 +59,7 @@ export function AuthLayout({
               )}>
                 <Image
                   src="/android-chrome-512x512.png"
-                  alt="Wrkout Logo"
+                  alt="wrkout logo"
                   width={64}
                   height={64}
                   className="w-full h-full object-contain"
