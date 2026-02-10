@@ -13,9 +13,10 @@ import type { Workout, WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getWorkoutDayIcon, getLocalDateYYYYMMDD } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { saveLastWorkoutSection, loadLastWorkoutSection, saveSelectedWorkout, loadSelectedWorkout } from "@/lib/storage"
-import { triggerWorkoutCompletionConfetti } from "@/lib/confetti"
+
 import { Button } from "@/components/ui/button"
 import { useWorkoutLogic } from "@/hooks/use-workout-logic"
+import { CompletionModal } from "@/components/modals/completion-modal"
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import {
@@ -79,6 +80,7 @@ export function WorkoutScreen({
 
   // Track if this is the initial data load (to skip confetti on refresh with completed data)
   const isInitialMountRef = useRef(true)
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
@@ -164,6 +166,31 @@ export function WorkoutScreen({
     logs,
     workoutDays
   })
+
+  // Completion Modal Logic
+  useEffect(() => {
+    // Skip if no workout selected
+    if (!selectedWorkout) {
+      previousProgressRef.current = activeProgress
+      return
+    }
+
+    const previousProgress = previousProgressRef.current
+    const isGenuineCompletion = previousProgress !== null && previousProgress < 100 && activeProgress === 100
+    const isInitialLoad = isInitialMountRef.current
+
+    if (activeProgress === 100 && isGenuineCompletion && !isInitialLoad && !hasCelebratedRef.current) {
+      setShowCompletionModal(true)
+      hasCelebratedRef.current = true
+    } else if (activeProgress < 100) {
+      hasCelebratedRef.current = false
+    }
+
+    previousProgressRef.current = activeProgress
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false
+    }
+  }, [activeProgress, selectedWorkout])
 
   // Toggle Exercise (DB Operation)
   const handleToggleExercise = async (exerciseName: string, isCompleted: boolean) => {
@@ -386,24 +413,6 @@ export function WorkoutScreen({
               </TabsList>
             </div>
 
-            {/* Progress Header - Minimalist Session Only */}
-            {activeProgress > 0 && (
-              <div className="mb-6 px-1 mx-auto max-w-[95%]">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                  <span className="font-medium tracking-tight">Session Progress</span>
-                  <span className="font-mono tracking-tighter">{activeProgress}%</span>
-                </div>
-                <div className="h-1 w-full bg-secondary/30 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${activeProgress}%`,
-                      backgroundColor: getWorkoutDayColor(selectedDay, colorMode)
-                    }}
-                  />
-                </div>
-              </div>
-            )}
 
             {currentWorkoutDays.map((day) => (
               <TabsContent key={day.id} value={day.day_id} className="mt-0">
@@ -431,7 +440,10 @@ export function WorkoutScreen({
 
       </Card>
 
-
+      <CompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => setShowCompletionModal(false)}
+      />
     </>
   )
 }
