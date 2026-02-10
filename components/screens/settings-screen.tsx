@@ -68,20 +68,20 @@ const ExerciseItem = memo(({
             size="sm"
             onClick={() => onMoveUp(dayId, index)}
             disabled={index === 0}
-            className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
+            className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
             aria-label={`Move ${exercise.name} up`}
           >
-            <ArrowUp className="h-2.5 w-2.5" aria-hidden="true" />
+            <ArrowUp className="h-4 w-4" aria-hidden="true" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onMoveDown(dayId, index)}
             disabled={index === totalExercises - 1}
-            className="h-5 w-5 p-0 rounded-full transition-all hover:bg-zinc-700 disabled:opacity-30"
+            className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
             aria-label={`Move ${exercise.name} down`}
           >
-            <ArrowDown className="h-2.5 w-2.5" aria-hidden="true" />
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
         <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1" title={exercise.name}>
@@ -817,8 +817,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                <Plus className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Plus className="h-5 w-5 text-blue-500" />
               </div>
               <DialogTitle className="text-center text-lg font-semibold">New Routine</DialogTitle>
             </div>
@@ -847,8 +847,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-green-500" />
               </div>
               <DialogTitle className="text-center text-lg font-semibold">Add Session</DialogTitle>
             </div>
@@ -907,8 +907,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
           <DialogHeader>
             <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
-                <Dumbbell className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-purple-500" />
               </div>
               <DialogTitle className="text-center text-lg font-semibold">New Exercise</DialogTitle>
             </div>
