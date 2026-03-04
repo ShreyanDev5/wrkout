@@ -131,7 +131,7 @@ export function InlineWorkoutLogger({
         }
 
         setIsSaving(true)
-        haptic("success")
+        haptic("medium")
         // Play tick sound for satisfaction
         if ((window as any).playTickSound) {
             ; (window as any).playTickSound()

@@ -25,8 +25,10 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
     useEffect(() => {
         setIsMounted(true)
         if (isOpen) {
-            // Small delay to match the visual pop
-            const timer = setTimeout(() => haptic("success"), 100)
+            // Delay increased to 300ms to allow the DOM to render the new Dialog,
+            // prevent overlap with the 'Done' button haptic from the inline logger,
+            // and sync perfectly with the peak of the visual pop animation.
+            const timer = setTimeout(() => haptic("success"), 300)
             return () => clearTimeout(timer)
         }
     }, [isOpen, haptic])

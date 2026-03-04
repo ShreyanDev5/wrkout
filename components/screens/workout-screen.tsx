@@ -78,7 +78,7 @@ export function WorkoutScreen({
   // Track previous progress to detect genuine transitions to 100%
   const previousProgressRef = useRef<number | null>(null)
 
-  // Track if this is the initial data load (to skip confetti on refresh with completed data)
+  // Track if this is the initial data load
   const isInitialMountRef = useRef(true)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
 
