@@ -263,81 +263,6 @@ const onboardingSteps: OnboardingStep[] = [
     )
   },
   {
-    id: "rir",
-    title: "RIR & Safety",
-    subtitle: "The Guardrails",
-    description: "RIR = how many good reps you could still do after the set. Manage fatigue smartly.",
-    icon: Zap,
-    color: "from-amber-400 to-orange-500",
-    content: (
-      <div className="pt-1 max-w-[300px] mx-auto">
-        <div className="bg-zinc-900/50 rounded-xl border border-white/5 p-3 space-y-4">
-
-          {/* Smart Pre-Fill Feature Badge */}
-          <div className="flex justify-center">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20">
-              <Zap className="h-3 w-3 text-violet-400" />
-              <span className="text-[9px] font-bold text-violet-200 uppercase tracking-wide">Smart Pre-Fill</span>
-            </div>
-          </div>
-
-          {/* Context Helper */}
-          <div className="text-center px-2">
-            <p className="text-[10px] text-zinc-400 leading-snug">
-              Next session auto-adjusts based on RIR. At rep limits (12+ compound, 17+ isolation), weight increases trigger automatically.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            {[
-              {
-                text: "Repeat",
-                sub: "Hit limit (RIR 0)",
-                icon: RefreshCw,
-                color: "text-red-500",
-                bg: "bg-red-500/10 border-red-500/20"
-              },
-              {
-                text: "Rep",
-                sub: "Add 1 Rep (RIR 1-2)",
-                icon: TrendingUp,
-                color: "text-amber-500",
-                bg: "bg-amber-500/10 border-amber-500/20"
-              },
-              {
-                text: "Weight",
-                sub: "Increase Load (RIR 3+)",
-                icon: ArrowUp,
-                color: "text-emerald-500",
-                bg: "bg-emerald-500/10 border-emerald-500/20"
-              },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between group">
-                {/* The Pill Visual */}
-                <div className={`flex items-center gap-2 h-9 px-3 rounded-full border ${item.bg}`}>
-                  <item.icon className={`h-4 w-4 ${item.color}`} strokeWidth={2.5} />
-                  <span className={`text-[11px] font-bold tracking-tight ${item.color}`}>{item.text}</span>
-                </div>
-
-                {/* Explanation */}
-                <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide">{item.sub}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Safety Rule - Compact */}
-          <div className="flex items-center gap-2.5 pt-2 border-t border-white/5 mx-1">
-            <AlertTriangle className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-            <p className="text-[10px] text-zinc-500 leading-tight">
-              Honest logging = accurate guidance.
-            </p>
-          </div>
-
-        </div>
-      </div>
-    )
-  },
-  {
     id: "insight",
     title: "Daily Focus",
     subtitle: "The Momentum",
@@ -361,7 +286,7 @@ const onboardingSteps: OnboardingStep[] = [
         {/* Cards Mock */}
         <div className="space-y-1.5">
           {[
-            { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", rir: "3", bar: "bg-amber-500", text: "text-amber-500" }
+            { label: "PUSH", name: "Chest Press", w: "37.5", r: "10", s: "3", bar: "bg-amber-500", text: "text-amber-500" }
           ].map((card, i) => (
             <div
               key={i}
@@ -376,16 +301,15 @@ const onboardingSteps: OnboardingStep[] = [
                   <h4 className="text-[12px] font-bold text-white truncate">{card.name}</h4>
                 </div>
 
-                <div className="grid grid-cols-4 gap-1">
+                <div className="grid grid-cols-3 gap-1">
                   {[
                     { l: "WEIGHT", v: card.w },
                     { l: "REPS", v: card.r },
-                    { l: "SETS", v: card.s },
-                    { l: "RIR", v: card.rir }
+                    { l: "SETS", v: card.s }
                   ].map((stat, j) => (
                     <div key={j} className="bg-zinc-950 rounded py-0.5 px-0.5 flex flex-col items-center">
                       <span className="text-[8px] text-zinc-600 font-bold uppercase">{stat.l}</span>
-                      <span className={cn("text-[10px] font-bold text-zinc-300", stat.l === "RIR" && "text-emerald-500")}>{stat.v}</span>
+                      <span className="text-[10px] font-bold text-zinc-300">{stat.v}</span>
                     </div>
                   ))}
                 </div>

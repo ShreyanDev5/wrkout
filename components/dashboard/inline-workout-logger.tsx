@@ -8,10 +8,10 @@ import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { v4 as uuidv4 } from 'uuid'
 import { motion, AnimatePresence } from "framer-motion"
-import { Check, X, RefreshCw, TrendingUp, ArrowUp } from "lucide-react"
+import { Check } from "lucide-react"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { useHaptics } from "@/hooks/use-haptics"
-import { getLocalDateYYYYMMDD, isCompoundExercise } from "@/lib/utils"
+import { getLocalDateYYYYMMDD } from "@/lib/utils"
 
 interface InlineWorkoutLoggerProps {
     exercise: Exercise
@@ -47,71 +47,10 @@ export function InlineWorkoutLogger({
         return bwKeywords.some(k => name.includes(k))
     }, [exercise.name])
 
-    // Pre-fill weight, reps, sets from last session - RIR always defaults to 1 (neutral)
     const [weight, setWeight] = useState(lastValues.weight ?? (isBodyweightExercise ? 0 : 20))
     const [reps, setReps] = useState(lastValues.reps || 10)
     const [sets, setSets] = useState(lastValues.sets || 3)
-    const [rir, setRir] = useState(0) // Deliberate entry: Default to neutral 0 each time
     const [isSaving, setIsSaving] = useState(false)
-
-    // Smart guidance based on last log's RIR and reps - with colors matching Progress screen
-    const getProgressionAdvice = (isCompound: boolean, reps: number, rir: number) => {
-        // 1. Override Logic: High Rep Thresholds (Force Weight Increase)
-        if (isCompound && reps >= 12) return 'increase-weight'
-        if (!isCompound && reps >= 17) return 'increase-weight'
-
-        // 2. Special Cases: Visual Indicator Only (No Automatic Rep Increment)
-        if (isCompound && reps === 11 && rir === 0) return 'visual-increase-rep'
-        if (!isCompound && reps === 16 && rir === 0) return 'visual-increase-rep'
-
-        // 3. Standard Logic
-        if (isCompound) {
-            if (reps === 11 && rir >= 1) return 'increase-weight'
-        }
-        if (!isCompound) {
-            if (reps === 16 && rir >= 1) return 'increase-weight'
-        }
-
-        // 4. Fallback Logic
-        if (rir === 0) return 'repeat'
-        if (rir <= 2) return 'increase-rep'
-        return 'increase-weight'
-    }
-
-    const guidance = useMemo(() => {
-        if (!lastLog || lastLog.rir === undefined || lastLog.rir === null) return null
-
-        const isCompound = isCompoundExercise(exercise.name)
-        const advice = getProgressionAdvice(isCompound, lastLog.avg_reps, lastLog.rir)
-
-        switch (advice) {
-            case 'increase-weight':
-                return {
-                    text: 'Weight',
-                    icon: ArrowUp,
-                    colorClass: 'text-emerald-500',
-                    bgClass: 'bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.1)]'
-                }
-            case 'increase-rep':
-            case 'visual-increase-rep': // Visual only: Shows "Rep" but logic handles data differently
-                return {
-                    text: 'Rep',
-                    icon: TrendingUp,
-                    colorClass: 'text-amber-500',
-                    bgClass: 'bg-amber-500/10 border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.1)]'
-                }
-            case 'repeat':
-                return {
-                    text: 'Repeat',
-                    icon: RefreshCw,
-                    colorClass: 'text-red-500',
-                    bgClass: 'bg-red-500/10 border-red-500/20'
-                }
-            default:
-                return null
-        }
-    }, [lastLog, exercise.name])
-
 
     // Audio context init
     useEffect(() => {
@@ -137,29 +76,9 @@ export function InlineWorkoutLogger({
             ; (window as any).playTickSound()
         }
 
-        // Calculate next session's values based on THIS session's performance
-        let nextWeight = weight
-        let nextReps = reps
-        const isCompound = isCompoundExercise(exercise.name)
-        const progression = getProgressionAdvice(isCompound, reps, rir)
-
-        if (progression === 'increase-weight') {
-            nextWeight += 5
-
-            // Universal rule: Always reset reps when increasing weight
-            if (isCompound) {
-                nextReps = 6
-            } else {
-                nextReps = 10
-            }
-        } else if (progression === 'increase-rep') {
-            nextReps += 1
-        }
-        // if 'repeat' or 'visual-increase-rep', values stay the same
-
-        // Deliberate entry: DO NOT store RIR in lastUsedValues to prevent pre-filling (reset to 1)
-        // Store the PROGRESSIVE values for the next session
-        setLastUsedValues(exercise.id, { weight: nextWeight, reps: nextReps, sets, rir: 1 })
+        // Store the actual logged values for the next session without any hidden background auto-increment logic
+        // This ensures the system behaves reliably and naturally
+        setLastUsedValues(exercise.id, { weight, reps, sets })
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -171,7 +90,6 @@ export function InlineWorkoutLogger({
             weight,
             avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB
             sets,
-            rir,
             performed_at: getLocalDateYYYYMMDD(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -196,8 +114,8 @@ export function InlineWorkoutLogger({
             }}
             className="overflow-hidden origin-top"
         >
-            <div className="pt-3 pb-5 px-1 space-y-5">
-                {/* Controls Container - Responsive Grid */}
+            <div className="pt-3 pb-5 px-1 space-y-4">
+                {/* Top Row: Weight & Reps */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-4">
                     {/* Weight (Primary) */}
                     <div className="space-y-2">
@@ -226,9 +144,12 @@ export function InlineWorkoutLogger({
                             size="large"
                         />
                     </div>
+                </div>
 
+                {/* Bottom Row: Sets & Done Button */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-4 pt-1">
                     {/* Sets (Secondary) */}
-                    <div className="space-y-2">
+                    <div className="flex flex-col justify-end space-y-2">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Sets</span>
                         <NumberStepper
                             value={sets}
@@ -237,58 +158,25 @@ export function InlineWorkoutLogger({
                             max={20}
                             className="w-full"
                             dayColor={dayColor}
+                            size="large"
                         />
                     </div>
 
-                    {/* RIR (Secondary) */}
-                    <div className="space-y-2">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">RIR</span>
-                        <NumberStepper
-                            value={rir}
-                            onChange={setRir}
-                            min={0}
-                            max={5}
-                            className="w-full"
-                            dayColor={dayColor}
-                        />
-                    </div>
-                </div>
-
-                {/* Actions Row */}
-                <div className="flex items-center gap-3 pt-1">
-                    {/* Smart Guidance Indicator - Premium minimal with RIR colors */}
-                    {guidance ? (
-                        <div className={`flex items-center gap-2.5 h-11 px-4 rounded-full border mr-auto select-none ${guidance.bgClass}`}>
-                            <guidance.icon className={`h-[18px] w-[18px] shrink-0 ${guidance.colorClass}`} strokeWidth={2.5} />
-                            <span className={`text-sm font-semibold tracking-tight ${guidance.colorClass}`}>{guidance.text}</span>
-                        </div>
-                    ) : (
-                        <div className="flex-1" /> // Unused spacer
-                    )}
-
-                    {/* Actions - Right Aligned & Symmetrical */}
-                    <div className="flex items-center gap-2.5 flex-1 justify-end">
-                        {/* Cancel Button - Matches Done button styling with neutral colors */}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={onCancel}
-                            className="h-11 w-11 rounded-full bg-zinc-700/40 hover:bg-zinc-600/50 text-zinc-300 transition-colors shrink-0 border-none"
-                        >
-                            <X className="h-5 w-5" />
-                        </Button>
-
-                        {/* Done Button */}
+                    {/* Done Button - Exactly matching stepper height for symmetry */}
+                    <div className="flex flex-col justify-end">
                         <Button
                             onClick={handleSave}
                             style={{ backgroundColor: dayColor }}
-                            className="h-11 w-16 rounded-full text-white shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0 border-none"
+                            className="h-[46px] w-full rounded-2xl text-white shadow-md brightness-[0.85] hover:brightness-100 active:scale-95 transition-all border-none"
                             disabled={isSaving}
                         >
                             {isSaving ? (
-                                <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                <span className="h-5 w-5 rounded-full border-[3px] border-white/30 border-t-white animate-spin" />
                             ) : (
-                                <Check className="h-6 w-6 stroke-[2.5]" />
+                                <div className="flex items-center justify-center gap-1.5">
+                                    <Check className="h-5 w-5 stroke-[2.5]" />
+                                    <span className="font-bold text-sm tracking-wide">DONE</span>
+                                </div>
                             )}
                         </Button>
                     </div>

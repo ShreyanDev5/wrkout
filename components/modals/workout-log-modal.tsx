@@ -39,7 +39,6 @@ export function WorkoutLogModal({
 
   const [weight, setWeight] = useState(lastValues.weight || 20)
   const [reps, setReps] = useState(lastValues.reps || 8)
-  const [rir, setRir] = useState(2) // Deliberate entry: Default to neutral 2
   const [isSaving, setIsSaving] = useState(false)
 
   // If the modal is opened, reset to last used values
@@ -47,7 +46,6 @@ export function WorkoutLogModal({
     if (isOpen) {
       setWeight(lastValues.weight || 20)
       setReps(lastValues.reps || 8)
-      setRir(2) // Deliberate entry: Always reset to neutral 2 when opening
     }
   }, [isOpen, lastValues])
 
@@ -65,8 +63,7 @@ export function WorkoutLogModal({
       return
     }
     setIsSaving(true)
-    // Deliberate entry: Reset RIR to 2 in storage
-    setLastUsedValues(exercise.id, { weight, reps, sets: 1, rir: 2 })
+    setLastUsedValues(exercise.id, { weight, reps, sets: 1 })
     const log: WorkoutLog = {
       id: uuidv4(),
       user_id: "",
@@ -76,7 +73,6 @@ export function WorkoutLogModal({
       weight,
       avg_reps: reps,
       sets: 1, // Default to 1 set for modal (matches DB default)
-      rir,
       performed_at: new Date().toISOString().split("T")[0],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -90,7 +86,6 @@ export function WorkoutLogModal({
     if (lastLog) {
       setWeight(lastLog.weight)
       setReps(lastLog.avg_reps)
-      // Deliberate entry: DO NOT recall RIR from last sessions
     }
   }
 
@@ -148,21 +143,6 @@ export function WorkoutLogModal({
                   onChange={setReps}
                   min={0}
                   max={30}
-                  className="w-full"
-                  dayColor={dayColor}
-                />
-              </div>
-            </div>
-
-            {/* RIR Section */}
-            <div className="space-y-2.5 pt-2 border-t border-white/5">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Reps in Reserve (RIR)</h3>
-              <div className="max-w-[200px] mx-auto">
-                <NumberStepper
-                  value={rir}
-                  onChange={setRir}
-                  min={0}
-                  max={5}
                   className="w-full"
                   dayColor={dayColor}
                 />

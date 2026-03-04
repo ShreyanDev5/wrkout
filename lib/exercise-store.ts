@@ -6,7 +6,6 @@ interface ExerciseValues {
   weight: number
   reps: number
   sets: number
-  rir: number
 }
 
 interface ExerciseStore {
@@ -23,7 +22,6 @@ const DEFAULT_VALUES: ExerciseValues = {
   weight: 20,
   reps: 8,
   sets: 3,
-  rir: 1,
 }
 
 export const useExerciseStore = create<ExerciseStore>()(

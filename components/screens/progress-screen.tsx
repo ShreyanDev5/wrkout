@@ -3,47 +3,10 @@
 import { useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import type { WorkoutLog, WorkoutDay } from "@/lib/types"
-import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD, isCompoundExercise } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD } from "@/lib/utils"
 import { useTheme } from "@/components/theme-context"
 import { motion } from "framer-motion"
 import { TrendingUp, Dumbbell } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-// Progression advice logic (mirrored from inline-workout-logger for consistency)
-const getProgressionAdvice = (isCompound: boolean, reps: number, rir: number | null | undefined): string => {
-  if (rir === null || rir === undefined) return 'none'
-
-  // 1. Override Logic: High Rep Thresholds (Force Weight Increase)
-  if (isCompound && reps >= 12) return 'increase-weight'
-  if (!isCompound && reps >= 17) return 'increase-weight'
-
-  // 2. Special Cases: Visual Indicator Only (No Automatic Rep Increment)
-  if (isCompound && reps === 11 && rir === 0) return 'visual-increase-rep'
-  if (!isCompound && reps === 16 && rir === 0) return 'visual-increase-rep'
-
-  // 3. Standard Logic
-  if (isCompound && reps === 11 && rir >= 1) return 'increase-weight'
-  if (!isCompound && reps === 16 && rir >= 1) return 'increase-weight'
-
-  // 4. Fallback Logic
-  if (rir === 0) return 'repeat'
-  if (rir <= 2) return 'increase-rep'
-  return 'increase-weight'
-}
-
-// Find the most recent log for an exercise from a PREVIOUS date (strictly before today)
-const findPreviousLog = (exerciseName: string, todayDate: string, logs: WorkoutLog[]): WorkoutLog | null => {
-  const previousLogs = logs
-    .filter(log => log.exercise_name === exerciseName && log.performed_at < todayDate)
-    .sort((a, b) => {
-      // Primary sort: Date (Newest first)
-      const dateComparison = b.performed_at.localeCompare(a.performed_at)
-      if (dateComparison !== 0) return dateComparison
-      // Secondary sort: Creation timestamp (Newest first)
-      return b.created_at.localeCompare(a.created_at)
-    })
-  return previousLogs.length > 0 ? previousLogs[0] : null
-}
 
 interface ProgressScreenProps {
   logs: WorkoutLog[]
@@ -151,72 +114,6 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
               const sets = latestLog.sets || exerciseLogs.length
               const weight = latestLog.weight
               const reps = latestLog.avg_reps
-              const rir = latestLog.rir
-
-              // Stagnation detection: compare against expected progression from previous log
-              // Use the original 'logs' prop (all logs) to find previous sessions
-              // Filter strictly by date < today to compare against the last SESSION, preventing intra-workout flags
-              const prevLog = findPreviousLog(exerciseName, today, logs)
-              let isWeightBelowExpected = false
-              let isRepsBelowExpected = false
-
-              if (prevLog && prevLog.rir !== null && prevLog.rir !== undefined) {
-                const isCompound = isCompoundExercise(exerciseName)
-                // Safe casting for RIR to ensure reliable advice logic
-                const prevRir = Number(prevLog.rir)
-                const advice = getProgressionAdvice(isCompound, prevLog.avg_reps, prevRir)
-
-                // Safe number comparisons
-                const currentWeight = Number(weight)
-                const prevWeight = Number(prevLog.weight)
-                const currentReps = Number(reps)
-                const prevReps = Number(prevLog.avg_reps)
-
-                // 1. Indicator = "repeat" (or visual nudge treated as strict repeat for validation)
-                if (advice === 'repeat' || advice === 'visual-increase-rep') {
-                  // Rule: User decreases reps or weight -> deep amber
-                  // (Maintained or Increased -> Neutral/White)
-                  isWeightBelowExpected = currentWeight < prevWeight
-                  isRepsBelowExpected = currentReps < prevReps
-                }
-                // 2. Indicator = "increase reps"
-                else if (advice === 'increase-rep') {
-                  // Rule: User increases reps vs previous -> neutral white
-                  // User keeps reps the same or decreases -> deep amber
-                  isRepsBelowExpected = currentReps <= prevReps
-                  // Weight: Neutral unless it drops (Implicit "don't drop" rule, but user stressed 'increase reps' rule)
-                  // Prompt says: "Indicator = 'increase reps' ... User keeps reps same or decreases -> deep amber."
-                  // It doesn't explicitly flag weight. To be safe/clean, we assume weight should ideally be maintained, 
-                  // but we only STRICTLY flag the focus metric (Reps) as per the specific rule "Indicator = 'increase reps'" block.
-                  // However, common sense: dropping weight is also bad.
-                  // Let's stick STRICTLY to the prompt for the "amber" trigger on the specific fields.
-                  // "Only the currently logged reps and/or weight... should turn amber"
-                  // If advice is increase reps, and I drop weight, should weight be amber? 
-                  // Prompt: "Indicator = 'repeat' ... User decreases... -> amber." 
-                  // Prompt for Increase Reps doesn't mention weight. 
-                  // I will add a safeguard: If weight drops, it's amber too, because 'Increase Reps' implies 'at same weight'.
-                  isWeightBelowExpected = currentWeight < prevWeight
-                }
-                // 3. Indicator = "increase weight"
-                else if (advice === 'increase-weight') {
-                  // Rule: User increases weight compared to previous -> neutral white
-                  // User keeps weight the same or decreases -> deep amber
-                  isWeightBelowExpected = currentWeight <= prevWeight
-
-                  // Reps Logic:
-                  // If user SUCCESSFULLY increased weight (currentWeight > prevWeight), 
-                  // a drop in reps is natural and expected (e.g. 12 reps -> 6 reps).
-                  // So we only flag reps as 'stagnant' if the weight explicitly FAILED to increase.
-                  if (currentWeight > prevWeight) {
-                    isRepsBelowExpected = false
-                  } else {
-                    // Failed to increase weight: must at least maintain reps
-                    isRepsBelowExpected = currentReps < prevReps
-                  }
-                }
-
-                // 'none' → no expectation (no previous RIR data)
-              }
 
               return (
                 <motion.div
@@ -246,13 +143,13 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                         {exerciseName}
                       </h3>
 
-                      {/* Integrated Metrics Grid - 4 Columns */}
-                      <div className="grid grid-cols-4 gap-1.5">
+                      {/* Integrated Metrics Grid - 3 Columns */}
+                      <div className="grid grid-cols-3 gap-1.5">
                         {/* Weight */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
                           <div className="flex items-baseline gap-0.5">
-                            <span className={cn("text-[15px] font-bold", isWeightBelowExpected ? "text-orange-600/90" : "text-zinc-100")}>{weight}</span>
+                            <span className="text-[15px] font-bold text-zinc-100">{weight}</span>
                             <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
                           </div>
                         </div>
@@ -260,26 +157,13 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                         {/* Reps */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
-                          <span className={cn("text-[15px] font-bold", isRepsBelowExpected ? "text-orange-600/90" : "text-zinc-100")}>{reps}</span>
+                          <span className="text-[15px] font-bold text-zinc-100">{reps}</span>
                         </div>
 
                         {/* Sets */}
                         <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
                           <span className="text-[15px] font-bold text-zinc-100">{sets}</span>
-                        </div>
-
-                        {/* RIR */}
-                        <div
-                          className={cn(
-                            "rounded-lg p-1.5 border flex flex-col items-center justify-center transition-opacity",
-                            rir !== null && rir !== undefined ? "bg-zinc-950/60 border-zinc-800/50" : "bg-transparent border-transparent opacity-20"
-                          )}
-                        >
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">RIR</span>
-                          <span className="text-[15px] font-bold text-zinc-100">
-                            {rir !== null && rir !== undefined ? rir : '—'}
-                          </span>
                         </div>
                       </div>
                     </div>

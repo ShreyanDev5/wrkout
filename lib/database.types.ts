@@ -78,7 +78,6 @@ export interface Database {
           weight: number
           avg_reps: number
           sets: number
-          rir: number | null
           performed_at: string
           created_at: string
           updated_at: string
@@ -92,7 +91,6 @@ export interface Database {
           weight: number
           avg_reps: number
           sets?: number // Default: 1
-          rir?: number | null
           performed_at?: string
           created_at?: string
           updated_at?: string
@@ -106,7 +104,6 @@ export interface Database {
           weight?: number
           avg_reps?: number
           sets?: number
-          rir?: number | null
           performed_at?: string
           created_at?: string
           updated_at?: string
