@@ -176,10 +176,10 @@ export function WorkoutTracker() {
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/android-chrome-512x512.png"
+              src="/logo_1.0-transparent.png"
               alt="wrkout logo"
-              className="h-7 w-7 object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
-              style={{ minHeight: 28, minWidth: 28 }}
+              className="h-11 w-11 object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
+              style={{ minHeight: 44, minWidth: 44, marginTop: 2 }}
             />
           </div>
         </div>

@@ -47,21 +47,19 @@ export function AuthLayout({
         )}>
           {/* Logo and Title Section */}
           <div className={cn(
-            "text-center space-y-6",
-            isMobile && "space-y-5" // Increased spacing in logo section
+            "text-center space-y-3",
+            isMobile && "space-y-2"
           )}>
             <Link
               href="/"
               className="inline-block transition-all duration-300 hover:scale-105 hover:rotate-3"
             >
-              <div className={cn(
-                "relative w-14 h-14 mx-auto bg-background/50 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border/50"
-              )}>
+              <div className="relative w-20 h-20 mx-auto">
                 <Image
-                  src="/android-chrome-512x512.png"
+                  src="/logo_1.0-transparent.png"
                   alt="wrkout logo"
-                  width={64}
-                  height={64}
+                  width={80}
+                  height={80}
                   className="w-full h-full object-contain"
                   priority
                 />
