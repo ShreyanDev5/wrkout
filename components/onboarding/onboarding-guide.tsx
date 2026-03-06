@@ -278,7 +278,7 @@ const onboardingSteps: OnboardingStep[] = [
             <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
           </div>
           <div>
-            <div className="text-[13px] font-bold text-white">Today's Focus</div>
+            <div className="text-[13px] font-bold text-white">Today&apos;s Focus</div>
             <div className="text-[9px] font-bold text-zinc-500 tracking-wider uppercase">Today</div>
           </div>
         </div>
@@ -371,20 +371,20 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
     }
   }, [currentStep])
 
-  const handleNext = useCallback(() => {
-    if (currentStep < onboardingSteps.length - 1) {
-      setCurrentStep(prev => prev + 1)
-    } else {
-      handleComplete()
-    }
-  }, [currentStep])
-
   const handleComplete = useCallback(() => {
     if (user?.id) {
       localStorage.setItem(`onboarding-completed-${user.id}`, 'true')
     }
     onClose()
   }, [user?.id, onClose])
+
+  const handleNext = useCallback(() => {
+    if (currentStep < onboardingSteps.length - 1) {
+      setCurrentStep(prev => prev + 1)
+    } else {
+      handleComplete()
+    }
+  }, [currentStep, handleComplete])
 
   const handleDotClick = useCallback((index: number) => {
     setCurrentStep(index)

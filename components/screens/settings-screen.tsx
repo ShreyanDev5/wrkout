@@ -18,7 +18,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { formatDate } from "@/lib/utils"
-import type { Workout, WorkoutDay } from "@/lib/types"
+import type { Workout, WorkoutDay, WorkoutExercise } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -37,7 +37,7 @@ const OnboardingGuide = dynamic(() => import("@/components/onboarding/onboarding
 })
 
 interface ExerciseItemProps {
-  exercise: any;
+  exercise: WorkoutExercise;
   index: number;
   totalExercises: number;
   dayId: string;
@@ -423,7 +423,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
     const updatedWorkoutDays = workoutDays.map(day => {
       if (day.id === exerciseToDelete.dayId) {
-        const updatedExercises = (day.exercises || []).filter((exercise: any) => exercise.id !== exerciseToDelete.id);
+        const updatedExercises = (day.exercises || []).filter((exercise) => exercise.id !== exerciseToDelete.id);
         return {
           ...day,
           exercises: updatedExercises

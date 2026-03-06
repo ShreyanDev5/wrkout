@@ -106,7 +106,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
             <TrendingUp className="h-5 w-5 text-[#4caf50]" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-xl font-bold text-foreground tracking-tight leading-none mb-1">Today's Focus</h2>
+            <h2 className="text-xl font-bold text-foreground tracking-tight leading-none mb-1">Today&apos;s Focus</h2>
             <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
               {formatDate(new Date().toISOString())}
             </p>

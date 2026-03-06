@@ -72,9 +72,7 @@ export function InlineWorkoutLogger({
         setIsSaving(true)
         haptic("medium")
         // Play tick sound for satisfaction
-        if ((window as any).playTickSound) {
-            ; (window as any).playTickSound()
-        }
+        window.playTickSound?.()
 
         // Store the actual logged values for the next session without any hidden background auto-increment logic
         // This ensures the system behaves reliably and naturally

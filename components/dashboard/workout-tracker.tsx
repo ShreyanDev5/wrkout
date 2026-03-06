@@ -21,9 +21,10 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export function WorkoutTracker() {
   const [activeTab, setActiveTab] = useState("workout")
-  const [appData, setAppData] = useState<any>({
+  const [appData, setAppData] = useState<AppData>({
     workouts: [],
     workoutDays: [],
+    lastSyncTime: null,
   })
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -151,7 +152,7 @@ export function WorkoutTracker() {
 
   // Update workouts and workoutDays
   const updateWorkoutsAndDays = (workouts: Workout[], workoutDays: WorkoutDay[]) => {
-    setAppData((prev: any) => ({
+    setAppData((prev) => ({
       ...prev,
       workouts,
       workoutDays,

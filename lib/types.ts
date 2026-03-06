@@ -4,12 +4,18 @@ export interface Exercise {
   description?: string
 }
 
+export interface WorkoutExercise {
+  id: string
+  name: string
+  [key: string]: unknown
+}
+
 export interface WorkoutDay {
   id: string // UUID
   workout_id: string // UUID, references parent workout
   day_id: string // e.g., 'push', 'pull', 'leg', or custom
   name: string // Human-friendly name
-  exercises: any[] // JSONB array, can be refined if structure is known
+  exercises: WorkoutExercise[]
   created_at: string
   updated_at: string
 }
@@ -41,6 +47,7 @@ export interface WorkoutLog {
 
 export interface AppData {
   workouts: Workout[]
-  lastSyncTime: string | null
+  workoutDays: WorkoutDay[]
+  lastSyncTime?: string | null
 }
 

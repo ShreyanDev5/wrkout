@@ -1,14 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
-import { Settings2 } from 'lucide-react';
-import { CollapsibleHeaderLayout } from '@/components/layouts/collapsible-header-layout';
 import { SettingsScreen } from '@/components/screens/settings-screen';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { loadUserWorkouts, loadUserWorkoutDays, saveUserWorkouts, saveUserWorkoutDays } from '@/lib/supabase-data';
@@ -17,46 +15,43 @@ import type { Workout, WorkoutDay } from '@/lib/types';
 export default function SettingsPage() {
   const { user, signOut, username } = useAuth();
   const router = useRouter();
+  const supabase = useMemo(() => createClientComponentClient(), []);
 
   // Add local state for workouts and workoutDays
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>([]);
 
+  const loadSettingsData = useCallback(async () => {
+    if (!user) return;
+
+    const [loadedWorkouts, loadedWorkoutDays] = await Promise.all([
+      loadUserWorkouts(supabase, user.id),
+      loadUserWorkoutDays(supabase, user.id),
+    ]);
+
+    setWorkouts(loadedWorkouts);
+    setWorkoutDays(loadedWorkoutDays);
+  }, [supabase, user]);
+
   // Load workouts and workoutDays from Supabase on mount (and when user changes)
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-      const supabase = createClientComponentClient();
-      const loadedWorkouts = await loadUserWorkouts(supabase, user.id);
-      const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-      setWorkouts(loadedWorkouts);
-      setWorkoutDays(loadedWorkoutDays);
-    };
-    fetchData();
-  }, [user]);
+    loadSettingsData();
+  }, [loadSettingsData]);
 
   // Handler to update both workouts and workoutDays
   const handleUpdateWorkoutsAndDays = async (newWorkouts: Workout[], newWorkoutDays: WorkoutDay[]) => {
     setWorkouts(newWorkouts);
     setWorkoutDays(newWorkoutDays);
     if (user) {
-      const supabase = createClientComponentClient();
       try {
         await saveUserWorkouts(supabase, newWorkouts, user.id);
         await saveUserWorkoutDays(supabase, newWorkoutDays, user.id);
-        // Reload from Supabase to ensure UI is in sync
-        const loadedWorkouts = await loadUserWorkouts(supabase, user.id);
-        const loadedWorkoutDays = await loadUserWorkoutDays(supabase, user.id);
-        setWorkouts(loadedWorkouts);
-        setWorkoutDays(loadedWorkoutDays);
+        await loadSettingsData();
       } catch (error) {
         console.error('Supabase save or reload error:', error);
       }
     }
   };
-
-  useEffect(() => {
-  }, [user]);
 
   const handleSignIn = () => {
     router.push('/auth/signin');
@@ -71,18 +66,6 @@ export default function SettingsPage() {
   };
 
   const displayUsername = username || (user?.email ? user.email.replace(/@wrkout\.app$/, '') : '');
-
-  const header = (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EA4335] shadow-sm">
-        <Settings2 className="h-5 w-5 text-white" />
-      </div>
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground">Settings</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">Customize your workout experience</p>
-      </div>
-    </div>
-  );
 
   return (
     <div className="space-y-6">

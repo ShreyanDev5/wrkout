@@ -16,7 +16,10 @@ const AnimatedCheckbox = React.forwardRef<
   React.useEffect(() => {
     // Create a simple tick sound using AudioContext
     const createTickSound = () => {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      if (!AudioContextClass) return
+
+      const audioContext = new AudioContextClass()
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
 
@@ -40,10 +43,10 @@ const AnimatedCheckbox = React.forwardRef<
     }
 
     // Store the function for later use
-    ;(window as any).playTickSound = createTickSound
+    window.playTickSound = createTickSound
 
     return () => {
-      delete (window as any).playTickSound
+      delete window.playTickSound
     }
   }, [])
 

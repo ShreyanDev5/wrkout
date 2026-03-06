@@ -7,13 +7,15 @@ let audioContextInstance: AudioContext | null = null
 let audioInitialized = false
 let audioEnabled = true
 
+const getAudioContextClass = (): typeof AudioContext | undefined => window.AudioContext || window.webkitAudioContext
+
 // Get or create the audio context
 export function getAudioContext(): AudioContext | null {
   if (!audioContextInstance) {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
-      if (AudioContextClass) {
-        audioContextInstance = new AudioContextClass()
+      const audioContextClass = getAudioContextClass()
+      if (audioContextClass) {
+        audioContextInstance = new audioContextClass()
       }
     } catch (error) {
       console.warn("AudioContext not supported:", error)
@@ -224,7 +226,7 @@ export function setAudioEnabled(enabled: boolean): void {
 
 // Check if audio is supported
 export function isAudioSupported(): boolean {
-  return !!(window.AudioContext || (window as any).webkitAudioContext || typeof Audio !== "undefined")
+  return !!(getAudioContextClass() || typeof Audio !== "undefined")
 }
 
 // Check if vibration is supported

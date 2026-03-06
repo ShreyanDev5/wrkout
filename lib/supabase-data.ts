@@ -1,5 +1,14 @@
-import { PostgrestSingleResponse } from '@supabase/supabase-js';
-import type { Workout, WorkoutDay, WorkoutLog } from './types';
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from './database.types'
+import type { Workout, WorkoutDay, WorkoutExercise, WorkoutLog } from './types'
+
+type SupabaseClientLike = SupabaseClient<Database>
+
+interface IdRow {
+  id: string
+}
+
+const mapIds = (rows: IdRow[] | null | undefined): string[] => (rows || []).map((row) => row.id)
 
 export interface ExerciseVolumeTrendRow {
   exercise_name: string
@@ -10,7 +19,7 @@ export interface ExerciseVolumeTrendRow {
 }
 
 // Load all workouts for a user
-export async function loadUserWorkouts(supabase: any, userId: string): Promise<Workout[]> {
+export async function loadUserWorkouts(supabase: SupabaseClientLike, userId: string): Promise<Workout[]> {
   const { data, error } = await supabase
     .from('workouts')
     .select('*')
@@ -25,7 +34,12 @@ export async function loadUserWorkouts(supabase: any, userId: string): Promise<W
 // - Deleting a workout in the DB will automatically delete all associated workout_days (ON DELETE CASCADE in schema).
 // - This function now prevents accidental mass deletion: if the new list is empty, it throws unless allowDeleteAll is true.
 // - Only call with allowDeleteAll=true after explicit user confirmation (e.g., via a confirmation dialog in the UI).
-export async function saveUserWorkouts(supabase: any, workouts: Workout[], userId: string, allowDeleteAll: boolean = false): Promise<void> {
+export async function saveUserWorkouts(
+  supabase: SupabaseClientLike,
+  workouts: Workout[],
+  userId: string,
+  allowDeleteAll: boolean = false,
+): Promise<void> {
   // Defensive: Prevent accidental mass deletion unless explicitly allowed
   if (workouts.length === 0 && !allowDeleteAll) {
     throw new Error('Attempted to delete all workouts. This action requires explicit confirmation.');
@@ -39,10 +53,10 @@ export async function saveUserWorkouts(supabase: any, workouts: Workout[], userI
     console.error('Failed to load current workouts:', loadError);
     throw loadError;
   }
-  const currentIds = (currentWorkouts || []).map((w: any) => w.id);
-  const newIds = workouts.map(w => w.id);
+  const currentIds = mapIds((currentWorkouts || []) as IdRow[]);
+  const newIds = workouts.map((workout) => workout.id);
   // 2. Find workouts to delete (present in DB, not in newWorkouts)
-  const toDelete = currentIds.filter((id: string) => !newIds.includes(id));
+  const toDelete = currentIds.filter((id) => !newIds.includes(id));
   // 3. Delete only those workouts
   if (toDelete.length > 0) {
     const { error: deleteError } = await supabase.from('workouts').delete().in('id', toDelete);
@@ -53,12 +67,12 @@ export async function saveUserWorkouts(supabase: any, workouts: Workout[], userI
   }
   // 4. Upsert new/updated workouts
   if (workouts.length > 0) {
-    const workoutsToInsert = workouts.map(w => ({
-      id: w.id,
-      name: w.name,
+    const workoutsToInsert = workouts.map((workout) => ({
+      id: workout.id,
+      name: workout.name,
       user_id: userId,
-      created_at: w.created_at,
-      updated_at: w.updated_at
+      created_at: workout.created_at,
+      updated_at: workout.updated_at,
     }));
     const { error: insertError } = await supabase.from('workouts').upsert(workoutsToInsert, { onConflict: 'id' });
     if (insertError) {
@@ -71,7 +85,7 @@ export async function saveUserWorkouts(supabase: any, workouts: Workout[], userI
 }
 
 // Load all workout days for a user (by joining workouts)
-export async function loadUserWorkoutDays(supabase: any, userId: string): Promise<WorkoutDay[]> {
+export async function loadUserWorkoutDays(supabase: SupabaseClientLike, userId: string): Promise<WorkoutDay[]> {
   // First, get all workout IDs for this user
   const { data: workouts, error: workoutsError } = await supabase
     .from('workouts')
@@ -80,7 +94,7 @@ export async function loadUserWorkoutDays(supabase: any, userId: string): Promis
 
   if (workoutsError || !workouts) return [];
 
-  const workoutIds = workouts.map((w: any) => w.id);
+  const workoutIds = mapIds((workouts || []) as IdRow[]);
 
   if (!Array.isArray(workoutIds) || workoutIds.length === 0) return [];
 
@@ -100,7 +114,12 @@ export async function loadUserWorkoutDays(supabase: any, userId: string): Promis
 // - Deleting a workout_day in the DB will delete all its exercises (since exercises are embedded JSON, not a separate table).
 // - This function now prevents accidental mass deletion: if the new list is empty, it throws unless allowDeleteAll is true.
 // - Only call with allowDeleteAll=true after explicit user confirmation (e.g., via a confirmation dialog in the UI).
-export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay[], userId: string, allowDeleteAll: boolean = false): Promise<void> {
+export async function saveUserWorkoutDays(
+  supabase: SupabaseClientLike,
+  workoutDays: WorkoutDay[],
+  userId: string,
+  allowDeleteAll: boolean = false,
+): Promise<void> {
   // Defensive: Prevent accidental mass deletion unless explicitly allowed
   if (workoutDays.length === 0 && !allowDeleteAll) {
     throw new Error('Attempted to delete all workout days. This action requires explicit confirmation.');
@@ -117,7 +136,14 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
     throw workoutFetchError;
   }
 
-  const userWorkoutIds = (workouts || []).map((w: any) => w.id);
+  const userWorkoutIds = mapIds((workouts || []) as IdRow[]);
+
+  if (userWorkoutIds.length === 0) {
+    if (workoutDays.length > 0) {
+      throw new Error('Cannot save workout days because no workouts exist for this user.');
+    }
+    return;
+  }
 
   // 2. Load current workout days from DB (IDs only)
   // We need to know what exists to know what to delete
@@ -131,11 +157,11 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
     throw loadError;
   }
 
-  const currentIds = (currentDays || []).map((d: any) => d.id);
-  const newIds = workoutDays.map(d => d.id);
+  const currentIds = mapIds((currentDays || []) as IdRow[]);
+  const newIds = workoutDays.map((day) => day.id);
 
   // 3. Find days to delete (present in DB, not in newDays)
-  const toDelete = currentIds.filter((id: string) => !newIds.includes(id));
+  const toDelete = currentIds.filter((id) => !newIds.includes(id));
 
   // 4. Delete only those days
   if (toDelete.length > 0) {
@@ -150,14 +176,14 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
   if (workoutDays.length > 0) {
     // Use upsert to avoid duplicate key errors
     const { error: insertError } = await supabase.from('workout_days').upsert(
-      workoutDays.map(d => ({
-        id: d.id,
-        workout_id: d.workout_id,
-        day_id: d.day_id,
-        name: d.name,
-        exercises: d.exercises || [],
-        created_at: d.created_at,
-        updated_at: d.updated_at
+      workoutDays.map((day) => ({
+        id: day.id,
+        workout_id: day.workout_id,
+        day_id: day.day_id,
+        name: day.name,
+        exercises: day.exercises || [],
+        created_at: day.created_at,
+        updated_at: day.updated_at,
       })),
       { onConflict: 'id' }
     );
@@ -172,10 +198,10 @@ export async function saveUserWorkoutDays(supabase: any, workoutDays: WorkoutDay
 
 // Load workout logs for a user with pagination
 export async function loadWorkoutLogs(
-  supabase: any, 
-  userId: string, 
+  supabase: SupabaseClientLike,
+  userId: string,
   limit: number = 50,
-  offset: number = 0
+  offset: number = 0,
 ): Promise<WorkoutLog[]> {
   const { data, error } = await supabase
     .from('workout_logs')
@@ -192,7 +218,7 @@ export async function loadWorkoutLogs(
 }
 
 // Save a workout log for a user
-export async function saveWorkoutLog(supabase: any, log: WorkoutLog, userId: string): Promise<void> {
+export async function saveWorkoutLog(supabase: SupabaseClientLike, log: WorkoutLog, userId: string): Promise<void> {
   // Upsert by user_id, exercise_name, and performed_at (date) to avoid duplicates for the same day/exercise
   await supabase.from('workout_logs').upsert([
     {
@@ -207,7 +233,11 @@ export async function saveWorkoutLog(supabase: any, log: WorkoutLog, userId: str
   });
 }
 
-export async function updateWorkoutDayExercises(supabase: any, workoutDayId: string, newExercises: any[]) {
+export async function updateWorkoutDayExercises(
+  supabase: SupabaseClientLike,
+  workoutDayId: string,
+  newExercises: WorkoutExercise[],
+) {
   return await supabase
     .from('workout_days')
     .update({ exercises: newExercises })
@@ -216,7 +246,7 @@ export async function updateWorkoutDayExercises(supabase: any, workoutDayId: str
 
 // Load today's volume trend state per exercise from the backend RPC.
 export async function loadExerciseVolumeTrendsForDate(
-  supabase: any,
+  supabase: SupabaseClientLike,
   userId: string,
   date?: string,
 ): Promise<ExerciseVolumeTrendRow[]> {

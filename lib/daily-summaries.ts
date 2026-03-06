@@ -1,5 +1,9 @@
 import type { WorkoutLog } from './types'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from './database.types'
 import { calculateWorkoutVolume } from './progress-data-utils'
+
+type SupabaseClientLike = SupabaseClient<Database>
 
 /**
  * Daily Summary type matching the daily_summaries table in Supabase.
@@ -28,7 +32,7 @@ interface SummaryStats {
  * This is optimized for the progress screen - much faster than loading all logs.
  */
 export async function loadRecentSummaries(
-    supabase: any,
+    supabase: SupabaseClientLike,
     userId: string,
     limit: number = 7
 ): Promise<DailySummary[]> {
@@ -52,7 +56,7 @@ export async function loadRecentSummaries(
  * Called after workout session completion.
  */
 export async function saveDailySummary(
-    supabase: any,
+    supabase: SupabaseClientLike,
     summary: Omit<DailySummary, 'id' | 'created_at'>
 ): Promise<void> {
     const { error } = await supabase
@@ -79,7 +83,7 @@ export async function saveDailySummary(
  * Call this after completing a workout session.
  */
 export async function updateDailySummaryFromLogs(
-    supabase: any,
+    supabase: SupabaseClientLike,
     userId: string,
     logs: WorkoutLog[],
     workoutName?: string
@@ -150,7 +154,7 @@ function determineWorkoutType(logs: WorkoutLog[]): string {
  * Returns true if summaries can be used, false if fallback to logs is needed.
  */
 export async function hasDailySummaries(
-    supabase: any,
+    supabase: SupabaseClientLike,
     userId: string
 ): Promise<boolean> {
     const { count, error } = await supabase

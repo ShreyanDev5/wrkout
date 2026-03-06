@@ -1,1 +1,8 @@
-// No interface needed as we're removing the only declaration
+declare global {
+	interface Window {
+		webkitAudioContext?: typeof AudioContext
+		playTickSound?: () => void
+	}
+}
+
+export {}
