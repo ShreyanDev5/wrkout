@@ -3,10 +3,34 @@
 import { useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import type { WorkoutLog, WorkoutDay } from "@/lib/types"
-import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD } from "@/lib/utils"
+import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD, cn } from "@/lib/utils"
+import { buildExerciseVolumeTrendMap, createExerciseTrendKey, type VolumeTrend } from "@/lib/progress-data-utils"
 import { useTheme } from "@/components/theme-context"
 import { motion } from "framer-motion"
-import { TrendingUp, Dumbbell } from "lucide-react"
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Dumbbell, Dot, TrendingUp } from "lucide-react"
+
+const trendPillStyles: Record<VolumeTrend, { srLabel: string; className: string; Icon: typeof ArrowUpRight }> = {
+  up: {
+    srLabel: "Volume trend up",
+    className: "text-emerald-300 border-emerald-400/20 bg-emerald-500/10",
+    Icon: ArrowUpRight,
+  },
+  same: {
+    srLabel: "Volume trend same",
+    className: "text-zinc-300 border-zinc-500/20 bg-zinc-500/10",
+    Icon: ArrowRight,
+  },
+  down: {
+    srLabel: "Volume trend down",
+    className: "text-rose-300 border-rose-400/20 bg-rose-500/10",
+    Icon: ArrowDownRight,
+  },
+  new: {
+    srLabel: "Volume trend new",
+    className: "text-zinc-400 border-zinc-500/20 bg-zinc-500/10",
+    Icon: Dot,
+  },
+}
 
 interface ProgressScreenProps {
   logs: WorkoutLog[]
@@ -40,15 +64,21 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
     return map
   }, [workoutDays])
 
+  const volumeTrendMap = useMemo(() => buildExerciseVolumeTrendMap(logs, today), [logs, today])
+
   // Group logs by exercise to show aggregated stats if multiple sets are logged
   const groupedLogs = useMemo(() => {
     const groups: Map<string, WorkoutLog[]> = new Map()
     for (const log of todayLogs) {
-      if (!groups.has(log.exercise_name)) {
-        groups.set(log.exercise_name, [])
+      const key = createExerciseTrendKey(log.exercise_name, log.workout_day_id)
+
+      if (!groups.has(key)) {
+        groups.set(key, [])
       }
-      groups.get(log.exercise_name)!.push(log)
+
+      groups.get(key)!.push(log)
     }
+
     return Array.from(groups.entries())
   }, [todayLogs])
 
@@ -91,15 +121,14 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
           variants={containerVariants}
         >
           {groupedLogs.length > 0 ? (
-            groupedLogs.map(([exerciseName, exerciseLogs]) => {
+            groupedLogs.map(([groupKey, exerciseLogs]) => {
+              const latestLog = exerciseLogs[exerciseLogs.length - 1]
+              const exerciseName = latestLog.exercise_name
               const types = getExerciseWorkoutType(exerciseName)
               const dominantType = types[0] || 'mixed'
-              const displayType = types.join(' / ').toUpperCase()
 
               // Detect the implicit day color from the session context
               // Use the latest log to determine context (usually all logs for one exercise are in one session)
-              const latestLog = exerciseLogs[exerciseLogs.length - 1]
-
               let effectiveDayType = dominantType // Fallback to keyword matching
 
               if (latestLog?.workout_day_id) {
@@ -111,13 +140,15 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
               }
 
               const dayColor = getWorkoutDayColor(effectiveDayType, colorMode || 'dark')
-              const sets = latestLog.sets || exerciseLogs.length
+              const sets = latestLog.sets ?? exerciseLogs.length
               const weight = latestLog.weight
               const reps = latestLog.avg_reps
+              const trend = volumeTrendMap.get(groupKey)?.trend ?? "new"
+              const trendPill = trendPillStyles[trend]
 
               return (
                 <motion.div
-                  key={exerciseName}
+                  key={groupKey}
                   variants={itemVariants}
                   className="group"
                 >
@@ -139,9 +170,21 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                     <div className="flex flex-col gap-2.5 pl-2">
                       {/* Exercise Header - Compact */}
 
-                      <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight py-0.5">
-                        {exerciseName}
-                      </h3>
+                      <div className="flex items-center justify-between gap-2 py-0.5">
+                        <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight truncate">
+                          {exerciseName}
+                        </h3>
+
+                        <span
+                          className={cn(
+                            "inline-flex h-5 w-5 items-center justify-center rounded-full border",
+                            trendPill.className,
+                          )}
+                          aria-label={trendPill.srLabel}
+                        >
+                          <trendPill.Icon className="h-3 w-3" strokeWidth={2.25} />
+                        </span>
+                      </div>
 
                       {/* Integrated Metrics Grid - 3 Columns */}
                       <div className="grid grid-cols-3 gap-1.5">

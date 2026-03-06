@@ -78,6 +78,7 @@ export interface Database {
           weight: number
           avg_reps: number
           sets: number
+          volume: number
           performed_at: string
           created_at: string
           updated_at: string
@@ -91,6 +92,7 @@ export interface Database {
           weight: number
           avg_reps: number
           sets?: number // Default: 1
+          volume?: never // Generated column
           performed_at?: string
           created_at?: string
           updated_at?: string
@@ -104,6 +106,7 @@ export interface Database {
           weight?: number
           avg_reps?: number
           sets?: number
+          volume?: never // Generated column
           performed_at?: string
           created_at?: string
           updated_at?: string
@@ -146,7 +149,19 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_exercise_volume_trends: {
+        Args: {
+          p_user_id: string
+          p_date?: string
+        }
+        Returns: {
+          exercise_name: string
+          workout_day_id: string | null
+          today_volume: number
+          previous_volume: number | null
+          trend: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,6 +1,14 @@
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import type { Workout, WorkoutDay, WorkoutLog } from './types';
 
+export interface ExerciseVolumeTrendRow {
+  exercise_name: string
+  workout_day_id: string | null
+  today_volume: number
+  previous_volume: number | null
+  trend: 'up' | 'same' | 'down' | 'new'
+}
+
 // Load all workouts for a user
 export async function loadUserWorkouts(supabase: any, userId: string): Promise<Workout[]> {
   const { data, error } = await supabase
@@ -205,3 +213,22 @@ export async function updateWorkoutDayExercises(supabase: any, workoutDayId: str
     .update({ exercises: newExercises })
     .eq('id', workoutDayId);
 } 
+
+// Load today's volume trend state per exercise from the backend RPC.
+export async function loadExerciseVolumeTrendsForDate(
+  supabase: any,
+  userId: string,
+  date?: string,
+): Promise<ExerciseVolumeTrendRow[]> {
+  const { data, error } = await supabase.rpc('get_exercise_volume_trends', {
+    p_user_id: userId,
+    p_date: date,
+  })
+
+  if (error) {
+    console.error('Error loading exercise volume trends:', error)
+    return []
+  }
+
+  return (data || []) as ExerciseVolumeTrendRow[]
+}

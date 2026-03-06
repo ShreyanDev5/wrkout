@@ -1,2 +1,96 @@
-// This file is intentionally left empty as volume calculation and progress chart logic has been removed.
-export { };
+import type { WorkoutLog } from "./types"
+
+export type VolumeTrend = "up" | "same" | "down" | "new"
+
+export interface ExerciseVolumeTrend {
+	key: string
+	exerciseName: string
+	workoutDayId: string | null
+	todayVolume: number
+	previousVolume: number | null
+	trend: VolumeTrend
+}
+
+export function calculateWorkoutVolume(weight: number, reps: number, sets: number): number {
+	const safeWeight = Number.isFinite(weight) ? Math.max(0, weight) : 0
+	const safeReps = Number.isFinite(reps) ? Math.max(0, reps) : 0
+	const safeSets = Number.isFinite(sets) ? Math.max(0, sets) : 0
+	return safeWeight * safeReps * safeSets
+}
+
+export function createExerciseTrendKey(exerciseName: string, workoutDayId: string | null): string {
+	return `${exerciseName.trim().toLowerCase()}::${workoutDayId ?? "none"}`
+}
+
+function hasValidSetAndRepData(log: WorkoutLog): boolean {
+	return (log.avg_reps ?? 0) > 0 && (log.sets ?? 0) > 0
+}
+
+function resolveTrend(todayVolume: number, previousVolume: number | null): VolumeTrend {
+	if (previousVolume === null) {
+		return "new"
+	}
+
+	const threshold = Math.max(1, Math.abs(previousVolume) * 0.01)
+	const delta = todayVolume - previousVolume
+
+	if (Math.abs(delta) <= threshold) {
+		return "same"
+	}
+
+	return delta > 0 ? "up" : "down"
+}
+
+export function buildExerciseVolumeTrendMap(
+	logs: WorkoutLog[],
+	today: string,
+): Map<string, ExerciseVolumeTrend> {
+	const dailyVolumeByKey = new Map<string, Map<string, number>>()
+
+	for (const log of logs) {
+		if (!hasValidSetAndRepData(log)) {
+			continue
+		}
+
+		const key = createExerciseTrendKey(log.exercise_name, log.workout_day_id)
+		const volume =
+			typeof log.volume === "number"
+				? log.volume
+				: calculateWorkoutVolume(log.weight, log.avg_reps, log.sets)
+
+		const byDate = dailyVolumeByKey.get(key) ?? new Map<string, number>()
+		byDate.set(log.performed_at, (byDate.get(log.performed_at) ?? 0) + volume)
+		dailyVolumeByKey.set(key, byDate)
+	}
+
+	const trendMap = new Map<string, ExerciseVolumeTrend>()
+
+	for (const [key, byDate] of dailyVolumeByKey.entries()) {
+		const todayVolume = byDate.get(today)
+
+		if (todayVolume === undefined) {
+			continue
+		}
+
+		let previousDate: string | null = null
+		for (const date of byDate.keys()) {
+			if (date < today && (previousDate === null || date > previousDate)) {
+				previousDate = date
+			}
+		}
+
+		const previousVolume = previousDate ? (byDate.get(previousDate) ?? null) : null
+		const [exerciseName, workoutDayIdRaw] = key.split("::")
+
+		trendMap.set(key, {
+			key,
+			exerciseName,
+			workoutDayId: workoutDayIdRaw === "none" ? null : workoutDayIdRaw,
+			todayVolume,
+			previousVolume,
+			trend: resolveTrend(todayVolume, previousVolume),
+		})
+	}
+
+	return trendMap
+}

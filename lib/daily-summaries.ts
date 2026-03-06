@@ -1,4 +1,5 @@
 import type { WorkoutLog } from './types'
+import { calculateWorkoutVolume } from './progress-data-utils'
 
 /**
  * Daily Summary type matching the daily_summaries table in Supabase.
@@ -94,7 +95,13 @@ export async function updateDailySummaryFromLogs(
     // Calculate summary stats
     const summaryStats: SummaryStats = {
         workoutType,
-        totalWeight: todayLogs.reduce((sum, log) => sum + (log.weight * log.avg_reps * log.sets), 0),
+        totalWeight: todayLogs.reduce((sum, log) => {
+            const volume = typeof log.volume === 'number'
+                ? log.volume
+                : calculateWorkoutVolume(log.weight, log.avg_reps, log.sets)
+
+            return sum + volume
+        }, 0),
         totalReps: todayLogs.reduce((sum, log) => sum + (log.avg_reps * log.sets), 0),
         exerciseNames: [...new Set(todayLogs.map(log => log.exercise_name))],
     }
