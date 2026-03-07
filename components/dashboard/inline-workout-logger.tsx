@@ -12,6 +12,7 @@ import { Check } from "lucide-react"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { useHaptics } from "@/hooks/use-haptics"
 import { getLocalDateYYYYMMDD } from "@/lib/utils"
+import { isBodyweightExerciseName } from "@/lib/bodyweight-utils"
 
 interface InlineWorkoutLoggerProps {
     exercise: Exercise
@@ -33,18 +34,8 @@ export function InlineWorkoutLogger({
     const lastLog = getLastLog(exercise.id)
     const { trigger: haptic } = useHaptics()
 
-    // List of common bodyweight exercises that should default to 0kg (B.W.) if no history exists
     const isBodyweightExercise = useMemo(() => {
-        const name = exercise.name.toLowerCase()
-        const bwKeywords = [
-            'pull up', 'chin up', 'dip', 'hanging leg raise', 'push up',
-            'sit up', 'crunch', 'plank', 'muscle up', 'burpee',
-            'lunge', 'squat', 'glute bridge', 'air squat', 'jump squat',
-            'calf raise', 'step up', 'mountain climber', 'box jump', 'jumping jack',
-            'hollow body', 'v-up', 'flutter kick', 'russian twist', 'superman',
-            'inverted row', 'pistol squat', 'nordic', 'bicycle crunch', 'toes to bar'
-        ]
-        return bwKeywords.some(k => name.includes(k))
+        return isBodyweightExerciseName(exercise.name)
     }, [exercise.name])
 
     const [weight, setWeight] = useState(lastValues.weight ?? (isBodyweightExercise ? 0 : 20))

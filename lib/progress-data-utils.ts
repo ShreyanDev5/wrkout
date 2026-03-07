@@ -1,3 +1,4 @@
+import { isBodyweightExerciseName } from "./bodyweight-utils"
 import type { WorkoutLog } from "./types"
 
 export type VolumeTrend = "up" | "same" | "down" | "new"
@@ -11,10 +12,20 @@ export interface ExerciseVolumeTrend {
 	trend: VolumeTrend
 }
 
-export function calculateWorkoutVolume(weight: number, reps: number, sets: number): number {
+export function calculateWorkoutVolume(
+	weight: number,
+	reps: number,
+	sets: number,
+	exerciseName?: string,
+): number {
 	const safeWeight = Number.isFinite(weight) ? Math.max(0, weight) : 0
 	const safeReps = Number.isFinite(reps) ? Math.max(0, reps) : 0
 	const safeSets = Number.isFinite(sets) ? Math.max(0, sets) : 0
+
+	if (safeWeight === 0 && exerciseName && isBodyweightExerciseName(exerciseName)) {
+		return safeReps * safeSets
+	}
+
 	return safeWeight * safeReps * safeSets
 }
 
@@ -53,10 +64,7 @@ export function buildExerciseVolumeTrendMap(
 		}
 
 		const key = createExerciseTrendKey(log.exercise_name, log.workout_day_id)
-		const volume =
-			typeof log.volume === "number"
-				? log.volume
-				: calculateWorkoutVolume(log.weight, log.avg_reps, log.sets)
+		const volume = calculateWorkoutVolume(log.weight, log.avg_reps, log.sets, log.exercise_name)
 
 		const byDate = dailyVolumeByKey.get(key) ?? new Map<string, number>()
 		byDate.set(log.performed_at, (byDate.get(log.performed_at) ?? 0) + volume)

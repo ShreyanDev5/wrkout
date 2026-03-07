@@ -100,9 +100,7 @@ export async function updateDailySummaryFromLogs(
     const summaryStats: SummaryStats = {
         workoutType,
         totalWeight: todayLogs.reduce((sum, log) => {
-            const volume = typeof log.volume === 'number'
-                ? log.volume
-                : calculateWorkoutVolume(log.weight, log.avg_reps, log.sets)
+            const volume = calculateWorkoutVolume(log.weight, log.avg_reps, log.sets, log.exercise_name)
 
             return sum + volume
         }, 0),

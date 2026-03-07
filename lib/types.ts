@@ -39,7 +39,7 @@ export interface WorkoutLog {
   weight: number
   avg_reps: number // Renamed from 'reps' to match DB schema
   sets: number // Default 1 in DB
-  volume?: number // Precomputed volume (weight * avg_reps * sets)
+  volume?: number // Precomputed volume (weight * avg_reps * sets, or avg_reps * sets for bodyweight exercises at 0kg)
   performed_at: string // ISO date string (YYYY-MM-DD)
   created_at: string
   updated_at: string
