@@ -1,3 +1,6 @@
 [auth]
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/auth/signin", "http://localhost:3000/auth/signup"] 
+
+[db]
+major_version = 15

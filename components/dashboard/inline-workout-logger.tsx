@@ -30,8 +30,9 @@ export function InlineWorkoutLogger({
     dayColor,
 }: InlineWorkoutLoggerProps) {
     const { getLastUsedValues, setLastUsedValues, getLastLog, setLastLog } = useExerciseStore()
-    const lastValues = getLastUsedValues(exercise.id)
-    const lastLog = getLastLog(exercise.id)
+    const storeKey = exercise.exercise_id || exercise.id // Fallback to id if exercise_id is missing
+    const lastValues = getLastUsedValues(storeKey)
+    const lastLog = getLastLog(storeKey)
     const { trigger: haptic } = useHaptics()
 
     const isBodyweightExercise = useMemo(() => {
@@ -67,7 +68,7 @@ export function InlineWorkoutLogger({
 
         // Store the actual logged values for the next session without any hidden background auto-increment logic
         // This ensures the system behaves reliably and naturally
-        setLastUsedValues(exercise.id, { weight, reps, sets })
+        setLastUsedValues(storeKey, { weight, reps, sets })
 
         // Optimistic Save
         const log: WorkoutLog = {
@@ -75,6 +76,7 @@ export function InlineWorkoutLogger({
             user_id: "", // Filled by parent/API
             workout_id: workoutId,
             workout_day_id: null,
+            exercise_id: storeKey,
             exercise_name: exercise.name,
             weight,
             avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB
@@ -84,7 +86,7 @@ export function InlineWorkoutLogger({
             updated_at: new Date().toISOString(),
         }
 
-        setLastLog(exercise.id, log)
+        setLastLog(storeKey, log)
         onSave(log)
         // Parent handles closing
     }

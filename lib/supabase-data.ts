@@ -229,7 +229,7 @@ export async function saveWorkoutLog(supabase: SupabaseClientLike, log: WorkoutL
       updated_at: log.updated_at
     }
   ], {
-    onConflict: 'user_id,exercise_name,performed_at,workout_day_id'
+    onConflict: 'user_id,exercise_id,performed_at,workout_day_id'
   });
 }
 
@@ -261,4 +261,52 @@ export async function loadExerciseVolumeTrendsForDate(
   }
 
   return (data || []) as ExerciseVolumeTrendRow[]
+}
+
+// Load all unique exercises for a user
+export async function loadUserExercises(
+  supabase: SupabaseClientLike,
+  userId: string
+): Promise<{ id: string, name: string }[]> {
+  const { data, error } = await supabase
+    .from('exercises')
+    .select('id, name')
+    .eq('user_id', userId)
+    .order('name', { ascending: true })
+
+  if (error) {
+    console.error('Error loading exercises:', error)
+    return []
+  }
+
+  return data || []
+}
+
+// Create a new global exercise entity
+export async function createExercise(
+  supabase: SupabaseClientLike,
+  userId: string,
+  name: string
+): Promise<string | null> {
+  const normalized_name = name.trim().toLowerCase()
+  
+  // Upsert to handle accidental duplicates gracefully
+  const { data, error } = await supabase
+    .from('exercises')
+    .upsert({
+      user_id: userId,
+      name: name.trim(),
+      normalized_name
+    }, {
+      onConflict: 'user_id,normalized_name'
+    })
+    .select('id')
+    .single()
+
+  if (error) {
+    console.error('Error creating exercise:', error)
+    return null
+  }
+
+  return data?.id || null
 }

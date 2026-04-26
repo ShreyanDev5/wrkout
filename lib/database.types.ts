@@ -13,6 +13,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      exercises: {
+        Row: {
+          id: string
+          user_id: string | null
+          name: string
+          normalized_name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          name: string
+          normalized_name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          name?: string
+          normalized_name?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
       workouts: {
         Row: {
           id: string
@@ -74,6 +100,7 @@ export interface Database {
           user_id: string | null
           workout_id: string | null
           workout_day_id: string | null
+          exercise_id: string
           exercise_name: string
           weight: number
           avg_reps: number
@@ -88,6 +115,7 @@ export interface Database {
           user_id?: string | null
           workout_id?: string | null
           workout_day_id?: string | null
+          exercise_id: string
           exercise_name: string
           weight: number
           avg_reps: number
@@ -102,6 +130,7 @@ export interface Database {
           user_id?: string | null
           workout_id?: string | null
           workout_day_id?: string | null
+          exercise_id?: string
           exercise_name?: string
           weight?: number
           avg_reps?: number

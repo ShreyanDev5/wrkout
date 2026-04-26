@@ -70,7 +70,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
   const groupedLogs = useMemo(() => {
     const groups: Map<string, WorkoutLog[]> = new Map()
     for (const log of todayLogs) {
-      const key = createExerciseTrendKey(log.exercise_name, log.workout_day_id)
+      const key = createExerciseTrendKey(log.exercise_id)
 
       if (!groups.has(key)) {
         groups.set(key, [])

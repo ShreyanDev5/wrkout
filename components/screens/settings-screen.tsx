@@ -139,6 +139,28 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const [isDuplicateDayOpen, setIsDuplicateDayOpen] = useState(false);
   const [isMaxDaysOpen, setIsMaxDaysOpen] = useState(false);
 
+  // Autocomplete state
+  const [availableExercises, setAvailableExercises] = useState<{ id: string, name: string }[]>([]);
+  const [isCreatingExercise, setIsCreatingExercise] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredExercises = useMemo(() => {
+    if (!newExerciseName.trim()) return availableExercises;
+    return availableExercises.filter(e => 
+      e.name.toLowerCase().includes(newExerciseName.toLowerCase())
+    );
+  }, [availableExercises, newExerciseName]);
+
+  useEffect(() => {
+    if (user) {
+      import('@/lib/supabase-data').then(m => {
+        m.loadUserExercises(supabase, user.id).then(setAvailableExercises);
+      });
+    }
+  }, [user, supabase]);
+
   useEffect(() => {
     if (!user) return;
     // Check if user has demo data
@@ -157,6 +179,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       setSelectedWorkoutId(null)
       setSelectedDayId(null)
       setNewExerciseName("")
+      setShowSuggestions(false)
+      setHighlightedIndex(-1)
+      setIsCreatingExercise(false)
     }
   }, [isAddExerciseOpen])
 
@@ -326,32 +351,66 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   const handleAddExercise = async () => {
     if (!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || !user) return;
-    // Find the workout day to update
-    const dayToUpdate = workoutDays.find(day => day.id === selectedDayId);
-    if (!dayToUpdate) return;
-    const updatedExercises = [
-      ...(dayToUpdate.exercises || []),
-      { id: uuidv4(), name: newExerciseName }
-    ];
-    // Use map to update correct day in list
-    const updatedWorkoutDays = workoutDays.map(day => {
-      if (day.id === selectedDayId) {
-        return {
-          ...day,
-          exercises: updatedExercises
-        };
+    
+    setIsCreatingExercise(true);
+    
+    try {
+      const dayToUpdate = workoutDays.find(day => day.id === selectedDayId);
+      if (!dayToUpdate) return;
+      
+      const { createExercise } = await import('@/lib/supabase-data');
+      
+      // Check if exact match exists in availableExercises
+      const exactMatchName = newExerciseName.trim().toLowerCase();
+      const existing = availableExercises.find(e => e.name.toLowerCase() === exactMatchName);
+      
+      let exercise_id = existing?.id;
+      let finalExerciseName = existing ? existing.name : newExerciseName.trim();
+      
+      if (!exercise_id) {
+         exercise_id = await createExercise(supabase, user.id, finalExerciseName) || undefined;
+         if (exercise_id) {
+            setAvailableExercises(prev => 
+              [...prev, { id: exercise_id as string, name: finalExerciseName }]
+              .sort((a, b) => a.name.localeCompare(b.name))
+            );
+         }
       }
-      return day;
-    });
 
-    onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
-    setNewExerciseName("");
-    setIsAddExerciseOpen(false);
-    toast({
-      title: "Exercise Added",
-      description: `${newExerciseName} has been added to your workout.`,
-      className: "bg-[#34A853] border-none text-white",
-    });
+      const updatedExercises = [
+        ...(dayToUpdate.exercises || []),
+        { id: uuidv4(), exercise_id, name: finalExerciseName }
+      ];
+
+      // Use map to update correct day in list
+      const updatedWorkoutDays = workoutDays.map(day => {
+        if (day.id === selectedDayId) {
+          return {
+            ...day,
+            exercises: updatedExercises
+          };
+        }
+        return day;
+      });
+
+      onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
+      setNewExerciseName("");
+      setIsAddExerciseOpen(false);
+      toast({
+        title: "Exercise Added",
+        description: `${finalExerciseName} has been added to your workout.`,
+        className: "bg-[#34A853] border-none text-white",
+      });
+    } catch (err) {
+      console.error("Failed to add exercise:", err);
+      toast({
+        title: "Error",
+        description: "Failed to save exercise.",
+        className: "bg-[#EA4335] border-none text-white",
+      });
+    } finally {
+      setIsCreatingExercise(false);
+    }
   }
 
   const handleDeleteExercise = async (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => {
@@ -913,24 +972,91 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               <DialogTitle className="text-center text-lg font-semibold">New Exercise</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 relative">
             <Label htmlFor="exercise-name">Exercise Name</Label>
-            <Input
-              id="exercise-name"
-              value={newExerciseName}
-              onChange={(e) => setNewExerciseName(e.target.value)}
-              placeholder="e.g. Incline Bench Press"
-              className="mt-2"
-            />
+            <div className="relative mt-2">
+              <Input
+                id="exercise-name"
+                ref={inputRef}
+                value={newExerciseName}
+                onChange={(e) => {
+                  setNewExerciseName(e.target.value);
+                  setShowSuggestions(true);
+                  setHighlightedIndex(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setHighlightedIndex(prev => Math.min(prev + 1, filteredExercises.length - 1));
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setHighlightedIndex(prev => Math.max(prev - 1, -1));
+                  } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (highlightedIndex >= 0 && highlightedIndex < filteredExercises.length) {
+                      setNewExerciseName(filteredExercises[highlightedIndex].name);
+                      setShowSuggestions(false);
+                    } else if (newExerciseName.trim()) {
+                      handleAddExercise();
+                    }
+                  } else if (e.key === 'Escape') {
+                    setShowSuggestions(false);
+                  }
+                }}
+                placeholder="e.g. Incline Bench Press"
+                className="w-full"
+                autoComplete="off"
+              />
+              <AnimatePresence>
+                {showSuggestions && (filteredExercises.length > 0 || newExerciseName.trim().length > 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
+                  >
+                    {filteredExercises.length > 0 ? (
+                      <ul className="py-1">
+                        {filteredExercises.map((ex, idx) => (
+                          <li
+                            key={ex.id}
+                            className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
+                              idx === highlightedIndex ? 'bg-zinc-100 dark:bg-zinc-700/50 text-foreground' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'
+                            }`}
+                            onClick={() => {
+                              setNewExerciseName(ex.name);
+                              setShowSuggestions(false);
+                              inputRef.current?.focus();
+                            }}
+                          >
+                            {ex.name}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="px-3 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                        No matches found.
+                        <div className="mt-1 font-medium text-purple-600 dark:text-purple-400">
+                          Press Add to create "{newExerciseName.trim()}"
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
           <DialogFooter className="flex-row gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setIsAddExerciseOpen(false)} className="flex-1">Cancel</Button>
             <Button
               onClick={handleAddExercise}
-              disabled={!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId}
+              disabled={!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || isCreatingExercise}
               className="flex-1 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
             >
-              Add
+              {isCreatingExercise ? 'Adding...' : 'Add'}
             </Button>
           </DialogFooter>
         </DialogContent>

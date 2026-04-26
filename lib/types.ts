@@ -6,6 +6,7 @@ export interface Exercise {
 
 export interface WorkoutExercise {
   id: string
+  exercise_id?: string // Shared UUID from the exercises table
   name: string
   [key: string]: unknown
 }
@@ -35,7 +36,8 @@ export interface WorkoutLog {
   user_id: string
   workout_id: string
   workout_day_id: string | null
-  exercise_name: string
+  exercise_id: string // Foreign key to exercises table
+  exercise_name: string // Denormalized name for UI convenience
   weight: number
   avg_reps: number // Renamed from 'reps' to match DB schema
   sets: number // Default 1 in DB

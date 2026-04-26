@@ -29,8 +29,8 @@ export function calculateWorkoutVolume(
 	return safeWeight * safeReps * safeSets
 }
 
-export function createExerciseTrendKey(exerciseName: string, workoutDayId: string | null): string {
-	return `${exerciseName.trim().toLowerCase()}::${workoutDayId ?? "none"}`
+export function createExerciseTrendKey(exerciseId: string): string {
+	return exerciseId;
 }
 
 function hasValidSetAndRepData(log: WorkoutLog): boolean {
@@ -63,7 +63,7 @@ export function buildExerciseVolumeTrendMap(
 			continue
 		}
 
-		const key = createExerciseTrendKey(log.exercise_name, log.workout_day_id)
+		const key = createExerciseTrendKey(log.exercise_id)
 		const volume = calculateWorkoutVolume(log.weight, log.avg_reps, log.sets, log.exercise_name)
 
 		const byDate = dailyVolumeByKey.get(key) ?? new Map<string, number>()
@@ -88,12 +88,14 @@ export function buildExerciseVolumeTrendMap(
 		}
 
 		const previousVolume = previousDate ? (byDate.get(previousDate) ?? null) : null
-		const [exerciseName, workoutDayIdRaw] = key.split("::")
-
+		const exerciseId = key
+		// We don't have exerciseName and workoutDayId directly from the key anymore,
+		// but the frontend UI just needs the trend. We can pass the key back as exerciseId.
+		
 		trendMap.set(key, {
 			key,
-			exerciseName,
-			workoutDayId: workoutDayIdRaw === "none" ? null : workoutDayIdRaw,
+			exerciseName: "", // Will be pulled from log in progress-screen
+			workoutDayId: null, // No longer strictly tied to a day ID
 			todayVolume,
 			previousVolume,
 			trend: resolveTrend(todayVolume, previousVolume),
