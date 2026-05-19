@@ -1,155 +1,122 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createPseudoEmail, validateUsername } from '@/lib/auth/auth-utils';
+import { createServiceRoleClient, findUserByUsername } from '@/lib/auth/server';
+
+type ResetPasswordRequest = {
+  username?: string;
+  recoveryEmail?: string;
+};
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function sendPasswordResetEmail(params: {
+  to: string;
+  username: string;
+  resetUrl: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.PASSWORD_RESET_FROM_EMAIL;
+
+  if (!apiKey || !from) {
+    return { configured: false, error: null };
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: params.to,
+      subject: 'Reset your wrkout password',
+      html: `
+        <p>Hi ${params.username},</p>
+        <p>Use this link to reset your wrkout password:</p>
+        <p><a href="${params.resetUrl}">Reset password</a></p>
+        <p>If you did not request this, you can ignore this email.</p>
+      `,
+      text: `Hi ${params.username},\n\nUse this link to reset your wrkout password:\n${params.resetUrl}\n\nIf you did not request this, you can ignore this email.`,
+    }),
+  });
+
+  if (!response.ok) {
+    return {
+      configured: true,
+      error: `Email provider returned ${response.status}`,
+    };
+  }
+
+  return { configured: true, error: null };
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, recoveryEmail } = await request.json();
+    const { username = '', recoveryEmail = '' } = (await request.json()) as ResetPasswordRequest;
+    const normalizedUsername = username.trim().toLowerCase();
+    const usernameError = validateUsername(normalizedUsername);
 
-    if (!username || !recoveryEmail) {
+    if (usernameError) {
+      return NextResponse.json({ error: usernameError }, { status: 400 });
+    }
+
+    if (!EMAIL_PATTERN.test(recoveryEmail)) {
+      return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
+    }
+
+    const serviceRoleSupabase = createServiceRoleClient();
+    const user = await findUserByUsername(serviceRoleSupabase, normalizedUsername);
+
+    if (!user) {
+      return NextResponse.json({ error: 'No account found with this username' }, { status: 404 });
+    }
+
+    const redirectTo = `${request.nextUrl.origin}/auth/reset-password`;
+    const { data, error } = await serviceRoleSupabase.auth.admin.generateLink({
+      type: 'recovery',
+      email: createPseudoEmail(normalizedUsername),
+      options: { redirectTo },
+    });
+
+    if (error || !data.properties?.action_link) {
       return NextResponse.json(
-        { error: 'Username and recovery email are required' },
-        { status: 400 }
+        { error: error?.message || 'Failed to generate password reset link' },
+        { status: 500 }
       );
     }
 
-    // Validate username format
-    if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
-      return NextResponse.json(
-        { error: 'Invalid username format' },
-        { status: 400 }
-      );
+    const delivery = await sendPasswordResetEmail({
+      to: recoveryEmail,
+      username: normalizedUsername,
+      resetUrl: data.properties.action_link,
+    });
+
+    if (delivery.error) {
+      return NextResponse.json({ error: 'Failed to send password reset email' }, { status: 502 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(recoveryEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Construct the pseudo-email
-    const pseudoEmail = `${username}@wrkout.app`;
-
-    // Create a service role client for admin operations
-    const { createClient } = await import('@supabase/supabase-js');
-    const serviceRoleSupabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    // Use the same method as frontend: try to sign in with dummy password
-    let user = null;
-
-    try {
-      // Try to sign in with dummy password to check if user exists
-      const { data: { user: foundUser }, error: signInError } = await serviceRoleSupabase.auth.signInWithPassword({
-        email: pseudoEmail,
-        password: 'dummy-password-to-check-existence'
-      });
-
-      if (foundUser) {
-        user = foundUser;
-      } else if (signInError) {
-        // If we get "Invalid login credentials", the user exists but password is wrong
-        if (signInError.message.includes('Invalid login credentials')) {
-          // We need to get the user details, so let's use listUsers as fallback
-          const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
-
-          if (listError) {
-            console.error('❌ Error fetching users:', listError);
-            return NextResponse.json(
-              { error: 'Failed to check user existence' },
-              { status: 500 }
-            );
-          }
-
-          user = users?.find(u => u.email === pseudoEmail);
-        } else if (signInError.message.includes('User not found')) {
-
-        } else {
-
-        }
-      }
-    } catch (err) {
-
-      // Fallback to listUsers
-      const { data: { users }, error: listError } = await serviceRoleSupabase.auth.admin.listUsers();
-
-      if (listError) {
-        console.error('❌ Error fetching users:', listError);
+    if (!delivery.configured) {
+      if (process.env.NODE_ENV !== 'production') {
         return NextResponse.json(
-          { error: 'Failed to check user existence' },
-          { status: 500 }
+          {
+            message: 'Password reset link generated. Email delivery is not configured.',
+            resetUrl: data.properties.action_link,
+          },
+          { status: 200 }
         );
       }
 
-      user = users?.find(u => u.email === pseudoEmail);
-    }
-
-    if (!user) {
       return NextResponse.json(
-        { error: 'No account found with this username' },
-        { status: 404 }
-      );
-    }
-
-    // Temporarily update the user's email to the recovery email
-    const { error: updateError } = await serviceRoleSupabase.auth.admin.updateUserById(
-      user.id,
-      { email: recoveryEmail }
-    );
-
-    if (updateError) {
-      console.error('❌ Error updating user email:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update user email for password reset' },
+        { error: 'Password reset email delivery is not configured' },
         { status: 500 }
       );
     }
 
-    // Send password reset email to the recovery email
-    const redirectUrl = `${request.nextUrl.origin}/auth/reset-password`;
-
-    const { error: resetError } = await serviceRoleSupabase.auth.admin.generateLink({
-      type: 'recovery',
-      email: recoveryEmail,
-      options: {
-        redirectTo: redirectUrl,
-      }
-    });
-
-    if (resetError) {
-      console.error('❌ Error generating reset link:', resetError);
-      return NextResponse.json(
-        { error: 'Failed to send password reset email' },
-        { status: 500 }
-      );
-    }
-
-    // Revert the email back to the pseudo-email format
-    const { error: revertError } = await serviceRoleSupabase.auth.admin.updateUserById(
-      user.id,
-      { email: pseudoEmail }
-    );
-
-    if (revertError) {
-      console.error('❌ Error reverting user email:', revertError);
-      // Don't fail the request, but log the error
-    }
-
-    return NextResponse.json(
-      { message: 'Password reset email sent successfully' },
-      { status: 200 }
-    );
-
+    return NextResponse.json({ message: 'Password reset email sent successfully' });
   } catch (error) {
-    console.error('❌ Password reset error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-} 
+}

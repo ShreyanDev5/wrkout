@@ -10,9 +10,14 @@ export default async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  const authRecoveryRoutes = ['/auth/reset-password', '/auth/verify'];
+  const isAuthRecoveryRoute = authRecoveryRoutes.some(route =>
+    req.nextUrl.pathname.startsWith(route)
+  );
+
   // Auth routes handling
   if (req.nextUrl.pathname.startsWith('/auth')) {
-    if (session) {
+    if (session && !isAuthRecoveryRoute) {
       // If user is signed in and tries to access auth pages, redirect to home
       return NextResponse.redirect(new URL('/', req.url));
     }

@@ -1,6 +1,30 @@
 import { AuthError } from '@supabase/supabase-js';
 import { AuthenticationError } from '../supabase';
 
+export const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/;
+
+export const normalizeUsername = (username: string): string => {
+  return username.trim().toLowerCase();
+};
+
+export const validateUsername = (username: string): string | null => {
+  const normalizedUsername = normalizeUsername(username);
+
+  if (normalizedUsername.length < 3) {
+    return 'Username must be at least 3 characters long';
+  }
+
+  if (!USERNAME_PATTERN.test(normalizedUsername)) {
+    return 'Username can only contain letters, numbers, and underscores';
+  }
+
+  return null;
+};
+
+export const createPseudoEmail = (username: string): string => {
+  return `${normalizeUsername(username)}@wrkout.app`;
+};
+
 export const isAuthError = (error: unknown): error is AuthError => {
   return error instanceof AuthError;
 };

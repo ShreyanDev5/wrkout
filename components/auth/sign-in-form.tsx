@@ -9,9 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
-import { loadUserWorkouts, saveUserWorkouts } from '@/lib/supabase-data';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createPseudoEmail, validateUsername } from '@/lib/auth/auth-utils';
 
 export function SignInForm() {
   const [username, setUsername] = useState('');
@@ -27,17 +26,13 @@ export function SignInForm() {
     setIsLoading(true);
 
     try {
-      if (!username || username.length < 3) {
-        setError('Username must be at least 3 characters long');
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        setError(usernameError);
         setIsLoading(false);
         return;
       }
-      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        setError('Username can only contain letters, numbers, and underscores');
-        setIsLoading(false);
-        return;
-      }
-      const pseudoEmail = `${username}@wrkout.app`;
+      const pseudoEmail = createPseudoEmail(username);
       const { error, data } = await signIn(pseudoEmail, password);
       
       if (error) {
@@ -49,7 +44,7 @@ export function SignInForm() {
       if (data && data.user) {
         const supabase = createClientComponentClient();
         if (!data.user.user_metadata?.username) {
-          const { error: metaError } = await supabase.auth.updateUser({ data: { username } });
+          const { error: metaError } = await supabase.auth.updateUser({ data: { username: username.trim().toLowerCase() } });
           if (metaError) {
             setError(metaError.message);
             return;

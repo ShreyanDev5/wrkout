@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
+import { Loader2, Lock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
 import { saveUserWorkouts } from '@/lib/supabase-data';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createPseudoEmail, normalizeUsername, validatePassword, validateUsername } from '@/lib/auth/auth-utils';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -22,33 +22,14 @@ export function SignUpForm() {
   const router = useRouter();
   const { signUp, signIn } = useAuth();
 
-  const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!/[A-Z]/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/[a-z]/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/[0-9]/.test(password)) {
-      return 'Password must contain at least one number';
-    }
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     // Validate username
-    if (!username || username.length < 3) {
-      setError('Username must be at least 3 characters long');
-      return;
-    }
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError('Username can only contain letters, numbers, and underscores');
+    const usernameError = validateUsername(username);
+    if (usernameError) {
+      setError(usernameError);
       return;
     }
 
@@ -68,10 +49,10 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      // Use username to construct a pseudo-email (case-sensitive)
-      const pseudoEmail = `${username}@wrkout.app`;
+      const normalizedUsername = normalizeUsername(username);
+      const pseudoEmail = createPseudoEmail(normalizedUsername);
       
-      const { error, data } = await signUp(pseudoEmail, password);
+      const { error } = await signUp(pseudoEmail, password, normalizedUsername);
       if (error) {
         setError(error.message);
         return;

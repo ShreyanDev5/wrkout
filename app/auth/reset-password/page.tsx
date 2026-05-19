@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { AuthLayout } from '@/components/auth/auth-layout';
@@ -18,7 +18,46 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [hasResetSession, setHasResetSession] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!isMounted) return;
+
+      if (!session) {
+        setError("This password reset link is invalid or has expired. Please request a new one.");
+      } else {
+        setHasResetSession(true);
+      }
+
+      setCheckingSession(false);
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session) {
+        setError("");
+        setHasResetSession(true);
+        setCheckingSession(false);
+      }
+    });
+
+    checkSession();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -67,6 +106,7 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message);
     } else {
+      await supabase.auth.signOut();
       setSuccess(true);
       setMessage("Password updated successfully!");
       setTimeout(() => router.push("/auth/signin"), 2000);
@@ -226,12 +266,12 @@ export default function ResetPasswordPage() {
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "h-11"
           )}
-          disabled={loading}
+          disabled={loading || checkingSession || !hasResetSession}
         >
-          {loading ? (
+          {loading || checkingSession ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Updating password...
+              {checkingSession ? 'Checking reset link...' : 'Updating password...'}
             </>
           ) : (
             'Set New Password'

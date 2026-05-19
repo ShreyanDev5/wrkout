@@ -22,12 +22,15 @@ Create `.env.local` with:
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+RESEND_API_KEY=...
+PASSWORD_RESET_FROM_EMAIL=...
 ```
 
 Notes:
 
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are required by `lib/supabase.ts`.
-- `SUPABASE_SERVICE_ROLE_KEY` is required by `app/api/auth/reset-password/route.ts`.
+- `SUPABASE_SERVICE_ROLE_KEY` is required by the auth API routes.
+- `RESEND_API_KEY` and `PASSWORD_RESET_FROM_EMAIL` are required to send password reset emails in production. In development, the backend returns the generated reset URL when email delivery is not configured.
 
 ## Local Development
 

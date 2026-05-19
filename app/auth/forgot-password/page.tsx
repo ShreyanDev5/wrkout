@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
+import { normalizeUsername, validateUsername } from '@/lib/auth/auth-utils';
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState<'username' | 'email' | 'success'>('username');
@@ -18,6 +17,7 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState("");
+  const [resetUrl, setResetUrl] = useState("");
 
   const handleUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,44 +28,36 @@ export default function ForgotPasswordPage() {
 
     try {
 
-      // Validate username format
-      if (!username || username.length < 3) {
-        setError("Username must be at least 3 characters long");
-        setLoading(false);
-        return;
-      }
-      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        setError("Username can only contain letters, numbers, and underscores");
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        setError(usernameError);
         setLoading(false);
         return;
       }
 
-      // Check if user exists by trying to sign in with the pseudo-email
-      const pseudoEmail = `${username}@wrkout.app`;
-
-      // Check if user exists by attempting to sign in (we'll catch the error if user doesn't exist)
-      // This is a workaround since we can't use admin APIs from the client
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: pseudoEmail,
-        password: 'dummy-password-to-check-existence'
+      const response = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: normalizeUsername(username) }),
       });
 
-      // If we get "Invalid login credentials", the user exists but password is wrong
-      // If we get "User not found", the user doesn't exist
-      if (signInError && signInError.message.includes('User not found')) {
-        setError("No account found with this username. Please check your username or create a new account.");
-        setLoading(false);
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "An error occurred while checking your username. Please try again.");
         return;
       }
 
-      // If we get "Invalid login credentials", the user exists (which is what we want)
-      if (signInError && signInError.message.includes('Invalid login credentials')) {
-        setStep('email');
-        setMessage("Username found! Please provide an email address where we can send your password reset link.");
-      } else {
-        // If we get here, something unexpected happened
-        setError("An error occurred while checking your username. Please try again.");
+      if (!result.exists) {
+        setError("No account found with this username. Please check your username or create a new account.");
+        return;
       }
+
+      setUsername(normalizeUsername(username));
+      setStep('email');
+      setMessage("Username found! Please provide an email address where we can send your password reset link.");
 
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -100,7 +92,7 @@ export default function ForgotPasswordPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username,
+          username: normalizeUsername(username),
           recoveryEmail,
         }),
       });
@@ -114,7 +106,8 @@ export default function ForgotPasswordPage() {
       } else {
         setStep('success');
         setMessage("Password reset link sent! Check your email for the reset link.");
-        setDebugInfo("Email sent successfully via API");
+        setResetUrl(result.resetUrl || "");
+        setDebugInfo(result.resetUrl ? "Email delivery is not configured; reset link generated for development." : "Email sent successfully via API");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -131,6 +124,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
     setError("");
     setDebugInfo("");
+    setResetUrl("");
   };
 
   if (step === 'success') {
@@ -195,6 +189,15 @@ export default function ForgotPasswordPage() {
 
           {/* Compact Action Buttons */}
           <div className="space-y-2">
+            {resetUrl && (
+              <Button
+                onClick={() => window.location.href = resetUrl}
+                variant="outline"
+                className="w-full h-10 text-sm border border-zinc-700/50 hover:bg-zinc-800/50 transition-all"
+              >
+                Open Reset Link
+              </Button>
+            )}
             <Button
               onClick={() => window.location.href = '/auth/signin'}
               className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold shadow-lg shadow-yellow-400/20 transition-all duration-200 hover:shadow-xl hover:shadow-yellow-400/30 h-10 text-sm"
