@@ -25,7 +25,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   // Protected routes handling - only protect specific routes that require auth
-  const protectedRoutes = ['/dashboard', '/profile', '/settings/premium'];
+  const protectedRoutes = ['/dashboard', '/profile', '/settings', '/settings/premium'];
   const isProtectedRoute = protectedRoutes.some(route => 
     req.nextUrl.pathname.startsWith(route)
   );
@@ -45,6 +45,6 @@ export const config = {
     '/dashboard/:path*',
     '/auth/:path*',
     '/profile/:path*',
-    '/settings/premium/:path*'
+    '/settings/:path*'
   ]
 }; 

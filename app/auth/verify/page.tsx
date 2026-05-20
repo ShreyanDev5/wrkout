@@ -22,7 +22,7 @@ function VerifyEmailHandler() {
 
         if (!token || type !== 'signup') {
           setStatus('error');
-          setMessage('Invalid verification link');
+          setMessage('This verification link is invalid or expired.');
           return;
         }
 
@@ -36,11 +36,11 @@ function VerifyEmailHandler() {
           setMessage(error.message);
         } else {
           setStatus('success');
-          setMessage('Email verified successfully! You can now sign in.');
+          setMessage('Email verified. Sign in to continue.');
         }
       } catch (error) {
         setStatus('error');
-        setMessage('An unexpected error occurred');
+        setMessage('We could not verify this link. Try again.');
       }
     };
 
@@ -54,20 +54,20 @@ function VerifyEmailHandler() {
   return (
     <div className="space-y-4">
       {status === 'loading' && (
-        <div className="flex items-center justify-center space-x-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Verifying your email...</span>
+        <div className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-3.5 text-[0.9rem] text-zinc-300 sm:py-4 sm:text-sm">
+          <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+          <span>Verifying link...</span>
         </div>
       )}
 
       {status === 'success' && (
-        <Alert>
+        <Alert className="border-white/10 bg-white/5 text-zinc-100">
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}
 
       {status === 'error' && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="border-leg-light/20 bg-leg-light/10 text-zinc-50">
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}
@@ -75,9 +75,9 @@ function VerifyEmailHandler() {
       {status !== 'loading' && (
         <Button
           onClick={handleSignIn}
-          className="w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500 text-black font-semibold shadow-lg shadow-yellow-400/20 transition-all duration-200 hover:shadow-xl hover:shadow-yellow-400/30 h-11"
+          className="h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11"
         >
-          Go to Sign In
+          Sign in
         </Button>
       )}
     </div>
@@ -87,13 +87,13 @@ function VerifyEmailHandler() {
 export default function VerifyPage() {
   return (
     <AuthLayout
-      title="Email Verification"
-      subtitle="Verifying your email address"
+      title="Verify your email"
+      subtitle="Checking your link."
       footerText=""
       footerLink=""
       footerLinkText=""
     >
-      <Suspense fallback={<div className="flex items-center justify-center space-x-2"><Loader2 className="h-4 w-4 animate-spin" /><span>Verifying your email...</span></div>}>
+      <Suspense fallback={<div className="flex items-center justify-center space-x-2"><Loader2 className="h-4 w-4 animate-spin" /><span>Verifying link...</span></div>}>
         <VerifyEmailHandler />
       </Suspense>
     </AuthLayout>

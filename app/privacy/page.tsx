@@ -1,19 +1,33 @@
 export default function PrivacyPage() {
   return (
-    <div className="max-w-xl mx-auto py-12 px-4">
-      <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
-      <p className="mb-2">
-        Your privacy matters. This app securely stores your username, password, and workout data using Supabase.
-      </p>
-      <p className="mb-2">
-        Your information is never shared with third parties and is used solely to provide you with personalized workout tracking features.
-      </p>
-      <p className="mb-2">
-        You can request to delete your account and all associated data at any time by contacting the app owner.
-      </p>
-      <p>
-        If you have any questions or concerns, feel free to reach out to the app owner directly.
-      </p>
-    </div>
+    <main className="min-h-screen bg-background px-4 py-12 text-foreground">
+      <div className="mx-auto max-w-2xl space-y-8">
+        <header className="space-y-2">
+          <p className="text-sm font-medium text-zinc-500">wrkout</p>
+          <h1 className="text-2xl font-semibold tracking-normal">Privacy notice</h1>
+          <p className="text-sm leading-6 text-zinc-500">
+            How wrkout handles your account and workout data.
+          </p>
+        </header>
+
+        <section className="space-y-5 rounded-lg border border-zinc-800 bg-zinc-950/35 p-6 text-sm leading-6 text-zinc-400">
+          <p>
+            wrkout stores the account details needed to sign you in and the workout data you choose to save in Supabase.
+          </p>
+          <p>
+            Supabase Auth handles your password. wrkout never stores or displays your raw password.
+          </p>
+          <p>
+            Your workout data is used to power the tracker, sync progress, and show your history in the app.
+          </p>
+          <p>
+            Password reset emails are sent only when you request them.
+          </p>
+          <p>
+            Your data is not sold. To request account or data deletion, contact the app owner.
+          </p>
+        </section>
+      </div>
+    </main>
   );
-} 
+}

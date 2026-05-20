@@ -817,14 +817,14 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             ) : (
               <motion.div
                 variants={itemVariants}
-                className="text-center py-12 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700"
+                className="text-center py-6 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700"
               >
-                <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Dumbbell className="h-6 w-6 text-zinc-400" />
+                <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Dumbbell className="h-5 w-5 text-zinc-400" />
                 </div>
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-1">No Workouts Yet</h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4 max-w-xs mx-auto">
-                  Create your first workout routine to get started with tracking your progress.
+                <h3 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">No Workouts Yet</h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 max-w-xs mx-auto">
+                  Create your first routine to start tracking.
                 </p>
                 <Button onClick={() => setIsAddWorkoutOpen(true)}>
                   Create Workout
@@ -1040,7 +1040,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       <div className="px-3 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                         No matches found.
                         <div className="mt-1 font-medium text-purple-600 dark:text-purple-400">
-                          Press Add to create "{newExerciseName.trim()}"
+                          Press Add to create &quot;{newExerciseName.trim()}&quot;
                         </div>
                       </div>
                     )}

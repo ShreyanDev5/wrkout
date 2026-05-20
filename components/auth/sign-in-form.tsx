@@ -59,23 +59,23 @@ export function SignInForm() {
 
       router.push('/');
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-[18px] sm:space-y-5">
       {error && (
-        <Alert variant="destructive" className="animate-in slide-in-from-top-2 duration-300">
+        <Alert variant="destructive" className="animate-in slide-in-from-top-2 duration-300 border-leg-light/20 bg-leg-light/10 text-zinc-50">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3.5 sm:space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="username" className="text-sm font-medium">
+          <Label htmlFor="username" className="text-sm font-medium text-zinc-200">
             Username
           </Label>
           <div className="relative w-full">
@@ -85,26 +85,26 @@ export function SignInForm() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
               className={cn(
-                "w-full rounded-lg border border-border/50 bg-background/50 pl-8",
-                "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/50",
+                "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
+                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25",
                 "transition-all duration-200",
-                "placeholder:text-muted-foreground/50",
-                username && "pl-3" // Standard padding when icon is hidden
+                username && "pl-3"
               )}
               disabled={isLoading}
             />
             <div className={cn(
               "absolute left-0 top-0 h-full flex items-center",
               "transition-all duration-200",
-              username && "opacity-0 -translate-x-2" // Hide and slide left when there's input
+              username && "opacity-0 -translate-x-2"
             )}>
-              <Mail className="h-4 w-4 ml-3 text-muted-foreground/60" />
+              <Mail className="h-4 w-4 ml-3 text-zinc-500" />
             </div>
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium">
+          <Label htmlFor="password" className="text-sm font-medium text-zinc-200">
             Password
           </Label>
           <div className="relative w-full">
@@ -114,21 +114,21 @@ export function SignInForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
               className={cn(
-                "w-full rounded-lg border border-border/50 bg-background/50 pl-8",
-                "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/50",
+                "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
+                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25",
                 "transition-all duration-200",
-                "placeholder:text-muted-foreground/50",
-                password && "pl-3" // Standard padding when icon is hidden
+                password && "pl-3"
               )}
               disabled={isLoading}
             />
             <div className={cn(
               "absolute left-0 top-0 h-full flex items-center",
               "transition-all duration-200",
-              password && "opacity-0 -translate-x-2" // Hide and slide left when there's input
+              password && "opacity-0 -translate-x-2"
             )}>
-              <Lock className="h-4 w-4 ml-3 text-muted-foreground/60" />
+              <Lock className="h-4 w-4 ml-3 text-zinc-500" />
             </div>
           </div>
         </div>
@@ -137,11 +137,9 @@ export function SignInForm() {
       <Button
         type="submit"
         className={cn(
-          "w-full bg-gradient-to-r from-yellow-400 to-green-400 hover:from-yellow-500 hover:to-green-500",
-          "text-black font-semibold shadow-lg shadow-yellow-400/20",
-          "transition-all duration-200 hover:shadow-xl hover:shadow-yellow-400/30",
+          "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
+          "font-medium transition-colors duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "h-11"
         )}
         disabled={isLoading}
       >

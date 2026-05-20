@@ -27,12 +27,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUsername(session?.user?.user_metadata?.username ?? null);
         setIsLoading(false);
 
-        // Handle session loss by checking for SIGNED_OUT event and null session
-        if (
-          event === 'SIGNED_OUT' && !session
-        ) {
-          // Optionally, you can show a toast or set a message in localStorage
-          router.push('/auth/signin?message=Session expired, please sign in again.');
+        // Only show session-expired message for unexpected sign-out, not intentional logout
+        if (event === 'SIGNED_OUT' && !session) {
+          // Check if this is an intentional logout by looking for a flag in sessionStorage
+          const intentionalLogout = sessionStorage.getItem('intentional_logout');
+          if (intentionalLogout) {
+            sessionStorage.removeItem('intentional_logout');
+            router.push('/auth/signin');
+          } else {
+            // Session was lost unexpectedly
+            router.push('/auth/signin?message=Session expired, please sign in again.');
+          }
         }
       } catch (error) {
         // Remove: console.error('Error in onAuthStateChange:', error);
@@ -72,11 +77,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Mark this as an intentional logout
+      sessionStorage.setItem('intentional_logout', 'true');
       await supabase.auth.signOut();
     } catch (error) {
       // Remove: console.error('Error during sign out:', error);
     }
-    router.push('/auth/signin');
+    // Router push happens in the onAuthStateChange listener
   };
 
   const value = {
