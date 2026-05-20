@@ -25,8 +25,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
 import { DeletionConfirmationModal } from "@/components/modals/deletion-confirmation-modal"
 import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal" // Re-trigger import check
-import { RestrictionConfirmationModal } from "@/components/modals/restriction-confirmation-modal"
-import { updateWorkoutDayExercises, loadUserWorkoutDays } from '@/lib/supabase-data'
+import { updateWorkoutDayExercises, loadUserWorkoutDays, createDefaultRoutinesForWorkout } from '@/lib/supabase-data'
 import { v4 as uuidv4 } from 'uuid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import dynamic from 'next/dynamic'
@@ -110,11 +109,8 @@ interface SettingsScreenProps {
 
 export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays }: SettingsScreenProps) {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false)
-  const [isAddDayOpen, setIsAddDayOpen] = useState(false)
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
   const [newWorkoutName, setNewWorkoutName] = useState("")
-  const [newDayName, setNewDayName] = useState("")
-  const [newDayId, setNewDayId] = useState("")
   const [newExerciseName, setNewExerciseName] = useState("")
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null)
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
@@ -132,12 +128,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const [pendingDeleteWorkoutId, setPendingDeleteWorkoutId] = useState<string | null>(null);
   const [isDeleteWorkoutOpen, setIsDeleteWorkoutOpen] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<{ id: string, name: string } | null>(null);
-  const [isDeleteDayOpen, setIsDeleteDayOpen] = useState(false);
-  const [dayToDelete, setDayToDelete] = useState<{ workoutId: string, id: string, name: string } | null>(null);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
   const [exerciseToDelete, setExerciseToDelete] = useState<{ workoutId: string, dayId: string, id: string, name: string } | null>(null);
-  const [isDuplicateDayOpen, setIsDuplicateDayOpen] = useState(false);
-  const [isMaxDaysOpen, setIsMaxDaysOpen] = useState(false);
 
   // Autocomplete state
   const [availableExercises, setAvailableExercises] = useState<{ id: string, name: string }[]>([]);
@@ -209,33 +201,44 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }))
   }
 
-  const handleAddWorkout = () => {
-    if (!newWorkoutName.trim()) return
+  const handleAddWorkout = async () => {
+    if (!newWorkoutName.trim() || !user) return
 
+    const newWorkoutId = uuidv4()
     const newWorkout: Workout = {
-      id: uuidv4(),
-      user_id: user?.id || '',
+      id: newWorkoutId,
+      user_id: user.id,
       name: newWorkoutName,
       days: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
 
-    onUpdateWorkoutsAndDays([...workouts, newWorkout], workoutDays)
-    setNewWorkoutName("")
-    setIsAddWorkoutOpen(false)
+    try {
+      const defaultDays = await createDefaultRoutinesForWorkout(supabase, user.id, newWorkoutId)
+      onUpdateWorkoutsAndDays([...workouts, newWorkout], [...workoutDays, ...defaultDays])
+      setNewWorkoutName("")
+      setIsAddWorkoutOpen(false)
 
-    // Auto-expand the new workout
-    setExpandedWorkouts((prev) => ({
-      ...prev,
-      [newWorkout.id]: true,
-    }))
+      // Auto-expand the new workout
+      setExpandedWorkouts((prev) => ({
+        ...prev,
+        [newWorkout.id]: true,
+      }))
 
-    toast({
-      title: "Workout Added",
-      description: `${newWorkoutName} has been added to your workouts.`,
-      className: "bg-[#34A853] border-none text-white",
-    })
+      toast({
+        title: "Workout Added",
+        description: `${newWorkoutName} has been added to your workouts with default Push, Pull, and Legs sessions.`,
+        className: "bg-[#34A853] border-none text-white",
+      })
+    } catch (error) {
+      console.error("Failed to add workout with default days:", error)
+      toast({
+        title: "Error",
+        description: "Failed to create workout routine.",
+        className: "bg-[#EA4335] border-none text-white",
+      })
+    }
   }
 
   const handleDeleteWorkout = (workoutId: string, workoutName: string) => {
@@ -265,89 +268,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     setIsDeleteWorkoutOpen(false);
   }
 
-  const handleAddDay = async () => {
-    // Validate that we have required data
-    if (!selectedWorkoutId || !user) return;
-
-    // Validate that we have a day name and ID
-    if (!newDayName.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a day name.',
-        className: 'bg-[#EA4335] border-none text-white'
-      });
-      return;
-    }
-
-    if (!newDayId.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please select a day ID or enter a custom one.',
-        className: 'bg-[#EA4335] border-none text-white'
-      });
-      return;
-    }
-
-    // Check if a day with this day_id already exists for this workout
-    const existingDay = workoutDays.find(day =>
-      day.workout_id === selectedWorkoutId &&
-      day.day_id.toLowerCase() === newDayId.toLowerCase()
-    );
-
-    if (existingDay) {
-      setIsDuplicateDayOpen(true);
-      return;
-    }
-
-    // Check if this workout already has 3 days (max limit)
-    const daysForWorkout = workoutDays.filter(day => day.workout_id === selectedWorkoutId);
-    if (daysForWorkout.length >= 3) {
-      setIsMaxDaysOpen(true);
-      return;
-    }
-
-    const newDay = {
-      id: uuidv4(),
-      workout_id: selectedWorkoutId,
-      day_id: newDayId.toLowerCase(),
-      name: newDayName,
-      exercises: [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    onUpdateWorkoutsAndDays(workouts, [...workoutDays, newDay]);
-    setNewDayName("");
-    setNewDayId("");
-    setIsAddDayOpen(false);
-    setExpandedDays((prev) => ({
-      ...prev,
-      [`${selectedWorkoutId}-${newDayId.toLowerCase()}`]: true,
-    }));
-    toast({
-      title: "Day Added",
-      description: `${newDayName} has been added to your workout.`,
-      className: "bg-[#34A853] border-none text-white",
-    });
-  };
-
-  const handleDeleteDay = async (workoutId: string, dayId: string, dayName: string) => {
-    setDayToDelete({ workoutId, id: dayId, name: dayName });
-    setIsDeleteDayOpen(true);
-  }
-
-  const confirmDeleteDay = async () => {
-    if (!dayToDelete || !user) return;
-
-    onUpdateWorkoutsAndDays(workouts, workoutDays.filter(day => day.id !== dayToDelete.id));
-    toast({
-      title: "Day Deleted",
-      description: "The day has been removed from your workout.",
-      className: "bg-[#EA4335] border-none text-white",
-    });
-    setDayToDelete(null);
-    setIsDeleteDayOpen(false);
-  };
+  // Custom day modification handlers removed since we pre-populate and restrict to default Push, Pull, and Legs routines
 
   const handleAddExercise = async () => {
     if (!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || !user) return;
@@ -675,16 +596,6 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                 <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
                                   Weekly Schedule
                                 </h4>
-                                <button
-                                  onClick={() => {
-                                    setSelectedWorkoutId(workout.id)
-                                    setIsAddDayOpen(true)
-                                  }}
-                                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1"
-                                >
-                                  <Plus className="h-3 w-3" />
-                                  Add Day
-                                </button>
                               </div>
 
                               {daysForWorkout.length > 0 ? (
@@ -721,19 +632,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                             </div>
                                           </div>
 
-                                          <div className="flex items-center gap-2">
-                                            <Button
-                                              variant="ghost"
-                                              size="icon"
-                                              onClick={(e) => {
-                                                e.stopPropagation()
-                                                handleDeleteDay(workout.id, day.id, day.name)
-                                              }}
-                                              className="h-7 w-7 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                              <Trash2 className="h-3.5 w-3.5" />
-                                            </Button>
-                                          </div>
+                                          {/* Day deletion is disabled to maintain the standard PPL three-layer structure */}
                                         </div>
 
                                         <AnimatePresence>
@@ -791,19 +690,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                   })}
                                 </div>
                               ) : (
-                                <div className="text-center py-8 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20">
-                                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2">No days added to this routine.</p>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setSelectedWorkoutId(workout.id)
-                                      setIsAddDayOpen(true)
-                                    }}
-                                    className="h-8 text-xs"
-                                  >
-                                    Add Your First Day
-                                  </Button>
+                                <div className="text-center py-8 rounded-xl border border-dashed border-zinc-700/50 bg-zinc-900/20">
+                                  <p className="text-sm text-zinc-400">No sessions in this routine.</p>
                                 </div>
                               )}
                             </div>
@@ -901,65 +789,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         </DialogContent>
       </Dialog>
 
-      {/* Add Day Dialog */}
-      <Dialog open={isAddDayOpen} onOpenChange={setIsAddDayOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <DialogHeader>
-            <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-green-500" />
-              </div>
-              <DialogTitle className="text-center text-lg font-semibold">Add Session</DialogTitle>
-            </div>
-          </DialogHeader>
-          <div className="py-4 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="day-name">Session Name</Label>
-              <Input
-                id="day-name"
-                value={newDayName}
-                onChange={(e) => setNewDayName(e.target.value)}
-                placeholder="e.g. Upper Body"
-              />
-            </div>
 
-            <div className="space-y-3">
-              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Quick Select</span>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'push', name: 'Push', icon: ArrowUp, color: 'text-zinc-900', bg: 'bg-[#FBBC04]' },
-                  { id: 'pull', name: 'Pull', icon: ArrowDown, color: 'text-white', bg: 'bg-[#34A853]' },
-                  { id: 'leg', name: 'Legs', icon: Footprints, color: 'text-white', bg: 'bg-[#EA4335]' }
-                ].map((type) => (
-                  <button
-                    key={type.id}
-                    type="button"
-                    onClick={() => {
-                      setNewDayId(type.id);
-                      setNewDayName(type.name + (type.id === 'leg' ? '' : ' Day'));
-                    }}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${newDayId === type.id
-                      ? 'border-zinc-900 ring-1 ring-zinc-900 dark:border-zinc-100 dark:ring-zinc-100 bg-zinc-50 dark:bg-zinc-800'
-                      : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
-                      }`}
-                  >
-                    <div className={`w-8 h-8 rounded-full ${type.bg} flex items-center justify-center ${type.color}`}>
-                      <type.icon className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs font-medium">{type.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="flex-row gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setIsAddDayOpen(false)} className="flex-1">Cancel</Button>
-            <Button onClick={handleAddDay} className="flex-1 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
-              Add Session
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Add Exercise Dialog */}
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
@@ -1104,16 +934,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         itemName={workoutToDelete?.name || ""}
       />
 
-      <DeletionConfirmationModal
-        isOpen={isDeleteDayOpen}
-        onClose={() => {
-          setIsDeleteDayOpen(false);
-          setDayToDelete(null);
-        }}
-        onConfirm={confirmDeleteDay}
-        itemType="day"
-        itemName={dayToDelete?.name || ""}
-      />
+
 
       <DeletionConfirmationModal
         isOpen={isDeleteExerciseOpen}
@@ -1126,19 +947,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         itemName={exerciseToDelete?.name || ""}
       />
 
-      <RestrictionConfirmationModal
-        isOpen={isDuplicateDayOpen}
-        onClose={() => setIsDuplicateDayOpen(false)}
-        title="Duplicate Day"
-        message="This day already exists in the current workout routine. Each day type can only be added once per routine."
-      />
 
-      <RestrictionConfirmationModal
-        isOpen={isMaxDaysOpen}
-        onClose={() => setIsMaxDaysOpen(false)}
-        title="Maximum Days Reached"
-        message="A workout routine can only contain up to 3 days. Please remove an existing day if you want to add a different one."
-      />
 
       <div className="my-6"></div>
     </div>

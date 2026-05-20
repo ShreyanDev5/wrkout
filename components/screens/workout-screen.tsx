@@ -32,8 +32,9 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, Dumbbell } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
+import { useAuth } from '@/lib/auth'
 
 import { useToast } from "@/hooks/use-toast"
 
@@ -54,6 +55,7 @@ export function WorkoutScreen({
   onDeleteWorkoutLog,
 }: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
   const [selectedWorkout, setSelectedWorkout] = useState("")
+  const { user } = useAuth()
 
   // Get the current workout data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
@@ -265,18 +267,21 @@ export function WorkoutScreen({
 
   if (workouts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-        <p className="text-muted-foreground text-sm sm:text-base text-center px-4 py-1 leading-snug">
-          No workouts yet<br className="hidden sm:block" />
-          <span className="block mt-0.5">Create one to start tracking</span>
+      <div className="flex flex-col items-center justify-center h-[65vh] px-6 text-center select-none animate-in fade-in duration-500">
+        <div className="w-16 h-16 rounded-full bg-zinc-900/80 border border-zinc-800 flex items-center justify-center mb-6 shadow-xl">
+          <Dumbbell className="h-7 w-7 text-zinc-400 opacity-60" />
+        </div>
+        <h3 className="text-lg font-bold text-zinc-100 mb-2">Welcome to Wrkout</h3>
+        <p className="text-zinc-400 text-sm max-w-sm mb-6 leading-relaxed">
+          You don&apos;t have any workout routines yet. Please create one to start tracking.
         </p>
         <Button
           onClick={() => setIsAddWorkoutOpen(true)}
-          className="rounded-md bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-sm px-6 py-2 text-base font-semibold"
-          aria-label="Add new workout"
+          className="rounded-xl bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-lg shadow-green-900/20 px-6 py-2.5 text-sm font-semibold tracking-tight transition-all active:scale-95"
+          aria-label="Create routine"
         >
-          <PlusCircle className="h-5 w-5 mr-2" aria-hidden="true" />
-          Add Workout
+          <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+          Create Routine
         </Button>
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
           <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
@@ -310,26 +315,36 @@ export function WorkoutScreen({
               </button>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   if (!newWorkoutName.trim()) return
-                  let userId = "";
-                  if (workouts && workouts.length > 0) {
-                    userId = workouts[0]?.user_id || "";
-                  } else if (typeof window !== 'undefined') {
-                    // Try to get userId from localStorage or a global context if available
-                    userId = window.localStorage.getItem('wrkout-user-id') || "";
+                  let userId = user?.id || ""
+                  if (!userId) {
+                    if (workouts && workouts.length > 0) {
+                      userId = workouts[0]?.user_id || ""
+                    } else if (typeof window !== 'undefined') {
+                      userId = window.localStorage.getItem('wrkout-user-id') || ""
+                    }
                   }
+                  
+                  const newWorkoutId = uuidv4()
                   const newWorkout: Workout = {
-                    id: uuidv4(),
+                    id: newWorkoutId,
                     user_id: userId,
                     name: newWorkoutName,
                     days: [],
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   }
-                  onUpdateWorkoutsAndDays([...(workouts || []), newWorkout], workoutDays)
-                  setNewWorkoutName("")
-                  setIsAddWorkoutOpen(false)
+
+                  try {
+                    const { createDefaultRoutinesForWorkout } = await import('@/lib/supabase-data')
+                    const defaultDays = await createDefaultRoutinesForWorkout(supabase, userId, newWorkoutId)
+                    onUpdateWorkoutsAndDays([...(workouts || []), newWorkout], [...workoutDays, ...defaultDays])
+                    setNewWorkoutName("")
+                    setIsAddWorkoutOpen(false)
+                  } catch (error) {
+                    console.error("Error creating workout with default days:", error)
+                  }
                 }}
                 className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none text-sm"
                 aria-label="Confirm add workout"

@@ -215,12 +215,13 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
               )
             })
           ) : (
-            <div className="text-center py-16 px-8 rounded-[32px] border border-dashed border-zinc-800/50 bg-zinc-900/10">
-              <div className="w-12 h-12 rounded-full bg-zinc-800/20 flex items-center justify-center mx-auto mb-4">
-                <Dumbbell className="h-6 w-6 text-muted-foreground opacity-30" />
+            <div className="flex flex-col items-center justify-center py-12 px-6 text-center select-none animate-in fade-in duration-500 rounded-[24px] bg-zinc-900/20 border border-zinc-800/40">
+              <div className="w-12 h-12 rounded-full bg-zinc-900/60 border border-zinc-800/60 flex items-center justify-center mb-4 shadow-lg">
+                <TrendingUp className="h-5 w-5 text-zinc-400 opacity-60" />
               </div>
-              <p className="text-muted-foreground font-medium text-xs leading-relaxed max-w-[180px] mx-auto opacity-50">
-                Log a workout today to build your progress momentum!
+              <h3 className="text-sm font-bold text-zinc-200 mb-1">No Activity Today</h3>
+              <p className="text-zinc-400 text-xs max-w-xs leading-relaxed">
+                Log an exercise to start tracking your daily progress and trends.
               </p>
             </div>
           )}

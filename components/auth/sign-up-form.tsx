@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Lock, CheckCircle2, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { saveUserWorkouts } from '@/lib/supabase-data';
+import { saveUserWorkouts, createDefaultRoutinesForWorkout } from '@/lib/supabase-data';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { createPseudoEmail, normalizeUsername, validatePassword, validateUsername } from '@/lib/auth/auth-utils';
 
@@ -66,15 +66,19 @@ export function SignUpForm() {
       
       if (signInData && signInData.user) {
         const supabase = createClientComponentClient();
+        const defaultWorkoutId = crypto.randomUUID();
         // Create a default 'My Workouts' routine for new users (one-time, only on sign-up)
         await saveUserWorkouts(supabase, [{
-          id: crypto.randomUUID(),
+          id: defaultWorkoutId,
           user_id: signInData.user.id,
           name: 'My Workouts',
           days: [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }], signInData.user.id);
+
+        // Pre-populate standard Push, Pull, Legs routines (days) with exercises
+        await createDefaultRoutinesForWorkout(supabase, signInData.user.id, defaultWorkoutId);
       }
       
       router.push('/');

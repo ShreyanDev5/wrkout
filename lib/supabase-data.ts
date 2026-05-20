@@ -310,3 +310,117 @@ export async function createExercise(
 
   return data?.id || null
 }
+
+// Create default days (Push, Pull, Legs) with default exercises for a workout
+export async function createDefaultRoutinesForWorkout(
+  supabase: SupabaseClientLike,
+  userId: string,
+  workoutId: string
+): Promise<WorkoutDay[]> {
+  const defaultExercises = [
+    // Push
+    { name: "Incline Dumbbell Press", type: "push" },
+    { name: "Shoulder Press", type: "push" },
+    { name: "Triceps Pushdown", type: "push" },
+    // Pull
+    { name: "Lat Pulldown", type: "pull" },
+    { name: "Barbell Row", type: "pull" },
+    { name: "Bicep Curl", type: "pull" },
+    // Legs
+    { name: "Squat", type: "leg" },
+    { name: "Romanian Deadlift", type: "leg" },
+    { name: "Calf Raise", type: "leg" },
+  ]
+
+  // 1. Upsert exercises to database
+  const exercisesToInsert = defaultExercises.map(ex => ({
+    user_id: userId,
+    name: ex.name,
+    normalized_name: ex.name.trim().toLowerCase(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }))
+
+  const { data: insertedExercises, error: exError } = await supabase
+    .from('exercises')
+    .upsert(exercisesToInsert, { onConflict: 'user_id,normalized_name' })
+    .select('id, name')
+
+  if (exError) {
+    console.error('Error upserting default exercises:', exError)
+  }
+
+  // Helper to find ID of an exercise by name
+  const findExId = (name: string): string | undefined => {
+    return insertedExercises?.find(
+      (e) => e.name.toLowerCase() === name.toLowerCase()
+    )?.id
+  }
+
+  // 2. Create the 3 default days
+  const uuidv4 = (await import('uuid')).v4
+  const now = new Date().toISOString()
+
+  const defaultDays: WorkoutDay[] = [
+    {
+      id: uuidv4(),
+      workout_id: workoutId,
+      day_id: "push",
+      name: "Push Day",
+      exercises: [
+        { id: uuidv4(), exercise_id: findExId("Incline Dumbbell Press"), name: "Incline Dumbbell Press" },
+        { id: uuidv4(), exercise_id: findExId("Shoulder Press"), name: "Shoulder Press" },
+        { id: uuidv4(), exercise_id: findExId("Triceps Pushdown"), name: "Triceps Pushdown" },
+      ],
+      created_at: now,
+      updated_at: now
+    },
+    {
+      id: uuidv4(),
+      workout_id: workoutId,
+      day_id: "pull",
+      name: "Pull Day",
+      exercises: [
+        { id: uuidv4(), exercise_id: findExId("Lat Pulldown"), name: "Lat Pulldown" },
+        { id: uuidv4(), exercise_id: findExId("Barbell Row"), name: "Barbell Row" },
+        { id: uuidv4(), exercise_id: findExId("Bicep Curl"), name: "Bicep Curl" },
+      ],
+      created_at: now,
+      updated_at: now
+    },
+    {
+      id: uuidv4(),
+      workout_id: workoutId,
+      day_id: "leg",
+      name: "Legs Day",
+      exercises: [
+        { id: uuidv4(), exercise_id: findExId("Squat"), name: "Squat" },
+        { id: uuidv4(), exercise_id: findExId("Romanian Deadlift"), name: "Romanian Deadlift" },
+        { id: uuidv4(), exercise_id: findExId("Calf Raise"), name: "Calf Raise" },
+      ],
+      created_at: now,
+      updated_at: now
+    }
+  ]
+
+  // 3. Save these days to Supabase
+  const { error: daysError } = await supabase
+    .from('workout_days')
+    .insert(
+      defaultDays.map((day) => ({
+        id: day.id,
+        workout_id: day.workout_id,
+        day_id: day.day_id,
+        name: day.name,
+        exercises: day.exercises || [],
+        created_at: day.created_at,
+        updated_at: day.updated_at
+      }))
+    )
+
+  if (daysError) {
+    console.error('Error inserting default workout days:', daysError)
+  }
+
+  return defaultDays
+}
