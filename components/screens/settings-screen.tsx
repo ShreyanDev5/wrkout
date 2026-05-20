@@ -635,8 +635,6 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                               </p>
                                             </div>
                                           </div>
-
-                                          {/* Day deletion is disabled to maintain the standard PPL three-layer structure */}
                                         </div>
 
                                         <AnimatePresence>
@@ -656,13 +654,13 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                         e.stopPropagation()
                                                         setPendingExerciseOpen({ workoutId: workout.id, dayId: day.id })
                                                       }}
-                                                      className="flex items-center justify-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/40 hover:border-zinc-600/50 shadow-md transition-all duration-200 active:scale-95 cursor-pointer min-h-[32px] sm:min-h-[38px]"
+                                                      className="flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/40 hover:border-zinc-600/50 shadow-md transition-all duration-200 active:scale-95 cursor-pointer"
+                                                      title="Add Exercise"
+                                                      aria-label="Add Exercise"
                                                     >
-                                                      <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-zinc-300" />
-                                                      Add Exercise
+                                                      <Plus className="h-4 w-4 text-zinc-300" />
                                                     </button>
                                                   </div>
-
                                                   {day.exercises.length > 0 ? (
                                                     <ul className="space-y-1.5">
                                                       {day.exercises.map((exercise, index) => (
