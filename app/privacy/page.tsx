@@ -3,28 +3,28 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-background px-4 py-12 text-foreground">
       <div className="mx-auto max-w-2xl space-y-8">
         <header className="space-y-2">
-          <p className="text-sm font-medium text-zinc-500">wrkout</p>
+          <p className="text-sm font-bold tracking-wider text-zinc-400 uppercase">Wrkout</p>
           <h1 className="text-2xl font-semibold tracking-normal">Privacy notice</h1>
           <p className="text-sm leading-6 text-zinc-500">
-            How wrkout handles your account and workout data.
+            How <span className="font-semibold italic text-zinc-300">Wrkout</span> handles your account and workout data.
           </p>
         </header>
 
         <section className="space-y-5 rounded-lg border border-zinc-800 bg-zinc-950/35 p-6 text-sm leading-6 text-zinc-400">
           <p>
-            wrkout stores the account details needed to sign you in and the workout data you choose to save in Supabase.
+            <span className="font-semibold italic text-zinc-200">Wrkout</span> stores only the account details necessary to authenticate you, alongside the workout logs you choose to record.
           </p>
           <p>
-            Supabase Auth handles your password. wrkout never stores or displays your raw password.
+            Passwords are securely handled by Supabase Auth. <span className="font-semibold italic text-zinc-200">Wrkout</span> never stores, accesses, or displays your raw credentials.
           </p>
           <p>
-            Your workout data is used to power the tracker, sync progress, and show your history in the app.
+            Your training data is solely used to power the tracking features, synchronize progress, and display your personal workout history.
           </p>
           <p>
-            Password reset emails are sent only when you request them.
+            Account emails, such as password resets, are sent strictly upon your request.
           </p>
           <p>
-            Your data is not sold. To request account or data deletion, contact the app owner.
+            Your personal data is never sold or shared. To request full account and data deletion at any time, please contact the app administrator.
           </p>
         </section>
       </div>
