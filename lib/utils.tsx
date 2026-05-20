@@ -27,10 +27,13 @@ export function formatDate(dateString: string): string {
 export function getWorkoutDayColor(dayId: string, colorMode?: string): string {
   switch (dayId.toLowerCase()) {
     case "push":
+    case "pushes":
       return "hsl(var(--push-dark))" // Soft Gold
     case "pull":
+    case "pulls":
       return "hsl(var(--pull-dark))" // Darker Green
     case "leg":
+    case "legs":
       return "hsl(var(--leg-dark))" // Darker Purple
     default:
       return "hsl(var(--muted))"
@@ -42,10 +45,13 @@ export function getWorkoutDayIcon(dayId: string, modern = false, size = "h-5 w-5
 
   switch (dayId.toLowerCase()) {
     case "push":
+    case "pushes":
       return <Hand className={`${size} ${iconClass}`} aria-hidden="true" />
     case "pull":
+    case "pulls":
       return <BicepsFlexed className={`${size} ${iconClass}`} aria-hidden="true" />
     case "leg":
+    case "legs":
       return <Footprints className={`${size} ${iconClass}`} aria-hidden="true" />
     default:
       return <Dumbbell className={`${size} ${iconClass}`} aria-hidden="true" />

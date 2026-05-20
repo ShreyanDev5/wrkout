@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { formatDate } from "@/lib/utils"
+import { formatDate, getWorkoutDayIcon, getWorkoutDayColor } from "@/lib/utils"
 import type { Workout, WorkoutDay, WorkoutExercise } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "@/components/ui/input"
@@ -427,34 +427,38 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   // Get day icon and color based on day ID
   const getDayIconAndColor = (dayId: string) => {
+    const icon = getWorkoutDayIcon(dayId, true, "h-4 w-4")
     switch (dayId.toLowerCase()) {
       case "push":
+      case "pushes":
         return {
-          icon: <ArrowUp className="h-4 w-4" />,
-          color: "bg-[#FBBC04]",
-          textColor: "text-zinc-900",
-          borderColor: "border-[#FBBC04]",
+          icon,
+          color: "bg-push-dark/10 border border-push-dark/20",
+          textColor: "text-push-dark",
+          borderColor: "border-push-dark/20",
         }
       case "pull":
+      case "pulls":
         return {
-          icon: <ArrowDown className="h-4 w-4" />,
-          color: "bg-[#34A853]",
-          textColor: "text-white",
-          borderColor: "border-[#34A853]",
+          icon,
+          color: "bg-pull-dark/10 border border-pull-dark/20",
+          textColor: "text-pull-dark",
+          borderColor: "border-pull-dark/20",
         }
       case "leg":
+      case "legs":
         return {
-          icon: <Footprints className="h-4 w-4" />,
-          color: "bg-[#EA4335]",
-          textColor: "text-white",
-          borderColor: "border-[#EA4335]",
+          icon,
+          color: "bg-leg-dark/10 border border-leg-dark/20",
+          textColor: "text-leg-dark",
+          borderColor: "border-leg-dark/20",
         }
       default:
         return {
-          icon: <Dumbbell className="h-4 w-4" />,
-          color: "bg-zinc-700",
-          textColor: "text-white",
-          borderColor: "border-zinc-700",
+          icon,
+          color: "bg-zinc-800/40 border border-zinc-700/30",
+          textColor: "text-zinc-400",
+          borderColor: "border-zinc-700/30",
         }
     }
   }
@@ -489,7 +493,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   return (
     <div className="w-full max-w-2xl mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex items-center gap-3 mb-8 sm:mb-10 pt-4 sm:pt-6">
+      <div className="flex items-center gap-3 mb-5 sm:mb-6 pt-4 sm:pt-6">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800/90 to-zinc-900/90 border border-zinc-700/40 shadow-lg shadow-zinc-900/50">
           <Settings className="h-5 w-5" strokeWidth={2.5} style={{ color: '#EA4335' }} />
         </div>
@@ -507,7 +511,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="space-y-10"
+        className="space-y-4"
       >
         {/* Workouts Section */}
         <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
@@ -611,7 +615,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                         className="relative rounded-xl border border-zinc-700/50 bg-zinc-800/40 overflow-hidden"
                                         style={{
                                           borderLeftWidth: '3px',
-                                          borderLeftColor: day.day_id === 'push' ? '#f9d949' : day.day_id === 'pull' ? '#4caf50' : day.day_id === 'leg' ? '#EA4335' : '#71717a'
+                                          borderLeftColor: getWorkoutDayColor(day.day_id)
                                         }}
                                       >
                                         <div
@@ -652,9 +656,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                         e.stopPropagation()
                                                         setPendingExerciseOpen({ workoutId: workout.id, dayId: day.id })
                                                       }}
-                                                      className="text-[10px] sm:text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 transition-colors px-2 py-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                                                      className="flex items-center justify-center gap-1.5 px-4 py-2 sm:px-4.5 sm:py-2.5 rounded-xl text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/40 hover:border-zinc-600/50 shadow-md transition-all duration-200 active:scale-95 cursor-pointer min-h-[38px]"
                                                     >
-                                                      <Plus className="h-3 w-3" />
+                                                      <Plus className="h-4 w-4 text-zinc-300" />
                                                       Add Exercise
                                                     </button>
                                                   </div>
@@ -723,8 +727,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         </section>
 
         {/* Account Actions */}
-        <section className="pt-6">
-          <div className="relative border border-zinc-700/50 rounded-2xl p-4">
+        <section className="pt-0">
+          <div className="relative bg-zinc-900/30 border border-zinc-700/40 shadow-lg shadow-zinc-950/20 rounded-2xl p-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
