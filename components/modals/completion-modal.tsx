@@ -3,12 +3,9 @@
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
 
 import { useHaptics } from "@/hooks/use-haptics"
 
@@ -38,48 +35,44 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="w-[90%] max-w-[320px] rounded-3xl border-0 bg-background/80 backdrop-blur-xl shadow-2xl p-0 overflow-hidden"
+                className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-0 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col"
                 hideCloseButton={true}
             >
-                <div className="flex flex-col items-center justify-center p-8 text-center space-y-6">
+                <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 relative">
 
                     {/* Subtle Glow Background Effect - Fiery & Energetic */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-red-500/20 to-amber-500/20 opacity-60 mix-blend-plus-lighter" />
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/30 rounded-full blur-3xl opacity-40" />
-                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-600/30 rounded-full blur-3xl opacity-40" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-red-500/10 to-amber-500/10 opacity-40 mix-blend-plus-lighter pointer-events-none" />
+                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
+                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-600/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
 
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center gap-4">
-                        <div className="text-6xl animate-in zoom-in-50 duration-500 ease-out-back">
+                        <div className="text-5xl animate-in zoom-in-50 duration-500 ease-out-back">
                             🔥
                         </div>
 
-                        <div className="space-y-2 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-150 fill-mode-both">
-                            <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
+                        <div className="space-y-1.5 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-150 fill-mode-both">
+                            <DialogTitle className="text-[1.2rem] font-extrabold tracking-tight text-white">
                                 Session Complete
                             </DialogTitle>
-                            <p className="text-sm font-bold text-orange-600/90 dark:text-orange-400/90 uppercase tracking-widest text-[0.7rem] shadow-sm">
+                            <p className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest">
                                 Show up. Execute. Repeat.
                             </p>
                         </div>
                     </div>
 
                     {/* Action */}
-                    <div className="relative z-10 w-full pt-2 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-300 fill-mode-both">
-                        <Button
+                    <div className="relative z-10 w-full pt-1 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-300 fill-mode-both">
+                        <button
+                            type="button"
                             onClick={() => {
                                 haptic("light")
                                 onClose()
                             }}
-                            className={cn(
-                                "w-full rounded-2xl h-12 text-base font-semibold",
-                                "bg-zinc-900 text-zinc-50 hover:bg-zinc-800",
-                                "dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200",
-                                "transition-all duration-300 shadow-lg shadow-zinc-500/10"
-                            )}
+                            className="w-full h-9.5 rounded-full bg-orange-600 hover:bg-orange-500 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(234,88,12,0.2)] border-none"
                         >
                             Done
-                        </Button>
+                        </button>
                     </div>
 
                 </div>
@@ -87,3 +80,4 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
         </Dialog>
     )
 }
+

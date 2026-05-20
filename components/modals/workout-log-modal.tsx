@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { WeightStepper } from "@/components/ui/weight-stepper"
 import type { Exercise, WorkoutLog } from "@/lib/types"
 import { useExerciseStore } from "@/lib/exercise-store"
 import { ensureAudioContextRunning } from "@/lib/audio-utils"
 import { v4 as uuidv4 } from 'uuid'
+
 
 interface WorkoutLogModalProps {
   isOpen: boolean
@@ -92,38 +92,41 @@ export function WorkoutLogModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="w-full max-w-sm sm:max-w-md mobile-narrow-modal dark:bg-background/90 dark:border-opacity-10 rounded-2xl mx-auto border-none shadow-2xl backdrop-blur-xl overflow-hidden"
+        className="w-[92%] max-w-[340px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-0 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col"
         hideCloseButton={true}
       >
-        {/* Header with gradient background */}
+        {/* Header with subtle color gradient background */}
         <div
-          className="relative pt-5 pb-6 px-6 rounded-t-2xl"
+          className="relative pt-6 pb-5 px-6 rounded-t-[24px] flex flex-col items-center justify-center"
           style={{
-            background: `linear-gradient(135deg, ${dayColor}20 0%, ${dayColor}10 100%)`,
-            borderBottom: `1px solid ${dayColor}20`
+            background: `linear-gradient(135deg, ${dayColor}22 0%, ${dayColor}08 100%)`,
+            borderBottom: `1px solid ${dayColor}18`
           }}
         >
-          <DialogHeader className="items-center">
-            <DialogTitle className="flex flex-col items-center gap-2.5 text-white">
-              <div className="flex items-center justify-center w-11 h-11 rounded-full bg-background/30 backdrop-blur-sm border border-white/10">
+          <DialogHeader className="items-center w-full">
+            <DialogTitle className="flex flex-col items-center w-full">
+              <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 shadow-[0_6px_16px_rgba(0,0,0,0.18)] mb-3">
                 <span
-                  className="inline-block w-3 h-3 rounded-full"
-                  style={{ backgroundColor: dayColor }}
+                  className="inline-block w-2.5 h-2.5 rounded-full animate-pulse"
+                  style={{ backgroundColor: dayColor, boxShadow: `0 0 10px ${dayColor}` }}
                   aria-hidden="true"
                 ></span>
               </div>
-              <span className="font-semibold text-lg">{exercise.name}</span>
+              <span className="font-extrabold tracking-tight text-white text-center text-[1.15rem] leading-snug w-full px-2 truncate block">{exercise.name}</span>
             </DialogTitle>
           </DialogHeader>
+          <span className="text-[9.5px] uppercase tracking-widest text-zinc-500 font-bold mt-1.5 block">
+            {dayName} • {workoutName}
+          </span>
         </div>
 
         {/* Main content */}
-        <div className="flex flex-col items-center py-5 px-5">
-          <div className="w-full space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col items-center py-5 px-5 w-full">
+          <div className="w-full space-y-5">
+            <div className="grid grid-cols-2 gap-4 w-full">
               {/* Weight Section */}
-              <div className="space-y-2.5">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Weight</h3>
+              <div className="space-y-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 text-center">Weight</h3>
                 <WeightStepper
                   value={weight}
                   onChange={setWeight}
@@ -136,8 +139,8 @@ export function WorkoutLogModal({
               </div>
 
               {/* Reps Section */}
-              <div className="space-y-2.5">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 text-center">Reps</h3>
+              <div className="space-y-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 text-center">Reps</h3>
                 <NumberStepper
                   value={reps}
                   onChange={setReps}
@@ -151,54 +154,54 @@ export function WorkoutLogModal({
 
             {/* Last Log Section */}
             {lastLog && (
-              <div className="mt-3 pt-4 border-t border-white/10">
-                <div className="flex justify-between items-center mb-2.5">
-                  <span className="text-xs text-muted-foreground">Last log</span>
-                  <span className="text-xs font-medium text-white" style={{ color: dayColor }}>
+              <div className="w-full mt-1 pt-4 border-t border-white/5 flex flex-col">
+                <div className="flex justify-between items-center mb-2 px-1">
+                  <span className="text-[11px] font-semibold text-zinc-400">Previous Best Set</span>
+                  <span className="text-[11.5px] font-extrabold text-white" style={{ color: dayColor }}>
                     {lastLog.weight} kg × {lastLog.avg_reps} reps
                   </span>
                 </div>
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  size="sm"
                   onClick={handleRecallLastLog}
-                  className="w-full h-10 px-4 text-xs font-medium rounded-lg bg-background/50 border-white/10 hover:bg-white/5 transition-all duration-200"
+                  className="w-full h-9 rounded-full border border-white/8 bg-white/[0.02] hover:bg-white/[0.06] text-xs font-bold text-zinc-200 hover:text-white transition-all active:scale-95 shadow-sm"
                 >
-                  Use Last Log
-                </Button>
+                  Replicate Previous Set
+                </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 px-5 pb-5 pt-3">
-          <Button
+        {/* Action Buttons Row */}
+        <div className="flex flex-row gap-2.5 px-5 pb-5 pt-1 w-full">
+          <button
             type="button"
-            variant="outline"
             onClick={onClose}
-            className="h-12 rounded-xl font-medium border-white/10 bg-background/50 hover:bg-white/5 text-white transition-all duration-200"
+            className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
             disabled={isSaving}
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
             onClick={handleSave}
-            style={{ backgroundColor: dayColor }}
-            className="h-12 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:brightness-110 border-none"
+            style={{ 
+              backgroundColor: dayColor, 
+              boxShadow: `0 4px 16px ${dayColor}33` 
+            }}
+            className="flex-1 h-9.5 rounded-full text-xs font-bold text-white transition-all active:scale-95 hover:brightness-110 border-none flex items-center justify-center"
             disabled={isSaving}
           >
             {isSaving ? (
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>
-                Saving...
+              <span className="flex items-center gap-1.5 justify-center">
+                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                Saving
               </span>
             ) : (
-              "Save Log"
+              "Log Set"
             )}
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>

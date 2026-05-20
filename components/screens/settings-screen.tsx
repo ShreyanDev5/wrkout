@@ -656,9 +656,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                         e.stopPropagation()
                                                         setPendingExerciseOpen({ workoutId: workout.id, dayId: day.id })
                                                       }}
-                                                      className="flex items-center justify-center gap-1.5 px-4 py-2 sm:px-4.5 sm:py-2.5 rounded-xl text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/40 hover:border-zinc-600/50 shadow-md transition-all duration-200 active:scale-95 cursor-pointer min-h-[38px]"
+                                                      className="flex items-center justify-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/40 hover:border-zinc-600/50 shadow-md transition-all duration-200 active:scale-95 cursor-pointer min-h-[32px] sm:min-h-[38px]"
                                                     >
-                                                      <Plus className="h-4 w-4 text-zinc-300" />
+                                                      <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-zinc-300" />
                                                       Add Exercise
                                                     </button>
                                                   </div>
@@ -765,31 +765,45 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       {/* Dialogs - Kept functionally same but ensures classes match new aesthetic if needed. existing styling indialogs is mostly generic shadcn which is fine. */}
       {/* Add Workout Dialog */}
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <DialogHeader>
-            <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Plus className="h-5 w-5 text-blue-500" />
-              </div>
-              <DialogTitle className="text-center text-lg font-semibold">New Routine</DialogTitle>
+        <DialogContent 
+          hideCloseButton
+          className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+        >
+          <DialogHeader className="w-full flex flex-col items-center">
+            {/* Floating Icon Box matching Onboarding */}
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
+              <Plus className="h-5.5 w-5.5 text-blue-500" aria-hidden="true" />
             </div>
+            <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Routine</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="workout-name" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</Label>
+          <div className="py-4 w-full">
+            <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
             <Input
               id="workout-name"
               value={newWorkoutName}
               onChange={(e) => setNewWorkoutName(e.target.value)}
               placeholder="e.g. Summer Cut, Bulking..."
-              className="mt-2"
+              className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500/50 focus:ring-blue-500/20 w-full"
             />
           </div>
-          <DialogFooter className="flex-row gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setIsAddWorkoutOpen(false)} className="flex-1">Cancel</Button>
-            <Button onClick={handleAddWorkout} className="flex-1 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+          {/* Buttons Row with premium pill styles */}
+          <div className="flex flex-row justify-between gap-2.5 mt-2 w-full px-0.5">
+            <button
+              type="button"
+              onClick={() => setIsAddWorkoutOpen(false)}
+              className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleAddWorkout}
+              disabled={!newWorkoutName.trim()}
+              className="flex-1 h-9.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(37,99,235,0.2)] border-none"
+            >
               Create
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -797,18 +811,20 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       {/* Add Exercise Dialog */}
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
-        <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <DialogHeader>
-            <div className="flex flex-col items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-                <Dumbbell className="h-5 w-5 text-purple-500" />
-              </div>
-              <DialogTitle className="text-center text-lg font-semibold">New Exercise</DialogTitle>
+        <DialogContent 
+          hideCloseButton
+          className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+        >
+          <DialogHeader className="w-full flex flex-col items-center">
+            {/* Floating Icon Box matching Onboarding */}
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
+              <Dumbbell className="h-5.5 w-5.5 text-purple-500 animate-pulse" aria-hidden="true" />
             </div>
+            <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Exercise</DialogTitle>
           </DialogHeader>
-          <div className="py-4 relative">
-            <Label htmlFor="exercise-name">Exercise Name</Label>
-            <div className="relative mt-2">
+          <div className="py-4 relative w-full">
+            <Label htmlFor="exercise-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Exercise Name</Label>
+            <div className="relative mt-1 w-full">
               <Input
                 id="exercise-name"
                 ref={inputRef}
@@ -840,7 +856,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                   }
                 }}
                 placeholder="e.g. Incline Bench Press"
-                className="w-full"
+                className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-purple-500/50 focus:ring-purple-500/20 w-full"
                 autoComplete="off"
               />
               <AnimatePresence>
@@ -850,15 +866,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
+                    className="absolute z-50 w-full mt-1.5 bg-zinc-950 border border-white/10 rounded-xl shadow-2xl max-h-[160px] overflow-y-auto backdrop-blur-xl"
                   >
                     {filteredExercises.length > 0 ? (
                       <ul className="py-1">
                         {filteredExercises.map((ex, idx) => (
                           <li
                             key={ex.id}
-                            className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
-                              idx === highlightedIndex ? 'bg-zinc-100 dark:bg-zinc-700/50 text-foreground' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'
+                            className={`px-3 py-2.5 text-xs font-semibold cursor-pointer transition-colors ${
+                              idx === highlightedIndex ? 'bg-white/[0.08] text-white' : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
                             }`}
                             onClick={() => {
                               setNewExerciseName(ex.name);
@@ -871,9 +887,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                         ))}
                       </ul>
                     ) : (
-                      <div className="px-3 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                      <div className="px-3 py-3 text-xs text-zinc-500">
                         No matches found.
-                        <div className="mt-1 font-medium text-purple-600 dark:text-purple-400">
+                        <div className="mt-1 font-bold text-purple-400">
                           Press Add to create &quot;{newExerciseName.trim()}&quot;
                         </div>
                       </div>
@@ -883,16 +899,24 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               </AnimatePresence>
             </div>
           </div>
-          <DialogFooter className="flex-row gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setIsAddExerciseOpen(false)} className="flex-1">Cancel</Button>
-            <Button
+          {/* Buttons Row with premium pill styles */}
+          <div className="flex flex-row justify-between gap-2.5 mt-2 w-full px-0.5">
+            <button
+              type="button"
+              onClick={() => setIsAddExerciseOpen(false)}
+              className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
               onClick={handleAddExercise}
               disabled={!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || isCreatingExercise}
-              className="flex-1 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="flex-1 h-9.5 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:pointer-events-none px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(147,51,234,0.2)] border-none"
             >
               {isCreatingExercise ? 'Adding...' : 'Add'}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 

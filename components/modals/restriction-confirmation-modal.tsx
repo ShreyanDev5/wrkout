@@ -1,8 +1,7 @@
 "use client"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { AlertTriangle } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 
 interface RestrictionConfirmationModalProps {
   isOpen: boolean
@@ -14,31 +13,38 @@ interface RestrictionConfirmationModalProps {
 export function RestrictionConfirmationModal({ isOpen, onClose, title, message }: RestrictionConfirmationModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto flex flex-col items-center text-center p-4 shadow-lg backdrop-blur-xl">
+      <DialogContent 
+        hideCloseButton
+        className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+      >
         <DialogHeader className="w-full flex flex-col items-center">
-          <div className="flex flex-col items-center gap-1.5 mb-1.5 w-full text-center">
-            <AlertTriangle className="h-5 w-5 text-amber-500 mx-auto" aria-hidden="true" />
-            <DialogTitle className="line-height-readable w-full text-center text-base font-semibold">{title}</DialogTitle>
+          {/* Floating Icon Box matching Onboarding */}
+          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
+            <AlertCircle className="h-5.5 w-5.5 text-amber-500 animate-pulse" aria-hidden="true" />
           </div>
+          <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">
+            {title}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="py-2 w-full flex flex-col items-center">
-          <p className="line-height-readable w-full text-center text-sm md:text-base text-muted-foreground px-0.5">
+        <div className="py-2.5 w-full">
+          <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-0.5">
             {message}
           </p>
         </div>
 
-        <div className="flex flex-row justify-between gap-2 mt-3.5 w-full px-0.5">
+        {/* Buttons Row with premium pill style */}
+        <div className="flex flex-row justify-center mt-4 w-full px-0.5">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary text-sm"
+            className="w-full h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
             aria-label="Close"
           >
-            OK
+            Got It
           </button>
         </div>
       </DialogContent>
     </Dialog>
   )
-}
+}

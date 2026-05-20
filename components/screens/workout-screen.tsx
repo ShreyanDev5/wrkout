@@ -284,31 +284,40 @@ export function WorkoutScreen({
           Create Routine
         </Button>
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
-          <DialogContent className="w-[92%] max-w-[320px] md:max-w-[400px] dark:bg-background/90 dark:border-opacity-10 rounded-xl mx-auto p-4 shadow-lg backdrop-blur-xl">
-            <DialogHeader>
-              <div className="flex flex-col items-center gap-1.5 mb-1.5">
-                <PlusCircle className="h-5 w-5 text-[#34A853]" aria-hidden="true" />
-                <DialogTitle className="line-height-readable text-center text-base">Add New Workout</DialogTitle>
+          <DialogContent 
+            hideCloseButton
+            className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+          >
+            <DialogHeader className="w-full flex flex-col items-center">
+              {/* Floating Icon Box matching Onboarding */}
+              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
+                <PlusCircle className="h-5.5 w-5.5 text-emerald-500 animate-pulse" aria-hidden="true" />
               </div>
+              <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Routine</DialogTitle>
             </DialogHeader>
-            <div className="pt-2 pb-3">
-              <p className="line-height-readable text-center mb-4 text-sm md:text-base text-muted-foreground">
-                Create a new workout routine. Workouts contain days and exercises.
+            
+            <div className="py-2.5 w-full flex flex-col items-center">
+              <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-0.5 mb-4">
+                Create a new workout routine. Push, Pull, and Legs days will be pre-populated automatically.
               </p>
-              <Label htmlFor="workout-name" className="block text-center mb-1.5 text-sm">Workout Name</Label>
-              <Input
-                id="workout-name"
-                value={newWorkoutName}
-                onChange={(e) => setNewWorkoutName(e.target.value)}
-                placeholder="Enter workout name"
-                className="mt-1.5 text-sm px-2.5 py-1.5 rounded-md"
-              />
+              <div className="w-full">
+                <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
+                <Input
+                  id="workout-name"
+                  value={newWorkoutName}
+                  onChange={(e) => setNewWorkoutName(e.target.value)}
+                  placeholder="e.g. Summer Cut, Bulking..."
+                  className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 w-full"
+                />
+              </div>
             </div>
-            <div className="flex flex-row justify-between gap-2 mt-3.5 w-full">
+
+            {/* Buttons Row with premium pill styles */}
+            <div className="flex flex-row justify-between gap-2.5 mt-4 w-full px-0.5">
               <button
                 type="button"
                 onClick={() => setIsAddWorkoutOpen(false)}
-                className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-muted hover:bg-muted/80 transition-colors focus-visible:ring outline-none dark:border-opacity-10 dark:hover:bg-secondary text-sm"
+                className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
                 aria-label="Cancel add workout"
               >
                 Cancel
@@ -346,7 +355,7 @@ export function WorkoutScreen({
                     console.error("Error creating workout with default days:", error)
                   }
                 }}
-                className="flex-1 px-2.5 py-2 rounded-md border font-semibold bg-[#34A853] text-white hover:bg-[#2D9249] transition-colors focus-visible:ring outline-none dark:border-none dark:shadow-none text-sm"
+                className="flex-1 h-9.5 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:pointer-events-none px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(16,185,129,0.2)] border-none"
                 aria-label="Confirm add workout"
               >
                 Add Workout
