@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, User, Mail, Hash } from "lucide-react";
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { cn } from "@/lib/utils";
 import { normalizeUsername, validateUsername } from '@/lib/auth/auth-utils';
 
 export default function ForgotPasswordPage() {
@@ -215,14 +216,19 @@ export default function ForgotPasswordPage() {
           <div className="space-y-2 pt-2">
             <Button
               onClick={() => window.location.href = '/auth/signin'}
-              className="h-11 w-full rounded-xl bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] font-bold text-sm shadow-[0_4px_16px_rgba(234,179,8,0.15)] transition-all active:scale-95"
+              className={cn(
+                "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
+                "font-semibold transition-all duration-200 active:scale-[0.98]",
+                "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
+                "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
+              )}
             >
               Back to sign in
             </Button>
             <Button
               onClick={resetForm}
               variant="ghost"
-              className="h-10 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+              className="h-10 w-full rounded-md text-xs font-semibold text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
             >
               Start over
             </Button>
@@ -273,32 +279,58 @@ export default function ForgotPasswordPage() {
             <Label htmlFor="username" className="text-sm font-medium text-zinc-200">
               Username
             </Label>
-            <Input
-              id="username"
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-              autoComplete="username"
-              className="h-[42px] rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25 sm:h-11"
-              disabled={loading}
-            />
+            <div className="relative w-full group">
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                className={cn(
+                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25 sm:h-11",
+                  "transition-all duration-200",
+                  username && "pl-3"
+                )}
+                disabled={loading}
+              />
+              <div className={cn(
+                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
+                "transition-all duration-200",
+                username && "opacity-0 -translate-x-2"
+              )}>
+                <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
+              </div>
+            </div>
           </div>
         ) : step === 'email' ? (
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-zinc-200">
               Email address
             </Label>
-            <Input
-              id="email"
-              type="email"
-              value={recoveryEmail}
-              onChange={e => setRecoveryEmail(e.target.value)}
-              required
-              autoComplete="email"
-              className="h-[42px] rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11"
-              disabled={loading}
-            />
+            <div className="relative w-full group">
+              <Input
+                id="email"
+                type="email"
+                value={recoveryEmail}
+                onChange={e => setRecoveryEmail(e.target.value)}
+                required
+                autoComplete="email"
+                className={cn(
+                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11",
+                  "transition-all duration-200",
+                  recoveryEmail && "pl-3"
+                )}
+                disabled={loading}
+              />
+              <div className={cn(
+                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
+                "transition-all duration-200",
+                recoveryEmail && "opacity-0 -translate-x-2"
+              )}>
+                <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
+              </div>
+            </div>
             <p className="text-xs leading-5 text-zinc-500">
               We will send a one-time code to confirm access.
             </p>
@@ -308,17 +340,30 @@ export default function ForgotPasswordPage() {
             <Label htmlFor="code" className="text-sm font-medium text-zinc-200">
               Code
             </Label>
-            <Input
-              id="code"
-              type="text"
-              value={verificationCode}
-              onChange={e => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              required
-              placeholder="000000"
-              maxLength={6}
-              className="h-[42px] rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11 text-center tracking-widest"
-              disabled={loading}
-            />
+            <div className="relative w-full group">
+              <Input
+                id="code"
+                type="text"
+                value={verificationCode}
+                onChange={e => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                required
+                placeholder="000000"
+                maxLength={6}
+                className={cn(
+                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11 text-center tracking-widest",
+                  "transition-all duration-200",
+                  verificationCode && "pl-3 text-center tracking-[0.3em] font-mono font-semibold"
+                )}
+                disabled={loading}
+              />
+              <div className={cn(
+                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
+                "transition-all duration-200",
+                verificationCode && "opacity-0 -translate-x-2"
+              )}>
+                <Hash className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
+              </div>
+            </div>
             <p className="text-xs leading-5 text-zinc-500">
               Enter the 6-digit code sent to <span className="text-zinc-300">{recoveryEmail}</span>.
             </p>
@@ -327,7 +372,12 @@ export default function ForgotPasswordPage() {
 
         <Button
           type="submit"
-          className="h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11"
+          className={cn(
+            "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
+            "font-semibold transition-all duration-200 active:scale-[0.98]",
+            "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
+            "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
+          )}
           disabled={loading}
         >
           {loading ? "Please wait..." : (

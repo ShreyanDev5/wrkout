@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Loader2, User, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { createPseudoEmail, validateUsername } from '@/lib/auth/auth-utils';
@@ -78,7 +78,7 @@ export function SignInForm() {
           <Label htmlFor="username" className="text-sm font-medium text-zinc-200">
             Username
           </Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="username"
               type="text"
@@ -95,11 +95,11 @@ export function SignInForm() {
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               username && "opacity-0 -translate-x-2"
             )}>
-              <Mail className="h-4 w-4 ml-3 text-zinc-500" />
+              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export function SignInForm() {
           <Label htmlFor="password" className="text-sm font-medium text-zinc-200">
             Password
           </Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="password"
               type="password"
@@ -124,11 +124,11 @@ export function SignInForm() {
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               password && "opacity-0 -translate-x-2"
             )}>
-              <Lock className="h-4 w-4 ml-3 text-zinc-500" />
+              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
             </div>
           </div>
         </div>
@@ -138,8 +138,9 @@ export function SignInForm() {
         type="submit"
         className={cn(
           "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
-          "font-medium transition-colors duration-200",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "font-semibold transition-all duration-200 active:scale-[0.98]",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
+          "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
         )}
         disabled={isLoading}
       >

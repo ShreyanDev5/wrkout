@@ -156,7 +156,7 @@ export default function ResetPasswordPage() {
               <Label htmlFor="password" className="text-sm font-medium text-zinc-200">
               New password
             </Label>
-            <div className="relative w-full">
+            <div className="relative w-full group">
               <Input
                 id="password"
                 type="password"
@@ -166,18 +166,18 @@ export default function ResetPasswordPage() {
                 autoComplete="new-password"
                 className={cn(
                     "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
-                  "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25",
+                  "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25",
                   "transition-all duration-200",
                   password && "pl-3"
                 )}
                 disabled={loading}
               />
               <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center",
+                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
                 "transition-all duration-200",
                 password && "opacity-0 -translate-x-2"
               )}>
-                  <Lock className="h-4 w-4 ml-3 text-zinc-500" />
+                  <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
               </div>
             </div>
             <div className="mt-3 grid gap-1.5">
@@ -191,8 +191,8 @@ export default function ResetPasswordPage() {
                 >
                   <CheckCircle2
                     className={cn(
-                      "mr-2 h-3.5 w-3.5",
-                      req.met ? "text-pull-light" : "text-zinc-600"
+                      "mr-2 h-3.5 w-3.5 transition-colors duration-250",
+                      req.met ? "text-pull-light" : "text-zinc-650"
                     )}
                   />
                   {req.label}
@@ -205,7 +205,7 @@ export default function ResetPasswordPage() {
               <Label htmlFor="confirm" className="text-sm font-medium text-zinc-200">
               Confirm new password
             </Label>
-            <div className="relative w-full">
+            <div className="relative w-full group">
               <Input
                 id="confirm"
                 type="password"
@@ -225,11 +225,11 @@ export default function ResetPasswordPage() {
                 disabled={loading}
               />
               <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center",
+                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
                 "transition-all duration-200",
                 confirm && "opacity-0 -translate-x-2"
               )}>
-                <Lock className="h-4 w-4 ml-3 text-zinc-500" />
+                <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
               </div>
             </div>
             {password !== confirm && confirm && (
@@ -244,8 +244,9 @@ export default function ResetPasswordPage() {
           type="submit"
           className={cn(
             "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
-            "font-medium transition-colors duration-200",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
+            "font-semibold transition-all duration-200 active:scale-[0.98]",
+            "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
+            "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
           )}
           disabled={loading || checkingSession || !hasResetSession}
         >

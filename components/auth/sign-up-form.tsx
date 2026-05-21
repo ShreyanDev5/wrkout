@@ -119,7 +119,7 @@ export function SignUpForm() {
       <div className="space-y-3.5 sm:space-y-4">
         <div className="space-y-2">
             <Label htmlFor="username" className="text-sm font-medium text-zinc-200">Username</Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="username"
               value={username}
@@ -135,18 +135,18 @@ export function SignUpForm() {
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               username && "opacity-0 -translate-x-2"
             )}>
-              <User className="h-4 w-4 ml-3 text-zinc-500" />
+              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="recoveryEmail" className="text-sm font-medium text-zinc-200">Recovery Email</Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="recoveryEmail"
               type="email"
@@ -164,11 +164,11 @@ export function SignUpForm() {
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               recoveryEmail && "opacity-0 -translate-x-2"
             )}>
-              <Mail className="h-4 w-4 ml-3 text-zinc-500" />
+              <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
             </div>
           </div>
           <p className="text-[10px] text-zinc-500 leading-4">
@@ -180,7 +180,7 @@ export function SignUpForm() {
           <Label htmlFor="password" className="text-sm font-medium text-zinc-200">
             Password
           </Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="password"
               type="password"
@@ -190,18 +190,18 @@ export function SignUpForm() {
               autoComplete="new-password"
               className={cn(
                 "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
-                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25",
+                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-leg-light/25",
                 "transition-all duration-200",
                 password && "pl-3"
               )}
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               password && "opacity-0 -translate-x-2"
             )}>
-              <Lock className="h-4 w-4 ml-3 text-zinc-500" />
+              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-leg-light transition-colors duration-200" />
             </div>
           </div>
           <div className="mt-[10px] grid grid-cols-1 gap-[5px] sm:mt-3 sm:gap-1.5">
@@ -215,8 +215,8 @@ export function SignUpForm() {
               >
                 <CheckCircle2
                   className={cn(
-                    "mr-2 h-3.5 w-3.5",
-                    req.met ? "text-pull-light" : "text-zinc-600"
+                    "mr-2 h-3.5 w-3.5 transition-colors duration-250",
+                    req.met ? "text-pull-light" : "text-zinc-650"
                   )}
                 />
                 {req.label}
@@ -229,7 +229,7 @@ export function SignUpForm() {
           <Label htmlFor="confirmPassword" className="text-sm font-medium text-zinc-200">
             Confirm password
           </Label>
-          <div className="relative w-full">
+          <div className="relative w-full group">
             <Input
               id="confirmPassword"
               type="password"
@@ -249,11 +249,11 @@ export function SignUpForm() {
               disabled={isLoading}
             />
             <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center",
+              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
               "transition-all duration-200",
               confirmPassword && "opacity-0 -translate-x-2"
             )}>
-              <Lock className="h-4 w-4 ml-3 text-zinc-500" />
+              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-leg-light transition-colors duration-200" />
             </div>
           </div>
           {password !== confirmPassword && confirmPassword && (
@@ -267,9 +267,10 @@ export function SignUpForm() {
       <Button
         type="submit"
         className={cn(
-          "h-[42px] w-full rounded-md bg-pull-dark text-zinc-950 hover:bg-[#366b39] sm:h-11",
-          "font-medium transition-colors duration-200",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "h-[42px] w-full rounded-md bg-pull-dark text-zinc-950 hover:bg-[#2c6130] sm:h-11",
+          "font-semibold transition-all duration-200 active:scale-[0.98]",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
+          "shadow-[0_4px_16px_rgba(76,175,80,0.08)] hover:shadow-[0_4px_16px_rgba(76,175,80,0.18)]"
         )}
         disabled={isLoading}
       >

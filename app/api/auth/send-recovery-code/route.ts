@@ -177,7 +177,7 @@ export async function GET(request: NextRequest) {
 
     let queryResult = await selectQuery;
     let hasAttemptsColumn = true;
-    let records = queryResult.data;
+    let records: any[] | null = queryResult.data;
 
     if (queryResult.error) {
       // Postgres error 42703 is "undefined_column"
