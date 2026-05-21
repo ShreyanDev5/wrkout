@@ -229,15 +229,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       toast({
         title: "Workout Added",
-        description: `${newWorkoutName} has been added to your workouts with default Push, Pull, and Legs sessions.`,
-        className: "bg-[#34A853] border-none text-white",
+        description: `${newWorkoutName} created with default routines.`,
+        className: "bg-emerald-950/90 border border-emerald-800/30 text-emerald-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
       })
     } catch (error) {
       console.error("Failed to add workout with default days:", error)
       toast({
         title: "Error",
-        description: "Failed to create workout routine.",
-        className: "bg-[#EA4335] border-none text-white",
+        description: "Failed to create workout.",
+        className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
       })
     }
   }
@@ -262,8 +262,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
     toast({
       title: "Workout Deleted",
-      description: "The workout has been removed.",
-      className: "bg-[#EA4335] border-none text-white",
+      description: `${workoutToDelete.name} has been removed.`,
+      className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
     setWorkoutToDelete(null);
     setIsDeleteWorkoutOpen(false);
@@ -320,15 +320,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       setIsAddExerciseOpen(false);
       toast({
         title: "Exercise Added",
-        description: `${finalExerciseName} has been added to your workout.`,
-        className: "bg-[#34A853] border-none text-white",
+        description: `${finalExerciseName} added to routine.`,
+        className: "bg-emerald-950/90 border border-emerald-800/30 text-emerald-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
       });
     } catch (err) {
       console.error("Failed to add exercise:", err);
       toast({
         title: "Error",
         description: "Failed to save exercise.",
-        className: "bg-[#EA4335] border-none text-white",
+        className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
       });
     } finally {
       setIsCreatingExercise(false);
@@ -364,9 +364,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
 
     toast({
-      title: "Exercise Moved",
-      description: "The exercise has been moved up in the list.",
-      className: "bg-[#34A853] border-none text-white",
+      title: "Exercise Reordered",
+      description: "Moved up.",
+      className: "bg-emerald-950/90 border border-emerald-800/30 text-emerald-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
   };
 
@@ -393,9 +393,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
 
     toast({
-      title: "Exercise Moved",
-      description: "The exercise has been moved down in the list.",
-      className: "bg-[#34A853] border-none text-white",
+      title: "Exercise Reordered",
+      description: "Moved down.",
+      className: "bg-emerald-950/90 border border-emerald-800/30 text-emerald-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
   };
 
@@ -416,8 +416,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
     toast({
       title: "Exercise Deleted",
-      description: "The exercise has been removed from your workout.",
-      className: "bg-[#EA4335] border-none text-white",
+      description: `${exerciseToDelete.name} removed from routine.`,
+      className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
     setExerciseToDelete(null);
     setIsDeleteExerciseOpen(false);
@@ -946,8 +946,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== pendingDeleteWorkoutId), workoutDays);
             toast({
               title: "Workout Deleted",
-              description: "The last workout routine has been removed.",
-              className: "bg-[#EA4335] border-none text-white",
+              description: "Last workout routine removed.",
+              className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
             });
             setPendingDeleteWorkoutId(null);
           }
