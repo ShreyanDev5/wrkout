@@ -33,10 +33,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const intentionalLogout = sessionStorage.getItem('intentional_logout');
           if (intentionalLogout) {
             sessionStorage.removeItem('intentional_logout');
-            router.push('/auth/signin');
+            window.location.href = '/auth/signin';
           } else {
             // Session was lost unexpectedly
-            router.push('/auth/signin?message=Session expired, please sign in again.');
+            window.location.href = '/auth/signin?message=' + encodeURIComponent('Session expired, please sign in again.');
           }
         }
       } catch (error) {
