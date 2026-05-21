@@ -50,12 +50,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Only depend on router, supabase is stable
   }, [router, supabase.auth]);
 
-  const signUp = async (email: string, password: string, username?: string) => {
+  const signUp = async (email: string, password: string, username?: string, recoveryEmail?: string) => {
     try {
+      const metadata: Record<string, any> = {};
+      if (username) metadata.username = username;
+      if (recoveryEmail) metadata.recovery_email = recoveryEmail.trim().toLowerCase();
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: username ? { data: { username } } : undefined,
+        options: Object.keys(metadata).length > 0 ? { data: metadata } : undefined,
       });
       return { data, error };
     } catch (error) {

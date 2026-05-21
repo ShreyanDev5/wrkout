@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
     // Retrieve the most recent unused code for this email
     const { data: records } = await supabase
       .from('verification_codes')
-      .select('id, code, expires_at')
+      .select('id, code, expires_at, attempts')
       .eq('email', email)
       .is('used_at', null)
       .order('created_at', { ascending: false })
@@ -162,17 +162,54 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     const expiresAt = new Date(record.expires_at);
 
+    // Check if expires_at has passed
+    if (now > expiresAt) {
+      return NextResponse.json({ error: 'Verification code has expired. Please request a new one.' }, { status: 400 });
+    }
+
+    // Check if attempts already reached safety limit
+    if ((record.attempts || 0) >= 5) {
+      // Burn the code by marking it as used
+      await supabase
+        .from('verification_codes')
+        .update({ used_at: new Date().toISOString() })
+        .eq('id', record.id);
+      return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
+    }
+
+    // Increment attempts
+    const newAttempts = (record.attempts || 0) + 1;
+
     // Use constant-time comparison to prevent timing attacks
     const isCodeValid = timingSafeEqual(record.code, code);
 
-    if (!isCodeValid || now > expiresAt) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    if (!isCodeValid) {
+      // If attempts reach limit now, burn the code
+      if (newAttempts >= 5) {
+        await supabase
+          .from('verification_codes')
+          .update({ 
+            attempts: newAttempts,
+            used_at: new Date().toISOString()
+          })
+          .eq('id', record.id);
+        return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
+      } else {
+        await supabase
+          .from('verification_codes')
+          .update({ attempts: newAttempts })
+          .eq('id', record.id);
+        return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 });
+      }
     }
 
-    // Mark code as used so it can only be used once
+    // Mark code as used on successful verification so it can only be used once, and record the final attempt count
     await supabase
       .from('verification_codes')
-      .update({ used_at: new Date().toISOString() })
+      .update({ 
+        used_at: new Date().toISOString(),
+        attempts: newAttempts
+      })
       .eq('id', record.id);
 
     return NextResponse.json({ verified: true, email });

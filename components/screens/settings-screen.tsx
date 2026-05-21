@@ -15,6 +15,7 @@ import {
   GripVertical,
   Settings,
   AlertCircle,
+  Mail,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
@@ -122,6 +123,54 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const { signOut, user, username } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
   const supabase = createClientComponentClient();
+
+  const [recoveryEmailState, setRecoveryEmailState] = useState(user?.user_metadata?.recovery_email || '');
+  const [updatingEmail, setUpdatingEmail] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  useEffect(() => {
+    if (user?.user_metadata?.recovery_email) {
+      setRecoveryEmailState(user.user_metadata.recovery_email);
+    }
+  }, [user]);
+
+  const handleUpdateRecoveryEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmailMessage('');
+    setEmailError('');
+    setUpdatingEmail(true);
+
+    try {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!recoveryEmailState) {
+        setEmailError('Recovery email is required.');
+        setUpdatingEmail(false);
+        return;
+      }
+      if (!emailRegex.test(recoveryEmailState)) {
+        setEmailError('Please enter a valid email address.');
+        setUpdatingEmail(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          recovery_email: recoveryEmailState.trim().toLowerCase()
+        }
+      });
+
+      if (error) {
+        setEmailError(error.message);
+      } else {
+        setEmailMessage('Recovery email updated successfully.');
+      }
+    } catch (err) {
+      setEmailError('Failed to update recovery email.');
+    } finally {
+      setUpdatingEmail(false);
+    }
+  };
 
   // Add a new state to track a pending exercise open request
   const [pendingExerciseOpen, setPendingExerciseOpen] = useState<{ workoutId: string, dayId: string } | null>(null)
@@ -723,6 +772,56 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               </motion.div>
             )}
           </div>
+        </section>
+
+        {/* Recovery Email Section */}
+        <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+              <Mail className="h-4 w-4" style={{ color: '#EA4335' }} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
+              <p className="text-xs text-muted-foreground">Keep your recovery email updated for secure password resets.</p>
+            </div>
+          </div>
+          
+          <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-1">
+            {emailMessage && (
+              <p className="text-xs text-pull-light font-medium bg-pull-light/10 border border-pull-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                {emailMessage}
+              </p>
+            )}
+            {emailError && (
+              <p className="text-xs text-leg-light font-medium bg-leg-light/10 border border-leg-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                {emailError}
+              </p>
+            )}
+            
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <div className="relative flex-1">
+                <Input
+                  id="settings-recovery-email"
+                  type="email"
+                  value={recoveryEmailState}
+                  onChange={(e) => setRecoveryEmailState(e.target.value)}
+                  placeholder="e.g. you@example.com"
+                  required
+                  className="h-9 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-red-500/50 focus:ring-red-500/20 w-full pl-9"
+                />
+                <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
+                  <Mail className="h-4 w-4" />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
+                className="h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-zinc-200 transition-all active:scale-95 border border-zinc-700/50 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                {updatingEmail ? 'Saving...' : 'Save Email'}
+              </button>
+            </div>
+          </form>
         </section>
 
         {/* Account Actions */}

@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
         return;
       }
 
-      // Code is verified; now send the reset link
+      // Code is verified; now send the reset link, passing the verified code
       const resetResponse = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
@@ -121,6 +121,7 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({
           username: normalizeUsername(username),
           recoveryEmail,
+          code: verificationCode,
         }),
       });
 
@@ -158,45 +159,47 @@ export default function ForgotPasswordPage() {
     return (
       <AuthLayout
         title="Check your inbox"
-        subtitle="Use the link below to set a new password."
-        footerText="Need to return?"
-        footerLink="/auth/signin"
-        footerLinkText="Back to sign in"
+        subtitle="We've sent a recovery link to your email."
+        footerText=""
+        footerLink=""
+        footerLinkText=""
       >
-          <div className="space-y-4 text-center sm:space-y-5">
-            <div className="mx-auto flex h-[42px] w-[42px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-pull-light sm:h-11 sm:w-11">
-            <CheckCircle2 className="h-5 w-5" />
+        <div className="space-y-6 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-pull-light/20 bg-pull-light/10 text-pull-light animate-pulse">
+            <CheckCircle2 className="h-6 w-6" strokeWidth={2.5} />
           </div>
 
-            <div className="space-y-1.5 sm:space-y-2">
-              <p className="text-[0.92rem] text-zinc-200 sm:text-sm">{message}</p>
-              <p className="text-[0.8rem] leading-5 text-zinc-500 sm:text-xs">
-              Sent for <span className="text-zinc-300">{username}</span> to{' '}
-              <span className="text-zinc-300">{recoveryEmail}</span>.
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-zinc-100">Reset Link Sent</h3>
+            <p className="text-[0.92rem] text-zinc-400 leading-relaxed max-w-xs mx-auto">
+              We've sent a password recovery link to <span className="text-zinc-200 font-medium">{recoveryEmail}</span>. Please check your inbox and spam folders.
             </p>
           </div>
 
           {resetUrl && (
-            <Button
-              onClick={() => window.location.href = resetUrl}
-              variant="outline"
-              className="h-10 w-full rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 hover:bg-white/5 hover:text-zinc-50"
-            >
-              Continue
-            </Button>
+            <div className="rounded-xl border border-white/5 bg-zinc-950/40 p-4 space-y-2 text-left">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Development Mode</p>
+              <Button
+                onClick={() => window.location.href = resetUrl}
+                variant="outline"
+                className="h-9 w-full rounded-lg border-white/10 bg-zinc-900/60 text-xs font-medium text-zinc-300 hover:bg-white/5 hover:text-white"
+              >
+                Bypass Email & Continue
+              </Button>
+            </div>
           )}
 
-          <div className="grid gap-2 sm:gap-2.5">
+          <div className="space-y-2 pt-2">
             <Button
               onClick={() => window.location.href = '/auth/signin'}
-              className="h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11"
+              className="h-11 w-full rounded-xl bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] font-bold text-sm shadow-[0_4px_16px_rgba(234,179,8,0.15)] transition-all active:scale-95"
             >
               Back to sign in
             </Button>
             <Button
               onClick={resetForm}
               variant="ghost"
-              className="h-10 w-full rounded-md text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+              className="h-10 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
             >
               Start over
             </Button>

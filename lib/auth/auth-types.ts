@@ -5,7 +5,7 @@ export interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   username: string | null;
-  signUp: (email: string, password: string, username?: string) => Promise<{
+  signUp: (email: string, password: string, username?: string, recoveryEmail?: string) => Promise<{
     error: Error | null;
     data: { user: User | null; session: Session | null } | null;
   }>;
@@ -14,4 +14,4 @@ export interface AuthContextType {
     data: { user: User | null; session: Session | null } | null;
   }>;
   signOut: () => Promise<void>;
-} 
+}

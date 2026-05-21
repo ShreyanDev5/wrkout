@@ -5,6 +5,7 @@ import { createServiceRoleClient, findUserByUsername } from '@/lib/auth/server';
 type ResetPasswordRequest = {
   username?: string;
   recoveryEmail?: string;
+  code?: string;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,7 +54,7 @@ async function sendPasswordResetEmail(params: {
 
 export async function POST(request: NextRequest) {
   try {
-    const { username = '', recoveryEmail = '' } = (await request.json()) as ResetPasswordRequest;
+    const { username = '', recoveryEmail = '', code = '' } = (await request.json()) as ResetPasswordRequest;
     const normalizedUsername = username.trim().toLowerCase();
     const usernameError = validateUsername(normalizedUsername);
 
@@ -65,13 +66,57 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
     }
 
+    if (!code || code.length !== 6 || !/^\d+$/.test(code)) {
+      return NextResponse.json({ error: 'Please enter a valid 6-digit verification code' }, { status: 400 });
+    }
+
     const serviceRoleSupabase = createServiceRoleClient();
+
+    // 1. Verify that the code was recently verified (within last 5 minutes)
+    const { data: verifiedRecords, error: dbError } = await serviceRoleSupabase
+      .from('verification_codes')
+      .select('id, used_at')
+      .eq('email', recoveryEmail)
+      .eq('code', code)
+      .not('used_at', 'is', null)
+      .order('used_at', { ascending: false })
+      .limit(1);
+
+    if (dbError || !verifiedRecords || verifiedRecords.length === 0) {
+      return NextResponse.json({ error: 'Verification code has not been verified.' }, { status: 400 });
+    }
+
+    const usedAt = new Date(verifiedRecords[0].used_at);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    if (usedAt < fiveMinutesAgo) {
+      return NextResponse.json({ error: 'Verification session expired. Please verify your code again.' }, { status: 400 });
+    }
+
+    // 2. Fetch the user profile by username
     const user = await findUserByUsername(serviceRoleSupabase, normalizedUsername);
 
     if (!user) {
       return NextResponse.json({ error: 'No account found with this username' }, { status: 404 });
     }
 
+    // 3. Verify or associate the recovery email with the user's metadata
+    const registeredEmail = user.user_metadata?.recovery_email;
+    if (registeredEmail) {
+      if (registeredEmail.trim().toLowerCase() !== recoveryEmail.trim().toLowerCase()) {
+        return NextResponse.json({ error: 'The email address provided does not match the registered recovery email.' }, { status: 400 });
+      }
+    } else {
+      // Auto-associate the recovery email with the account for future resets
+      const { error: updateMetadataError } = await serviceRoleSupabase.auth.admin.updateUserById(
+        user.id,
+        { user_metadata: { ...user.user_metadata, recovery_email: recoveryEmail.trim().toLowerCase() } }
+      );
+      if (updateMetadataError) {
+        console.error('Error updating user metadata with recovery email:', updateMetadataError);
+      }
+    }
+
+    // 4. Generate recovery link and send it
     const redirectTo = `${request.nextUrl.origin}/auth/reset-password`;
     const { data, error } = await serviceRoleSupabase.auth.admin.generateLink({
       type: 'recovery',
