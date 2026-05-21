@@ -2,11 +2,13 @@
 
 Private Next.js + Supabase workout tracker.
 
-## Stack
+## Architecture & Stack
 
-- Next.js 15 (App Router) + React 18 + TypeScript
-- Tailwind CSS + Radix/shadcn UI
-- Supabase Auth + Postgres
+The application is structured as a premium, dynamic Single-Page Application (SPA) running entirely on the root route (`/`). It uses an animated, tab-based navigation layout to seamlessly switch between **Workout**, **Progress**, and **Settings** views, backed by highly polished custom components.
+
+- **Frontend**: Next.js 15 (App Router) + React 18 + TypeScript
+- **Styling & UI**: Tailwind CSS + Framer Motion + Radix/shadcn UI
+- **Database & Auth**: Supabase Auth + PostgreSQL
 
 ## Auth Model
 
@@ -55,8 +57,8 @@ Open `http://localhost:3000`.
 
 ## Project Layout
 
-- `app/` - routes, layouts, and API handlers
-- `components/` - UI and screen components
-- `hooks/` - reusable React hooks
-- `lib/` - auth/data utilities and shared types
-- `types/` - global TypeScript declarations
+- `app/` - Core SPA layout, API handlers, authentication routes, and the privacy policy page
+- `components/` - Screen-level components (`screens/`), reusable UI blocks (`ui/`), charts, and modals
+- `hooks/` - Reusable React hooks (e.g. haptics, theme, and audio feedback)
+- `lib/` - Auth helpers, database queries, and storage utilities
+- `types/` - Global TypeScript declarations

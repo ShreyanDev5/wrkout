@@ -94,7 +94,7 @@ const onboardingSteps: OnboardingStep[] = [
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
-              className="flex items-center justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] p-2 px-3"
+              className="flex items-center rounded-xl border border-white/[0.05] bg-white/[0.02] p-2 px-3"
             >
               <div className="flex items-center gap-2.5">
                 <span className={cn("inline-flex h-7 w-7 items-center justify-center rounded-lg border", item.tone)}>
@@ -105,9 +105,6 @@ const onboardingSteps: OnboardingStep[] = [
                   <div className="text-[10px] text-zinc-500 leading-none mt-0.5">{item.desc}</div>
                 </div>
               </div>
-              <span className="text-[9px] font-semibold text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.05]">
-                Active
-              </span>
             </motion.div>
           ))}
         </div>
@@ -127,14 +124,9 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="mx-auto w-full max-w-[285px] rounded-2xl border border-white/[0.08] bg-zinc-950/80 p-4 shadow-xl select-none">
         <div className="mb-4 flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-          <div className="text-left">
-            <span className="inline-block rounded bg-push-dark/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-push-dark">
-              Chest
-            </span>
-            <h4 className="text-[12px] font-bold text-foreground">Incline Dumbbell Press</h4>
-          </div>
-          <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.05]">
-            Single Set
+          <h4 className="text-[12px] font-bold text-foreground">Incline Dumbbell Press</h4>
+          <span className="inline-block rounded bg-push-dark/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-push-dark">
+            Chest
           </span>
         </div>
 
@@ -268,10 +260,7 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
         </div>
 
-        {/* Small disclaimer */}
-        <p className="text-[8px] text-zinc-600/70 italic text-center leading-none mt-1">
-          *For illustration purposes only
-        </p>
+
       </div>
     ),
   },
@@ -418,10 +407,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                     </div>
 
                     {/* Step Title & Subtitle */}
-                    <div className="space-y-1 mb-4 select-none">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/35">
-                        Welcome to wrkout
-                      </p>
+                    <div className="space-y-1 mb-5 select-none">
                       <h2 className="text-[1.2rem] font-extrabold tracking-tight text-foreground sm:text-lg">
                         {step.title}
                       </h2>
