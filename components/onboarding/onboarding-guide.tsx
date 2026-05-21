@@ -391,7 +391,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
         </div>
 
         {/* Slider & Swipe Content Container */}
-        <div
+        <motion.div
           className="relative flex min-h-[460px] max-h-[82dvh] flex-col overflow-hidden pt-7 sm:max-h-[75vh]"
           style={{ opacity: dragOpacity }}
           onTouchStart={onTouchStart}
@@ -519,7 +519,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
               </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   )

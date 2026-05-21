@@ -38,7 +38,7 @@ export function RestrictionConfirmationModal({ isOpen, onClose, title, message }
           <button
             type="button"
             onClick={onClose}
-            className="w-full h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+            className="w-full h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
             aria-label="Close"
           >
             Got It

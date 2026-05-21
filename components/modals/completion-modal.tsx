@@ -69,7 +69,7 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
                                 haptic("light")
                                 onClose()
                             }}
-                            className="w-full h-9.5 rounded-full bg-orange-600 hover:bg-orange-500 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(234,88,12,0.2)] border-none"
+                            className="w-full h-11 rounded-full bg-orange-600 hover:bg-orange-500 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(234,88,12,0.2)] border-none"
                         >
                             Done
                         </button>

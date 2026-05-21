@@ -107,7 +107,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+                        className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
                         aria-label={cancelAria}
                     >
                         Cancel
@@ -118,7 +118,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
                             onConfirm()
                             onClose()
                         }}
-                        className={`flex-1 h-9.5 rounded-full px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 border-none ${getConfirmButtonClasses()}`}
+                        className={`flex-1 h-11 rounded-full px-4 text-[13px] font-bold text-white transition-all active:scale-95 border-none ${getConfirmButtonClasses()}`}
                         aria-label={confirmAria}
                     >
                         {buttonLabel}

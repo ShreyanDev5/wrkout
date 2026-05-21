@@ -30,7 +30,7 @@ export function InlineWorkoutLogger({
     dayColor,
 }: InlineWorkoutLoggerProps) {
     const { getLastUsedValues, setLastUsedValues, getLastLog, setLastLog } = useExerciseStore()
-    const storeKey = exercise.exercise_id || exercise.id // Fallback to id if exercise_id is missing
+    const storeKey = exercise.id
     const lastValues = getLastUsedValues(storeKey)
     const lastLog = getLastLog(storeKey)
     const { trigger: haptic } = useHaptics()

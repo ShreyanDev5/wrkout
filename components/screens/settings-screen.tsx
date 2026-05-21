@@ -14,6 +14,7 @@ import {
   Sparkles,
   GripVertical,
   Settings,
+  AlertCircle,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
@@ -139,7 +140,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filteredExercises = useMemo(() => {
-    if (!newExerciseName.trim()) return availableExercises;
+    if (!newExerciseName.trim()) return [];
     return availableExercises.filter(e => 
       e.name.toLowerCase().includes(newExerciseName.toLowerCase())
     );
@@ -789,7 +790,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             <button
               type="button"
               onClick={() => setIsAddWorkoutOpen(false)}
-              className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+              className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
             >
               Cancel
             </button>
@@ -797,7 +798,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               type="button"
               onClick={handleAddWorkout}
               disabled={!newWorkoutName.trim()}
-              className="flex-1 h-9.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(37,99,235,0.2)] border-none"
+              className="flex-1 h-11 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(37,99,235,0.2)] border-none"
             >
               Create
             </button>
@@ -858,21 +859,23 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 autoComplete="off"
               />
               <AnimatePresence>
-                {showSuggestions && (filteredExercises.length > 0 || newExerciseName.trim().length > 0) && (
+                {showSuggestions && newExerciseName.trim().length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 w-full mt-1.5 bg-zinc-950 border border-white/10 rounded-xl shadow-2xl max-h-[160px] overflow-y-auto backdrop-blur-xl"
+                    className="absolute z-50 w-full mt-1.5 bg-zinc-900/95 border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.65)] max-h-[160px] overflow-y-auto backdrop-blur-xl select-none"
                   >
                     {filteredExercises.length > 0 ? (
                       <ul className="py-1">
                         {filteredExercises.map((ex, idx) => (
                           <li
                             key={ex.id}
-                            className={`px-3 py-2.5 text-xs font-semibold cursor-pointer transition-colors ${
-                              idx === highlightedIndex ? 'bg-white/[0.08] text-white' : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
+                            className={`flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium cursor-pointer transition-all duration-150 border-l-[3px] ${
+                              idx === highlightedIndex 
+                                ? 'bg-purple-600/20 text-purple-200 border-purple-500 pl-[11px]' 
+                                : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white border-transparent'
                             }`}
                             onClick={() => {
                               setNewExerciseName(ex.name);
@@ -880,15 +883,19 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                               inputRef.current?.focus();
                             }}
                           >
-                            {ex.name}
+                            <Dumbbell className={`h-3.5 w-3.5 flex-shrink-0 transition-colors ${idx === highlightedIndex ? 'text-purple-400' : 'text-zinc-500/70'}`} />
+                            <span className="truncate">{ex.name}</span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <div className="px-3 py-3 text-xs text-zinc-500">
-                        No matches found.
-                        <div className="mt-1 font-bold text-purple-400">
-                          Press Add to create &quot;{newExerciseName.trim()}&quot;
+                      <div className="px-4 py-3.5 text-xs text-zinc-400 flex flex-col gap-1.5 bg-zinc-900/30">
+                        <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
+                          <AlertCircle className="h-3.5 w-3.5 text-zinc-600" />
+                          <span>No matching exercises found</span>
+                        </div>
+                        <div className="text-[11px] font-bold text-purple-400/90 flex items-center gap-1 pl-5">
+                          <Plus className="h-3 w-3" /> Press Enter or Add to create &quot;{newExerciseName.trim()}&quot;
                         </div>
                       </div>
                     )}
@@ -902,7 +909,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             <button
               type="button"
               onClick={() => setIsAddExerciseOpen(false)}
-              className="flex-1 h-9.5 rounded-full border border-white/8 bg-white/[0.02] px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+              className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
             >
               Cancel
             </button>
@@ -910,7 +917,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               type="button"
               onClick={handleAddExercise}
               disabled={!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || isCreatingExercise}
-              className="flex-1 h-9.5 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:pointer-events-none px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(147,51,234,0.2)] border-none"
+              className="flex-1 h-11 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:pointer-events-none px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(147,51,234,0.2)] border-none"
             >
               {isCreatingExercise ? 'Adding...' : 'Add'}
             </button>
