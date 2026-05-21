@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceRoleClient } from '@/lib/auth/server';
+import { createServiceRoleClient, findUserByUsername } from '@/lib/auth/server';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODE_LENGTH = 6;
@@ -56,20 +56,38 @@ function generateVerificationCode(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email = '' } = (await request.json()) as { email?: string };
+    const { email = '', username = '' } = (await request.json()) as { email?: string; username?: string };
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUsername = username.trim().toLowerCase();
 
-    if (!EMAIL_PATTERN.test(email)) {
+    if (!EMAIL_PATTERN.test(normalizedEmail)) {
       return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
     }
 
-    // Rate limiting: check if email has exceeded max attempts in the last hour
     const supabase = createServiceRoleClient();
+
+    // 1. Verify username and match recovery email if username is provided
+    if (normalizedUsername) {
+      const user = await findUserByUsername(supabase, normalizedUsername);
+      if (!user) {
+        return NextResponse.json({ error: 'No account found with this username' }, { status: 404 });
+      }
+
+      const registeredEmail = user.user_metadata?.recovery_email;
+      if (registeredEmail) {
+        if (registeredEmail.trim().toLowerCase() !== normalizedEmail) {
+          return NextResponse.json({ error: 'The provided email does not match the recovery email' }, { status: 400 });
+        }
+      }
+    }
+
+    // Rate limiting: check if email has exceeded max attempts in the last hour
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     
     const { data: recentCodes } = await supabase
       .from('verification_codes')
-      .select('id', { count: 'exact' })
-      .eq('email', email)
+      .select('id')
+      .eq('email', normalizedEmail)
       .gt('created_at', oneHourAgo);
 
     if (recentCodes && recentCodes.length >= MAX_ATTEMPTS_PER_HOUR) {
@@ -82,12 +100,12 @@ export async function POST(request: NextRequest) {
     const code = generateVerificationCode();
     const expiresAt = new Date(Date.now() + CODE_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
-    // Store code in Supabase (table should have columns: id, email, code, expires_at, used_at, created_at)
+    // Store code in Supabase
     const { error: insertError } = await supabase
       .from('verification_codes')
       .insert([
         {
-          email,
+          email: normalizedEmail,
           code,
           expires_at: expiresAt,
         },
@@ -102,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     const delivery = await sendVerificationEmail({
-      to: email,
+      to: normalizedEmail,
       code,
     });
 
@@ -143,36 +161,49 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
     const supabase = createServiceRoleClient();
     
-    // Retrieve the most recent unused code for this email
+    // Retrieve the absolute most recent code for this email (used or unused)
     const { data: records } = await supabase
       .from('verification_codes')
-      .select('id, code, expires_at, attempts')
-      .eq('email', email)
-      .is('used_at', null)
+      .select('id, code, expires_at, attempts, used_at')
+      .eq('email', normalizedEmail)
       .order('created_at', { ascending: false })
       .limit(1);
 
     if (!records || records.length === 0) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+      return NextResponse.json({ error: 'No verification code requested for this email.' }, { status: 400 });
     }
 
     const record = records[0];
     const now = new Date();
     const expiresAt = new Date(record.expires_at);
 
-    // Check if expires_at has passed
+    // 1. Check if the code has already been marked as used / expired
+    if (record.used_at !== null) {
+      if ((record.attempts || 0) >= 5) {
+        return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
+      }
+      return NextResponse.json({ error: 'This verification code has already been used. Please request a new code.' }, { status: 400 });
+    }
+
+    // 2. Check if expires_at has passed
     if (now > expiresAt) {
+      // Burn the code by setting used_at so it cannot be guessed again
+      await supabase
+        .from('verification_codes')
+        .update({ used_at: now.toISOString() })
+        .eq('id', record.id);
       return NextResponse.json({ error: 'Verification code has expired. Please request a new one.' }, { status: 400 });
     }
 
-    // Check if attempts already reached safety limit
+    // 3. Check if attempts already reached safety limit
     if ((record.attempts || 0) >= 5) {
       // Burn the code by marking it as used
       await supabase
         .from('verification_codes')
-        .update({ used_at: new Date().toISOString() })
+        .update({ used_at: now.toISOString() })
         .eq('id', record.id);
       return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
     }
@@ -190,7 +221,7 @@ export async function GET(request: NextRequest) {
           .from('verification_codes')
           .update({ 
             attempts: newAttempts,
-            used_at: new Date().toISOString()
+            used_at: now.toISOString()
           })
           .eq('id', record.id);
         return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
@@ -207,12 +238,12 @@ export async function GET(request: NextRequest) {
     await supabase
       .from('verification_codes')
       .update({ 
-        used_at: new Date().toISOString(),
+        used_at: now.toISOString(),
         attempts: newAttempts
       })
       .eq('id', record.id);
 
-    return NextResponse.json({ verified: true, email });
+    return NextResponse.json({ verified: true, email: normalizedEmail });
   } catch (error) {
     console.error('Unexpected error in GET:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

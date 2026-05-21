@@ -28,15 +28,30 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const usernameError = validateUsername(username);
+      const normalizedUsername = username.trim().toLowerCase();
+      const usernameError = validateUsername(normalizedUsername);
       if (usernameError) {
         setError(usernameError);
         return;
       }
 
-      // Don't check if username exists; proceed directly to email verification
-      // This prevents account enumeration
-      setUsername(normalizeUsername(username));
+      // Verify that the username exists
+      const response = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: normalizedUsername }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.exists) {
+        setError("No account found with this username.");
+        return;
+      }
+
+      setUsername(normalizedUsername);
       setStep('email');
       setMessage("We will send a one-time code to this email.");
     } catch (err) {
@@ -55,8 +70,9 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
+      const normalizedEmail = recoveryEmail.trim().toLowerCase();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(recoveryEmail)) {
+      if (!emailRegex.test(normalizedEmail)) {
         setError("Enter a valid email address.");
         return;
       }
@@ -66,7 +82,10 @@ export default function ForgotPasswordPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: recoveryEmail }),
+        body: JSON.stringify({ 
+          email: normalizedEmail,
+          username: username.trim().toLowerCase()
+        }),
       });
 
       const result = await response.json();
@@ -75,6 +94,7 @@ export default function ForgotPasswordPage() {
         setError(result.error || "We could not send the code.");
         setDebugInfo(`API error: ${response.status} - ${JSON.stringify(result)}`);
       } else {
+        setRecoveryEmail(normalizedEmail);
         setStep('verify-code');
         setMessage("A 6-digit code has been sent. Enter it below.");
         setDebugInfo(result.code ? `Development mode: ${result.code}` : "");
@@ -100,8 +120,11 @@ export default function ForgotPasswordPage() {
         return;
       }
 
+      const normalizedEmail = recoveryEmail.trim().toLowerCase();
+      const normalizedUsername = username.trim().toLowerCase();
+
       const verifyResponse = await fetch(
-        `/api/auth/send-recovery-code?email=${encodeURIComponent(recoveryEmail)}&code=${verificationCode}`,
+        `/api/auth/send-recovery-code?email=${encodeURIComponent(normalizedEmail)}&code=${verificationCode}`,
         { method: 'GET' }
       );
 
@@ -119,8 +142,8 @@ export default function ForgotPasswordPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: normalizeUsername(username),
-          recoveryEmail,
+          username: normalizedUsername,
+          recoveryEmail: normalizedEmail,
           code: verificationCode,
         }),
       });
@@ -172,7 +195,7 @@ export default function ForgotPasswordPage() {
           <div className="space-y-2">
             <h3 className="text-base font-semibold text-zinc-100">Reset Link Sent</h3>
             <p className="text-[0.92rem] text-zinc-400 leading-relaxed max-w-xs mx-auto">
-              We've sent a password recovery link to <span className="text-zinc-200 font-medium">{recoveryEmail}</span>. Please check your inbox and spam folders.
+              We&apos;ve sent a password recovery link to <span className="text-zinc-200 font-medium">{recoveryEmail}</span>. Please check your inbox and spam folders.
             </p>
           </div>
 

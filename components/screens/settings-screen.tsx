@@ -777,10 +777,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         {/* Recovery Email Section */}
         <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40 flex-shrink-0">
               <Mail className="h-4 w-4" style={{ color: '#EA4335' }} />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
               <p className="text-xs text-muted-foreground">Keep your recovery email updated for secure password resets.</p>
             </div>
@@ -828,11 +828,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         <section className="pt-0">
           <div className="relative bg-zinc-900/30 border border-zinc-700/40 shadow-lg shadow-zinc-950/20 rounded-2xl p-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40 flex-shrink-0">
                   <Sparkles className="h-4 w-4" style={{ color: '#f9d949' }} />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h3 className="font-semibold text-foreground text-sm">Account & Guide</h3>
                   <p className="text-xs text-muted-foreground">Need help or switching accounts?</p>
                 </div>

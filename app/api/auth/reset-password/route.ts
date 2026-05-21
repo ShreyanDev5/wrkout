@@ -56,13 +56,14 @@ export async function POST(request: NextRequest) {
   try {
     const { username = '', recoveryEmail = '', code = '' } = (await request.json()) as ResetPasswordRequest;
     const normalizedUsername = username.trim().toLowerCase();
+    const normalizedEmail = recoveryEmail.trim().toLowerCase();
     const usernameError = validateUsername(normalizedUsername);
 
     if (usernameError) {
       return NextResponse.json({ error: usernameError }, { status: 400 });
     }
 
-    if (!EMAIL_PATTERN.test(recoveryEmail)) {
+    if (!EMAIL_PATTERN.test(normalizedEmail)) {
       return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
     }
 
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
     const { data: verifiedRecords, error: dbError } = await serviceRoleSupabase
       .from('verification_codes')
       .select('id, used_at')
-      .eq('email', recoveryEmail)
+      .eq('email', normalizedEmail)
       .eq('code', code)
       .not('used_at', 'is', null)
       .order('used_at', { ascending: false })
@@ -102,14 +103,14 @@ export async function POST(request: NextRequest) {
     // 3. Verify or associate the recovery email with the user's metadata
     const registeredEmail = user.user_metadata?.recovery_email;
     if (registeredEmail) {
-      if (registeredEmail.trim().toLowerCase() !== recoveryEmail.trim().toLowerCase()) {
+      if (registeredEmail.trim().toLowerCase() !== normalizedEmail) {
         return NextResponse.json({ error: 'The email address provided does not match the registered recovery email.' }, { status: 400 });
       }
     } else {
       // Auto-associate the recovery email with the account for future resets
       const { error: updateMetadataError } = await serviceRoleSupabase.auth.admin.updateUserById(
         user.id,
-        { user_metadata: { ...user.user_metadata, recovery_email: recoveryEmail.trim().toLowerCase() } }
+        { user_metadata: { ...user.user_metadata, recovery_email: normalizedEmail } }
       );
       if (updateMetadataError) {
         console.error('Error updating user metadata with recovery email:', updateMetadataError);
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     const delivery = await sendPasswordResetEmail({
-      to: recoveryEmail,
+      to: normalizedEmail,
       username: normalizedUsername,
       resetUrl: data.properties.action_link,
     });
