@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
 
       if (!response.ok) {
         setError(result.error || "We could not send the code.");
-        setDebugInfo(`API error: ${response.status} - ${JSON.stringify(result)}`);
+        console.error(`API error: ${response.status} - ${JSON.stringify(result)}`);
       } else {
         setRecoveryEmail(normalizedEmail);
         setStep('verify-code');
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
 
       if (!resetResponse.ok) {
         setError(resetResult.error || "We could not send the reset link.");
-        setDebugInfo(`API error: ${resetResponse.status} - ${JSON.stringify(resetResult)}`);
+        console.error(`API error: ${resetResponse.status} - ${JSON.stringify(resetResult)}`);
       } else {
         setStep('success');
         setMessage("Your reset link is on the way. Check your inbox and spam folder.");

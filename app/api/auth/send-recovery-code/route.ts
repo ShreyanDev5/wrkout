@@ -74,10 +74,12 @@ export async function POST(request: NextRequest) {
       }
 
       const registeredEmail = user.user_metadata?.recovery_email;
-      if (registeredEmail) {
-        if (registeredEmail.trim().toLowerCase() !== normalizedEmail) {
-          return NextResponse.json({ error: 'The provided email does not match the recovery email' }, { status: 400 });
-        }
+      if (!registeredEmail) {
+        return NextResponse.json({ error: 'No recovery email has been set for this account' }, { status: 400 });
+      }
+
+      if (registeredEmail.trim().toLowerCase() !== normalizedEmail) {
+        return NextResponse.json({ error: 'The provided email does not match the recovery email' }, { status: 400 });
       }
     }
 
@@ -154,8 +156,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const email = request.nextUrl.searchParams.get('email');
-    const code = request.nextUrl.searchParams.get('code');
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
+    const code = searchParams.get('code');
 
     if (!email || !code) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
@@ -165,12 +168,38 @@ export async function GET(request: NextRequest) {
     const supabase = createServiceRoleClient();
     
     // Retrieve the absolute most recent code for this email (used or unused)
-    const { data: records } = await supabase
+    const selectQuery = supabase
       .from('verification_codes')
       .select('id, code, expires_at, attempts, used_at')
       .eq('email', normalizedEmail)
       .order('created_at', { ascending: false })
       .limit(1);
+
+    let queryResult = await selectQuery;
+    let hasAttemptsColumn = true;
+    let records = queryResult.data;
+
+    if (queryResult.error) {
+      // Postgres error 42703 is "undefined_column"
+      if (queryResult.error.code === '42703') {
+        hasAttemptsColumn = false;
+        const fallbackResult = await supabase
+          .from('verification_codes')
+          .select('id, code, expires_at, used_at')
+          .eq('email', normalizedEmail)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (fallbackResult.error) {
+          console.error('Fallback query error:', fallbackResult.error);
+          return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        }
+        records = fallbackResult.data;
+      } else {
+        console.error('Query error:', queryResult.error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      }
+    }
 
     if (!records || records.length === 0) {
       return NextResponse.json({ error: 'No verification code requested for this email.' }, { status: 400 });
@@ -179,10 +208,11 @@ export async function GET(request: NextRequest) {
     const record = records[0];
     const now = new Date();
     const expiresAt = new Date(record.expires_at);
+    const attempts = hasAttemptsColumn ? (record.attempts || 0) : 0;
 
     // 1. Check if the code has already been marked as used / expired
     if (record.used_at !== null) {
-      if ((record.attempts || 0) >= 5) {
+      if (hasAttemptsColumn && attempts >= 5) {
         return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
       }
       return NextResponse.json({ error: 'This verification code has already been used. Please request a new code.' }, { status: 400 });
@@ -199,7 +229,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Check if attempts already reached safety limit
-    if ((record.attempts || 0) >= 5) {
+    if (hasAttemptsColumn && attempts >= 5) {
       // Burn the code by marking it as used
       await supabase
         .from('verification_codes')
@@ -209,14 +239,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Increment attempts
-    const newAttempts = (record.attempts || 0) + 1;
+    const newAttempts = attempts + 1;
 
     // Use constant-time comparison to prevent timing attacks
     const isCodeValid = timingSafeEqual(record.code, code);
 
     if (!isCodeValid) {
       // If attempts reach limit now, burn the code
-      if (newAttempts >= 5) {
+      if (hasAttemptsColumn && newAttempts >= 5) {
         await supabase
           .from('verification_codes')
           .update({ 
@@ -226,21 +256,25 @@ export async function GET(request: NextRequest) {
           .eq('id', record.id);
         return NextResponse.json({ error: 'Too many failed attempts. Please request a new code.' }, { status: 400 });
       } else {
-        await supabase
-          .from('verification_codes')
-          .update({ attempts: newAttempts })
-          .eq('id', record.id);
+        if (hasAttemptsColumn) {
+          await supabase
+            .from('verification_codes')
+            .update({ attempts: newAttempts })
+            .eq('id', record.id);
+        }
         return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 });
       }
     }
 
     // Mark code as used on successful verification so it can only be used once, and record the final attempt count
+    const updatePayload: any = { used_at: now.toISOString() };
+    if (hasAttemptsColumn) {
+      updatePayload.attempts = newAttempts;
+    }
+
     await supabase
       .from('verification_codes')
-      .update({ 
-        used_at: now.toISOString(),
-        attempts: newAttempts
-      })
+      .update(updatePayload)
       .eq('id', record.id);
 
     return NextResponse.json({ verified: true, email: normalizedEmail });
