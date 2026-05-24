@@ -78,7 +78,7 @@ export function DayExercises({
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 md:space-y-2 flex flex-col w-full">
       {exercises.map((exercise) => {
         const completed = completedExerciseNames.has(exercise.name)
         const isExpanded = expandedExerciseId === exercise.id
@@ -88,15 +88,15 @@ export function DayExercises({
             key={exercise.id}
             id={`exercise-${exercise.id}`}
             className={cn(
-              "rounded-2xl transition-all duration-300 ease-in-out border",
+              "rounded-2xl transition-all duration-300 ease-in-out border h-fit",
               isExpanded
                 ? "bg-secondary/10 border-border/50 shadow-sm"
-                : "bg-secondary/5 border-border/20 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:bg-secondary/10 hover:border-border/30 hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)]"
+                : "bg-secondary/5 border-border/20 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:bg-secondary/10 hover:border-border/30 hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:md:border-zinc-700/40 dark:hover:md:border-zinc-700/60"
             )}
           >
             <div
               className={cn(
-                "relative py-4 px-4 flex items-center gap-4 cursor-pointer select-none",
+                "relative py-4 px-4 md:py-3.5 md:px-3.5 flex items-center gap-4 cursor-pointer select-none",
               )}
               onClick={() => handleToggleExpand(exercise.id)}
             >
@@ -113,7 +113,7 @@ export function DayExercises({
               <div className="flex-1 min-w-0">
                 <Label
                   className={cn(
-                    "text-[0.9375rem] font-semibold block leading-tight cursor-pointer tracking-tight",
+                    "text-[0.9375rem] md:text-sm font-semibold block leading-tight cursor-pointer tracking-tight",
                     "text-foreground",
                     isExpanded ? "whitespace-normal" : "truncate",
                     completed && "exercise-label-checked opacity-40 font-medium"
@@ -179,9 +179,9 @@ export function DayExercises({
         )
       }
 
-      {/* Dynamic Spacer to ensure last item can be scrolled to center */}
+      {/* Dynamic Spacer to ensure last item can be scrolled to center - Mobile only */}
       <div
-        className="transition-all duration-300 ease-in-out"
+        className="md:hidden transition-all duration-300 ease-in-out"
         style={{ height: expandedExerciseId ? '45vh' : '0px' }}
         aria-hidden="true"
       />

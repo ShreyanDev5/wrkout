@@ -167,27 +167,29 @@ export function WorkoutTracker() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
-      <header className="sticky top-0 z-10 bg-background border-b dark:border-opacity-10">
-        <div className="container flex items-center justify-between h-16 px-4">
-          <h1
-            className="text-2xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none"
-          >
-            wrkout
-          </h1>
-          <div className="flex items-center gap-2">
+      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-zinc-800/20 dark:border-zinc-800/40">
+        <div className="max-w-4xl mx-auto flex items-center justify-between h-16 md:h-14 px-4 sm:px-6">
+          <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo_1.0-transparent.png"
               alt="wrkout logo"
-              className="h-11 w-11 object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
-              style={{ minHeight: 44, minWidth: 44, marginTop: 2 }}
+              className="h-12 w-12 md:h-[42px] md:w-[42px] object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
+              style={{ minHeight: 40, minWidth: 40, marginTop: 1 }}
             />
+            <h1
+              className="text-2xl md:text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none transition-all"
+            >
+              wrkout
+            </h1>
           </div>
+          {/* Right side is kept empty for a clean, minimal aesthetic */}
+          <div />
         </div>
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col min-h-0 flex-1">
-        <div className="flex-1 container px-4 py-6 md:py-8" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 container max-w-4xl mx-auto px-4 py-6 md:py-8 md:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
             <ErrorBoundary>
               <WorkoutScreen
@@ -221,8 +223,10 @@ export function WorkoutTracker() {
           </TabsContent>
         </div>
 
-        <footer className="sticky bottom-0 z-10 bg-background">
-          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <footer className="sticky bottom-0 z-30 bg-background border-t border-zinc-800/10 dark:border-zinc-800/30 md:bg-transparent md:fixed md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:border-none md:w-auto md:px-0 md:pointer-events-none">
+          <div className="w-full md:pointer-events-auto">
+            <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
         </footer>
       </Tabs>
 
