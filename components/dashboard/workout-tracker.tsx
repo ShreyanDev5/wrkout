@@ -168,8 +168,13 @@ export function WorkoutTracker() {
   return (
     <div className="flex flex-col min-h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
       <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-zinc-800/20 dark:border-zinc-800/40">
-        <div className="max-w-4xl mx-auto flex items-center justify-between h-16 md:h-14 px-4 sm:px-6">
-          <div className="flex items-center gap-3">
+        <div className="max-w-[540px] mx-auto flex items-center justify-between h-16 md:h-14 px-4 sm:px-4">
+          <h1
+            className="text-2xl md:text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none transition-all"
+          >
+            wrkout
+          </h1>
+          <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo_1.0-transparent.png"
@@ -177,14 +182,7 @@ export function WorkoutTracker() {
               className="h-12 w-12 md:h-[42px] md:w-[42px] object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
               style={{ minHeight: 40, minWidth: 40, marginTop: 1 }}
             />
-            <h1
-              className="text-2xl md:text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none transition-all"
-            >
-              wrkout
-            </h1>
           </div>
-          {/* Right side is kept empty for a clean, minimal aesthetic */}
-          <div />
         </div>
       </header>
 
