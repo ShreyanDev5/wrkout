@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CircularProgress } from "@/components/ui/circular-progress"
-import { WorkoutLogModal } from "@/components/modals/workout-log-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/dashboard/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
@@ -19,16 +18,6 @@ import { useWorkoutLogic } from "@/hooks/use-workout-logic"
 import { CompletionModal } from "@/components/modals/completion-modal"
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

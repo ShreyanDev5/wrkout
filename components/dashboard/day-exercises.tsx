@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Exercise, WorkoutLog } from "@/lib/types"
-import { WorkoutLogModal } from "@/components/modals/workout-log-modal" // Keep for fallback if needed, or remove if unused.
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
