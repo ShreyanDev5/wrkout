@@ -2,6 +2,7 @@ export interface Exercise {
   id: string
   name: string
   description?: string
+  exercise_id?: string // Shared UUID from the exercises table
 }
 
 export interface WorkoutExercise {

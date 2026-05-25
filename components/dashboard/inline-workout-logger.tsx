@@ -76,7 +76,7 @@ export function InlineWorkoutLogger({
             user_id: "", // Filled by parent/API
             workout_id: workoutId,
             workout_day_id: null,
-            exercise_id: storeKey,
+            exercise_id: exercise.exercise_id || exercise.id,
             exercise_name: exercise.name,
             weight,
             avg_reps: reps, // 'reps' UI state maps to 'avg_reps' in DB

@@ -541,7 +541,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
+    <div className="w-full max-w-[540px] mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
       <div className="flex items-center gap-3 mb-5 sm:mb-6 pt-4 sm:pt-6">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800/90 to-zinc-900/90 border border-zinc-700/40 shadow-lg shadow-zinc-900/50">

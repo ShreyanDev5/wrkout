@@ -69,7 +69,7 @@ export function WorkoutLogModal({
       user_id: "",
       workout_id: workoutId,
       workout_day_id: null,
-      exercise_id: exercise.id,
+      exercise_id: exercise.exercise_id || exercise.id,
       exercise_name: exercise.name,
       weight,
       avg_reps: reps,

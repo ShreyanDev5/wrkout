@@ -233,16 +233,21 @@ export function WorkoutScreen({
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      const activeDay = currentWorkoutDays.find(d => d.day_id === selectedDay)
+      const exercise = activeDay?.exercises.find(e => e.name === exerciseName)
+      const exercise_id = exercise?.exercise_id || exercise?.id
+
       const { error } = await supabase.from('workout_logs').upsert({
         user_id: user.id,
         workout_id: selectedWorkout,
         exercise_name: exerciseName,
+        exercise_id: exercise_id,
         weight: 0,
         avg_reps: 0,
         sets: 0,
         performed_at: today,
-        workout_day_id: currentWorkoutDays.find(d => d.day_id === selectedDay)?.id
-      }, { onConflict: 'user_id, exercise_name, performed_at, workout_day_id' })
+        workout_day_id: activeDay?.id
+      }, { onConflict: 'user_id,exercise_id,performed_at,workout_day_id' })
 
       if (error) throw error
     } catch (error) {
