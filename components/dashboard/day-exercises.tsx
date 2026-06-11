@@ -98,18 +98,18 @@ export function DayExercises({
               transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
               '--day-color-glow': completed
                 ? `#262628`
-                : `#2c2c2e`,
+                : `#323236`,
               '--day-color-glow-hover': completed
                 ? `#2c2c2e`
-                : `color-mix(in srgb, ${dayColor} 8%, #3a3a3c)`,
-              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 12%, #3a3a3c)`,
+                : `color-mix(in srgb, ${dayColor} 8%, #3e3e42)`,
+              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 12%, #444448)`,
               '--day-bg-glow': completed
-                ? `#141416`
-                : `#1c1c1e`,
-              '--day-bg-glow-hover': completed
                 ? `#1c1c1e`
-                : `color-mix(in srgb, ${dayColor} 2%, #222225)`,
-              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 3%, #222225)`,
+                : `#252528`,
+              '--day-bg-glow-hover': completed
+                ? `#222224`
+                : `color-mix(in srgb, ${dayColor} 2%, #2a2a2d)`,
+              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 3%, #2c2c2f)`,
               borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
               backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
               boxShadow: isExpanded

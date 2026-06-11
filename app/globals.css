@@ -928,7 +928,8 @@
   width: 100% !important;
   min-width: unset !important;
   max-width: calc(100vw - 2rem) !important;
-  /* Account for padding */
+  padding: 4px 8px !important;
+  box-sizing: border-box !important;
 }
 
 [role='option'] {
