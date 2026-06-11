@@ -64,7 +64,7 @@ const AnimatedCheckbox = React.forwardRef<
         )}
         style={{
           backgroundColor: checked ? checkboxColor : undefined,
-          // Remove boxShadow and border for minimal look
+          borderColor: checked ? checkboxColor : `color-mix(in srgb, ${checkboxColor} 30%, transparent)`,
         }}
         checked={checked}
         {...props}

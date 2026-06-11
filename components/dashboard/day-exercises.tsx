@@ -89,9 +89,22 @@ export function DayExercises({
             className={cn(
               "rounded-2xl transition-all duration-300 ease-in-out border h-fit",
               isExpanded
-                ? "bg-secondary/10 border-border/50 shadow-sm"
-                : "bg-secondary/5 border-border/20 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:bg-secondary/10 hover:border-border/30 hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:md:border-zinc-700/40 dark:hover:md:border-zinc-700/60"
+                ? "shadow-sm"
+                : "shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
             )}
+            style={{
+              '--day-color-glow': `color-mix(in srgb, ${dayColor} 12%, transparent)`,
+              '--day-color-glow-hover': `color-mix(in srgb, ${dayColor} 25%, transparent)`,
+              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 45%, transparent)`,
+              '--day-bg-glow': `color-mix(in srgb, ${dayColor} 3%, rgba(255, 255, 255, 0.015))`,
+              '--day-bg-glow-hover': `color-mix(in srgb, ${dayColor} 5%, rgba(255, 255, 255, 0.025))`,
+              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 8%, rgba(255, 255, 255, 0.025))`,
+              borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
+              backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
+              boxShadow: isExpanded
+                ? `0 4px 20px -8px color-mix(in srgb, ${dayColor} 30%, transparent)`
+                : undefined,
+            } as React.CSSProperties}
           >
             <div
               className={cn(

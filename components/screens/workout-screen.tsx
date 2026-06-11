@@ -367,7 +367,7 @@ export function WorkoutScreen({
         <CardContent className="px-0 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
             {/* Unified Controls Panel: side-by-side on desktop, stacked on mobile */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-zinc-800/10 dark:border-zinc-800/30 bg-zinc-900/10 dark:bg-zinc-900/30 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-zinc-800/30 dark:border-zinc-700/50 bg-zinc-900/10 dark:bg-zinc-900/30 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
               {/* Workout Routine Selector */}
               <div className="w-full md:w-48 flex-shrink-0 workout-select">
                 <Select
@@ -382,7 +382,7 @@ export function WorkoutScreen({
                   }}
                   disabled={workouts.length === 0}
                 >
-                  <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border-zinc-800/20 dark:border-zinc-800/50 bg-zinc-900/40 dark:bg-zinc-900/60 hover:bg-zinc-900/80 transition-all rounded-full text-sm font-semibold text-zinc-200">
+                  <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border-zinc-800/30 dark:border-zinc-700/60 bg-zinc-900/40 dark:bg-zinc-900/60 hover:bg-zinc-900/80 transition-all rounded-full text-sm font-semibold text-zinc-200">
                     <SelectValue placeholder="Select Workout" className="truncate tracking-tight" />
                   </SelectTrigger>
                   <SelectContent className="border-zinc-800/50 bg-zinc-950/98 backdrop-blur-xl">
@@ -401,7 +401,7 @@ export function WorkoutScreen({
 
               {/* Day Tabs Selector */}
               <div className="w-full md:w-auto">
-                <TabsList className="flex flex-nowrap w-full md:w-[276px] bg-zinc-900/60 dark:bg-zinc-900/85 border border-zinc-800/40 p-1 rounded-full gap-1">
+                <TabsList className="flex flex-nowrap w-full md:w-[276px] bg-zinc-900/60 dark:bg-zinc-900/85 border border-zinc-800/60 dark:border-zinc-700/60 p-1 rounded-full gap-1">
                   {['push', 'pull', 'leg'].map((day) => {
                     const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
 
