@@ -390,7 +390,7 @@ export function WorkoutScreen({
                       <SelectItem
                         key={workout.id}
                         value={workout.id}
-                        className="pl-3.5 pr-3.5 py-1.5 cursor-pointer transition-colors rounded-xl text-zinc-300 hover:text-white hover:bg-white/[0.04] focus:bg-white/[0.04] focus:text-white data-[state=checked]:bg-white/[0.07] data-[state=checked]:text-white data-[state=checked]:font-semibold"
+                        className="mx-1 pl-3.5 pr-3.5 py-1.5 cursor-pointer transition-colors rounded-xl text-zinc-300 hover:text-white hover:bg-white/[0.04] focus:bg-white/[0.04] focus:text-white data-[state=checked]:bg-white/[0.07] data-[state=checked]:text-white data-[state=checked]:font-semibold"
                       >
                         {workout.name}
                       </SelectItem>
