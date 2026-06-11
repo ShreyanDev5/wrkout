@@ -367,7 +367,7 @@ export function WorkoutScreen({
         <CardContent className="px-0 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
             {/* Unified Controls Panel: side-by-side on desktop, stacked on mobile */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-white/[0.04] bg-white/[0.015] backdrop-blur-md shadow-[0_8px_32px_-4px_rgba(0,0,0,0.3)]">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-white/[0.04] bg-white/[0.015] backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.25)]">
               {/* Workout Routine Selector */}
               <div className="w-full md:w-48 flex-shrink-0 workout-select">
                 <Select
@@ -390,7 +390,7 @@ export function WorkoutScreen({
                       <SelectItem
                         key={workout.id}
                         value={workout.id}
-                        className="pl-4 pr-4 py-2 cursor-pointer transition-colors rounded-full text-zinc-300 hover:text-white hover:bg-white/[0.05] focus:bg-white/[0.05] focus:text-white data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-white data-[state=checked]:font-semibold"
+                        className="pl-3.5 pr-3.5 py-1.5 cursor-pointer transition-colors rounded-xl text-zinc-300 hover:text-white hover:bg-white/[0.04] focus:bg-white/[0.04] focus:text-white data-[state=checked]:bg-white/[0.07] data-[state=checked]:text-white data-[state=checked]:font-semibold"
                       >
                         {workout.name}
                       </SelectItem>
