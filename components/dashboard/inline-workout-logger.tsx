@@ -97,11 +97,11 @@ export function InlineWorkoutLogger({
             animate={{ opacity: 1, height: "auto", scale: 1 }}
             exit={{ opacity: 0, height: 0, scale: 0.96 }}
             transition={{
-                duration: 0.35,
-                ease: [0.4, 0, 0.2, 1],
-                opacity: { duration: 0.25 },
-                scale: { duration: 0.3 },
-                height: { duration: 0.35 }
+                duration: 0.22,
+                ease: [0.16, 1, 0.3, 1],
+                opacity: { duration: 0.15 },
+                scale: { duration: 0.18 },
+                height: { duration: 0.22 }
             }}
             className="overflow-hidden origin-top"
         >

@@ -87,22 +87,33 @@ export function DayExercises({
             key={exercise.id}
             id={`exercise-${exercise.id}`}
             className={cn(
-              "rounded-2xl transition-all duration-300 ease-in-out border h-fit",
+              "rounded-2xl transition-all duration-200 border h-fit",
               isExpanded
-                ? "shadow-sm"
-                : "shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
+                ? "shadow-sm scale-[1.005]"
+                : "shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+              !isExpanded && !completed && "hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
+              !isExpanded && completed && "opacity-65 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
             )}
             style={{
-              '--day-color-glow': `color-mix(in srgb, ${dayColor} 12%, transparent)`,
-              '--day-color-glow-hover': `color-mix(in srgb, ${dayColor} 25%, transparent)`,
-              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 45%, transparent)`,
-              '--day-bg-glow': `color-mix(in srgb, ${dayColor} 3%, rgba(255, 255, 255, 0.015))`,
-              '--day-bg-glow-hover': `color-mix(in srgb, ${dayColor} 5%, rgba(255, 255, 255, 0.025))`,
-              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 8%, rgba(255, 255, 255, 0.025))`,
+              transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+              '--day-color-glow': completed
+                ? `rgba(255, 255, 255, 0.03)`
+                : `color-mix(in srgb, ${dayColor} 6%, rgba(255, 255, 255, 0.03))`,
+              '--day-color-glow-hover': completed
+                ? `rgba(255, 255, 255, 0.06)`
+                : `color-mix(in srgb, ${dayColor} 12%, rgba(255, 255, 255, 0.05))`,
+              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.08))`,
+              '--day-bg-glow': completed
+                ? `rgba(255, 255, 255, 0.005)`
+                : `color-mix(in srgb, ${dayColor} 1.5%, rgba(255, 255, 255, 0.01))`,
+              '--day-bg-glow-hover': completed
+                ? `rgba(255, 255, 255, 0.01)`
+                : `color-mix(in srgb, ${dayColor} 3%, rgba(255, 255, 255, 0.02))`,
+              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 4%, rgba(255, 255, 255, 0.02))`,
               borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
               backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
               boxShadow: isExpanded
-                ? `0 4px 20px -8px color-mix(in srgb, ${dayColor} 30%, transparent)`
+                ? `0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.05)`
                 : undefined,
             } as React.CSSProperties}
           >
