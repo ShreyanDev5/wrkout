@@ -543,7 +543,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   return (
     <div className="w-full max-w-[540px] mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex flex-col gap-1 mb-6 pt-4 sm:pt-8 md:pt-10">
+      <div className="flex flex-col gap-1 mb-6 pt-1 sm:pt-4 md:pt-6">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           Settings
         </h1>

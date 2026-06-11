@@ -98,10 +98,10 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
 
   return (
     <Card className="border-0 shadow-none dark:bg-background max-w-[540px] mx-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-      <CardContent className="px-4 pt-6 pb-24 space-y-8">
+      <CardContent className="px-4 pt-3 sm:pt-6 pb-24 space-y-8">
 
         {/* Header - Today's Focus */}
-        <div className="flex flex-col gap-1 mb-6 pt-0 sm:pt-4 md:pt-6">
+        <div className="flex flex-col gap-1 mb-6 pt-0 sm:pt-2 md:pt-4">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
             Today&apos;s Focus
           </h2>

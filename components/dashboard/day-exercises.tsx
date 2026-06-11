@@ -90,9 +90,9 @@ export function DayExercises({
               "rounded-2xl transition-all duration-200 border h-fit",
               isExpanded
                 ? "shadow-sm scale-[1.005]"
-                : "shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
-              !isExpanded && !completed && "hover:shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
-              !isExpanded && completed && "opacity-65 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
+                : completed
+                  ? "shadow-none opacity-60 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
+                  : "shadow-[0_8px_24px_-4px_rgba(0,0,0,0.35)] hover:shadow-[0_12px_30px_-6px_rgba(0,0,0,0.4)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
             )}
             style={{
               transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

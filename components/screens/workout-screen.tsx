@@ -385,7 +385,7 @@ export function WorkoutScreen({
                   <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.1] active:scale-[0.98] transition-all rounded-full text-sm font-semibold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-white/20 focus:ring-offset-0">
                     <SelectValue placeholder="Select Workout" className="truncate tracking-tight" />
                   </SelectTrigger>
-                  <SelectContent className="border border-white/[0.08] bg-zinc-950/98 backdrop-blur-xl rounded-[20px] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+                  <SelectContent className="SelectContent border border-white/[0.08] bg-zinc-950/98 backdrop-blur-xl rounded-[20px] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                     {workouts.map((workout) => (
                       <SelectItem
                         key={workout.id}
