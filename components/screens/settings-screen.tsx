@@ -543,18 +543,13 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   return (
     <div className="w-full max-w-[540px] mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex items-center gap-3 mb-5 sm:mb-6 pt-4 sm:pt-6">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800/90 to-zinc-900/90 border border-zinc-700/40 shadow-lg shadow-zinc-900/50">
-          <Settings className="h-5 w-5" strokeWidth={2.5} style={{ color: '#EA4335' }} />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-foreground tracking-tight">
-            Settings
-          </h1>
-          <p className="text-[10px] text-muted-foreground font-medium">
-            Manage routines
-          </p>
-        </div>
+      <div className="flex flex-col gap-1 mb-6 pt-4 sm:pt-8 md:pt-10">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+          Settings
+        </h1>
+        <p className="text-[11px] sm:text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+          Manage routines
+        </p>
       </div>
 
       <motion.div

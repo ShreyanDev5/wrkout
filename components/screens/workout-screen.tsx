@@ -367,7 +367,7 @@ export function WorkoutScreen({
         <CardContent className="px-0 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
             {/* Unified Controls Panel: side-by-side on desktop, stacked on mobile */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-zinc-800/30 dark:border-zinc-700/50 bg-zinc-900/10 dark:bg-zinc-900/30 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-white/[0.04] bg-white/[0.015] backdrop-blur-md shadow-[0_8px_32px_-4px_rgba(0,0,0,0.3)]">
               {/* Workout Routine Selector */}
               <div className="w-full md:w-48 flex-shrink-0 workout-select">
                 <Select
@@ -382,15 +382,15 @@ export function WorkoutScreen({
                   }}
                   disabled={workouts.length === 0}
                 >
-                  <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border-zinc-800/30 dark:border-zinc-700/60 bg-zinc-900/40 dark:bg-zinc-900/60 hover:bg-zinc-900/80 transition-all rounded-full text-sm font-semibold text-zinc-200">
+                  <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.1] active:scale-[0.98] transition-all rounded-full text-sm font-semibold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-white/20 focus:ring-offset-0">
                     <SelectValue placeholder="Select Workout" className="truncate tracking-tight" />
                   </SelectTrigger>
-                  <SelectContent className="border-zinc-800/50 bg-zinc-950/98 backdrop-blur-xl">
+                  <SelectContent className="border border-white/[0.08] bg-zinc-950/98 backdrop-blur-xl rounded-[20px] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                     {workouts.map((workout) => (
                       <SelectItem
                         key={workout.id}
                         value={workout.id}
-                        className="pl-3 pr-3 py-2 cursor-pointer transition-colors"
+                        className="pl-4 pr-4 py-2 cursor-pointer transition-colors rounded-full text-zinc-300 hover:text-white hover:bg-white/[0.05] focus:bg-white/[0.05] focus:text-white data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-white data-[state=checked]:font-semibold"
                       >
                         {workout.name}
                       </SelectItem>
@@ -401,7 +401,7 @@ export function WorkoutScreen({
 
               {/* Day Tabs Selector */}
               <div className="w-full md:w-auto">
-                <TabsList className="flex flex-nowrap w-full md:w-[276px] bg-zinc-900/60 dark:bg-zinc-900/85 border border-zinc-800/60 dark:border-zinc-700/60 p-1 rounded-full gap-1">
+                <TabsList className="flex flex-nowrap w-full md:w-[276px] bg-white/[0.01] border border-white/[0.06] p-1 rounded-full gap-1">
                   {['push', 'pull', 'leg'].map((day) => {
                     const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
 
@@ -417,7 +417,7 @@ export function WorkoutScreen({
                         style={{
                           backgroundColor:
                             selectedDay === day
-                              ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 15%, transparent)`
+                              ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 12%, rgba(255, 255, 255, 0.02))`
                               : undefined,
                           boxShadow: 'none',
                         }}

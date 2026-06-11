@@ -101,16 +101,13 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
       <CardContent className="px-4 pt-6 pb-24 space-y-8">
 
         {/* Header - Today's Focus */}
-        <div className="flex items-center gap-4 mb-2">
-          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl">
-            <TrendingUp className="h-5 w-5 text-[#4caf50]" strokeWidth={2.5} />
-          </div>
-          <div className="flex flex-col">
-            <h2 className="text-xl font-bold text-foreground tracking-tight leading-none mb-1">Today&apos;s Focus</h2>
-            <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
-              {formatDate(new Date().toISOString())}
-            </p>
-          </div>
+        <div className="flex flex-col gap-1 mb-6 pt-0 sm:pt-4 md:pt-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+            Today&apos;s Focus
+          </h2>
+          <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
+            {formatDate(new Date().toISOString())}
+          </p>
         </div>
 
         {/* Detailed Session Breakdown */}
