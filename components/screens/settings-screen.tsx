@@ -46,6 +46,7 @@ interface ExerciseItemProps {
   onMoveUp: (dayId: string, index: number) => void;
   onMoveDown: (dayId: string, index: number) => void;
   onDelete: (workoutId: string, dayId: string, exerciseId: string, exerciseName: string) => void;
+  isEditMode: boolean;
 }
 
 const ExerciseItem = memo(({
@@ -56,48 +57,62 @@ const ExerciseItem = memo(({
   workoutId,
   onMoveUp,
   onMoveDown,
-  onDelete
+  onDelete,
+  isEditMode
 }: ExerciseItemProps) => {
   return (
     <li
-      className={`flex items-center justify-between p-1.5 sm:p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-colors group/item`}
+      className={`flex items-center justify-between p-1.5 sm:p-2 rounded-lg transition-colors ${
+        isEditMode
+          ? "hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+          : "hover:bg-zinc-800/10"
+      }`}
     >
-      <div className="flex items-center gap-1.5 min-w-0 flex-1">
-        <div className="flex flex-col gap-0.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onMoveUp(dayId, index)}
-            disabled={index === 0}
-            className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
-            aria-label={`Move ${exercise.name} up`}
-          >
-            <ArrowUp className="h-4 w-4" aria-hidden="true" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onMoveDown(dayId, index)}
-            disabled={index === totalExercises - 1}
-            className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
-            aria-label={`Move ${exercise.name} down`}
-          >
-            <ArrowDown className="h-4 w-4" aria-hidden="true" />
-          </Button>
-        </div>
-        <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1" title={exercise.name}>
+      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        {isEditMode ? (
+          <div className="flex flex-col gap-0.5">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onMoveUp(dayId, index)}
+              disabled={index === 0}
+              className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
+              aria-label={`Move ${exercise.name} up`}
+            >
+              <ArrowUp className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onMoveDown(dayId, index)}
+              disabled={index === totalExercises - 1}
+              className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
+              aria-label={`Move ${exercise.name} down`}
+            >
+              <ArrowDown className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        ) : (
+          <div className="h-2 w-2 rounded-full bg-zinc-700 dark:bg-zinc-600 flex-shrink-0 ml-1.5" />
+        )}
+        <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1 py-1" title={exercise.name}>
           {exercise.name}
         </span>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
-        className="h-6 w-6 sm:h-6 sm:w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
-        aria-label={`Delete ${exercise.name} exercise`}
-      >
-        <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" aria-hidden="true" />
-      </Button>
+      {isEditMode && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
+          className="h-6 w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+          aria-label={`Delete ${exercise.name} exercise`}
+        >
+          <Trash2 className="h-3 w-3" aria-hidden="true" />
+        </Button>
+      )}
     </li>
   );
 })
@@ -122,6 +137,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const { toast } = useToast()
   const { signOut, user, username } = useAuth()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isAccountExpanded, setIsAccountExpanded] = useState(false)
   const supabase = createClientComponentClient();
 
   const [recoveryEmailState, setRecoveryEmailState] = useState(user?.user_metadata?.recovery_email || '');
@@ -134,6 +151,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       setRecoveryEmailState(user.user_metadata.recovery_email);
     }
   }, [user]);
+
+
 
   const handleUpdateRecoveryEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -541,13 +560,13 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   }
 
   return (
-    <div className="w-full max-w-[540px] mx-auto pb-20 sm:pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
+    <div className="w-full max-w-[540px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex flex-col gap-1 mb-6 pt-1 sm:pt-4 md:pt-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+      <div className="flex flex-col gap-1 mb-8 pt-4 sm:pt-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
           Settings
         </h1>
-        <p className="text-[11px] sm:text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+        <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
           Manage routines
         </p>
       </div>
@@ -563,7 +582,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
-                <Dumbbell className="h-4 w-4" style={{ color: '#4caf50' }} />
+                <Dumbbell className="h-4 w-4" style={{ color: '#2563eb' }} />
               </div>
               <div>
                 <h2 className="text-base font-semibold text-foreground">
@@ -574,15 +593,29 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 {workouts.length}
               </span>
             </div>
-            <Button
-              onClick={() => setIsAddWorkoutOpen(true)}
-              size="sm"
-              variant="ghost"
-              className="h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
-            >
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
-              New
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                onClick={() => setIsEditMode(!isEditMode)}
+                size="sm"
+                variant="ghost"
+                className={`h-8 px-3 rounded-lg transition-all text-xs font-medium border ${
+                  isEditMode
+                    ? "bg-blue-950/40 hover:bg-blue-900/30 text-blue-400 border-blue-900/35"
+                    : "bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 border-zinc-700/30"
+                }`}
+              >
+                {isEditMode ? "Done" : "Edit"}
+              </Button>
+              <Button
+                onClick={() => setIsAddWorkoutOpen(true)}
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all border border-zinc-700/30 flex items-center justify-center"
+                aria-label="New Routine"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -719,6 +752,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                                           onMoveUp={moveExerciseUp}
                                                           onMoveDown={moveExerciseDown}
                                                           onDelete={handleDeleteExercise}
+                                                          isEditMode={isEditMode}
                                                         />
                                                       ))}
                                                     </ul>
@@ -769,89 +803,130 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           </div>
         </section>
 
-        {/* Recovery Email Section */}
+        {/* Account & Security Section */}
         <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40 flex-shrink-0">
-              <Mail className="h-4 w-4" style={{ color: '#EA4335' }} />
+          <div
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setIsAccountExpanded(!isAccountExpanded)}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
+                <Settings className="h-4 w-4" style={{ color: '#dc2626' }} />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">
+                  Account &amp; Security
+                </h2>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
-              <p className="text-xs text-muted-foreground">Keep your recovery email updated for secure password resets.</p>
+            <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-transform duration-300 ${isAccountExpanded ? 'rotate-180 bg-zinc-800' : ''}`}>
+              <ArrowDown className="h-4 w-4 text-zinc-500" />
             </div>
           </div>
-          
-          <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-1">
-            {emailMessage && (
-              <p className="text-xs text-pull-light font-medium bg-pull-light/10 border border-pull-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
-                {emailMessage}
-              </p>
-            )}
-            {emailError && (
-              <p className="text-xs text-leg-light font-medium bg-leg-light/10 border border-leg-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
-                {emailError}
-              </p>
-            )}
-            
-            <div className="flex flex-col sm:flex-row gap-2.5">
-              <div className="relative flex-1">
-                <Input
-                  id="settings-recovery-email"
-                  type="email"
-                  value={recoveryEmailState}
-                  onChange={(e) => setRecoveryEmailState(e.target.value)}
-                  placeholder="e.g. you@example.com"
-                  required
-                  className="h-9 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-red-500/50 focus:ring-red-500/20 w-full pl-9"
-                />
-                <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
-                  <Mail className="h-4 w-4" />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
-                className="h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-zinc-200 transition-all active:scale-95 border border-zinc-700/50 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                {updatingEmail ? 'Saving...' : 'Save Email'}
-              </button>
-            </div>
-          </form>
-        </section>
 
-        {/* Account Actions */}
-        <section className="pt-0">
-          <div className="relative bg-zinc-900/30 border border-zinc-700/40 shadow-lg shadow-zinc-950/20 rounded-2xl p-4">
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40 flex-shrink-0">
-                  <Sparkles className="h-4 w-4" style={{ color: '#f9d949' }} />
+          <AnimatePresence>
+            {isAccountExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{
+                  height: "auto",
+                  opacity: 1,
+                  transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
+                }}
+                exit={{
+                  height: 0,
+                  opacity: 0,
+                  transition: { duration: 0.2, ease: "easeIn" }
+                }}
+                className="space-y-6 pt-2 overflow-hidden"
+              >
+                <div className="w-full h-px bg-zinc-800/30 mb-2" />
+                
+                {/* Recovery Email Form */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/30 border border-zinc-700/40 flex-shrink-0">
+                      <Mail className="h-4 w-4" style={{ color: '#16a34a' }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
+                      <p className="text-xs text-muted-foreground">Keep your recovery email updated for secure password resets.</p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-1">
+                    {emailMessage && (
+                      <p className="text-xs text-pull-light font-medium bg-pull-light/10 border border-pull-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                        {emailMessage}
+                      </p>
+                    )}
+                    {emailError && (
+                      <p className="text-xs text-leg-light font-medium bg-leg-light/10 border border-leg-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                        {emailError}
+                      </p>
+                    )}
+                    
+                    <div className="flex flex-col sm:flex-row gap-2.5">
+                      <div className="relative flex-1">
+                        <Input
+                          id="settings-recovery-email"
+                          type="email"
+                          value={recoveryEmailState}
+                          onChange={(e) => setRecoveryEmailState(e.target.value)}
+                          placeholder="e.g. you@example.com"
+                          required
+                          className="h-9 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-red-500/50 focus:ring-red-500/20 w-full pl-9"
+                        />
+                        <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
+                          <Mail className="h-4 w-4" />
+                        </div>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
+                        className="h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-zinc-200 transition-all active:scale-95 border border-zinc-700/50 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        {updatingEmail ? 'Saving...' : 'Save Email'}
+                      </button>
+                    </div>
+                  </form>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-foreground text-sm">Account & Guide</h3>
-                  <p className="text-xs text-muted-foreground">Need help or switching accounts?</p>
+
+                <div className="w-full h-px bg-zinc-800/30 my-4" />
+
+                {/* Account Actions */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/30 border border-zinc-700/40 flex-shrink-0">
+                      <Sparkles className="h-4 w-4" style={{ color: '#f9d949' }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-foreground text-sm">Account &amp; Guide</h3>
+                      <p className="text-xs text-muted-foreground">Need help or switching accounts?</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
+                      onClick={() => setShowOnboarding(true)}
+                    >
+                      View Guide
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
+                      onClick={() => setIsSignOutOpen(true)}
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
-                  onClick={() => setShowOnboarding(true)}
-                >
-                  View Guide
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
-                  onClick={() => setIsSignOutOpen(true)}
-                >
-                  Sign Out
-                </Button>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </motion.div>
 

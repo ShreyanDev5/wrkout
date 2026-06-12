@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import type { WorkoutLog, WorkoutDay } from "@/lib/types"
 import { getWorkoutDayColor, getExerciseWorkoutType, formatDate, getLocalDateYYYYMMDD, cn } from "@/lib/utils"
 import { buildExerciseVolumeTrendMap, createExerciseTrendKey, type VolumeTrend } from "@/lib/progress-data-utils"
@@ -97,18 +96,16 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
   }
 
   return (
-    <Card className="border-0 shadow-none dark:bg-background max-w-[540px] mx-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-      <CardContent className="px-4 pt-3 sm:pt-6 pb-24 space-y-8">
-
-        {/* Header - Today's Focus */}
-        <div className="flex flex-col gap-1 mb-6 pt-0 sm:pt-2 md:pt-4">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-            Today&apos;s Focus
-          </h2>
-          <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
-            {formatDate(new Date().toISOString())}
-          </p>
-        </div>
+    <div className="w-full max-w-[540px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in duration-500" style={{ WebkitOverflowScrolling: 'touch' }}>
+      {/* Header - Today's Focus */}
+      <div className="flex flex-col gap-1 mb-8 pt-4 sm:pt-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+          Today&apos;s Focus
+        </h1>
+        <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
+          {formatDate(new Date().toISOString())}
+        </p>
+      </div>
 
         {/* Detailed Session Breakdown */}
         <motion.div
@@ -223,7 +220,6 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
             </div>
           )}
         </motion.div>
-      </CardContent >
-    </Card >
+    </div>
   )
 }
