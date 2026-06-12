@@ -521,28 +521,7 @@
   margin-bottom: 0.5rem;
 }
 
-/* Matte dark grey select styles */
-.workout-select .min-touch-target {
-  height: 40px !important;
-  min-height: 40px !important;
-  padding: 0.75rem 1rem !important;
-  border-radius: 12px !important;
-  border: 1px solid #2d2d2d !important;
-  background: #242424 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  transition: all 0.2s ease !important;
-}
 
-.workout-select .min-touch-target:focus {
-  border-color: hsl(var(--ring)) !important;
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
-  outline: none;
-}
-
-.workout-select .min-touch-target:hover:not(:focus) {
-  background: #252525 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
-}
 
 /* Consistent reset button size across all devices */
 .reset-button-premium {
@@ -886,24 +865,15 @@
   transition: width 0.2s ease-out, height 0.2s ease-out;
 }
 
-.workout-select .min-touch-target {
-  height: 36px !important;
-  min-height: 36px !important;
-  padding-top: 0.25rem !important;
-  padding-bottom: 0.25rem !important;
-}
 
-.workout-select .min-touch-target [data-slot='value'] {
-  line-height: 1.25 !important;
-}
 
 /* Workout Selector Animation */
 .workout-selector {
-  transition: transform 0.15s ease-out;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .workout-selector:active {
-  transform: scale(0.98);
+  transform: scale(0.998);
 }
 
 /* Dropdown arrow rotation */
@@ -916,28 +886,7 @@
   transition: transform 0.2s ease;
 }
 
-/* Target Radix UI Select/* Workout Selector Specific Styles */
-[role='combobox'] {
-  @apply h-9 !important;
-  @apply text-sm !important;
-  @apply px-3 !important;
-  @apply py-1.5 !important;
-}
 
-[role='listbox'] {
-  width: 100% !important;
-  min-width: unset !important;
-  max-width: calc(100vw - 2rem) !important;
-  padding: 4px 8px !important;
-  box-sizing: border-box !important;
-}
-
-[role='option'] {
-  @apply h-8 !important;
-  @apply text-sm !important;
-  @apply px-3 !important;
-  @apply py-1.5 !important;
-}
 
 /* Ensure dropdown portal matches the width of the trigger */
 .SelectContent {

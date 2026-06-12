@@ -87,33 +87,33 @@ export function DayExercises({
             key={exercise.id}
             id={`exercise-${exercise.id}`}
             className={cn(
-              "rounded-2xl transition-all duration-200 border h-fit",
+              "rounded-2xl transition-all duration-200 border h-fit backdrop-blur-md",
               isExpanded
-                ? "shadow-sm scale-[1.005]"
+                ? "shadow-md scale-[1.005]"
                 : completed
-                  ? "shadow-none opacity-60 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
-                  : "shadow-[0_2px_8px_rgba(0,0,0,0.16)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.22)] hover:md:scale-[1.01] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
+                  ? "shadow-none opacity-50 hover:opacity-80 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
+                  : "shadow-[0_4px_16px_rgba(0,0,0,0.18)] hover:shadow-[0_6px_22px_rgba(0,0,0,0.22)] hover:md:scale-[1.008] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
             )}
             style={{
               transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
               '--day-color-glow': completed
-                ? `#262628`
-                : `#323236`,
+                ? `rgba(255, 255, 255, 0.03)`
+                : `rgba(255, 255, 255, 0.06)`,
               '--day-color-glow-hover': completed
-                ? `#2c2c2e`
-                : `color-mix(in srgb, ${dayColor} 8%, #3e3e42)`,
-              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 12%, #444448)`,
+                ? `rgba(255, 255, 255, 0.05)`
+                : `color-mix(in srgb, ${dayColor} 8%, rgba(255, 255, 255, 0.08))`,
+              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.12))`,
               '--day-bg-glow': completed
-                ? `#1c1c1e`
-                : `#252528`,
+                ? `rgba(18, 18, 20, 0.35)`
+                : `rgba(28, 28, 30, 0.7)`,
               '--day-bg-glow-hover': completed
-                ? `#222224`
-                : `color-mix(in srgb, ${dayColor} 2%, #2a2a2d)`,
-              '--day-bg-glow-active': `color-mix(in srgb, ${dayColor} 3%, #2c2c2f)`,
+                ? `rgba(22, 22, 24, 0.45)`
+                : `color-mix(in srgb, ${dayColor} 1.5%, rgba(36, 36, 40, 0.75))`,
+              '--day-bg-glow-active': `rgba(20, 20, 22, 0.4)`,
               borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
               backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
               boxShadow: isExpanded
-                ? `0 8px 24px -6px rgba(0, 0, 0, 0.5)`
+                ? `0 12px 30px -10px rgba(0, 0, 0, 0.5)`
                 : undefined,
             } as React.CSSProperties}
           >
@@ -176,7 +176,7 @@ export function DayExercises({
             {/* Inline Logger */}
             <AnimatePresence>
               {isExpanded && (
-                <div className="px-2 pb-3">
+                <div className="px-4 pb-4 pt-2 border-t border-white/[0.05]">
                   <InlineWorkoutLogger
                     exercise={exercise}
                     workoutId={workoutId}

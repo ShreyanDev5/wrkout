@@ -93,17 +93,16 @@ export function InlineWorkoutLogger({
 
     return (
         <motion.div
-            initial={{ opacity: 0, height: 0, scale: 0.98 }}
-            animate={{ opacity: 1, height: "auto", scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.96 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{
                 duration: 0.22,
                 ease: [0.16, 1, 0.3, 1],
                 opacity: { duration: 0.15 },
-                scale: { duration: 0.18 },
                 height: { duration: 0.22 }
             }}
-            className="overflow-hidden origin-top"
+            className="overflow-hidden"
         >
             <div className="pt-3 pb-5 px-1 space-y-4">
                 {/* Top Row: Weight & Reps */}
@@ -157,12 +156,19 @@ export function InlineWorkoutLogger({
                     <div className="flex flex-col justify-end">
                         <Button
                             onClick={handleSave}
-                            style={{ backgroundColor: dayColor }}
-                            className="h-[46px] w-full rounded-2xl text-white shadow-md brightness-[0.85] hover:brightness-100 active:scale-95 transition-all border-none"
+                            style={{
+                                backgroundColor: `color-mix(in srgb, ${dayColor} 10%, rgba(255, 255, 255, 0.02))`,
+                                borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
+                                color: dayColor
+                            }}
+                            className="h-[46px] w-full rounded-2xl border shadow-sm brightness-95 hover:brightness-100 active:scale-95 transition-all"
                             disabled={isSaving}
                         >
                             {isSaving ? (
-                                <span className="h-5 w-5 rounded-full border-[3px] border-white/30 border-t-white animate-spin" />
+                                <span 
+                                    className="h-5 w-5 rounded-full border-[3px] border-current/30 animate-spin" 
+                                    style={{ borderTopColor: 'currentColor' }}
+                                />
                             ) : (
                                 <div className="flex items-center justify-center gap-1.5">
                                     <Check className="h-5 w-5 stroke-[2.5]" />

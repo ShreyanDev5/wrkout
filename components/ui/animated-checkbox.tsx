@@ -58,24 +58,25 @@ const AnimatedCheckbox = React.forwardRef<
       <CheckboxPrimitive.Root
         ref={ref}
         className={cn(
-          "peer h-5 w-5 shrink-0 rounded-[3px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 checkbox-premium",
+          "peer h-5 w-5 shrink-0 rounded-[6px] border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 checkbox-premium",
           checked && "animate-checkbox-subtle",
           className,
         )}
         style={{
-          backgroundColor: checked ? checkboxColor : undefined,
-          borderColor: checked ? checkboxColor : `color-mix(in srgb, ${checkboxColor} 30%, transparent)`,
+          backgroundColor: checked ? `color-mix(in srgb, ${checkboxColor} 15%, transparent)` : undefined,
+          borderColor: checked ? checkboxColor : `color-mix(in srgb, ${checkboxColor} 20%, transparent)`,
         }}
         checked={checked}
         {...props}
       >
         <CheckboxPrimitive.Indicator
           className={cn(
-            "flex items-center justify-center text-background transition-all duration-200",
+            "flex items-center justify-center transition-all duration-200",
             checked ? "scale-100 opacity-100" : "scale-0 opacity-0",
           )}
+          style={{ color: checkboxColor }}
         >
-          <Check className="h-3 w-3 stroke-[2px]" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
+          <Check className="h-3.5 w-3.5 stroke-[3px]" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {/* Touch target overlay for better mobile accessibility */}

@@ -366,10 +366,19 @@ export function WorkoutScreen({
       <Card className="border-0 shadow-none bg-transparent max-w-[540px] mx-auto w-full workout-selector">
         <CardContent className="px-0 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-            {/* Unified Controls Panel: side-by-side on desktop, stacked on mobile */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 md:p-3 mb-6 rounded-3xl md:rounded-2xl border border-white/[0.04] bg-white/[0.015] backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.25)]">
+            {/* Header Section with Routine Selector */}
+            <div className="flex flex-row items-center justify-between gap-4 mb-6 pt-4 sm:pt-6 px-4 sm:px-6">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                  Train
+                </h1>
+                <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
+                  Active Routine
+                </p>
+              </div>
+
               {/* Workout Routine Selector */}
-              <div className="w-full md:w-48 flex-shrink-0 workout-select">
+              <div className="w-[130px] sm:w-[150px] flex-shrink-0 workout-select">
                 <Select
                   value={selectedWorkout}
                   onValueChange={(value) => {
@@ -382,15 +391,15 @@ export function WorkoutScreen({
                   }}
                   disabled={workouts.length === 0}
                 >
-                  <SelectTrigger className="w-full h-10 min-h-0 py-2 px-4 border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.1] active:scale-[0.98] transition-all rounded-full text-sm font-semibold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-white/20 focus:ring-offset-0">
+                  <SelectTrigger className="w-full !h-9 !min-h-0 !min-w-0 py-1.5 pl-3.5 pr-3.5 border border-white/[0.08] bg-white/[0.04] backdrop-blur-md hover:bg-white/[0.08] active:scale-[0.98] transition-all rounded-full text-xs font-semibold text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-700/50 focus:ring-offset-0">
                     <SelectValue placeholder="Select Workout" className="truncate tracking-tight" />
                   </SelectTrigger>
-                  <SelectContent className="SelectContent border border-white/[0.08] bg-zinc-950/98 backdrop-blur-xl rounded-[20px] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+                  <SelectContent className="SelectContent border border-white/[0.08] !bg-zinc-900/50 !backdrop-blur-2xl rounded-[14px] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
                     {workouts.map((workout) => (
                       <SelectItem
                         key={workout.id}
                         value={workout.id}
-                        className="mx-1 pl-3.5 pr-3.5 py-1.5 cursor-pointer transition-colors rounded-xl text-zinc-300 hover:text-white hover:bg-white/[0.04] focus:bg-white/[0.04] focus:text-white data-[state=checked]:bg-white/[0.07] data-[state=checked]:text-white data-[state=checked]:font-semibold"
+                        className="pl-3 pr-3 py-1 cursor-pointer transition-colors rounded-[10px] text-[11.5px] text-zinc-400 hover:text-white hover:bg-white/5 focus:bg-white/5 focus:text-white data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-white data-[state=checked]:font-semibold"
                       >
                         {workout.name}
                       </SelectItem>
@@ -398,38 +407,38 @@ export function WorkoutScreen({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              {/* Day Tabs Selector */}
-              <div className="w-full md:w-auto">
-                <TabsList className="flex flex-nowrap w-full md:w-[276px] bg-white/[0.01] border border-white/[0.06] p-1 rounded-full gap-1">
-                  {['push', 'pull', 'leg'].map((day) => {
-                    const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
+            {/* Day Tabs Selector - Clean segmented control */}
+            <div className="mb-6 px-4 sm:px-6">
+              <TabsList className="flex flex-nowrap w-full bg-zinc-900/30 border border-zinc-800/60 p-1 rounded-full gap-1">
+                {['push', 'pull', 'leg'].map((day) => {
+                  const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
 
-                    return (
-                      <TabsTrigger
-                        key={day}
-                        value={day}
-                        className={cn(
-                          'flex-1 rounded-full flex items-center justify-center gap-1 py-1.5 px-2.5 transition-all',
-                          'text-xs font-semibold',
-                          selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
-                        )}
-                        style={{
-                          backgroundColor:
-                            selectedDay === day
-                              ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 12%, rgba(255, 255, 255, 0.02))`
-                              : undefined,
-                          boxShadow: 'none',
-                        }}
-                        aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
-                      >
-                        {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5')}
-                        <span className="inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-                      </TabsTrigger>
-                    )
-                  })}
-                </TabsList>
-              </div>
+                  return (
+                    <TabsTrigger
+                      key={day}
+                      value={day}
+                      className={cn(
+                        'flex-1 rounded-full flex items-center justify-center gap-1.5 py-2 px-3 transition-all',
+                        'text-xs font-semibold',
+                        selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
+                      )}
+                      style={{
+                        backgroundColor:
+                          selectedDay === day
+                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 8%, transparent)`
+                            : undefined,
+                        boxShadow: 'none',
+                      }}
+                      aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
+                    >
+                      {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5')}
+                      <span className="inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                    </TabsTrigger>
+                  )
+                })}
+              </TabsList>
             </div>
 
             {currentWorkoutDays.map((day) => (

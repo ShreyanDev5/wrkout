@@ -47,7 +47,7 @@ export function EmptyWorkoutState({ dayId, onStart }: EmptyWorkoutStateProps) {
     <Card className="flex flex-col items-center justify-center p-8 text-center h-[400px] border-dashed dark:border-opacity-10">
       <div
         className="w-16 h-16 rounded-full flex items-center justify-center mb-6"
-        style={{ backgroundColor: `color-mix(in srgb, ${dayColor} 15%, transparent)` }}
+        style={{ backgroundColor: `color-mix(in srgb, ${dayColor} 8%, transparent)` }}
       >
         {getIcon()}
       </div>
@@ -61,9 +61,13 @@ export function EmptyWorkoutState({ dayId, onStart }: EmptyWorkoutStateProps) {
       <Button
         size="lg"
         onClick={onStart}
-        className="min-touch-target focus-visible-ring px-6"
+        className="min-touch-target focus-visible-ring px-6 text-foreground border shadow-sm transition-all"
         aria-label={`Start ${getDayName(dayId)} workout`}
-        style={{ backgroundColor: dayColor }}
+        style={{
+          backgroundColor: `color-mix(in srgb, ${dayColor} 10%, rgba(255, 255, 255, 0.02))`,
+          borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
+          color: dayColor
+        }}
       >
         Start <ArrowRight className="ml-2 h-4 w-4 modern-icon" />
       </Button>
