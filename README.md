@@ -1,67 +1,81 @@
-# ⚡ wrkout
+# 🏋️‍♂️ wrkout
 
-A premium, high-performance, and beautifully crafted private workout tracker built with **Next.js** and **Supabase**. 
+A fast, simple workout tracker built with **Next.js** and **Supabase**. Built to log workouts without ads, subscriptions, or clutter.
 
-`wrkout` is designed as a smooth Single-Page Application (SPA) that runs entirely on the root route (`/`), utilizing haptic feedback, fluid animations, and a contextual logger to optimize your training flow.
-
----
-
-## ✨ Features & Architecture
-
-- **🚀 Single-Page Experience**: Instant load times and fluid screen switching between **Workout**, **Progress**, and **Settings** views.
-- **🎨 Premium UI/UX**: Crafted with custom Tailwind styling, smooth Framer Motion transitions, and theme script optimizations (Light/Dark mode).
-- **🔊 Multi-Sensory Feedback**: Responsive haptic feedback (vibrations) and subtle audio feedback (ticks) on actions.
-- **🛡️ Custom Auth Model**: Simplified login using plain usernames mapping internally to secure pseudo-emails (`username@wrkout.app`), supported by a custom verification and recovery flow.
+Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a clean, single-page web app designed to log your sets in under 2 seconds so you can focus on lifting.
 
 ---
 
-## 🛠️ Technology Stack
+## ⚡ Features
+
+- **Fast Logging**: Contextual inline logger with custom number steppers.
+- **Charts & Analytics**: Tracks volume trends, peak lifts, and workout frequency using Recharts.
+- **Clean UI**: Dark-mode first design with smooth Framer Motion transitions.
+- **Tactile Feedback**: Audio ticks and mobile vibration (haptics) when you log sets.
+- **Simple Auth**: Login with just a username. Internally maps to a secure Supabase account.
+- **Routine Builder**: Create custom splits (like Push-Pull-Legs) and add your own exercises.
+
+---
+
+## 🛠️ Tech Stack
 
 - **Framework**: Next.js 15 (App Router) & React 18
-- **Styling**: Tailwind CSS & Vanilla CSS
-- **Animations**: Framer Motion
 - **Database & Auth**: Supabase (PostgreSQL)
-- **State & Stores**: Zustand & Immer
+- **State Management**: Zustand & Immer
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Libraries**: Recharts (Charts), Sonner (Toasts), Lucide React (Icons)
 
 ---
 
-## 🔑 Environment Setup
+## 🔑 Local Setup
 
+### Prerequisites
+- Node.js (v18+)
+- Docker (required to run Supabase locally)
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/wrkout.git
+cd wrkout
+```
+
+### 2. Start the local database
+This project uses the Supabase CLI to run a local database instance.
+```bash
+npx supabase start
+```
+This command runs the database migrations automatically. Copy the local credentials outputted in the terminal:
+- `API URL`
+- `anon key`
+- `service_role key`
+
+### 3. Set up environment variables
 Create a `.env.local` file in the root directory:
-
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-RESEND_API_KEY=your-resend-api-key
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-local-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-local-service-role-key
+
+# Optional: configure Resend for email delivery
+RESEND_API_KEY=
 PASSWORD_RESET_FROM_EMAIL=noreply@yourdomain.com
 ```
+*Note: If `RESEND_API_KEY` is left empty, password recovery codes will log directly to your terminal console for local testing.*
 
-> [!NOTE]
-> `RESEND_API_KEY` and `PASSWORD_RESET_FROM_EMAIL` are optional in development. If not configured, the console will log the local recovery URL to complete the reset process directly.
-
----
-
-## 🚀 Getting Started
-
-### 1. Install dependencies
+### 4. Install and Run
 ```bash
 npm install
-```
-
-### 2. Start the local development server
-```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## 📂 Project Structure
 
-- **`app/`**: Core SPA page routes, custom recovery pages, and API endpoints (`check-username`, `send-recovery-code`, `reset-password`).
-- **`components/`**: Clean component tree including screen layouts (`screens/`), interactive charts (`charts/`), overlay modals (`modals/`), and shared custom UI primitives (`ui/`).
-- **`hooks/`**: Specialized React hooks managing state and sensory feedback (`use-workout-logic`, `use-audio-feedback`, `use-haptics`, `use-toast`).
-- **`lib/`**: Business logic modules, Supabase helper functions, offline storage, and formatting utilities.
-- **`supabase/`**: Local configuration (`config.toml`) and database schema migrations (`migrations/`).
+- **`app/`**: Routes, recovery pages, and auth API endpoints.
+- **`components/`**: Layouts, charts, modals, and custom UI components.
+- **`hooks/`**: Custom hooks for app logic, audio, and haptics.
+- **`lib/`**: Supabase client, local storage helpers, and database types.
+- **`supabase/`**: Database migrations and configuration.

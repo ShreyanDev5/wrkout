@@ -20,7 +20,10 @@ yarn-error.log*
 .env*
 
 # vercel
-.vercel
+/.vercel
+
+# supabase
+supabase/.temp/
 
 # typescript
 *.tsbuildinfo
