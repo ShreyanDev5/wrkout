@@ -27,7 +27,7 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
 - **Libraries**: Sonner (Toasts), Lucide React (Icons)
-- **AI Toolchain Progression**: Built and iteratively refined over the years using: v0 by Vercel → Cursor → Windsurf → Gemini CLI → Qwen CLI → Codex → Antigravity
+- **Built With**: v0 → Cursor → Windsurf → Gemini → Qwen → Codex → Antigravity (iterative progression)
 
 ---
 
