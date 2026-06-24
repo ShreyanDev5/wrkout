@@ -79,3 +79,18 @@ Open [http://localhost:3000](http://localhost:3000).
 - **`hooks/`**: Custom hooks for app logic, audio, and haptics.
 - **`lib/`**: Supabase client, local storage helpers, and database types.
 - **`supabase/`**: Database migrations and configuration.
+
+---
+
+## 🤖 Built with AI
+
+`wrkout` was built and iterated on entirely with the help of AI coding tools over the years. The toolchain progression:
+
+- **v0 by Vercel**: Generated the initial layouts and visual shell.
+- **Cursor**: Refined the React components and built out the core page routing.
+- **Windsurf**: Added offline storage states and progressive overload database schema.
+- **Gemini CLI**: Handled major migration scripts and API endpoint refactoring.
+- **Qwen CLI**: Optimized custom SQL queries, RLS policies, and triggers.
+- **Codex**: Generated early test helpers and utility functions.
+- **Antigravity**: Prepared the codebase for release, untracked local states, and polished documentation.
+
