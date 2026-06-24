@@ -419,15 +419,19 @@ export function WorkoutScreen({
                       key={day}
                       value={day}
                       className={cn(
-                        'flex-1 rounded-full flex items-center justify-center gap-1.5 py-2 px-3 transition-all',
-                        'text-xs font-medium',
+                        'flex-1 rounded-full flex items-center justify-center gap-1.5 py-2 px-3 transition-all border border-transparent',
+                        'text-xs font-semibold',
                         selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/85'
                       )}
                       style={{
                         backgroundColor:
                           selectedDay === day
-                            ? 'rgba(255, 255, 255, 0.04)'
+                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 12%, rgba(255, 255, 255, 0.02))`
                             : undefined,
+                        borderColor:
+                          selectedDay === day
+                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 25%, transparent)`
+                            : 'transparent',
                         boxShadow: 'none',
                       }}
                       aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}

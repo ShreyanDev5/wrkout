@@ -89,28 +89,15 @@ export function DayExercises({
             className={cn(
               "rounded-xl transition-all duration-200 border h-fit",
               isExpanded
-                ? "scale-[1.002]"
+                ? "scale-[1.002] bg-card"
                 : completed
-                  ? "opacity-40 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
-                  : "hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
+                  ? "bg-transparent border-white/[0.03] opacity-55 hover:opacity-85 hover:border-white/[0.08] hover:bg-white/[0.01]"
+                  : "bg-card border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.01]"
             )}
-            style={{
-              transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-              '--day-color-glow': completed
-                ? `rgba(255, 255, 255, 0.03)`
-                : `rgba(255, 255, 255, 0.05)`,
-              '--day-color-glow-hover': completed
-                ? `rgba(255, 255, 255, 0.06)`
-                : `color-mix(in srgb, ${dayColor} 15%, rgba(255, 255, 255, 0.06))`,
-              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 30%, rgba(255, 255, 255, 0.1))`,
-              '--day-bg-glow': `transparent`,
-              '--day-bg-glow-hover': completed
-                ? `rgba(255, 255, 255, 0.01)`
-                : `rgba(255, 255, 255, 0.015)`,
-              '--day-bg-glow-active': `rgba(255, 255, 255, 0.02)`,
-              borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
-              backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
-            } as React.CSSProperties}
+            style={isExpanded ? {
+              borderColor: `color-mix(in srgb, ${dayColor} 30%, rgba(255, 255, 255, 0.12))`,
+              boxShadow: `0 4px 20px -8px color-mix(in srgb, ${dayColor} 20%, transparent)`
+            } : undefined}
           >
             <div
               className={cn(
