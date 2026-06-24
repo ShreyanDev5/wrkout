@@ -39,7 +39,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
     <nav
       className={cn(
         "flex w-[240px] h-12 px-1.5 rounded-full border border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)] gap-1",
-        "md:w-[520px] md:px-2"
+        "md:w-[480px] md:px-2"
       )}
       role="tablist"
       aria-label="Main navigation"
