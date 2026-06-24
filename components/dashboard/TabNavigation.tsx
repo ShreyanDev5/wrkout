@@ -38,8 +38,8 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   return (
     <nav
       className={cn(
-        "flex w-full max-w-[420px] h-12 px-1.5 rounded-full border border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)] gap-1",
-        "md:w-[460px] md:px-2"
+        "flex w-[240px] h-12 px-1.5 rounded-full border border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)] gap-1",
+        "md:w-[520px] md:px-2"
       )}
       role="tablist"
       aria-label="Main navigation"
@@ -71,7 +71,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             {tab.icon && (
               <tab.icon
                 className={cn(
-                  "h-[16px] w-[16px] md:h-[18px] md:w-[18px] transition-all duration-200",
+                  "h-[20px] w-[20px] md:h-[18px] md:w-[18px] transition-all duration-200",
                   isActive ? "opacity-100" : "opacity-45 md:opacity-60",
                 )}
                 aria-hidden="true"
@@ -83,7 +83,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             )}
             <span
               className={cn(
-                "text-[10px] md:text-xs font-semibold tracking-wide transition-all duration-200",
+                "hidden md:inline text-xs font-semibold tracking-wide transition-all duration-200",
                 isActive ? "opacity-100" : "opacity-45 md:opacity-60",
               )}
               style={{

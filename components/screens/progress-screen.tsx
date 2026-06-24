@@ -97,10 +97,10 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
 
   return (
     <div className="w-full max-w-[540px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in duration-500" style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* Header - Today's Focus */}
+      {/* Header - Today's Progress */}
       <div className="flex flex-col gap-1 mb-8 pt-4 sm:pt-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Today&apos;s Focus
+          Today&apos;s Progress
         </h1>
         <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
           {formatDate(new Date().toISOString())}

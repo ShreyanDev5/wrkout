@@ -187,7 +187,7 @@ export function WorkoutTracker() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col min-h-0 flex-1">
-        <div className="flex-1 container max-w-4xl mx-auto px-4 py-6 md:py-8 md:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 container max-w-4xl mx-auto px-4 pt-6 pb-28 md:py-8 md:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
             <ErrorBoundary>
               <WorkoutScreen
