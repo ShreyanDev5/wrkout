@@ -38,8 +38,8 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   return (
     <nav
       className={cn(
-        "grid grid-cols-3 w-full h-[60px] border-t border-zinc-800/40 bg-[#1a1a1a]",
-        "md:flex md:w-auto md:min-w-[340px] md:h-12 md:px-2 md:rounded-full md:border md:border-zinc-800/60 md:bg-zinc-950/80 md:backdrop-blur-xl md:shadow-[0_12px_40px_rgba(0,0,0,0.5)] md:gap-1"
+        "flex w-full max-w-[420px] h-12 px-1.5 rounded-full border border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)] gap-1",
+        "md:w-[460px] md:px-2"
       )}
       role="tablist"
       aria-label="Main navigation"
@@ -52,14 +52,11 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             onClick={() => onTabChange(tab.id)}
             role="tab"
             className={cn(
-              "flex flex-col items-center justify-center gap-1 relative",
-              "transition-all duration-200 ease-out",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]",
-              isActive ? "focus-visible:ring-current" : "focus-visible:ring-zinc-500",
-              "md:flex-1 md:flex-row md:gap-2 md:px-4 md:py-1.5 md:h-8 md:my-auto md:rounded-full",
+              "flex-1 flex flex-row items-center justify-center gap-1.5 px-3 py-1.5 h-8 my-auto rounded-full transition-all duration-200 ease-out",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
               isActive 
-                ? "md:bg-white/[0.06] md:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" 
-                : "text-muted-foreground hover:md:bg-white/[0.03] hover:text-foreground"
+                ? "bg-white/[0.06] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] text-foreground" 
+                : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
             )}
             style={
               {
@@ -74,7 +71,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             {tab.icon && (
               <tab.icon
                 className={cn(
-                  "h-[22px] w-[22px] md:h-[18px] md:w-[18px] transition-all duration-200",
+                  "h-[16px] w-[16px] md:h-[18px] md:w-[18px] transition-all duration-200",
                   isActive ? "opacity-100" : "opacity-45 md:opacity-60",
                 )}
                 aria-hidden="true"

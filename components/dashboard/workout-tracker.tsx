@@ -221,8 +221,8 @@ export function WorkoutTracker() {
           </TabsContent>
         </div>
 
-        <footer className="sticky bottom-0 z-30 bg-background border-t border-zinc-800/10 dark:border-zinc-800/30 md:bg-transparent md:fixed md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:border-none md:w-auto md:px-0 md:pointer-events-none">
-          <div className="w-full md:pointer-events-auto">
+        <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-[540px] flex justify-center pointer-events-none bg-transparent border-none">
+          <div className="w-full pointer-events-auto flex justify-center">
             <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
         </footer>
