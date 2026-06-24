@@ -87,34 +87,29 @@ export function DayExercises({
             key={exercise.id}
             id={`exercise-${exercise.id}`}
             className={cn(
-              "rounded-2xl transition-all duration-200 border h-fit backdrop-blur-md",
+              "rounded-xl transition-all duration-200 border h-fit",
               isExpanded
-                ? "shadow-md scale-[1.005]"
+                ? "scale-[1.002]"
                 : completed
-                  ? "shadow-none opacity-50 hover:opacity-80 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
-                  : "shadow-[0_4px_16px_rgba(0,0,0,0.18)] hover:shadow-[0_6px_22px_rgba(0,0,0,0.22)] hover:md:scale-[1.008] hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
+                  ? "opacity-40 hover:opacity-85 hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]"
+                  : "hover:!border-[var(--day-color-glow-hover)] hover:!bg-[var(--day-bg-glow-hover)]",
             )}
             style={{
               transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
               '--day-color-glow': completed
                 ? `rgba(255, 255, 255, 0.03)`
-                : `rgba(255, 255, 255, 0.06)`,
+                : `rgba(255, 255, 255, 0.05)`,
               '--day-color-glow-hover': completed
-                ? `rgba(255, 255, 255, 0.05)`
-                : `color-mix(in srgb, ${dayColor} 8%, rgba(255, 255, 255, 0.08))`,
-              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.12))`,
-              '--day-bg-glow': completed
-                ? `rgba(18, 18, 20, 0.35)`
-                : `rgba(28, 28, 30, 0.7)`,
+                ? `rgba(255, 255, 255, 0.06)`
+                : `color-mix(in srgb, ${dayColor} 15%, rgba(255, 255, 255, 0.06))`,
+              '--day-color-glow-active': `color-mix(in srgb, ${dayColor} 30%, rgba(255, 255, 255, 0.1))`,
+              '--day-bg-glow': `transparent`,
               '--day-bg-glow-hover': completed
-                ? `rgba(22, 22, 24, 0.45)`
-                : `color-mix(in srgb, ${dayColor} 1.5%, rgba(36, 36, 40, 0.75))`,
-              '--day-bg-glow-active': `rgba(20, 20, 22, 0.4)`,
+                ? `rgba(255, 255, 255, 0.01)`
+                : `rgba(255, 255, 255, 0.015)`,
+              '--day-bg-glow-active': `rgba(255, 255, 255, 0.02)`,
               borderColor: isExpanded ? 'var(--day-color-glow-active)' : 'var(--day-color-glow)',
               backgroundColor: isExpanded ? 'var(--day-bg-glow-active)' : 'var(--day-bg-glow)',
-              boxShadow: isExpanded
-                ? `0 12px 30px -10px rgba(0, 0, 0, 0.5)`
-                : undefined,
             } as React.CSSProperties}
           >
             <div

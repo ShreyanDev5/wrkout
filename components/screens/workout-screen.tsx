@@ -410,9 +410,9 @@ export function WorkoutScreen({
 
             {/* Day Tabs Selector - Clean segmented control */}
             <div className="mb-6 px-4 sm:px-6">
-              <TabsList className="flex flex-nowrap w-full bg-zinc-900/30 border border-zinc-800/60 p-1 rounded-full gap-1">
+              <TabsList className="flex flex-nowrap w-full bg-white/[0.02] border border-white/[0.04] p-1 rounded-full gap-1">
                 {['push', 'pull', 'leg'].map((day) => {
-                  const activeColorClass = day === 'push' ? 'text-push-dark' : day === 'pull' ? 'text-pull-dark' : 'text-leg-dark';
+                  const activeColorClass = day === 'push' ? 'text-push-dark font-bold' : day === 'pull' ? 'text-pull-dark font-bold' : 'text-leg-dark font-bold';
 
                   return (
                     <TabsTrigger
@@ -420,13 +420,13 @@ export function WorkoutScreen({
                       value={day}
                       className={cn(
                         'flex-1 rounded-full flex items-center justify-center gap-1.5 py-2 px-3 transition-all',
-                        'text-xs font-semibold',
-                        selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/80'
+                        'text-xs font-medium',
+                        selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/85'
                       )}
                       style={{
                         backgroundColor:
                           selectedDay === day
-                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 8%, transparent)`
+                            ? 'rgba(255, 255, 255, 0.04)'
                             : undefined,
                         boxShadow: 'none',
                       }}

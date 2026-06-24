@@ -68,40 +68,40 @@
   }
 
   .dark {
-    --background: 0 0% 10%;
-    /* #1A1A1A - Premium Dark Background */
+    --background: 0 0% 0%;
+    /* #000000 - Pure OLED Black Background */
     --foreground: 0 0% 93%;
     /* #EDEDED - Soft White Text */
 
-    --card: 0 0% 14%;
-    /* #242424 - Premium Card Surface */
+    --card: 0 0% 0%;
+    /* #000000 - Pure Black Card Surface (transparency by default) */
     --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 14%;
-    /* Match card surface */
+    --popover: 0 0% 4%;
+    /* #0A0A0A - Extremely Dark grey popover for contrast */
     --popover-foreground: 0 0% 93%;
 
     --primary: 0 0% 93%;
-    --primary-foreground: 0 0% 10%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 0 0% 18%;
-    /* Slightly lighter than card for interactions */
+    --secondary: 0 0% 8%;
+    /* #141414 - Dark gray for secondary elements */
     --secondary-foreground: 0 0% 93%;
 
-    --muted: 0 0% 18%;
+    --muted: 0 0% 6%;
     --muted-foreground: 0 0% 63%;
     /* #A1A1A1 - Accessible Muted Text */
 
-    --accent: 0 0% 18%;
+    --accent: 0 0% 8%;
     --accent-foreground: 0 0% 93%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 93%;
 
-    --border: 0 0% 18%;
-    /* Subtle borders */
-    --input: 0 0% 18%;
-    --ring: 0 0% 25%;
+    --border: 0 0% 12%;
+    /* #1F1F1F - Minimal low-contrast borders */
+    --input: 0 0% 8%;
+    --ring: 0 0% 18%;
 
     /* Tab navigation colors */
     --tab-inactive: 0 0% 63%;

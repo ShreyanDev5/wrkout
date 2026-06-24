@@ -147,17 +147,17 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                   className="group"
                 >
                   <div
-                    className="relative bg-zinc-900/30 backdrop-blur-md rounded-[18px] px-2.5 py-3.5 transition-all duration-300 overflow-hidden hover:bg-zinc-900/50 hover:!border-[var(--day-color)] hover:shadow-[0_4px_24px_-8px_var(--day-color)]"
+                    className="relative rounded-xl px-3 py-3.5 border transition-all duration-300 overflow-hidden hover:!border-[var(--day-color)]"
                     style={{
-                      '--day-color': dayColor,
-                      border: `1px solid color-mix(in srgb, ${dayColor} 50%, transparent)`,
-                      boxShadow: `0 0 0 1px color-mix(in srgb, ${dayColor} 30%, transparent)`
+                      '--day-color': `color-mix(in srgb, ${dayColor} 40%, rgba(255, 255, 255, 0.15))`,
+                      borderColor: `color-mix(in srgb, ${dayColor} 12%, rgba(255, 255, 255, 0.04))`,
+                      backgroundColor: 'transparent',
                     } as React.CSSProperties}
                   >
 
                     {/* Very faint background tint for premium feel */}
                     <div
-                      className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                      className="absolute inset-0 opacity-[0.02] pointer-events-none"
                       style={{ backgroundColor: dayColor }}
                     />
 
@@ -183,7 +183,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       {/* Integrated Metrics Grid - 3 Columns */}
                       <div className="grid grid-cols-3 gap-1.5">
                         {/* Weight */}
-                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                        <div className="bg-white/[0.015] rounded-lg p-1.5 border border-white/[0.03] flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
                           <div className="flex items-baseline gap-0.5">
                             <span className="text-[15px] font-bold text-zinc-100">{weight}</span>
@@ -192,13 +192,13 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                         </div>
 
                         {/* Reps */}
-                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                        <div className="bg-white/[0.015] rounded-lg p-1.5 border border-white/[0.03] flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
                           <span className="text-[15px] font-bold text-zinc-100">{reps}</span>
                         </div>
 
                         {/* Sets */}
-                        <div className="bg-zinc-950/60 rounded-lg p-1.5 border border-zinc-800/50 flex flex-col items-center justify-center">
+                        <div className="bg-white/[0.015] rounded-lg p-1.5 border border-white/[0.03] flex flex-col items-center justify-center">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
                           <span className="text-[15px] font-bold text-zinc-100">{sets}</span>
                         </div>
