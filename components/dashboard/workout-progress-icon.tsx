@@ -59,4 +59,4 @@ export function WorkoutProgressIcon({ className = "", size = 32 }: WorkoutProgre
       <circle cx="12" cy="12" r="3" fill="#1C1C1E" />
     </svg>
   )
-} 
+}

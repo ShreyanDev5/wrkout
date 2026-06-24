@@ -1,6 +1,6 @@
 # 🏋️‍♂️ wrkout
 
-A fast, simple workout tracker built with **Next.js** and **Supabase**. Built to log workouts without ads, subscriptions, or clutter.
+A fast, simple workout tracker built with **Next.js** and **Supabase**, optimized specifically for the **Push, Pull, Legs (PPL)** split. Built to log workouts without ads, subscriptions, or clutter.
 
 Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a clean, single-page web app designed to log your sets in under 2 seconds so you can focus on lifting.
 
@@ -9,7 +9,7 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 ## ⚡ Features
 
 - **Fast Logging**: Contextual inline logger with custom number steppers.
-- **Charts & Analytics**: Tracks volume trends, peak lifts, and workout frequency using Recharts.
+- **Volume & Trend Tracking**: Shows exercise volume trends, peak lift tracking, and frequency indicators.
 - **Clean UI**: Dark-mode first design with smooth Framer Motion transitions.
 - **Tactile Feedback**: Audio ticks and mobile vibration (haptics) when you log sets.
 - **Simple Auth**: Login with just a username. Internally maps to a secure Supabase account.
@@ -24,7 +24,8 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 - **State Management**: Zustand & Immer
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
-- **Libraries**: Recharts (Charts), Sonner (Toasts), Lucide React (Icons)
+- **Libraries**: Sonner (Toasts), Lucide React (Icons)
+- **AI Toolchain Progression**: Built and iteratively refined over the years using: v0 by Vercel → Cursor → Windsurf → Gemini CLI → Qwen CLI → Codex → Antigravity
 
 ---
 
@@ -68,29 +69,14 @@ PASSWORD_RESET_FROM_EMAIL=noreply@yourdomain.com
 npm install
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000].
 
 ---
 
 ## 📂 Project Structure
 
 - **`app/`**: Routes, recovery pages, and auth API endpoints.
-- **`components/`**: Layouts, charts, modals, and custom UI components.
+- **`components/`**: Layouts, modals, and custom UI components.
 - **`hooks/`**: Custom hooks for app logic, audio, and haptics.
 - **`lib/`**: Supabase client, local storage helpers, and database types.
 - **`supabase/`**: Database migrations and configuration.
-
----
-
-## 🤖 Built with AI
-
-`wrkout` was built and iterated on entirely with the help of AI coding tools over the years. The toolchain progression:
-
-- **v0 by Vercel**: Generated the initial layouts and visual shell.
-- **Cursor**: Refined the React components and built out the core page routing.
-- **Windsurf**: Added offline storage states and progressive overload database schema.
-- **Gemini CLI**: Handled major migration scripts and API endpoint refactoring.
-- **Qwen CLI**: Optimized custom SQL queries, RLS policies, and triggers.
-- **Codex**: Generated early test helpers and utility functions.
-- **Antigravity**: Prepared the codebase for release, untracked local states, and polished documentation.
-

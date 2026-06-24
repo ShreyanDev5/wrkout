@@ -12,7 +12,7 @@ import { useTheme } from "@/components/theme-context"
 import { loadUserWorkouts, saveUserWorkouts, saveWorkoutLog, loadWorkoutLogs, loadUserWorkoutDays, saveUserWorkoutDays } from "@/lib/supabase-data"
 import { initAudioSystem } from "@/lib/audio-utils"
 import type { Workout, WorkoutLog, WorkoutDay, AppData } from "@/lib/types"
-import { WorkoutProgressIcon } from "@/components/charts/workout-progress-icon"
+import { WorkoutProgressIcon } from "./workout-progress-icon"
 import { useAuth } from '@/lib/auth'
 import { OnboardingGuide } from "@/components/onboarding/onboarding-guide"
 import { ErrorBoundary } from "@/components/error-boundary"
