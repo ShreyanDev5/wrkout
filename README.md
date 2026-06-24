@@ -4,6 +4,8 @@ A fast, simple workout tracker built with **Next.js** and **Supabase**, optimize
 
 Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a clean, single-page web app designed to log your sets in under 2 seconds so you can focus on lifting.
 
+![wrkout Home Page](public/readme_home_page.png)
+
 ---
 
 ## ⚡ Features
