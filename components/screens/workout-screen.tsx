@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { CircularProgress } from "@/components/ui/circular-progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/dashboard/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"

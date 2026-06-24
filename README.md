@@ -9,7 +9,7 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 ## ⚡ Features
 
 - **Fast Logging**: Contextual inline logger with custom number steppers.
-- **Volume & Trend Tracking**: Shows exercise volume trends, peak lift tracking, and frequency indicators.
+- **Volume & Trend Tracking**: Shows exercise volume trends compared to your previous workouts.
 - **Clean UI**: Dark-mode first design with smooth Framer Motion transitions.
 - **Tactile Feedback**: Audio ticks and mobile vibration (haptics) when you log sets.
 - **Simple Auth**: Login with just a username. Internally maps to a secure Supabase account.
