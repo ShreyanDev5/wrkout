@@ -362,7 +362,7 @@ export function WorkoutScreen({
 
   return (
     <>
-      <Card className="border-0 shadow-none bg-transparent max-w-[540px] mx-auto w-full workout-selector">
+      <Card className="border-0 shadow-none bg-transparent max-w-[480px] mx-auto w-full workout-selector">
         <CardContent className="px-0 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
             {/* Header Section with Routine Selector */}

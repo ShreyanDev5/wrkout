@@ -104,11 +104,11 @@ export function InlineWorkoutLogger({
             }}
             className="overflow-hidden"
         >
-            <div className="pt-3 pb-5 px-1 space-y-4">
+            <div className="pt-2 pb-4 px-1 space-y-3">
                 {/* Top Row: Weight & Reps */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-4">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3">
                     {/* Weight (Primary) */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Weight (KG)</span>
                         <WeightStepper
                             value={weight}
@@ -117,12 +117,12 @@ export function InlineWorkoutLogger({
                             max={300}
                             className="w-full"
                             dayColor={dayColor}
-                            size="large"
+                            size="default"
                         />
                     </div>
 
                     {/* Reps (Primary) */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Reps</span>
                         <NumberStepper
                             value={reps}
@@ -131,15 +131,15 @@ export function InlineWorkoutLogger({
                             max={100}
                             className="w-full"
                             dayColor={dayColor}
-                            size="large"
+                            size="default"
                         />
                     </div>
                 </div>
 
                 {/* Bottom Row: Sets & Done Button */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-4 pt-1">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3 pt-0.5">
                     {/* Sets (Secondary) */}
-                    <div className="flex flex-col justify-end space-y-2">
+                    <div className="flex flex-col justify-end space-y-1">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Sets</span>
                         <NumberStepper
                             value={sets}
@@ -148,7 +148,7 @@ export function InlineWorkoutLogger({
                             max={20}
                             className="w-full"
                             dayColor={dayColor}
-                            size="large"
+                            size="default"
                         />
                     </div>
 
@@ -161,7 +161,7 @@ export function InlineWorkoutLogger({
                                 borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
                                 color: dayColor
                             }}
-                            className="h-[46px] w-full rounded-2xl border shadow-sm brightness-95 hover:brightness-100 active:scale-95 transition-all"
+                            className="h-[40px] w-full rounded-2xl border shadow-sm brightness-95 hover:brightness-100 active:scale-95 transition-all"
                             disabled={isSaving}
                         >
                             {isSaving ? (
@@ -171,7 +171,7 @@ export function InlineWorkoutLogger({
                                 />
                             ) : (
                                 <div className="flex items-center justify-center gap-1.5">
-                                    <Check className="h-5 w-5 stroke-[2.5]" />
+                                    <Check className="h-4.5 w-4.5 stroke-[2.5]" />
                                     <span className="font-bold text-sm tracking-wide">DONE</span>
                                 </div>
                             )}
