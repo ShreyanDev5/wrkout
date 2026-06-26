@@ -86,6 +86,6 @@ Open [http://localhost:3000].
 
 ---
 
-**🌐 Deployment**
+## 🌐 Deployment
 
 * **Platform**: Vercel
