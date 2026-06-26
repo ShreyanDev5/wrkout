@@ -28,6 +28,7 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 - **Animations**: Framer Motion
 - **Libraries**: Sonner (Toasts), Lucide React (Icons)
 - **AI Tools**: v0, Cursor, Windsurf, Gemini CLI, Qwen CLI, Codex, GitHub Copilot, Antigravity
+- **Deployment**: Vercel
 
 ---
 
@@ -82,3 +83,9 @@ Open [http://localhost:3000].
 - **`hooks/`**: Custom hooks for app logic, audio, and haptics.
 - **`lib/`**: Supabase client, local storage helpers, and database types.
 - **`supabase/`**: Database migrations and configuration.
+
+---
+
+**🌐 Deployment**
+
+* **Platform**: Vercel
