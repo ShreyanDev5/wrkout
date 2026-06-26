@@ -88,4 +88,5 @@ Open [http://localhost:3000].
 
 ## 🌐 Deployment
 
-* **Platform**: Vercel
+* **Platform**: [Vercel](https://vercel.com)
+* **Live Link**: [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
