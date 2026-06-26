@@ -1,4 +1,4 @@
-# 🏋️‍♂️ wrkout
+# <img src="public/logo_1.0-transparent.png" width="32" height="32" align="center" /> wrkout
 
 A fast, simple workout tracker built with **Next.js** and **Supabase**, optimized specifically for the **Push, Pull, Legs (PPL)** split. Built to log workouts without ads, subscriptions, or clutter.
 
@@ -27,7 +27,7 @@ Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a cl
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
 - **Libraries**: Sonner (Toasts), Lucide React (Icons)
-- **Built With**: v0 → Cursor → Windsurf → Gemini CLI → Qwen CLI → Codex → Antigravity
+- **AI Tools**: v0, Cursor, Windsurf, Gemini CLI, Qwen CLI, Codex, GitHub Copilot, Antigravity
 
 ---
 
