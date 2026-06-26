@@ -1,4 +1,4 @@
-# <img src="public/logo_1.0-transparent.png" width="32" height="32" align="center" /> wrkout
+# <img src="public/logo_1.0-transparent.png" width="48" height="48" align="center" /> wrkout
 
 A fast, simple workout tracker built with **Next.js** and **Supabase**, optimized specifically for the **Push, Pull, Legs (PPL)** split. Built to log workouts without ads, subscriptions, or clutter.
 
