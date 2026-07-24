@@ -62,52 +62,65 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
     // Determine the icon and color based on intent/button label
     const getModalIcon = () => {
         if (intent === 'sign_out' || buttonLabel === 'Sign Out') {
-            return <LogOut className="h-5.5 w-5.5 text-red-500 animate-pulse" aria-hidden="true" />;
+            return (
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 shadow-sm">
+                    <LogOut className="h-5 w-5 text-rose-400" aria-hidden="true" />
+                </div>
+            )
         }
         if (intent === 'start_new' || buttonLabel === 'Start') {
-            return <Play className="h-5.5 w-5.5 text-emerald-500 fill-emerald-500/20 animate-pulse ml-0.5" aria-hidden="true" />;
+            return (
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-leg-dark/20 bg-leg-dark/10 shadow-sm">
+                    <Play className="h-5 w-5 text-leg-dark fill-leg-dark/20 ml-0.5" aria-hidden="true" />
+                </div>
+            )
         }
         if (buttonLabel === 'Delete') {
-            return <AlertTriangle className="h-5.5 w-5.5 text-red-500 animate-pulse" aria-hidden="true" />;
+            return (
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 shadow-sm">
+                    <AlertTriangle className="h-5 w-5 text-rose-400" aria-hidden="true" />
+                </div>
+            )
         }
-        return <RefreshCw className="h-5.5 w-5.5 text-amber-500 animate-pulse" aria-hidden="true" />;
-    };
+        return (
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-pull-dark/20 bg-pull-dark/10 shadow-sm">
+                <RefreshCw className="h-5 w-5 text-pull-dark" aria-hidden="true" />
+            </div>
+        )
+    }
 
     const getConfirmButtonClasses = () => {
         if (buttonLabel === 'Sign Out' || buttonLabel === 'Delete' || buttonLabel === 'Reset') {
-            return "bg-red-600 hover:bg-red-500 shadow-[0_4px_16px_rgba(220,38,38,0.2)]";
+            return "bg-rose-600 hover:bg-rose-500 shadow-sm text-white";
         }
-        return "bg-emerald-600 hover:bg-emerald-500 shadow-[0_4px_16px_rgba(16,185,129,0.2)]";
-    };
+        return "bg-leg-dark hover:opacity-90 shadow-sm text-white";
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent 
                 hideCloseButton
-                className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+                className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center relative"
             >
                 <DialogHeader className="w-full flex flex-col items-center">
-                    {/* Floating Icon Box matching Onboarding */}
-                    <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
-                        {getModalIcon()}
-                    </div>
-                    <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">
+                    {getModalIcon()}
+                    <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">
                         {heading}
                     </DialogTitle>
                 </DialogHeader>
 
                 <div className="py-2.5 w-full">
-                    <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-0.5">
+                    <p className="text-xs leading-relaxed text-zinc-400 text-center px-0.5">
                         {message || 'Are you sure you want to restart this session? All checked exercises will be marked as incomplete.'}
                     </p>
                 </div>
 
-                {/* Buttons Row with premium pill styles */}
-                <div className="flex flex-row justify-between gap-2.5 mt-4 w-full px-0.5">
+                {/* Buttons Row */}
+                <div className="flex flex-row justify-between gap-2.5 mt-3 w-full px-0.5">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+                        className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
                         aria-label={cancelAria}
                     >
                         Cancel
@@ -118,7 +131,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
                             onConfirm()
                             onClose()
                         }}
-                        className={`flex-1 h-11 rounded-full px-4 text-[13px] font-bold text-white transition-all active:scale-95 border-none ${getConfirmButtonClasses()}`}
+                        className={`flex-1 h-10 rounded-xl px-4 text-xs font-bold transition-all active:scale-95 border-none ${getConfirmButtonClasses()}`}
                         aria-label={confirmAria}
                     >
                         {buttonLabel}

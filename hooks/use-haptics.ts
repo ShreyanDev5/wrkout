@@ -10,22 +10,22 @@ export function useHaptics() {
 
         switch (pattern) {
             case "light":
-                navigator.vibrate(5) // Subtle click
+                navigator.vibrate(3) // Soft micro click
                 break
             case "medium":
-                navigator.vibrate(10) // Standard tap
+                navigator.vibrate(6) // Gentle tap
                 break
             case "heavy":
-                navigator.vibrate(20) // Firm press
+                navigator.vibrate(12) // Soft press
                 break
             case "success":
-                navigator.vibrate([10, 30, 20]) // Da-da (Success check)
+                navigator.vibrate([6, 20, 10]) // Soft double tap
                 break
             case "warning":
-                navigator.vibrate([10, 50, 10]) // Uh-oh
+                navigator.vibrate([6, 30, 6])
                 break
             case "error":
-                navigator.vibrate([10, 50, 10, 50, 10]) // No-no-no
+                navigator.vibrate([6, 30, 6, 30, 6])
                 break
         }
     }, [])

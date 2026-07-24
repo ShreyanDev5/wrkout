@@ -11,22 +11,22 @@ import { ArrowDownRight, ArrowRight, ArrowUpRight, Dumbbell, Dot, TrendingUp } f
 const trendPillStyles: Record<VolumeTrend, { srLabel: string; className: string; Icon: typeof ArrowUpRight }> = {
   up: {
     srLabel: "Volume trend up",
-    className: "text-emerald-300 border-emerald-400/20 bg-emerald-500/10",
+    className: "text-zinc-400 border-zinc-700/60 bg-zinc-900/80",
     Icon: ArrowUpRight,
   },
   same: {
     srLabel: "Volume trend same",
-    className: "text-zinc-300 border-zinc-500/20 bg-zinc-500/10",
+    className: "text-zinc-400 border-zinc-700/60 bg-zinc-900/80",
     Icon: ArrowRight,
   },
   down: {
     srLabel: "Volume trend down",
-    className: "text-rose-300 border-rose-400/20 bg-rose-500/10",
+    className: "text-zinc-400 border-zinc-700/60 bg-zinc-900/80",
     Icon: ArrowDownRight,
   },
   new: {
     srLabel: "Volume trend new",
-    className: "text-zinc-400 border-zinc-500/20 bg-zinc-500/10",
+    className: "text-zinc-400 border-zinc-700/60 bg-zinc-900/80",
     Icon: Dot,
   },
 }
@@ -97,128 +97,128 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
 
   return (
     <div className="w-full max-w-[480px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in duration-500" style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* Header - Today's Progress */}
-      <div className="flex flex-col gap-1 mb-8 pt-4 sm:pt-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Today&apos;s Progress
+      {/* Header - Progress */}
+      <div className="flex flex-col gap-1 mb-6 pt-2 sm:pt-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+          Progress
         </h1>
         <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
           {formatDate(new Date().toISOString())}
         </p>
       </div>
 
-        {/* Detailed Session Breakdown */}
-        <motion.div
-          className="space-y-3"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-        >
-          {groupedLogs.length > 0 ? (
-            groupedLogs.map(([groupKey, exerciseLogs]) => {
-              const latestLog = exerciseLogs[exerciseLogs.length - 1]
-              const exerciseName = latestLog.exercise_name
-              const types = getExerciseWorkoutType(exerciseName)
-              const dominantType = types[0] || 'mixed'
+      {/* Detailed Session Breakdown */}
+      <motion.div
+        className="space-y-3"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        {groupedLogs.length > 0 ? (
+          groupedLogs.map(([groupKey, exerciseLogs]) => {
+            const latestLog = exerciseLogs[exerciseLogs.length - 1]
+            const exerciseName = latestLog.exercise_name
+            const types = getExerciseWorkoutType(exerciseName)
+            const dominantType = types[0] || 'mixed'
 
-              // Detect the implicit day color from the session context
-              // Use the latest log to determine context (usually all logs for one exercise are in one session)
-              let effectiveDayType = dominantType // Fallback to keyword matching
-
-              if (latestLog?.workout_day_id) {
-                // If we have a robust DB link to the day, use it!
-                const sessionDayType = dayIdMap.get(latestLog.workout_day_id)
-                if (sessionDayType) {
-                  effectiveDayType = sessionDayType
-                }
+            let effectiveDayType = dominantType
+            if (latestLog?.workout_day_id) {
+              const sessionDayType = dayIdMap.get(latestLog.workout_day_id)
+              if (sessionDayType) {
+                effectiveDayType = sessionDayType
               }
+            }
 
-              const dayColor = getWorkoutDayColor(effectiveDayType, colorMode || 'dark')
-              const sets = latestLog.sets ?? exerciseLogs.length
-              const weight = latestLog.weight
-              const reps = latestLog.avg_reps
-              const trend = volumeTrendMap.get(groupKey)?.trend ?? "new"
-              const trendPill = trendPillStyles[trend]
+            const dayColor = getWorkoutDayColor(effectiveDayType, colorMode || 'dark')
+            const sets = latestLog.sets ?? exerciseLogs.length
+            const weight = latestLog.weight
+            const reps = latestLog.avg_reps
+            const trend = volumeTrendMap.get(groupKey)?.trend ?? "new"
+            const trendPill = trendPillStyles[trend]
 
-              return (
-                <motion.div
-                  key={groupKey}
-                  variants={itemVariants}
-                  className="group"
+            return (
+              <motion.div
+                key={groupKey}
+                variants={itemVariants}
+                className="group"
+              >
+                <div
+                  className="relative rounded-2xl p-3.5 sm:p-4 border transition-all duration-300 overflow-hidden backdrop-blur-md"
+                  style={{
+                    borderColor: `color-mix(in srgb, ${dayColor} 25%, #27272a)`,
+                    backgroundColor: `color-mix(in srgb, ${dayColor} 6%, #18181b)`,
+                  }}
                 >
+                  {/* Subtle Category Accent Ambient Tint */}
                   <div
-                    className="relative rounded-xl px-3 py-3.5 border transition-all duration-300 overflow-hidden bg-card hover:!border-[var(--day-color)]"
-                    style={{
-                      '--day-color': `color-mix(in srgb, ${dayColor} 40%, rgba(255, 255, 255, 0.15))`,
-                      borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
-                    } as React.CSSProperties}
-                  >
+                    className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                    style={{ backgroundColor: dayColor }}
+                  />
 
-                    {/* Very faint background tint for premium feel */}
-                    <div
-                      className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                      style={{ backgroundColor: dayColor }}
-                    />
-
-                    <div className="flex flex-col gap-2.5 pl-2">
-                      {/* Exercise Header - Compact */}
-
-                      <div className="flex items-center justify-between gap-2 py-0.5">
-                        <h3 className="text-base font-bold text-zinc-100 leading-none tracking-tight truncate">
+                  <div className="relative z-10 flex flex-col gap-3">
+                    {/* Exercise Header */}
+                    <div className="flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div
+                          className="w-2 h-2 rounded-full flex-shrink-0 shadow-sm"
+                          style={{ backgroundColor: dayColor }}
+                        />
+                        <h3 className="text-base font-bold text-zinc-100 leading-tight tracking-tight truncate" title={exerciseName}>
                           {exerciseName}
                         </h3>
-
-                        <span
-                          className={cn(
-                            "inline-flex h-5 w-5 items-center justify-center rounded-full border",
-                            trendPill.className,
-                          )}
-                          aria-label={trendPill.srLabel}
-                        >
-                          <trendPill.Icon className="h-3 w-3" strokeWidth={2.25} />
-                        </span>
                       </div>
 
-                      {/* Integrated Metrics Grid - 3 Columns */}
-                      <div className="grid grid-cols-3 gap-1.5">
-                        {/* Weight */}
-                        <div className="bg-black/15 rounded-lg p-1.5 border border-white/[0.02] flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Weight</span>
-                          <div className="flex items-baseline gap-0.5">
-                            <span className="text-[15px] font-bold text-zinc-100">{weight}</span>
-                            <span className="text-[9px] font-medium text-muted-foreground/50">kg</span>
-                          </div>
-                        </div>
+                      <span
+                        className={cn(
+                          "inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border",
+                          trendPill.className,
+                        )}
+                        aria-label={trendPill.srLabel}
+                      >
+                        <trendPill.Icon className="h-3 w-3 flex-shrink-0" strokeWidth={2.25} />
+                      </span>
+                    </div>
 
-                        {/* Reps */}
-                        <div className="bg-black/15 rounded-lg p-1.5 border border-white/[0.02] flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Reps</span>
-                          <span className="text-[15px] font-bold text-zinc-100">{reps}</span>
+                    {/* Integrated Metrics Grid - 3 High-Contrast Elevated Dark Tiles on Colored Surface */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {/* Weight */}
+                      <div className="bg-zinc-950/85 rounded-xl p-2 sm:p-2.5 border border-zinc-800/90 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-[11px] font-semibold text-zinc-400">Weight</span>
+                        <div className="flex items-baseline gap-0.5 mt-0.5">
+                          <span className="text-base font-bold text-white">{weight}</span>
+                          <span className="text-[10px] font-medium text-zinc-400">kg</span>
                         </div>
+                      </div>
 
-                        {/* Sets */}
-                        <div className="bg-black/15 rounded-lg p-1.5 border border-white/[0.02] flex flex-col items-center justify-center">
-                          <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Sets</span>
-                          <span className="text-[15px] font-bold text-zinc-100">{sets}</span>
-                        </div>
+                      {/* Reps */}
+                      <div className="bg-zinc-950/85 rounded-xl p-2 sm:p-2.5 border border-zinc-800/90 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-[11px] font-semibold text-zinc-400">Reps</span>
+                        <span className="text-base font-bold text-white mt-0.5">{reps}</span>
+                      </div>
+
+                      {/* Sets */}
+                      <div className="bg-zinc-950/85 rounded-xl p-2 sm:p-2.5 border border-zinc-800/90 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-[11px] font-semibold text-zinc-400">Sets</span>
+                        <span className="text-base font-bold text-white mt-0.5">{sets}</span>
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              )
-            })
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 px-6 text-center select-none animate-in fade-in duration-500 rounded-[24px] bg-zinc-900/20 border border-zinc-800/40">
-              <div className="w-12 h-12 rounded-full bg-zinc-900/60 border border-zinc-800/60 flex items-center justify-center mb-4 shadow-lg">
-                <TrendingUp className="h-5 w-5 text-zinc-400 opacity-60" />
-              </div>
-              <h3 className="text-sm font-bold text-zinc-200 mb-1">No Activity Today</h3>
-              <p className="text-zinc-400 text-xs max-w-xs leading-relaxed">
-                Log an exercise to start tracking your daily progress and trends.
-              </p>
+                </div>
+              </motion.div>
+            )
+          })
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 text-center min-h-[300px] rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md">
+            <div className="w-14 h-14 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center mb-4 shadow-sm text-zinc-300">
+              <TrendingUp className="h-7 w-7 text-zinc-400" />
             </div>
-          )}
-        </motion.div>
+            <h3 className="text-lg font-bold text-zinc-100 mb-1.5 tracking-tight">No Activity Today</h3>
+            <p className="text-zinc-400 text-xs max-w-xs leading-snug font-medium">
+              Log an exercise today to track your progress.
+            </p>
+          </div>
+        )}
+      </motion.div>
     </div>
   )
 }

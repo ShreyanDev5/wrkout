@@ -44,33 +44,33 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
-        className="w-[92%] max-w-[340px] rounded-2xl border border-white/10 bg-zinc-950/95 p-[18px] sm:p-5"
+        className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center text-center relative"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(193,154,30,0.06),transparent_30%),radial-gradient(circle_at_20%_18%,rgba(91,144,95,0.05),transparent_24%),radial-gradient(circle_at_80%_10%,rgba(160,80,80,0.05),transparent_24%)]" />
-        <DialogHeader className="items-center">
-          <DialogTitle className="text-lg font-semibold text-zinc-100 sm:text-xl">
+        <DialogHeader className="items-center w-full">
+          <DialogTitle className="text-base font-extrabold text-white text-center tracking-tight">
             Sign in to wrkout
           </DialogTitle>
-          <DialogDescription className="mt-1 text-center text-[0.88rem] leading-6 text-zinc-500 sm:text-sm">
-            Stay in sync.
+          <DialogDescription className="mt-1 text-center text-xs leading-relaxed text-zinc-400">
+            Stay in sync across all your devices.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 flex flex-col gap-2.5 sm:gap-3">
-          <Button
+        <div className="mt-4 flex flex-col gap-2.5 w-full">
+          <button
+            type="button"
             onClick={handleSignIn}
-            className="h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11"
+            className="h-10 w-full rounded-xl bg-flex-dark text-white font-bold hover:opacity-90 transition-all active:scale-95 text-xs shadow-sm border-none"
           >
             Sign in
-          </Button>
-          <Button
+          </button>
+          <button
+            type="button"
             onClick={handleSignUp}
-            variant="outline"
-            className="h-[42px] w-full rounded-md border-white/10 bg-zinc-900/40 text-zinc-100 hover:bg-white/5 hover:text-zinc-50 sm:h-11"
+            className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-200 font-semibold hover:bg-zinc-800 hover:text-white transition-all active:scale-95 text-xs shadow-none"
           >
             Create account
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>

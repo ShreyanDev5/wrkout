@@ -35,46 +35,43 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-0 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col"
+                className="w-[92%] max-w-[315px] overflow-hidden rounded-[24px] border border-amber-500/25 bg-zinc-950 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center text-center relative"
                 hideCloseButton={true}
             >
-                <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 relative">
+                {/* Full-Modal Seamless Golden-Amber Ambient Glow */}
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-950/60 via-amber-950/25 to-zinc-950 pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-500/16 via-amber-500/8 to-transparent pointer-events-none" />
+                <div className="absolute -top-10 -right-10 w-44 h-44 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-                    {/* Subtle Glow Background Effect - Fiery & Energetic */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-red-500/10 to-amber-500/10 opacity-40 mix-blend-plus-lighter pointer-events-none" />
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
-                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-600/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
-
-                    {/* Content */}
-                    <div className="relative z-10 flex flex-col items-center gap-4">
-                        <div className="text-5xl animate-in zoom-in-50 duration-500 ease-out-back">
-                            🔥
-                        </div>
-
-                        <div className="space-y-1.5 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-150 fill-mode-both">
-                            <DialogTitle className="text-[1.2rem] font-extrabold tracking-tight text-white">
-                                Session Complete
-                            </DialogTitle>
-                            <p className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest">
-                                Show up. Execute. Repeat.
-                            </p>
-                        </div>
+                <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-4 w-full">
+                    {/* Fiery Icon Badge with Soft Amber Tint */}
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-500/15 shadow-sm text-3xl">
+                        🔥
                     </div>
 
-                    {/* Action */}
-                    <div className="relative z-10 w-full pt-1 animate-in slide-in-from-bottom-2 fade-in duration-700 delay-300 fill-mode-both">
+                    <div className="space-y-1">
+                        <DialogTitle className="text-lg font-extrabold tracking-tight text-white drop-shadow-sm">
+                            Session Complete
+                        </DialogTitle>
+                        <p className="text-[10px] font-extrabold text-amber-300 uppercase tracking-widest drop-shadow-sm">
+                            Show up. Execute. Repeat.
+                        </p>
+                    </div>
+
+                    {/* Compact Solid Deep Yellow Action Button */}
+                    <div className="w-full flex justify-center pt-1">
                         <button
                             type="button"
                             onClick={() => {
                                 haptic("light")
                                 onClose()
                             }}
-                            className="w-full h-11 rounded-full bg-orange-600 hover:bg-orange-500 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(234,88,12,0.2)] border-none"
+                            className="w-[124px] h-[38px] rounded-xl bg-amber-500 hover:bg-amber-400 text-[13.5px] font-extrabold text-zinc-950 transition-all active:scale-95 shadow-[0_4px_16px_rgba(245,158,11,0.25)] border-none cursor-pointer flex items-center justify-center"
                         >
                             Done
                         </button>
                     </div>
-
                 </div>
             </DialogContent>
         </Dialog>

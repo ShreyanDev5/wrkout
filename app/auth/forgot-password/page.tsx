@@ -216,19 +216,14 @@ export default function ForgotPasswordPage() {
           <div className="space-y-2 pt-2">
             <Button
               onClick={() => window.location.href = '/auth/signin'}
-              className={cn(
-                "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
-                "font-semibold transition-all duration-200 active:scale-[0.98]",
-                "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
-                "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
-              )}
+              className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer"
             >
               Back to sign in
             </Button>
             <Button
               onClick={resetForm}
               variant="ghost"
-              className="h-10 w-full rounded-md text-xs font-semibold text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+              className="h-10 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all"
             >
               Start over
             </Button>
@@ -244,8 +239,8 @@ export default function ForgotPasswordPage() {
       subtitle={step === 'username'
         ? "Enter your username to begin."
         : step === 'email'
-        ? "Enter the email address for the code."
-        : "Enter the verification code we sent."
+        ? "Enter your recovery email address."
+        : "Enter the verification code sent to your email."
       }
       footerText="Need to return?"
       footerLink="/auth/signin"
@@ -255,28 +250,21 @@ export default function ForgotPasswordPage() {
         step === 'username' ? handleUsernameSubmit :
         step === 'email' ? handleEmailSubmit :
         handleVerifyCodeSubmit
-      } className="space-y-5">
+      } className="space-y-4">
         {message && (
-          <Alert className="border-white/10 bg-white/5 text-zinc-100">
+          <Alert className="rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-200 text-xs p-3">
             <AlertDescription>{message}</AlertDescription>
           </Alert>
         )}
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-xs p-3">
             <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {debugInfo && process.env.NODE_ENV === 'development' && (
-          <Alert className="border-white/10 bg-zinc-950/60">
-            <AlertDescription className="text-xs font-mono text-zinc-500">
-              {debugInfo}
-            </AlertDescription>
           </Alert>
         )}
 
         {step === 'username' ? (
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium text-zinc-200">
+          <div className="space-y-1.5">
+            <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
               Username
             </Label>
             <div className="relative w-full group">
@@ -288,9 +276,8 @@ export default function ForgotPasswordPage() {
                 required
                 autoComplete="username"
                 className={cn(
-                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25 sm:h-11",
-                  "transition-all duration-200",
-                  username && "pl-3"
+                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
+                  username ? "pl-3" : "pl-9"
                 )}
                 disabled={loading}
               />
@@ -299,13 +286,13 @@ export default function ForgotPasswordPage() {
                 "transition-all duration-200",
                 username && "opacity-0 -translate-x-2"
               )}>
-                <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
+                <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
               </div>
             </div>
           </div>
         ) : step === 'email' ? (
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-zinc-200">
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
               Email address
             </Label>
             <div className="relative w-full group">
@@ -317,9 +304,8 @@ export default function ForgotPasswordPage() {
                 required
                 autoComplete="email"
                 className={cn(
-                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11",
-                  "transition-all duration-200",
-                  recoveryEmail && "pl-3"
+                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
+                  recoveryEmail ? "pl-3" : "pl-9"
                 )}
                 disabled={loading}
               />
@@ -328,17 +314,17 @@ export default function ForgotPasswordPage() {
                 "transition-all duration-200",
                 recoveryEmail && "opacity-0 -translate-x-2"
               )}>
-                <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
+                <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
               </div>
             </div>
-            <p className="text-xs leading-5 text-zinc-500">
-              We will send a one-time code to confirm access.
+            <p className="text-[11px] font-medium text-zinc-500 mt-1">
+              Required for secure account recovery if you forget your password.
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            <Label htmlFor="code" className="text-sm font-medium text-zinc-200">
-              Code
+          <div className="space-y-1.5">
+            <Label htmlFor="code" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              6-Digit Code
             </Label>
             <div className="relative w-full group">
               <Input
@@ -350,8 +336,7 @@ export default function ForgotPasswordPage() {
                 placeholder="000000"
                 maxLength={6}
                 className={cn(
-                  "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25 sm:h-11 text-center tracking-widest",
-                  "transition-all duration-200",
+                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 text-center tracking-widest transition-all",
                   verificationCode && "pl-3 text-center tracking-[0.3em] font-mono font-semibold"
                 )}
                 disabled={loading}
@@ -361,23 +346,18 @@ export default function ForgotPasswordPage() {
                 "transition-all duration-200",
                 verificationCode && "opacity-0 -translate-x-2"
               )}>
-                <Hash className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
+                <Hash className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
               </div>
             </div>
-            <p className="text-xs leading-5 text-zinc-500">
-              Enter the 6-digit code sent to <span className="text-zinc-300">{recoveryEmail}</span>.
+            <p className="text-[11px] font-medium text-zinc-500 mt-1">
+              Enter the 6-digit code sent to <span className="text-zinc-300 font-semibold">{recoveryEmail}</span>.
             </p>
           </div>
         )}
 
-        <Button
+        <button
           type="submit"
-          className={cn(
-            "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
-            "font-semibold transition-all duration-200 active:scale-[0.98]",
-            "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
-            "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
-          )}
+          className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer flex items-center justify-center mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
           {loading ? "Please wait..." : (
@@ -385,28 +365,26 @@ export default function ForgotPasswordPage() {
             step === 'email' ? "Send code" :
             "Verify code"
           )}
-        </Button>
+        </button>
 
         {step === 'email' && (
-          <Button
+          <button
             type="button"
             onClick={resetForm}
-            variant="ghost"
-            className="h-10 w-full rounded-md text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all border-none bg-transparent cursor-pointer"
           >
             Change username
-          </Button>
+          </button>
         )}
 
         {step === 'verify-code' && (
-          <Button
+          <button
             type="button"
             onClick={() => setStep('email')}
-            variant="ghost"
-            className="h-10 w-full rounded-md text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all border-none bg-transparent cursor-pointer"
           >
             Change email
-          </Button>
+          </button>
         )}
       </form>
     </AuthLayout>

@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DayExercises } from "@/components/dashboard/day-exercises"
 import { EmptyWorkoutState } from "@/components/dashboard/empty-workout-state"
 import { useTheme } from "@/components/theme-context"
@@ -20,11 +19,12 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PlusCircle, Dumbbell } from "lucide-react"
+import { PlusCircle, Dumbbell, ChevronDown, Check } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
 import { useAuth } from '@/lib/auth'
 
 import { useToast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
 
 interface WorkoutScreenProps {
   workouts: Workout[]
@@ -32,32 +32,35 @@ interface WorkoutScreenProps {
   onAddWorkoutLog: (log: WorkoutLog) => void | Promise<void>
   logs: WorkoutLog[]
   onDeleteWorkoutLog: (logId: string) => void | Promise<void>
+  onUpdateWorkoutsAndDays?: (workouts: Workout[], workoutDays: WorkoutDay[]) => void
+  onNavigateToSettings?: () => void
 }
 
 export function WorkoutScreen({
   workouts,
   workoutDays,
   onAddWorkoutLog,
-  onUpdateWorkoutsAndDays, // <-- Add this prop
+  onUpdateWorkoutsAndDays,
   logs,
   onDeleteWorkoutLog,
-}: WorkoutScreenProps & { onUpdateWorkoutsAndDays: (workouts: Workout[], workoutDays: WorkoutDay[]) => void }) {
+  onNavigateToSettings,
+}: WorkoutScreenProps) {
   const [selectedWorkout, setSelectedWorkout] = useState("")
   const { user } = useAuth()
 
   // Get the current workout data
   const currentWorkout = workouts.find((w) => w.id === selectedWorkout)
   // Get the days for the current workout
-  const currentWorkoutDays = workoutDays.filter((d) => d.workout_id === selectedWorkout)
+  const currentWorkoutDays = useMemo(() => {
+    return workoutDays.filter((d) => d.workout_id === selectedWorkout)
+  }, [workoutDays, selectedWorkout])
 
   const handleDayChange = (val: string) => {
-    setSelectedDay(val as "push" | "pull" | "leg")
-    // Optional: Save to local storage or URL state
+    setSelectedDay(val)
     saveLastWorkoutSection(val)
   }
 
-
-  const [selectedDay, setSelectedDay] = useState<"push" | "pull" | "leg">("push") // Default value, will be updated from localStorage
+  const [selectedDay, setSelectedDay] = useState<string>("push")
   const { colorMode } = useTheme()
   const supabase = createClientComponentClient()
 
@@ -76,6 +79,45 @@ export function WorkoutScreen({
   const [newWorkoutName, setNewWorkoutName] = useState("")
   const [isInitialized, setIsInitialized] = useState(false)
 
+  // Rebuilt Custom Routine Selector Dropdown state & outside click handler
+  const [isRoutineDropdownOpen, setIsRoutineDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsRoutineDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  // Synthesize days so PPL and Custom days are always seamlessly available in strict order (Push, Pull, Legs, Custom)
+  const displayDays = useMemo(() => {
+    const standardIds = ['push', 'pull', 'leg', 'flex']
+    const dayMap = new Map(currentWorkoutDays.map((d) => [d.day_id.toLowerCase(), d]))
+    const allIds = Array.from(new Set([...standardIds, ...currentWorkoutDays.map((d) => d.day_id.toLowerCase())]))
+
+    const categoryOrderMap: Record<string, number> = { push: 0, pull: 1, leg: 2, legs: 2, flex: 3, flexible: 3, custom: 3 }
+
+    return allIds
+      .map((dayId) => {
+        const existing = dayMap.get(dayId)
+        if (existing) return existing
+        return {
+          id: `${selectedWorkout || 'temp'}-${dayId}`,
+          workout_id: selectedWorkout,
+          day_id: dayId,
+          name: (dayId === 'flex' || dayId === 'custom' || dayId === 'flexible') ? 'Custom Day' : `${dayId.charAt(0).toUpperCase() + dayId.slice(1)} Day`,
+          exercises: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        } as WorkoutDay
+      })
+      .sort((a, b) => (categoryOrderMap[a.day_id.toLowerCase()] ?? 99) - (categoryOrderMap[b.day_id.toLowerCase()] ?? 99))
+  }, [currentWorkoutDays, selectedWorkout])
+
   // Start a workout (for empty state)
   const startWorkout = useCallback(() => {
     // Placeholder for specific start workout logic
@@ -86,8 +128,8 @@ export function WorkoutScreen({
     const loadSavedData = async () => {
       try {
         const savedDay = await loadLastWorkoutSection()
-        if (savedDay && ["push", "pull", "leg"].includes(savedDay)) {
-          setSelectedDay(savedDay as "push" | "pull" | "leg")
+        if (savedDay) {
+          setSelectedDay(savedDay)
         }
         const savedWorkout = await loadSelectedWorkout()
         if (savedWorkout && workouts.some(w => w.id === savedWorkout)) {
@@ -149,7 +191,6 @@ export function WorkoutScreen({
   /* -------------------------------------------------------------------------
    *  SESSION & STATE MANAGEMENT (SUPABASE)
    * ------------------------------------------------------------------------- */
-  // Use custom hook for logic extraction
   const { completedLogs, completedExerciseNames, activeProgress } = useWorkoutLogic({
     workoutId: selectedWorkout,
     dayId: selectedDay,
@@ -165,14 +206,14 @@ export function WorkoutScreen({
       return
     }
 
-    const previousProgress = previousProgressRef.current
-    const isGenuineCompletion = previousProgress !== null && previousProgress < 100 && activeProgress === 100
-    const isInitialLoad = isInitialMountRef.current
-
-    if (activeProgress === 100 && isGenuineCompletion && !isInitialLoad && !hasCelebratedRef.current) {
-      setShowCompletionModal(true)
-      hasCelebratedRef.current = true
-    } else if (activeProgress < 100) {
+    // Trigger completion modal whenever activeProgress reaches 100% after user action
+    if (activeProgress === 100) {
+      if (!isInitialMountRef.current && !hasCelebratedRef.current) {
+        setShowCompletionModal(true)
+        hasCelebratedRef.current = true
+      }
+    } else {
+      // Reset celebrated flag whenever progress is below 100%
       hasCelebratedRef.current = false
     }
 
@@ -194,17 +235,16 @@ export function WorkoutScreen({
       await onDeleteWorkoutLog(log.id)
 
       toast({
+        variant: "destructive",
         title: "Log deleted",
         description: `${exerciseName} unchecked`,
         action: (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onAddWorkoutLog(log)} // Restore the exact log
-            className="border-none shadow-none bg-accent hover:bg-accent/80"
+          <ToastAction
+            altText="Undo delete log"
+            onClick={() => onAddWorkoutLog(log)}
           >
             Undo
-          </Button>
+          </ToastAction>
         ),
         duration: 4000,
       })
@@ -260,38 +300,37 @@ export function WorkoutScreen({
 
   if (workouts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[65vh] px-6 text-center select-none animate-in fade-in duration-500">
-        <div className="w-16 h-16 rounded-full bg-zinc-900/80 border border-zinc-800 flex items-center justify-center mb-6 shadow-xl">
-          <Dumbbell className="h-7 w-7 text-zinc-400 opacity-60" />
+      <div className="flex flex-col items-center justify-center min-h-[350px] p-8 text-center rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md max-w-[480px] mx-auto select-none my-8">
+        <div className="w-14 h-14 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center mb-4 shadow-sm text-zinc-300">
+          <Dumbbell className="h-7 w-7 text-zinc-400" />
         </div>
-        <h3 className="text-lg font-bold text-zinc-100 mb-2">Welcome to Wrkout</h3>
-        <p className="text-zinc-400 text-sm max-w-sm mb-6 leading-relaxed">
-          You don&apos;t have any workout routines yet. Please create one to start tracking.
+        <h3 className="text-lg font-bold text-zinc-100 mb-1.5 tracking-tight">No Workout Routines</h3>
+        <p className="text-zinc-400 text-xs max-w-xs mb-5 leading-snug font-medium">
+          Create a routine to start tracking your workouts.
         </p>
         <Button
           onClick={() => setIsAddWorkoutOpen(true)}
-          className="rounded-xl bg-[#34A853] hover:bg-[#2D9249] text-white border-none shadow-lg shadow-green-900/20 px-6 py-2.5 text-sm font-semibold tracking-tight transition-all active:scale-95"
+          className="h-9 px-4 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 shadow-sm transition-all flex items-center gap-2 active:scale-95"
           aria-label="Create routine"
         >
-          <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
-          Create Routine
+          <PlusCircle className="h-3.5 w-3.5 text-zinc-400" aria-hidden="true" />
+          <span>Create Routine</span>
         </Button>
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
           <DialogContent 
             hideCloseButton
-            className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+            className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
           >
             <DialogHeader className="w-full flex flex-col items-center">
-              {/* Floating Icon Box matching Onboarding */}
-              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
-                <PlusCircle className="h-5.5 w-5.5 text-emerald-500 animate-pulse" aria-hidden="true" />
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+                <PlusCircle className="h-5 w-5 text-flex-dark" aria-hidden="true" />
               </div>
-              <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Routine</DialogTitle>
+              <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Routine</DialogTitle>
             </DialogHeader>
             
             <div className="py-2.5 w-full flex flex-col items-center">
-              <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-0.5 mb-4">
-                Create a new workout routine. Push, Pull, and Legs days will be pre-populated automatically.
+              <p className="text-xs leading-relaxed text-zinc-400 text-center px-0.5 mb-3">
+                Create a new workout routine. Push, Pull, Legs, and Custom days will be set up automatically.
               </p>
               <div className="w-full">
                 <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
@@ -300,17 +339,17 @@ export function WorkoutScreen({
                   value={newWorkoutName}
                   onChange={(e) => setNewWorkoutName(e.target.value)}
                   placeholder="e.g. Summer Cut, Bulking..."
-                  className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 w-full"
+                  className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
                 />
               </div>
             </div>
 
-            {/* Buttons Row with premium pill styles */}
-            <div className="flex flex-row justify-between gap-2.5 mt-4 w-full px-0.5">
+            {/* Buttons Row */}
+            <div className="flex flex-row justify-between gap-2.5 mt-3 w-full px-0.5">
               <button
                 type="button"
                 onClick={() => setIsAddWorkoutOpen(false)}
-                className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+                className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
                 aria-label="Cancel add workout"
               >
                 Cancel
@@ -341,17 +380,17 @@ export function WorkoutScreen({
                   try {
                     const { createDefaultRoutinesForWorkout } = await import('@/lib/supabase-data')
                     const defaultDays = await createDefaultRoutinesForWorkout(supabase, userId, newWorkoutId)
-                    onUpdateWorkoutsAndDays([...(workouts || []), newWorkout], [...workoutDays, ...defaultDays])
+                    onUpdateWorkoutsAndDays?.([...(workouts || []), newWorkout], [...workoutDays, ...defaultDays])
                     setNewWorkoutName("")
                     setIsAddWorkoutOpen(false)
                   } catch (error) {
                     console.error("Error creating workout with default days:", error)
                   }
                 }}
-                className="flex-1 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:pointer-events-none px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(16,185,129,0.2)] border-none"
+                className="flex-1 h-10 rounded-xl bg-flex-dark hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
                 aria-label="Confirm add workout"
               >
-                Add Workout
+                Add Routine
               </button>
             </div>
           </DialogContent>
@@ -363,88 +402,108 @@ export function WorkoutScreen({
   return (
     <>
       <Card className="border-0 shadow-none bg-transparent max-w-[480px] mx-auto w-full workout-selector">
-        <CardContent className="px-0 sm:px-4 pt-0 pb-2">
+        <CardContent className="px-3 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-            {/* Header Section with Routine Selector */}
-            <div className="flex flex-row items-center justify-between gap-4 mb-6 pt-4 sm:pt-6 px-4 sm:px-6">
-              <div className="flex flex-col gap-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-                  Train
-                </h1>
-                <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
-                  Active Routine
-                </p>
-              </div>
-
-              {/* Workout Routine Selector */}
-              <div className="w-[130px] sm:w-[150px] flex-shrink-0 workout-select">
-                <Select
-                  value={selectedWorkout}
-                  onValueChange={(value) => {
-                    if (workouts.some(w => w.id === value)) {
-                      setSelectedWorkout(value)
-                      saveSelectedWorkout(value).catch((error) => {
-                        // Error handling
-                      })
-                    }
-                  }}
-                  disabled={workouts.length === 0}
-                >
-                  <SelectTrigger className="w-full !h-9 !min-h-0 !min-w-0 py-1.5 pl-3.5 pr-3.5 border border-white/[0.08] bg-white/[0.04] backdrop-blur-md hover:bg-white/[0.08] active:scale-[0.98] transition-all rounded-full text-xs font-semibold text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-700/50 focus:ring-offset-0">
-                    <SelectValue placeholder="Select Workout" className="truncate tracking-tight" />
-                  </SelectTrigger>
-                  <SelectContent className="SelectContent border border-white/[0.08] !bg-zinc-900/50 !backdrop-blur-2xl rounded-[14px] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
-                    {workouts.map((workout) => (
-                      <SelectItem
-                        key={workout.id}
-                        value={workout.id}
-                        className="pl-3 pr-3 py-1 cursor-pointer transition-colors rounded-[10px] text-[11.5px] text-zinc-400 hover:text-white hover:bg-white/5 focus:bg-white/5 focus:text-white data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-white data-[state=checked]:font-semibold"
-                      >
-                        {workout.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Unified Page Header */}
+            <div className="flex flex-col gap-1 mb-6 pt-2 sm:pt-4">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                Train
+              </h1>
+              <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
+                Today&apos;s Workout
+              </p>
             </div>
 
-            {/* Day Tabs Selector - Clean segmented control */}
-            <div className="mb-6 px-4 sm:px-6">
-              <TabsList className="flex flex-nowrap w-full bg-white/[0.02] border border-white/[0.04] p-1 rounded-full gap-1">
-                {['push', 'pull', 'leg'].map((day) => {
-                  const activeColorClass = day === 'push' ? 'text-push-dark font-bold' : day === 'pull' ? 'text-pull-dark font-bold' : 'text-leg-dark font-bold';
+            {/* Rebuilt Custom Routine Selector Dropdown (Edge-Safe & High Contrast) */}
+            <div className="relative w-full mb-4" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsRoutineDropdownOpen((prev) => !prev)}
+                className="w-full h-10 px-3.5 ios-segmented-container hover:bg-zinc-800/80 active:scale-[0.99] transition-all rounded-xl text-xs font-semibold text-zinc-200 focus:outline-none border border-zinc-800 shadow-sm flex items-center justify-between"
+                aria-haspopup="listbox"
+                aria-expanded={isRoutineDropdownOpen}
+              >
+                <div className="flex items-center gap-2 min-w-0 truncate">
+                  <Dumbbell className="h-4 w-4 text-zinc-400 flex-shrink-0" />
+                  <span className="text-xs text-zinc-400 font-semibold flex-shrink-0">Routine:</span>
+                  <span className="truncate font-bold text-zinc-100">{currentWorkout?.name || "Select Routine"}</span>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 text-zinc-400 transition-transform duration-200 flex-shrink-0 ml-2", isRoutineDropdownOpen && "rotate-180")} />
+              </button>
+
+              {isRoutineDropdownOpen && (
+                <div className="absolute top-full left-0 right-0 w-full mt-1.5 z-50 bg-zinc-900 border border-zinc-700/90 rounded-xl p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-100">
+                  <div className="max-h-60 overflow-y-auto py-0.5 space-y-0.5" role="listbox">
+                    {workouts.map((workout) => {
+                      const isChecked = workout.id === selectedWorkout
+                      return (
+                        <button
+                          key={workout.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isChecked}
+                          onClick={() => {
+                            setSelectedWorkout(workout.id)
+                            saveSelectedWorkout(workout.id).catch(() => {})
+                            setIsRoutineDropdownOpen(false)
+                          }}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3.5 py-2.5 text-xs rounded-lg transition-colors text-left",
+                            isChecked
+                              ? "bg-zinc-800 text-white font-bold"
+                              : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white font-medium"
+                          )}
+                        >
+                          <span className="truncate">{workout.name}</span>
+                          {isChecked && <Check className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0 ml-2" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Day Tabs Selector - Native Apple iOS Segmented Control */}
+            <div className="mb-6">
+              <TabsList className="grid grid-cols-4 w-full h-auto min-h-[44px] ios-segmented-container p-[4px] rounded-xl gap-1 items-center overflow-hidden">
+                {displayDays.map((d) => {
+                  const day = d.day_id
+                  const dayColor = getWorkoutDayColor(day, colorMode)
+                  const label = (day === 'flex' || day === 'flexible' || day === 'custom') ? 'Custom' : day.charAt(0).toUpperCase() + day.slice(1)
+                  const isSelected = selectedDay === day
 
                   return (
                     <TabsTrigger
                       key={day}
                       value={day}
                       className={cn(
-                        'flex-1 rounded-full flex items-center justify-center gap-1.5 py-2 px-3 transition-all border border-transparent',
-                        'text-xs font-semibold',
-                        selectedDay === day ? activeColorClass : 'text-muted-foreground hover:text-foreground/85'
+                        'w-full min-w-0 h-9 rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 transition-all duration-150 ease-out select-none border',
+                        'text-[11px] sm:text-xs font-semibold tracking-tight my-0',
+                        isSelected
+                          ? 'font-bold shadow-sm'
+                          : 'bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.04]'
                       )}
                       style={{
-                        backgroundColor:
-                          selectedDay === day
-                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 12%, rgba(255, 255, 255, 0.02))`
-                            : undefined,
-                        borderColor:
-                          selectedDay === day
-                            ? `color-mix(in srgb, ${getWorkoutDayColor(day, colorMode)} 25%, transparent)`
-                            : 'transparent',
-                        boxShadow: 'none',
+                        color: isSelected ? dayColor : undefined,
+                        backgroundColor: isSelected
+                          ? `color-mix(in srgb, ${dayColor} 10%, #202024)`
+                          : undefined,
+                        borderColor: isSelected
+                          ? `color-mix(in srgb, ${dayColor} 22%, #38383c)`
+                          : 'transparent'
                       }}
-                      aria-label={`${day.charAt(0).toUpperCase() + day.slice(1)} day`}
+                      aria-label={`${label} day`}
                     >
-                      {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5')}
-                      <span className="inline">{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                      {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5 flex-shrink-0')}
+                      <span className="truncate">{label}</span>
                     </TabsTrigger>
                   )
                 })}
               </TabsList>
             </div>
 
-            {currentWorkoutDays.map((day) => (
+            {displayDays.map((day) => (
               <TabsContent key={day.id} value={day.day_id} className="mt-0">
                 {day.exercises.length > 0 ? (
                   <DayExercises
@@ -460,7 +519,7 @@ export function WorkoutScreen({
                     dayColor={getWorkoutDayColor(day.day_id, colorMode)}
                   />
                 ) : (
-                  <EmptyWorkoutState dayId={day.day_id} onStart={startWorkout} />
+                  <EmptyWorkoutState dayId={day.day_id} dayName={day.name} onStart={onNavigateToSettings || startWorkout} />
                 )}
               </TabsContent>
             ))}

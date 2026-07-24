@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { Hand, BicepsFlexed, Dumbbell, Footprints } from "lucide-react"
+import { Hand, BicepsFlexed, Dumbbell, Footprints, Zap, Layers, Activity } from "lucide-react"
 import { ReactNode } from "react"
 
 export function cn(...inputs: ClassValue[]) {
@@ -34,9 +34,17 @@ export function getWorkoutDayColor(dayId: string, colorMode?: string): string {
       return "hsl(var(--pull-dark))" // Darker Green
     case "leg":
     case "legs":
-      return "hsl(var(--leg-dark))" // Darker Purple
+      return "hsl(var(--leg-dark))" // Darker Red
+    case "flex":
+    case "flexible":
+    case "fullbody":
+    case "full body":
+    case "cardio":
+    case "custom":
+    case "other":
+      return "hsl(var(--flex-dark))" // Sleek Cyan
     default:
-      return "hsl(var(--muted))"
+      return "hsl(var(--flex-dark))"
   }
 }
 
@@ -53,8 +61,16 @@ export function getWorkoutDayIcon(dayId: string, modern = false, size = "h-5 w-5
     case "leg":
     case "legs":
       return <Footprints className={`${size} ${iconClass}`} aria-hidden="true" />
+    case "flex":
+    case "flexible":
+    case "fullbody":
+    case "full body":
+    case "custom":
+      return <Zap className={`${size} ${iconClass}`} fill="currentColor" aria-hidden="true" />
+    case "cardio":
+      return <Activity className={`${size} ${iconClass}`} aria-hidden="true" />
     default:
-      return <Dumbbell className={`${size} ${iconClass}`} aria-hidden="true" />
+      return <Layers className={`${size} ${iconClass}`} aria-hidden="true" />
   }
 }
 

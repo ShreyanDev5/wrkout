@@ -157,11 +157,11 @@ export function InlineWorkoutLogger({
                         <Button
                             onClick={handleSave}
                             style={{
-                                backgroundColor: `color-mix(in srgb, ${dayColor} 10%, rgba(255, 255, 255, 0.02))`,
-                                borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
+                                backgroundColor: `color-mix(in srgb, ${dayColor} 14%, transparent)`,
+                                borderColor: `color-mix(in srgb, ${dayColor} 30%, transparent)`,
                                 color: dayColor
                             }}
-                            className="h-[40px] w-full rounded-2xl border shadow-sm brightness-95 hover:brightness-100 active:scale-95 transition-all"
+                            className="h-[40px] w-full rounded-xl border font-bold hover:brightness-110 active:scale-95 transition-all duration-150 shadow-none"
                             disabled={isSaving}
                         >
                             {isSaving ? (

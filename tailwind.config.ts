@@ -77,6 +77,10 @@ const config = {
           light: "hsl(var(--leg-light))",
           dark: "hsl(var(--leg-dark))",
         },
+        flex: {
+          light: "hsl(var(--flex-light))",
+          dark: "hsl(var(--flex-dark))",
+        },
         // Accent colors
         emerald: {
           DEFAULT: "hsl(var(--emerald))",

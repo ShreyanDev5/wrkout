@@ -1,76 +1,98 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { useTheme } from "@/components/theme-context"
-import { ArrowRight, ArrowUp, ArrowDown, Footprints, Dumbbell } from "lucide-react"
-import { getWorkoutDayColor } from "@/lib/utils"
+import { ArrowRight, Settings } from "lucide-react"
+import { getWorkoutDayColor, getWorkoutDayIcon } from "@/lib/utils"
 
 interface EmptyWorkoutStateProps {
   dayId: string
-  onStart: () => void
+  dayName?: string
+  onStart?: () => void
 }
 
-export function EmptyWorkoutState({ dayId, onStart }: EmptyWorkoutStateProps) {
+export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutStateProps) {
   const { colorMode } = useTheme()
   const dayColor = getWorkoutDayColor(dayId, colorMode)
 
-  // Get day name based on dayId
-  const getDayName = (id: string) => {
-    switch (id.toLowerCase()) {
+  // Get human-friendly day title
+  const getCategoryTitle = () => {
+    if (dayName && dayName.trim()) {
+      if (dayName.toLowerCase().includes("flex")) return "Custom Day"
+      return dayName
+    }
+    switch (dayId.toLowerCase()) {
       case "push":
-        return "PUSH"
+        return "Push Day"
       case "pull":
-        return "PULL"
+        return "Pull Day"
       case "leg":
-        return "LEG"
+      case "legs":
+        return "Legs Day"
+      case "flex":
+      case "flexible":
+      case "custom":
+        return "Custom Day"
       default:
-        return "workout"
+        return `${dayId.charAt(0).toUpperCase() + dayId.slice(1)} Workout`
     }
   }
 
-  // Get the appropriate icon based on dayId
-  const getIcon = () => {
+  // Get exercise type label for the description
+  const getExerciseTypeLabel = () => {
+    if (dayName && dayName.trim()) {
+      if (dayName.toLowerCase().includes("flex")) return "Custom"
+      const cleaned = dayName.replace(/day|workout/gi, "").trim()
+      return cleaned || dayName
+    }
     switch (dayId.toLowerCase()) {
       case "push":
-        return <ArrowUp className="h-8 w-8 modern-icon" style={{ color: dayColor }} aria-hidden="true" />
+        return "Push"
       case "pull":
-        return <ArrowDown className="h-8 w-8 modern-icon" style={{ color: dayColor }} aria-hidden="true" />
+        return "Pull"
       case "leg":
-        return <Footprints className="h-8 w-8 modern-icon" style={{ color: dayColor }} aria-hidden="true" />
+      case "legs":
+        return "Leg"
+      case "flex":
+      case "flexible":
+      case "custom":
+        return "Custom"
       default:
-        return <Dumbbell className="h-8 w-8 modern-icon" style={{ color: dayColor }} aria-hidden="true" />
+        return dayId.charAt(0).toUpperCase() + dayId.slice(1)
     }
   }
 
   return (
-    <Card className="flex flex-col items-center justify-center p-8 text-center h-[400px] border-dashed dark:border-opacity-10">
+    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[300px] rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md">
       <div
-        className="w-16 h-16 rounded-full flex items-center justify-center mb-6"
-        style={{ backgroundColor: `color-mix(in srgb, ${dayColor} 8%, transparent)` }}
-      >
-        {getIcon()}
-      </div>
-
-      <h3 className="text-xl font-bold mb-3 line-height-readable">Start your {getDayName(dayId)} workout</h3>
-
-      <p className="text-muted-foreground mb-6 max-w-md line-height-readable text-sm">
-        Track your exercises and log your progress. Add exercises in Settings to get started.
-      </p>
-
-      <Button
-        size="lg"
-        onClick={onStart}
-        className="min-touch-target focus-visible-ring px-6 text-foreground border shadow-sm transition-all"
-        aria-label={`Start ${getDayName(dayId)} workout`}
+        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 border border-zinc-800 shadow-sm"
         style={{
-          backgroundColor: `color-mix(in srgb, ${dayColor} 10%, rgba(255, 255, 255, 0.02))`,
-          borderColor: `color-mix(in srgb, ${dayColor} 20%, rgba(255, 255, 255, 0.05))`,
+          backgroundColor: `color-mix(in srgb, ${dayColor} 12%, #18181b)`,
+          borderColor: `color-mix(in srgb, ${dayColor} 25%, #27272a)`,
           color: dayColor
         }}
       >
-        Start <ArrowRight className="ml-2 h-4 w-4 modern-icon" />
-      </Button>
-    </Card>
+        {getWorkoutDayIcon(dayId, true, "h-7 w-7")}
+      </div>
+
+      <h3 className="text-lg font-bold text-zinc-100 mb-1.5 tracking-tight">
+        No exercises in {getCategoryTitle()}
+      </h3>
+
+      <p className="text-zinc-400 text-xs max-w-xs mb-5 leading-snug font-medium">
+        Add {getExerciseTypeLabel()} exercises in Settings to get started.
+      </p>
+
+      {onStart && (
+        <Button
+          onClick={onStart}
+          className="h-9 px-4 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 shadow-sm transition-all flex items-center gap-2 active:scale-95"
+          aria-label={`Open Settings for ${getCategoryTitle()}`}
+        >
+          <Settings className="h-3.5 w-3.5 text-zinc-400" />
+          <span>Open Settings</span>
+        </Button>
+      )}
+    </div>
   )
 }

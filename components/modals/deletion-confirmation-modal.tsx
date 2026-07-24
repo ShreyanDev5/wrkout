@@ -64,30 +64,30 @@ export function DeletionConfirmationModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         hideCloseButton
-        className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+        className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center relative"
       >
         <DialogHeader className="w-full flex flex-col items-center">
-          {/* Floating Icon Box matching Onboarding */}
-          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
-            <AlertTriangle className="h-5.5 w-5.5 text-amber-500 animate-pulse" aria-hidden="true" />
+          {/* Ambient Red Icon Box */}
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 shadow-sm">
+            <AlertTriangle className="h-5 w-5 text-rose-400" aria-hidden="true" />
           </div>
-          <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">
+          <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">
             {getHeading()}
           </DialogTitle>
         </DialogHeader>
 
         <div className="py-2.5 w-full">
-          <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-0.5">
+          <p className="text-xs leading-relaxed text-zinc-400 text-center px-0.5">
             {getMessage()}
           </p>
         </div>
 
-        {/* Buttons Row with premium pill styles */}
-        <div className="flex flex-row justify-between gap-2.5 mt-4 w-full px-0.5">
+        {/* Buttons Row */}
+        <div className="flex flex-row justify-between gap-2.5 mt-3 w-full px-0.5">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+            className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
             aria-label="Cancel deletion"
           >
             Cancel
@@ -98,7 +98,7 @@ export function DeletionConfirmationModal({
               onConfirm()
               onClose()
             }}
-            className="flex-1 h-11 rounded-full bg-red-600 hover:bg-red-500 px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(220,38,38,0.2)] border-none"
+            className="flex-1 h-10 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
             aria-label={`Confirm ${itemType} deletion`}
           >
             Delete

@@ -16,15 +16,18 @@ import {
   Settings,
   AlertCircle,
   Mail,
+  ChevronDown,
+  ShieldCheck,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { formatDate, getWorkoutDayIcon, getWorkoutDayColor } from "@/lib/utils"
+import { formatDate, getWorkoutDayIcon, getWorkoutDayColor, cn } from "@/lib/utils"
 import type { Workout, WorkoutDay, WorkoutExercise } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from '@/lib/auth/auth-context'
+import { useHaptics } from "@/hooks/use-haptics"
 import { DeletionConfirmationModal } from "@/components/modals/deletion-confirmation-modal"
 import { ResetConfirmationModal } from "@/components/modals/reset-confirmation-modal" // Re-trigger import check
 import { updateWorkoutDayExercises, loadUserWorkoutDays, createDefaultRoutinesForWorkout } from '@/lib/supabase-data'
@@ -62,25 +65,26 @@ const ExerciseItem = memo(({
 }: ExerciseItemProps) => {
   return (
     <li
-      className={`flex items-center justify-between p-1.5 sm:p-2 rounded-lg transition-colors ${
+      className={cn(
+        "flex items-center justify-between px-3 py-2 rounded-xl border transition-all",
         isEditMode
-          ? "hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-          : "hover:bg-zinc-800/10"
-      }`}
+          ? "bg-zinc-900/90 border-zinc-700/80 shadow-sm"
+          : "bg-zinc-950/60 border-zinc-800/60 hover:border-zinc-700/60"
+      )}
     >
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
         {isEditMode ? (
-          <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-0.5">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => onMoveUp(dayId, index)}
               disabled={index === 0}
-              className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
+              className="h-7 w-7 p-0 rounded-lg transition-all text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20"
               aria-label={`Move ${exercise.name} up`}
             >
-              <ArrowUp className="h-4 w-4" aria-hidden="true" />
+              <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
             </Button>
             <Button
               type="button"
@@ -88,16 +92,16 @@ const ExerciseItem = memo(({
               size="sm"
               onClick={() => onMoveDown(dayId, index)}
               disabled={index === totalExercises - 1}
-              className="h-8 w-8 p-0 rounded-full transition-all text-muted-foreground/40 hover:text-foreground hover:bg-zinc-700/50 disabled:opacity-10"
+              className="h-7 w-7 p-0 rounded-lg transition-all text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20"
               aria-label={`Move ${exercise.name} down`}
             >
-              <ArrowDown className="h-4 w-4" aria-hidden="true" />
+              <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
             </Button>
           </div>
         ) : (
-          <div className="h-2 w-2 rounded-full bg-zinc-700 dark:bg-zinc-600 flex-shrink-0 ml-1.5" />
+          <div className="h-1.5 w-1.5 rounded-full bg-zinc-600 flex-shrink-0 ml-1" />
         )}
-        <span className="text-xs sm:text-sm text-foreground min-w-0 flex-1 py-1" title={exercise.name}>
+        <span className="text-xs font-semibold text-zinc-200 truncate py-0.5" title={exercise.name}>
           {exercise.name}
         </span>
       </div>
@@ -107,10 +111,10 @@ const ExerciseItem = memo(({
           variant="ghost"
           size="sm"
           onClick={() => onDelete(workoutId, dayId, exercise.id, exercise.name)}
-          className="h-6 w-6 p-0 rounded-full transition-all hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-[#EA4335]"
+          className="h-7 w-7 p-0 rounded-lg transition-all text-zinc-400 hover:bg-rose-950/40 hover:text-rose-400 border border-transparent hover:border-rose-900/40"
           aria-label={`Delete ${exercise.name} exercise`}
         >
-          <Trash2 className="h-3 w-3" aria-hidden="true" />
+          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
         </Button>
       )}
     </li>
@@ -136,6 +140,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const [showOnboarding, setShowOnboarding] = useState(false)
   const { toast } = useToast()
   const { signOut, user, username } = useAuth()
+  const { trigger: haptic } = useHaptics()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isAccountExpanded, setIsAccountExpanded] = useState(false)
@@ -152,7 +157,21 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }
   }, [user]);
 
+  const toggleWorkoutExpanded = (workoutId: string) => {
+    haptic("light")
+    setExpandedWorkouts((prev) => ({
+      ...prev,
+      [workoutId]: !prev[workoutId],
+    }))
+  }
 
+  const toggleDayExpanded = (dayKey: string) => {
+    haptic("light")
+    setExpandedDays((prev) => ({
+      ...prev,
+      [dayKey]: !prev[dayKey],
+    }))
+  }
 
   const handleUpdateRecoveryEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -256,20 +275,6 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     }
   }, [pendingExerciseOpen])
 
-  const toggleWorkoutExpanded = (workoutId: string) => {
-    setExpandedWorkouts((prev) => ({
-      ...prev,
-      [workoutId]: !prev[workoutId],
-    }))
-  }
-
-  const toggleDayExpanded = (dayKey: string) => {
-    setExpandedDays((prev) => ({
-      ...prev,
-      [dayKey]: !prev[dayKey],
-    }))
-  }
-
   const handleAddWorkout = async () => {
     if (!newWorkoutName.trim() || !user) return
 
@@ -329,9 +334,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     );
 
     toast({
+      variant: "destructive",
       title: "Workout Deleted",
       description: `${workoutToDelete.name} has been removed.`,
-      className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
     setWorkoutToDelete(null);
     setIsDeleteWorkoutOpen(false);
@@ -483,9 +488,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
     onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
     toast({
+      variant: "destructive",
       title: "Exercise Deleted",
       description: `${exerciseToDelete.name} removed from routine.`,
-      className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
     });
     setExerciseToDelete(null);
     setIsDeleteExerciseOpen(false);
@@ -522,12 +527,21 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           textColor: "text-leg-dark",
           borderColor: "border-leg-dark/20",
         }
+      case "flex":
+      case "flexible":
+      case "custom":
+        return {
+          icon,
+          color: "bg-flex-dark/10 border border-flex-dark/20",
+          textColor: "text-flex-dark",
+          borderColor: "border-flex-dark/20",
+        }
       default:
         return {
           icon,
-          color: "bg-zinc-800/40 border border-zinc-700/30",
-          textColor: "text-zinc-400",
-          borderColor: "border-zinc-700/30",
+          color: "bg-flex-dark/10 border border-flex-dark/20",
+          textColor: "text-flex-dark",
+          borderColor: "border-flex-dark/20",
         }
     }
   }
@@ -561,13 +575,13 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   return (
     <div className="w-full max-w-[480px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in duration-500">
-      {/* Header Section */}
-      <div className="flex flex-col gap-1 mb-8 pt-4 sm:pt-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+      {/* Unified Page Header */}
+      <div className="flex flex-col gap-1 mb-6 pt-2 sm:pt-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           Settings
         </h1>
         <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
-          Manage routines
+          Routines & Exercises
         </p>
       </div>
 
@@ -578,31 +592,29 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         className="space-y-4"
       >
         {/* Workouts Section */}
-        <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
+        <section className="space-y-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 backdrop-blur-md shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
-                <Dumbbell className="h-4 w-4" style={{ color: '#2563eb' }} />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-flex-dark/10 border border-flex-dark/20 text-flex-dark shadow-sm">
+                <Dumbbell className="h-4 w-4 text-flex-dark" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">
+                <h2 className="text-base font-extrabold text-zinc-100 tracking-tight">
                   Routines
                 </h2>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-zinc-800/50 text-[10px] font-medium text-zinc-400 mr-3">
-                {workouts.length}
-              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <Button
                 onClick={() => setIsEditMode(!isEditMode)}
                 size="sm"
                 variant="ghost"
-                className={`h-8 px-3 rounded-lg transition-all text-xs font-medium border ${
+                className={cn(
+                  "h-8 px-3.5 rounded-xl transition-all text-xs font-semibold border shadow-sm",
                   isEditMode
-                    ? "bg-blue-950/40 hover:bg-blue-900/30 text-blue-400 border-blue-900/35"
-                    : "bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 border-zinc-700/30"
-                }`}
+                    ? "bg-emerald-950/50 hover:bg-emerald-900/40 text-emerald-300 border-emerald-800/60"
+                    : "bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border-zinc-700/60"
+                )}
               >
                 {isEditMode ? "Done" : "Edit"}
               </Button>
@@ -610,7 +622,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 onClick={() => setIsAddWorkoutOpen(true)}
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all border border-zinc-700/30 flex items-center justify-center"
+                className="h-8 w-8 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 transition-all border border-zinc-700/60 flex items-center justify-center shadow-sm"
                 aria-label="New Routine"
               >
                 <Plus className="h-4 w-4" />
@@ -621,7 +633,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           <div className="space-y-3">
             {workouts.length > 0 ? (
               workouts.map((workout) => {
-                const daysForWorkout = workoutDays.filter((day) => day.workout_id === workout.id)
+                const categoryOrderMap: Record<string, number> = { push: 0, pull: 1, leg: 2, legs: 2, flex: 3, flexible: 3, custom: 3 }
+                const daysForWorkout = workoutDays
+                  .filter((day) => day.workout_id === workout.id)
+                  .sort((a, b) => (categoryOrderMap[a.day_id.toLowerCase()] ?? 99) - (categoryOrderMap[b.day_id.toLowerCase()] ?? 99))
                 const isExpanded = expandedWorkouts[workout.id]
 
                 return (
@@ -629,37 +644,37 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     key={workout.id}
                     variants={itemVariants}
                     layout
-                    className={`group relative bg-zinc-800/60 hover:bg-zinc-800/80 border border-zinc-700/50 rounded-xl transition-all duration-300 overflow-hidden`}
+                    className="group relative bg-zinc-900/70 hover:bg-zinc-900 border border-zinc-800/90 rounded-2xl transition-all duration-200 overflow-hidden shadow-sm"
                   >
                     <div
-                      className="flex items-center justify-between p-4 cursor-pointer"
+                      className="flex items-center justify-between p-4 cursor-pointer select-none"
                       onClick={() => toggleWorkoutExpanded(workout.id)}
                     >
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-zinc-900 dark:text-zinc-100 text-base">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-zinc-100 text-base tracking-tight">
                           {workout.name}
                         </span>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                          {daysForWorkout.length} {daysForWorkout.length === 1 ? 'Session' : 'Sessions'}
+                        <span className="text-xs text-zinc-400 font-medium">
+                          {daysForWorkout.length} {daysForWorkout.length === 1 ? 'Day' : 'Days'}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDeleteWorkout(workout.id, workout.name)
-                          }}
-                          className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-transform duration-300 ${isExpanded ? 'rotate-180 bg-zinc-100 dark:bg-zinc-800' : ''}`}>
-                          <ArrowDown className="h-4 w-4 text-zinc-500" />
+                      {isEditMode && (
+                        <div className="flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity duration-200">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteWorkout(workout.id, workout.name)
+                            }}
+                            className="h-8 w-8 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/40 border border-transparent hover:border-rose-900/40 rounded-xl transition-all"
+                            aria-label={`Delete ${workout.name} routine`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
-                      </div>
+                      )}
                     </div>
 
                     <AnimatePresence>
@@ -706,7 +721,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                             </div>
                                             <div className="min-w-0 flex-1">
                                               <p className="text-sm font-semibold text-zinc-100 break-words leading-tight">
-                                                {day.name}
+                                                {(day.name === 'Flex / Custom' || day.name === 'Flex') ? 'Custom Day' : day.name}
                                               </p>
                                               <p className="text-xs text-zinc-500 mt-0.5">
                                                 {day.exercises?.length || 0} Exercises
@@ -804,24 +819,44 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
         </section>
 
         {/* Account & Security Section */}
-        <section className="space-y-4 bg-zinc-900/30 border border-zinc-700/40 rounded-2xl p-4">
+        <section className="space-y-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 backdrop-blur-md shadow-sm">
           <div
-            className="flex items-center justify-between cursor-pointer"
-            onClick={() => setIsAccountExpanded(!isAccountExpanded)}
+            className="flex items-center justify-between cursor-pointer select-none"
+            onClick={() => {
+              haptic("light")
+              setIsAccountExpanded(!isAccountExpanded)
+            }}
           >
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/50 border border-zinc-600/40">
-                <Settings className="h-4 w-4" style={{ color: '#dc2626' }} />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-flex-dark/10 border border-flex-dark/20 text-flex-dark shadow-sm">
+                <ShieldCheck className="h-4 w-4 text-flex-dark" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">
+                <h2 className="text-base font-extrabold text-zinc-100 tracking-tight">
                   Account &amp; Security
                 </h2>
               </div>
             </div>
-            <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-transform duration-300 ${isAccountExpanded ? 'rotate-180 bg-zinc-800' : ''}`}>
-              <ArrowDown className="h-4 w-4 text-zinc-500" />
-            </div>
+
+            {/* Lightweight animated chevron arrow - ONLY visible when card is collapsed */}
+            <AnimatePresence>
+              {!isAccountExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 4 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex items-center text-zinc-400"
+                >
+                  <motion.div
+                    animate={{ y: [0, 2.5, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+                  >
+                    <ChevronDown className="h-4 w-4 text-zinc-400" />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <AnimatePresence>
@@ -845,8 +880,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 {/* Recovery Email Form */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/30 border border-zinc-700/40 flex-shrink-0">
-                      <Mail className="h-4 w-4" style={{ color: '#16a34a' }} />
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-pull-dark/10 border border-pull-dark/20 text-pull-dark flex-shrink-0">
+                      <Mail className="h-4 w-4 text-pull-dark" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
@@ -897,8 +932,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 {/* Account Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-700/30 border border-zinc-700/40 flex-shrink-0">
-                      <Sparkles className="h-4 w-4" style={{ color: '#f9d949' }} />
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-leg-dark/10 border border-leg-dark/20 text-leg-dark flex-shrink-0">
+                      <Sparkles className="h-4 w-4 text-leg-dark" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground text-sm">Account &amp; Guide</h3>
@@ -910,7 +945,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       variant="ghost"
                       size="sm"
                       className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
-                      onClick={() => setShowOnboarding(true)}
+                      onClick={() => {
+                        haptic("light");
+                        setShowOnboarding(true);
+                      }}
                     >
                       View Guide
                     </Button>
@@ -918,7 +956,10 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       variant="ghost"
                       size="sm"
                       className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
-                      onClick={() => setIsSignOutOpen(true)}
+                      onClick={() => {
+                        haptic("warning");
+                        setIsSignOutOpen(true);
+                      }}
                     >
                       Sign Out
                     </Button>
@@ -935,31 +976,30 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
         <DialogContent 
           hideCloseButton
-          className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+          className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
         >
           <DialogHeader className="w-full flex flex-col items-center">
-            {/* Floating Icon Box matching Onboarding */}
-            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
-              <Plus className="h-5.5 w-5.5 text-blue-500" aria-hidden="true" />
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+              <Plus className="h-5 w-5 text-flex-dark" aria-hidden="true" />
             </div>
-            <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Routine</DialogTitle>
+            <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Routine</DialogTitle>
           </DialogHeader>
-          <div className="py-4 w-full">
+          <div className="py-3 w-full">
             <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
             <Input
               id="workout-name"
               value={newWorkoutName}
               onChange={(e) => setNewWorkoutName(e.target.value)}
               placeholder="e.g. Summer Cut, Bulking..."
-              className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500/50 focus:ring-blue-500/20 w-full"
+              className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
             />
           </div>
-          {/* Buttons Row with premium pill styles */}
+          {/* Buttons Row */}
           <div className="flex flex-row justify-between gap-2.5 mt-2 w-full px-0.5">
             <button
               type="button"
               onClick={() => setIsAddWorkoutOpen(false)}
-              className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+              className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
             >
               Cancel
             </button>
@@ -967,7 +1007,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               type="button"
               onClick={handleAddWorkout}
               disabled={!newWorkoutName.trim()}
-              className="flex-1 h-11 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(37,99,235,0.2)] border-none"
+              className="flex-1 h-10 rounded-xl bg-flex-dark hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
             >
               Create
             </button>
@@ -981,16 +1021,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
         <DialogContent 
           hideCloseButton
-          className="w-[92%] max-w-[328px] overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950/98 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+          className="w-[92%] max-w-[330px] rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
         >
           <DialogHeader className="w-full flex flex-col items-center">
-            {/* Floating Icon Box matching Onboarding */}
-            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] shadow-[0_6px_16px_rgba(0,0,0,0.18)]">
-              <Dumbbell className="h-5.5 w-5.5 text-purple-500 animate-pulse" aria-hidden="true" />
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+              <Dumbbell className="h-5 w-5 text-flex-dark" aria-hidden="true" />
             </div>
-            <DialogTitle className="text-[1.1rem] font-extrabold tracking-tight text-foreground text-center w-full leading-snug">New Exercise</DialogTitle>
+            <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Exercise</DialogTitle>
           </DialogHeader>
-          <div className="py-4 relative w-full">
+          <div className="py-3 relative w-full">
             <Label htmlFor="exercise-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Exercise Name</Label>
             <div className="relative mt-1 w-full">
               <Input
@@ -1024,27 +1063,27 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                   }
                 }}
                 placeholder="e.g. Incline Bench Press"
-                className="h-10 rounded-xl border-white/10 bg-white/[0.03] text-sm text-zinc-100 placeholder-zinc-500 focus:border-purple-500/50 focus:ring-purple-500/20 w-full"
+                className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
                 autoComplete="off"
               />
               <AnimatePresence>
                 {showSuggestions && newExerciseName.trim().length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 w-full mt-1.5 bg-zinc-900/95 border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.65)] max-h-[160px] overflow-y-auto backdrop-blur-xl select-none"
+                    className="absolute z-[100] left-0 right-0 w-full mt-1.5 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl max-h-[140px] overflow-y-auto backdrop-blur-2xl select-none"
                   >
                     {filteredExercises.length > 0 ? (
                       <ul className="py-1">
                         {filteredExercises.map((ex, idx) => (
                           <li
                             key={ex.id}
-                            className={`flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium cursor-pointer transition-all duration-150 border-l-[3px] ${
+                            className={`flex items-center gap-2 px-3 py-2 text-[11.5px] font-medium cursor-pointer transition-all duration-150 border-l-[3px] ${
                               idx === highlightedIndex 
-                                ? 'bg-purple-600/20 text-purple-200 border-purple-500 pl-[11px]' 
-                                : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white border-transparent'
+                                ? 'bg-flex-dark/15 text-flex-dark border-flex-dark pl-[10px]' 
+                                : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border-transparent'
                             }`}
                             onClick={() => {
                               setNewExerciseName(ex.name);
@@ -1052,20 +1091,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                               inputRef.current?.focus();
                             }}
                           >
-                            <Dumbbell className={`h-3.5 w-3.5 flex-shrink-0 transition-colors ${idx === highlightedIndex ? 'text-purple-400' : 'text-zinc-500/70'}`} />
+                            <Dumbbell className={`h-3.5 w-3.5 flex-shrink-0 transition-colors ${idx === highlightedIndex ? 'text-flex-dark' : 'text-zinc-500'}`} />
                             <span className="truncate">{ex.name}</span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <div className="px-4 py-3.5 text-xs text-zinc-400 flex flex-col gap-1.5 bg-zinc-900/30">
-                        <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
-                          <AlertCircle className="h-3.5 w-3.5 text-zinc-600" />
-                          <span>No matching exercises found</span>
-                        </div>
-                        <div className="text-[11px] font-bold text-purple-400/90 flex items-center gap-1 pl-5">
-                          <Plus className="h-3 w-3" /> Press Enter or Add to create &quot;{newExerciseName.trim()}&quot;
-                        </div>
+                      <div className="px-3.5 py-2.5 text-[11px] font-medium text-zinc-400 flex items-center gap-2 bg-zinc-950">
+                        <Plus className="h-3.5 w-3.5 text-flex-dark flex-shrink-0" />
+                        <span className="truncate">Tap Add to create &quot;{newExerciseName.trim()}&quot;</span>
                       </div>
                     )}
                   </motion.div>
@@ -1073,12 +1107,12 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               </AnimatePresence>
             </div>
           </div>
-          {/* Buttons Row with premium pill styles */}
+          {/* Buttons Row */}
           <div className="flex flex-row justify-between gap-2.5 mt-2 w-full px-0.5">
             <button
               type="button"
               onClick={() => setIsAddExerciseOpen(false)}
-              className="flex-1 h-11 rounded-full border border-white/8 bg-white/[0.02] px-4 text-[13px] font-bold text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white active:scale-95 shadow-sm"
+              className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
             >
               Cancel
             </button>
@@ -1086,7 +1120,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
               type="button"
               onClick={handleAddExercise}
               disabled={!newExerciseName.trim() || !selectedWorkoutId || !selectedDayId || isCreatingExercise}
-              className="flex-1 h-11 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:pointer-events-none px-4 text-[13px] font-bold text-white transition-all active:scale-95 shadow-[0_4px_16px_rgba(147,51,234,0.2)] border-none"
+              className="flex-1 h-10 rounded-xl bg-flex-dark hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
             >
               {isCreatingExercise ? 'Adding...' : 'Add'}
             </button>

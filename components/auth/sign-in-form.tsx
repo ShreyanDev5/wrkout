@@ -66,16 +66,16 @@ export function SignInForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-[18px] sm:space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <Alert variant="destructive" className="animate-in slide-in-from-top-2 duration-300 border-leg-light/20 bg-leg-light/10 text-zinc-50">
+        <Alert variant="destructive" className="rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-xs p-3">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <div className="space-y-3.5 sm:space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="username" className="text-sm font-medium text-zinc-200">
+      <div className="space-y-3.5">
+        <div className="space-y-1.5">
+          <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
             Username
           </Label>
           <div className="relative w-full group">
@@ -87,10 +87,8 @@ export function SignInForm() {
               required
               autoComplete="username"
               className={cn(
-                "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
-                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-push-light/25",
-                "transition-all duration-200",
-                username && "pl-3"
+                "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
+                username ? "pl-3" : "pl-9"
               )}
               disabled={isLoading}
             />
@@ -99,12 +97,12 @@ export function SignInForm() {
               "transition-all duration-200",
               username && "opacity-0 -translate-x-2"
             )}>
-              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-push-light transition-colors duration-200" />
+              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
             </div>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium text-zinc-200">
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
             Password
           </Label>
           <div className="relative w-full group">
@@ -116,10 +114,8 @@ export function SignInForm() {
               required
               autoComplete="current-password"
               className={cn(
-                "h-[42px] w-full rounded-md border-white/10 bg-zinc-950/60 pl-9 text-zinc-100 shadow-none sm:h-11",
-                "placeholder:text-zinc-500 focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-pull-light/25",
-                "transition-all duration-200",
-                password && "pl-3"
+                "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
+                password ? "pl-3" : "pl-9"
               )}
               disabled={isLoading}
             />
@@ -128,19 +124,17 @@ export function SignInForm() {
               "transition-all duration-200",
               password && "opacity-0 -translate-x-2"
             )}>
-              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-pull-light transition-colors duration-200" />
+              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
             </div>
           </div>
         </div>
       </div>
 
-      <Button
+      <button
         type="submit"
         className={cn(
-          "h-[42px] w-full rounded-md bg-push-dark text-zinc-950 hover:bg-[#4d3f0a] sm:h-11",
-          "font-semibold transition-all duration-200 active:scale-[0.98]",
-          "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
-          "shadow-[0_4px_16px_rgba(249,217,73,0.08)] hover:shadow-[0_4px_16px_rgba(249,217,73,0.18)]"
+          "h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs transition-all active:scale-95 border-none shadow-sm flex items-center justify-center cursor-pointer mt-2",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
         )}
         disabled={isLoading}
       >
@@ -152,7 +146,7 @@ export function SignInForm() {
         ) : (
           'Sign in'
         )}
-      </Button>
+      </button>
     </form>
   );
 } 

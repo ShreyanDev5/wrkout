@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
 import { InlineWorkoutLogger } from "@/components/dashboard/inline-workout-logger"
-import { AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useHaptics } from "@/hooks/use-haptics"
 
 interface DayExercisesProps {
@@ -87,17 +87,13 @@ export function DayExercises({
             key={exercise.id}
             id={`exercise-${exercise.id}`}
             className={cn(
-              "rounded-xl transition-all duration-200 border h-fit",
+              "rounded-xl transition-all duration-150 h-fit overflow-hidden",
               isExpanded
-                ? "scale-[1.002] bg-card"
+                ? "ios-card border-zinc-700"
                 : completed
-                  ? "bg-transparent border-white/[0.03] opacity-55 hover:opacity-85 hover:border-white/[0.08] hover:bg-white/[0.01]"
-                  : "bg-card border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.01]"
+                  ? "bg-zinc-950/40 border border-zinc-800/40 opacity-55 hover:opacity-85 hover:border-zinc-800"
+                  : "ios-card hover:border-zinc-700/80"
             )}
-            style={isExpanded ? {
-              borderColor: `color-mix(in srgb, ${dayColor} 30%, rgba(255, 255, 255, 0.12))`,
-              boxShadow: `0 4px 20px -8px color-mix(in srgb, ${dayColor} 20%, transparent)`
-            } : undefined}
           >
             <div
               className={cn(
@@ -155,21 +151,29 @@ export function DayExercises({
               </Button>
             </div>
 
-            {/* Inline Logger */}
-            <AnimatePresence>
+            {/* Inline Logger - Smooth Motion Collapse */}
+            <AnimatePresence initial={false}>
               {isExpanded && (
-                <div className="px-4 pb-4 pt-2 border-t border-white/[0.05]">
-                  <InlineWorkoutLogger
-                    exercise={exercise}
-                    workoutId={workoutId}
-                    onSave={(log) => {
-                      onLogWorkout(log)
-                      setExpandedExerciseId(null) // Close on save
-                    }}
-                    onCancel={() => setExpandedExerciseId(null)}
-                    dayColor={dayColor}
-                  />
-                </div>
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+                  className="overflow-hidden border-t border-white/[0.05]"
+                >
+                  <div className="px-4 pb-4 pt-2">
+                    <InlineWorkoutLogger
+                      exercise={exercise}
+                      workoutId={workoutId}
+                      onSave={(log) => {
+                        onLogWorkout(log)
+                        setExpandedExerciseId(null) // Close on save
+                      }}
+                      onCancel={() => setExpandedExerciseId(null)}
+                      dayColor={dayColor}
+                    />
+                  </div>
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
@@ -184,10 +188,12 @@ export function DayExercises({
         )
       }
 
-      {/* Dynamic Spacer to ensure last item can be scrolled to center - Mobile only */}
-      <div
-        className="md:hidden transition-all duration-300 ease-in-out"
-        style={{ height: expandedExerciseId ? '45vh' : '0px' }}
+      {/* Dynamic Spacer - Synchronized smooth collapse */}
+      <motion.div
+        initial={false}
+        animate={{ height: expandedExerciseId ? '40vh' : 0 }}
+        transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+        className="md:hidden overflow-hidden"
         aria-hidden="true"
       />
     </div >

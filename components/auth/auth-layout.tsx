@@ -27,40 +27,27 @@ export function AuthLayout({
 
   return (
     <div className={cn(
-      "relative isolate min-h-screen overflow-hidden bg-background text-foreground",
+      "relative isolate min-h-screen overflow-hidden bg-zinc-950 text-foreground",
       "flex items-center justify-center px-4 py-8 sm:py-10"
     )}>
-      {/* Premium subtle iOS-like background blur blobs */}
+      {/* Subtle luxury ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        {/* Yellow top/left blob */}
-        <div className="absolute -left-[10%] -top-[10%] h-[55%] w-[55%] rounded-full bg-[rgba(249,217,73,0.07)] blur-[100px] sm:blur-[120px]" />
-        {/* Green middle/right blob */}
-        <div className="absolute right-[5%] top-[15%] h-[50%] w-[50%] rounded-full bg-[rgba(76,175,80,0.06)] blur-[100px] sm:blur-[120px]" />
-        {/* Red bottom/left blob */}
-        <div className="absolute -bottom-[10%] left-[15%] h-[45%] w-[45%] rounded-full bg-[rgba(244,67,54,0.05)] blur-[100px] sm:blur-[120px]" />
-        
-        {/* Premium faint dot pattern overlay */}
+        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[350px] w-[350px] rounded-full bg-flex-dark/5 blur-[120px]" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.012)_1px,transparent_1px)] [background-size:24px_24px] opacity-70" />
       </div>
 
       <div className={cn(
-        "w-full max-w-[420px]",
-        isMobile && "max-w-[390px]"
+        "w-full max-w-[400px] -mt-6 sm:-mt-8",
+        isMobile && "max-w-[360px]"
       )}>
-        <div className={cn(
-          "space-y-6 sm:space-y-7",
-          isMobile && "space-y-5"
-        )}>
-          <div className={cn(
-            "text-center space-y-3 sm:space-y-4",
-            isMobile && "space-y-2"
-          )}>
+        <div className="space-y-6">
+          <div className="text-center space-y-3">
             <Link
               href="/"
-              className="inline-flex animate-fade-in"
+              className="inline-flex transition-transform active:scale-95"
             >
               <div className="relative mx-auto h-14 w-14 sm:h-16 sm:w-16">
-                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-zinc-950/70 shadow-[0_10px_30px_rgba(0,0,0,0.2)] sm:h-16 sm:w-16 transition-all duration-350 hover:scale-[1.05] hover:border-push-light/20 hover:shadow-[0_10px_25px_rgba(249,217,73,0.12)]">
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/80 shadow-md sm:h-16 sm:w-16 transition-all duration-200 hover:border-zinc-700">
                   <Image
                     src="/logo_1.0-transparent.png"
                     alt="wrkout logo"
@@ -72,42 +59,37 @@ export function AuthLayout({
                 </div>
               </div>
             </Link>
-            <div className="space-y-1.5">
-              <h2 className={cn(
-                "text-[1.7rem] font-semibold tracking-normal text-foreground sm:text-2xl",
-                isMobile && "text-[1.5rem]"
-              )}>
+            <div className="space-y-1">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 {title}
               </h2>
-              <p className={cn(
-                "mx-auto max-w-sm text-[0.92rem] leading-6 text-muted-foreground sm:text-sm",
-                isMobile && "text-[0.89rem]"
-              )}>
+              <p className="mx-auto max-w-sm text-xs sm:text-sm text-zinc-400">
                 {subtitle}
               </p>
             </div>
           </div>
 
-          <div className={cn(
-            "rounded-3xl border border-white/10 bg-gradient-to-b from-zinc-950/80 to-zinc-950/65 p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl",
-            isMobile && "p-[18px]"
-          )}>
-            {children}
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/75 p-5 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 relative overflow-hidden">
+            {/* Subtle internal glass glow */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none" />
+            <div className="relative z-10">
+              {children}
+            </div>
           </div>
 
           {footerText && footerLink && footerLinkText && (
-            <p className="text-center text-[0.88rem] text-muted-foreground sm:text-sm">
+            <p className="text-center text-xs text-zinc-400">
               {footerText}{' '}
               <Link
                 href={footerLink}
-                className="font-medium text-foreground underline-offset-4 transition-colors duration-200 hover:text-pull-dark hover:underline"
+                className="font-bold text-flex-dark underline-offset-4 transition-colors hover:text-blue-400 hover:underline"
               >
                 {footerLinkText}
               </Link>
             </p>
           )}
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 } 

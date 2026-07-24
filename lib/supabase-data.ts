@@ -335,6 +335,10 @@ export async function createDefaultRoutinesForWorkout(
     { name: "Squat", type: "leg" },
     { name: "Romanian Deadlift", type: "leg" },
     { name: "Calf Raise", type: "leg" },
+    // Custom
+    { name: "Core Plank", type: "flex" },
+    { name: "Jumping Jacks", type: "flex" },
+    { name: "Kettlebell Swings", type: "flex" },
   ]
 
   // 1. Upsert exercises to database
@@ -362,7 +366,7 @@ export async function createDefaultRoutinesForWorkout(
     )?.id
   }
 
-  // 2. Create the 3 default days
+  // 2. Create the 4 default days (Push, Pull, Legs, Flex)
   const uuidv4 = (await import('uuid')).v4
   const now = new Date().toISOString()
 
@@ -402,6 +406,19 @@ export async function createDefaultRoutinesForWorkout(
         { id: uuidv4(), exercise_id: findExId("Squat"), name: "Squat" },
         { id: uuidv4(), exercise_id: findExId("Romanian Deadlift"), name: "Romanian Deadlift" },
         { id: uuidv4(), exercise_id: findExId("Calf Raise"), name: "Calf Raise" },
+      ],
+      created_at: now,
+      updated_at: now
+    },
+    {
+      id: uuidv4(),
+      workout_id: workoutId,
+      day_id: "flex",
+      name: "Custom Day",
+      exercises: [
+        { id: uuidv4(), exercise_id: findExId("Core Plank"), name: "Core Plank" },
+        { id: uuidv4(), exercise_id: findExId("Jumping Jacks"), name: "Jumping Jacks" },
+        { id: uuidv4(), exercise_id: findExId("Kettlebell Swings"), name: "Kettlebell Swings" },
       ],
       created_at: now,
       updated_at: now

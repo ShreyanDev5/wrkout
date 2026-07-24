@@ -167,25 +167,6 @@ export function WorkoutTracker() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
-      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-zinc-800/20 dark:border-zinc-800/40">
-        <div className="max-w-[480px] mx-auto flex items-center justify-between h-16 md:h-14 px-4 sm:px-4">
-          <h1
-            className="text-2xl md:text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-100 cursor-default select-none transition-all"
-          >
-            wrkout
-          </h1>
-          <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo_1.0-transparent.png"
-              alt="wrkout logo"
-              className="h-12 w-12 md:h-[42px] md:w-[42px] object-contain transition-all duration-300 hover:scale-105 hover:rotate-3"
-              style={{ minHeight: 40, minWidth: 40, marginTop: 1 }}
-            />
-          </div>
-        </div>
-      </header>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col min-h-0 flex-1">
         <div className="flex-1 container max-w-4xl mx-auto px-4 pt-6 pb-24 md:py-8 md:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TabsContent value="workout" className="mt-0 p-0" id="workout-tab">
@@ -197,6 +178,7 @@ export function WorkoutTracker() {
                 onUpdateWorkoutsAndDays={updateWorkoutsAndDays}
                 logs={workoutLogs}
                 onDeleteWorkoutLog={deleteWorkoutLog}
+                onNavigateToSettings={() => setActiveTab('settings')}
               />
             </ErrorBoundary>
           </TabsContent>
