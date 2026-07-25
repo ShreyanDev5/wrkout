@@ -885,12 +885,18 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 animate={{
                   height: "auto",
                   opacity: 1,
-                  transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
+                  transition: {
+                    height: { duration: 0.3, ease: [0.25, 1, 0.5, 1] },
+                    opacity: { duration: 0.25, ease: "easeOut" }
+                  }
                 }}
                 exit={{
                   height: 0,
                   opacity: 0,
-                  transition: { duration: 0.2, ease: "easeIn" }
+                  transition: {
+                    height: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
+                    opacity: { duration: 0.18, ease: "easeIn" }
+                  }
                 }}
                 className="space-y-6 pt-2 overflow-hidden"
               >
@@ -904,7 +910,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
-                      <p className="text-xs text-muted-foreground">Keep your recovery email updated for secure password resets.</p>
+                      <p className="text-xs text-muted-foreground">Set a backup email for secure account recovery.</p>
                     </div>
                   </div>
                   
@@ -955,8 +961,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       <Sparkles className="h-4 w-4 text-leg-dark" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground text-sm">Account &amp; Guide</h3>
-                      <p className="text-xs text-muted-foreground">Need help or switching accounts?</p>
+                      <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>
+                      <p className="text-xs text-muted-foreground">Review the onboarding guide or sign out.</p>
                     </div>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto">

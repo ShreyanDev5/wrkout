@@ -31,7 +31,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "split",
     title: "Build your split",
     subtitle: "",
-    description: "Organize Push, Pull, Legs, and Custom days in Settings.",
+    description: "Organize Push, Pull, Legs, and Custom days with ease in Settings.",
     icon: Dumbbell,
     iconClass: "text-push-dark",
     barClass: "bg-push-dark",
@@ -72,7 +72,7 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               label: "Push",
-              desc: "Chest & Delts",
+              desc: "Chest & Shoulders",
               tone: "bg-push-dark/15 text-push-dark border-push-dark/30",
               icon: Hand,
             },
@@ -119,7 +119,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging",
     title: "Log the set",
     subtitle: "",
-    description: "Record weight, reps, and target sets in one clean entry.",
+    description: "Record weight, reps, and target sets in one clean, simple entry.",
     icon: PlusCircle,
     iconClass: "text-pull-dark",
     barClass: "bg-pull-dark",
@@ -211,7 +211,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress",
     title: "Track progress",
     subtitle: "",
-    description: "Track progressive overload with visual trend indicators.",
+    description: "Track progressive overload session by session with visual trend indicators.",
     icon: TrendingUp,
     iconClass: "text-leg-dark",
     barClass: "bg-leg-dark",
@@ -266,22 +266,22 @@ const onboardingSteps: OnboardingStep[] = [
             {
               icon: ArrowUpRight,
               label: "Volume Up",
-              desc: "More weight/reps",
+              desc: "Higher weight & reps",
             },
             {
               icon: ArrowRight,
               label: "Same Volume",
-              desc: "Same performance",
+              desc: "Equal weight & reps",
             },
             {
               icon: ArrowDownRight,
               label: "Volume Down",
-              desc: "Less weight/reps",
+              desc: "Lower weight & reps",
             },
             {
               icon: Dot,
               label: "New Exercise",
-              desc: "First log entry",
+              desc: "First exercise entry",
             },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2 px-2.5 min-h-[44px]">
@@ -290,7 +290,7 @@ const onboardingSteps: OnboardingStep[] = [
               </span>
               <div className="text-left min-w-0">
                 <div className="text-[10px] font-bold text-zinc-200 leading-none">{item.label}</div>
-                <div className="text-[8.5px] text-zinc-400 font-medium leading-tight mt-1 break-words">{item.desc}</div>
+                <div className="text-[8.5px] text-zinc-400 font-medium leading-tight mt-1 whitespace-nowrap overflow-hidden text-ellipsis">{item.desc}</div>
               </div>
             </div>
           ))}
@@ -428,7 +428,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                       <h2 className="text-[1.2rem] font-extrabold tracking-tight text-foreground sm:text-lg">
                         {step.title}
                       </h2>
-                      <p className="mx-auto max-w-[280px] w-full px-1 text-[11px] font-medium leading-relaxed text-zinc-400">
+                      <p className="mx-auto max-w-[290px] w-full px-2 text-[11px] font-medium leading-relaxed text-zinc-400 text-center">
                         {step.description}
                       </p>
                     </div>
