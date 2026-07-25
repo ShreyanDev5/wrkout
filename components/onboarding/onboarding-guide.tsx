@@ -72,7 +72,7 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               label: "Push",
-              desc: "Chest & Shoulders",
+              desc: "Chest & Delts",
               tone: "bg-push-dark/15 text-push-dark border-push-dark/30",
               icon: Hand,
             },
@@ -107,7 +107,7 @@ const onboardingSteps: OnboardingStep[] = [
               </span>
               <div className="text-left min-w-0 flex-1">
                 <div className="text-[11px] font-bold text-foreground leading-none">{item.label}</div>
-                <div className="text-[9.5px] text-zinc-400 font-medium leading-tight mt-1 truncate">{item.desc}</div>
+                <div className="text-[9.5px] text-zinc-400 font-medium leading-tight mt-1 break-words">{item.desc}</div>
               </div>
             </motion.div>
           ))}
@@ -266,22 +266,22 @@ const onboardingSteps: OnboardingStep[] = [
             {
               icon: ArrowUpRight,
               label: "Volume Up",
-              desc: "Higher weight or reps",
+              desc: "More weight/reps",
             },
             {
               icon: ArrowRight,
               label: "Same Volume",
-              desc: "Equal performance",
+              desc: "Same performance",
             },
             {
               icon: ArrowDownRight,
               label: "Volume Down",
-              desc: "Lower weight or reps",
+              desc: "Less weight/reps",
             },
             {
               icon: Dot,
               label: "New Exercise",
-              desc: "First time logged",
+              desc: "First log entry",
             },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2 px-2.5 min-h-[44px]">
@@ -290,7 +290,7 @@ const onboardingSteps: OnboardingStep[] = [
               </span>
               <div className="text-left min-w-0">
                 <div className="text-[10px] font-bold text-zinc-200 leading-none">{item.label}</div>
-                <div className="text-[8.5px] text-zinc-400 font-medium leading-tight mt-1 truncate">{item.desc}</div>
+                <div className="text-[8.5px] text-zinc-400 font-medium leading-tight mt-1 break-words">{item.desc}</div>
               </div>
             </div>
           ))}
