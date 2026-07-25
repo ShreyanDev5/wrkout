@@ -883,9 +883,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             {isAccountExpanded && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
+                animate={{ opacity: 1, height: "auto", transition: { duration: 0.25, ease: "easeInOut" } }}
+                exit={{ opacity: 0, height: 0, transition: { duration: 0.16, ease: "easeIn" } }}
                 className="space-y-6 pt-2 overflow-hidden"
               >
                 <div className="w-full h-px bg-zinc-800/30 mb-2" />

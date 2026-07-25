@@ -72,25 +72,25 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               label: "Push",
-              desc: "Chest, Shoulders & Triceps",
+              desc: "Chest, Shoulders, Arms",
               tone: "bg-push-dark/15 text-push-dark border-push-dark/30",
               icon: Hand,
             },
             {
               label: "Pull",
-              desc: "Back, Biceps & Rear Delts",
+              desc: "Back, Biceps & Lats",
               tone: "bg-pull-dark/15 text-pull-dark border-pull-dark/30",
               icon: BicepsFlexed,
             },
             {
               label: "Legs",
-              desc: "Quads & Hamstrings",
+              desc: "Quads & Hams",
               tone: "bg-leg-dark/15 text-leg-dark border-leg-dark/30",
               icon: Footprints,
             },
             {
               label: "Custom",
-              desc: "Arms, Abs & Core Exercises",
+              desc: "Arms, Abs & Core",
               tone: "bg-flex-dark/15 text-flex-dark border-flex-dark/30",
               icon: Zap,
             },
@@ -265,19 +265,19 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               icon: ArrowUpRight,
-              text: "Higher weight or reps logged",
+              text: "Higher weight or reps",
             },
             {
               icon: ArrowRight,
-              text: "Equal weight and reps logged",
+              text: "Equal weight & reps",
             },
             {
               icon: ArrowDownRight,
-              text: "Lower weight or reps logged",
+              text: "Lower weight or reps",
             },
             {
               icon: Dot,
-              text: "First time logging exercise",
+              text: "First exercise logged",
             },
           ].map((item) => (
             <div key={item.text} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2.5 px-3 min-h-[46px]">
