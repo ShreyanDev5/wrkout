@@ -46,7 +46,7 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
 
                 <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-4 w-full">
                     {/* Fiery Icon Badge with Soft Amber Tint */}
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-500/15 shadow-sm text-3xl">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/20 bg-amber-500/8 shadow-none text-3xl">
                         🔥
                     </div>
 
@@ -54,12 +54,12 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
                         <DialogTitle className="text-lg font-extrabold tracking-tight text-white drop-shadow-sm">
                             Session Complete
                         </DialogTitle>
-                        <p className="text-[10px] font-extrabold text-amber-300 uppercase tracking-widest drop-shadow-sm">
+                        <p className="text-[10px] font-extrabold text-orange-500 uppercase tracking-widest drop-shadow-sm">
                             Show up. Execute. Repeat.
                         </p>
                     </div>
 
-                    {/* Compact Solid Deep Yellow Action Button */}
+                    {/* Compact Action Button with Reduced Glow */}
                     <div className="w-full flex justify-center pt-1">
                         <button
                             type="button"
@@ -67,7 +67,7 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
                                 haptic("light")
                                 onClose()
                             }}
-                            className="w-[124px] h-[38px] rounded-xl bg-amber-500 hover:bg-amber-400 text-[13.5px] font-extrabold text-zinc-950 transition-all active:scale-95 shadow-[0_4px_16px_rgba(245,158,11,0.25)] border-none cursor-pointer flex items-center justify-center"
+                            className="w-[124px] h-[38px] rounded-xl bg-amber-500 hover:bg-amber-400 text-[13.5px] font-extrabold text-zinc-950 transition-all active:scale-95 shadow-[0_2px_8px_rgba(245,158,11,0.15)] border-none cursor-pointer flex items-center justify-center"
                         >
                             Done
                         </button>

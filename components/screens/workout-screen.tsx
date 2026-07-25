@@ -410,7 +410,7 @@ export function WorkoutScreen({
                 Train
               </h1>
               <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
-                Today&apos;s Workout
+                Today&apos;s Agenda
               </p>
             </div>
 

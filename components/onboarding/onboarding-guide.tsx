@@ -376,8 +376,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         hideCloseButton
-        style={{ top: "50%" }}
-        className="w-[calc(100%-1rem)] max-w-[360px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-0 shadow-2xl backdrop-blur-2xl outline-none select-none"
+        className="w-[calc(100%-1.5rem)] max-w-[360px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/90 p-0 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl outline-none select-none my-auto"
       >
         <DialogTitle className="sr-only">Onboarding Guide</DialogTitle>
 

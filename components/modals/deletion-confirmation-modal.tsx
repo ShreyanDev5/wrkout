@@ -21,9 +21,9 @@ export function DeletionConfirmationModal({
   const getHeading = () => {
     switch (itemType) {
       case 'workout':
-        return 'Delete Workout Routine'
+        return 'Delete Routine'
       case 'day':
-        return 'Delete Workout Day'
+        return 'Delete Day'
       case 'exercise':
         return 'Delete Exercise'
       default:
@@ -36,7 +36,7 @@ export function DeletionConfirmationModal({
       case 'workout':
         return (
           <>
-            Are you sure you want to permanently delete the <span className="font-extrabold text-zinc-100">&quot;{itemName}&quot;</span> workout routine? All associated sessions and exercises will be removed. This action cannot be undone.
+            Are you sure you want to delete <span className="font-extrabold text-zinc-100">&quot;{itemName}&quot;</span>? All associated days and exercises will be removed.
           </>
         )
       case 'day':

@@ -17,8 +17,15 @@ import {
   AlertCircle,
   Mail,
   ChevronDown,
-  ShieldCheck,
+  User,
 } from "lucide-react"
+
+const DEFAULT_EXERCISE_SUGGESTIONS = [
+  "Incline Dumbbell Press", "Bench Press", "Shoulder Press", "Triceps Pushdown",
+  "Lat Pulldown", "Barbell Row", "Bicep Curl", "Squat", "Romanian Deadlift",
+  "Calf Raise", "Leg Press", "Hammer Curl", "Chest Fly", "Overhead Extension",
+  "Core Plank", "Jumping Jacks", "Kettlebell Swings", "Lateral Raise", "Face Pull"
+]
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { formatDate, getWorkoutDayIcon, getWorkoutDayColor, cn } from "@/lib/utils"
@@ -228,8 +235,16 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
   const filteredExercises = useMemo(() => {
     if (!newExerciseName.trim()) return [];
-    return availableExercises.filter(e => 
-      e.name.toLowerCase().includes(newExerciseName.toLowerCase())
+    const query = newExerciseName.toLowerCase().trim();
+    const combinedMap = new Map<string, { id?: string; name: string }>();
+    DEFAULT_EXERCISE_SUGGESTIONS.forEach(name => {
+      combinedMap.set(name.toLowerCase(), { name });
+    });
+    availableExercises.forEach(e => {
+      combinedMap.set(e.name.toLowerCase(), { id: e.id, name: e.name });
+    });
+    return Array.from(combinedMap.values()).filter(e => 
+      e.name.toLowerCase().includes(query)
     );
   }, [availableExercises, newExerciseName]);
 
@@ -301,7 +316,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       }))
 
       toast({
-        title: "Workout Added",
+        title: "Routine created",
         description: `${newWorkoutName} created with default routines.`,
         className: "bg-emerald-950/90 border border-emerald-800/30 text-emerald-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
       })
@@ -335,7 +350,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
     toast({
       variant: "destructive",
-      title: "Workout Deleted",
+      title: "Routine deleted",
       description: `${workoutToDelete.name} has been removed.`,
     });
     setWorkoutToDelete(null);
@@ -581,7 +596,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           Settings
         </h1>
         <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
-          Routines & Exercises
+          Routines & Account
         </p>
       </div>
 
@@ -801,17 +816,21 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             ) : (
               <motion.div
                 variants={itemVariants}
-                className="text-center py-6 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700"
+                className="text-center py-6 rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 p-4"
               >
-                <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Dumbbell className="h-5 w-5 text-zinc-400" />
+                <div className="w-9 h-9 bg-zinc-800/80 rounded-full flex items-center justify-center mx-auto mb-2 border border-zinc-700/50">
+                  <Dumbbell className="h-4 w-4 text-zinc-400" />
                 </div>
-                <h3 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">No Workouts Yet</h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 max-w-xs mx-auto">
+                <h3 className="text-sm font-semibold text-zinc-200 mb-1">No routines yet</h3>
+                <p className="text-[11px] text-zinc-400 mb-3 max-w-xs mx-auto">
                   Create your first routine to start tracking.
                 </p>
-                <Button onClick={() => setIsAddWorkoutOpen(true)}>
-                  Create Workout
+                <Button
+                  size="sm"
+                  onClick={() => setIsAddWorkoutOpen(true)}
+                  className="h-8 px-3.5 text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 shadow-sm transition-all"
+                >
+                  Create Routine
                 </Button>
               </motion.div>
             )}
@@ -829,11 +848,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           >
             <div className="flex items-center gap-2.5">
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-flex-dark/10 border border-flex-dark/20 text-flex-dark shadow-sm">
-                <ShieldCheck className="h-4 w-4 text-flex-dark" />
+                <User className="h-4 w-4 text-flex-dark" />
               </div>
               <div>
                 <h2 className="text-base font-extrabold text-zinc-100 tracking-tight">
-                  Account &amp; Security
+                  Account
                 </h2>
               </div>
             </div>
@@ -1079,12 +1098,17 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       <ul className="py-1">
                         {filteredExercises.map((ex, idx) => (
                           <li
-                            key={ex.id}
+                            key={ex.id || ex.name}
                             className={`flex items-center gap-2 px-3 py-2 text-[11.5px] font-medium cursor-pointer transition-all duration-150 border-l-[3px] ${
                               idx === highlightedIndex 
                                 ? 'bg-flex-dark/15 text-flex-dark border-flex-dark pl-[10px]' 
                                 : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border-transparent'
                             }`}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setNewExerciseName(ex.name);
+                              setShowSuggestions(false);
+                            }}
                             onClick={() => {
                               setNewExerciseName(ex.name);
                               setShowSuggestions(false);

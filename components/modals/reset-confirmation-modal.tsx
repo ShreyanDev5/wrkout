@@ -30,14 +30,14 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
         cancelAria = 'Cancel sign out';
         confirmAria = 'Confirm sign out';
     } else if (intent === 'delete') {
-        heading = 'Delete Workout Routine';
+        heading = 'Delete Routine';
         buttonLabel = 'Delete';
         cancelAria = 'Cancel delete';
         confirmAria = 'Confirm delete';
     }
     // Fallback to message matching if intent is generic 'reset'
     else if (message?.toLowerCase().includes('delete') && intent === 'reset') {
-        heading = 'Delete Workout Routine';
+        heading = 'Delete Routine';
         buttonLabel = 'Delete';
     } else if (message?.toLowerCase().includes('start a new workout') && intent === 'reset') {
         heading = 'Start New Workout';
@@ -47,7 +47,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
     if (message && intent === 'reset' && buttonLabel === 'Reset') {
         // Legacy generic fallback
         if (message.startsWith('Are you sure you want to delete')) {
-            heading = 'Delete Workout Routine';
+            heading = 'Delete Routine';
             buttonLabel = 'Delete';
         } else if (message.includes('start a new workout')) {
             heading = 'Start New Workout';
