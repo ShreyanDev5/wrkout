@@ -952,11 +952,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       <p className="text-xs text-muted-foreground">Review the onboarding guide or sign out.</p>
                     </div>
                   </div>
-                  <div className="flex gap-2 w-full sm:w-auto pt-1">
+                  <div className="grid grid-cols-2 gap-2.5 w-full pt-1">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
+                      className="w-full h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-zinc-700/50 text-zinc-300 transition-all text-xs font-medium border border-zinc-700/30"
                       onClick={() => {
                         haptic("light");
                         setShowOnboarding(true);
@@ -967,7 +967,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex-1 sm:flex-none h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
+                      className="w-full h-8 px-3 rounded-lg bg-zinc-800/40 hover:bg-red-900/20 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/30"
                       onClick={() => {
                         haptic("warning");
                         setIsSignOutOpen(true);
