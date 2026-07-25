@@ -18,6 +18,7 @@ import {
   Mail,
   ChevronDown,
   User,
+  SlidersHorizontal,
 } from "lucide-react"
 
 const DEFAULT_EXERCISE_SUGGESTIONS = [
@@ -881,32 +882,19 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           <AnimatePresence>
             {isAccountExpanded && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{
-                  height: "auto",
-                  opacity: 1,
-                  transition: {
-                    height: { duration: 0.3, ease: [0.25, 1, 0.5, 1] },
-                    opacity: { duration: 0.25, ease: "easeOut" }
-                  }
-                }}
-                exit={{
-                  height: 0,
-                  opacity: 0,
-                  transition: {
-                    height: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
-                    opacity: { duration: 0.18, ease: "easeIn" }
-                  }
-                }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="space-y-6 pt-2 overflow-hidden"
               >
                 <div className="w-full h-px bg-zinc-800/30 mb-2" />
                 
                 {/* Recovery Email Form */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-pull-dark/10 border border-pull-dark/20 text-pull-dark flex-shrink-0">
-                      <Mail className="h-4 w-4 text-pull-dark" />
+                  <div className="flex items-start gap-3">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 shadow-sm flex-shrink-0 mt-0.5">
+                      <Mail className="h-3.5 w-3.5 text-zinc-300" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
@@ -956,9 +944,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
                 {/* Account Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-leg-dark/10 border border-leg-dark/20 text-leg-dark flex-shrink-0">
-                      <Sparkles className="h-4 w-4 text-leg-dark" />
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 shadow-sm flex-shrink-0 mt-0.5">
+                      <SlidersHorizontal className="h-3.5 w-3.5 text-zinc-300" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>

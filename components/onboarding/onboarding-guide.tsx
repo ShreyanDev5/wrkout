@@ -72,25 +72,25 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               label: "Push",
-              desc: "Chest & Shoulders",
+              desc: "Chest, Shoulders & Triceps",
               tone: "bg-push-dark/15 text-push-dark border-push-dark/30",
               icon: Hand,
             },
             {
               label: "Pull",
-              desc: "Back & Biceps",
+              desc: "Back, Biceps & Rear Delts",
               tone: "bg-pull-dark/15 text-pull-dark border-pull-dark/30",
               icon: BicepsFlexed,
             },
             {
               label: "Legs",
-              desc: "Quads & Calves",
+              desc: "Quads & Hamstrings",
               tone: "bg-leg-dark/15 text-leg-dark border-leg-dark/30",
               icon: Footprints,
             },
             {
               label: "Custom",
-              desc: "Arms & Core",
+              desc: "Arms, Abs & Core Exercises",
               tone: "bg-flex-dark/15 text-flex-dark border-flex-dark/30",
               icon: Zap,
             },
@@ -119,7 +119,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging",
     title: "Log the set",
     subtitle: "",
-    description: "Record weight, reps, and target sets in one clean, simple entry.",
+    description: "Record weight, reps, and sets in a single entry by logging either your last set or the average across all sets.",
     icon: PlusCircle,
     iconClass: "text-pull-dark",
     barClass: "bg-pull-dark",
@@ -211,7 +211,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress",
     title: "Track progress",
     subtitle: "",
-    description: "Track progressive overload session by session with visual trend indicators.",
+    description: "Volume compares your previous workout to today's session, displaying real-time progress indicators.",
     icon: TrendingUp,
     iconClass: "text-leg-dark",
     barClass: "bg-leg-dark",
@@ -265,32 +265,27 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               icon: ArrowUpRight,
-              label: "Volume Up",
-              desc: "Higher weight & reps",
+              text: "Higher weight or reps logged",
             },
             {
               icon: ArrowRight,
-              label: "Same Volume",
-              desc: "Equal weight & reps",
+              text: "Equal weight and reps logged",
             },
             {
               icon: ArrowDownRight,
-              label: "Volume Down",
-              desc: "Lower weight & reps",
+              text: "Lower weight or reps logged",
             },
             {
               icon: Dot,
-              label: "New Exercise",
-              desc: "First exercise entry",
+              text: "First time logging exercise",
             },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2 px-2.5 min-h-[44px]">
+            <div key={item.text} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2.5 px-3 min-h-[46px]">
               <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-zinc-700/60 bg-zinc-950 text-zinc-300">
                 <item.icon className="h-2.5 w-2.5" strokeWidth={2.5} />
               </span>
-              <div className="text-left min-w-0">
-                <div className="text-[10px] font-bold text-zinc-200 leading-none">{item.label}</div>
-                <div className="text-[8.5px] text-zinc-400 font-medium leading-tight mt-1 whitespace-nowrap overflow-hidden text-ellipsis">{item.desc}</div>
+              <div className="text-left min-w-0 flex-1">
+                <div className="text-[9.5px] font-medium text-zinc-300 leading-tight break-words">{item.text}</div>
               </div>
             </div>
           ))}
