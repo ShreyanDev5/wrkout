@@ -942,8 +942,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 <div className="w-full h-px bg-zinc-800/30 my-4" />
 
                 {/* Account Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
                     <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 shadow-sm flex-shrink-0 mt-0.5">
                       <SlidersHorizontal className="h-3.5 w-3.5 text-zinc-300" />
                     </div>
@@ -952,7 +952,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       <p className="text-xs text-muted-foreground">Review the onboarding guide or sign out.</p>
                     </div>
                   </div>
-                  <div className="flex gap-2 w-full sm:w-auto">
+                  <div className="flex gap-2 w-full sm:w-auto pt-1">
                     <Button
                       variant="ghost"
                       size="sm"
