@@ -72,7 +72,7 @@ const onboardingSteps: OnboardingStep[] = [
           {[
             {
               label: "Push",
-              desc: "Chest, Shoulders, Arms",
+              desc: "Chest & Shoulders",
               tone: "bg-push-dark/15 text-push-dark border-push-dark/30",
               icon: Hand,
             },
@@ -84,7 +84,7 @@ const onboardingSteps: OnboardingStep[] = [
             },
             {
               label: "Legs",
-              desc: "Quads & Hams",
+              desc: "Quads & Hamstrings",
               tone: "bg-leg-dark/15 text-leg-dark border-leg-dark/30",
               icon: Footprints,
             },
