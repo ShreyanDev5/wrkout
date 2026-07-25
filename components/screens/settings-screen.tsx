@@ -998,12 +998,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
           className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
         >
           <DialogHeader className="w-full flex flex-col items-center">
-            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+            <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
               <Plus className="h-5 w-5 text-flex-dark" aria-hidden="true" />
             </div>
             <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Routine</DialogTitle>
+            <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-1 mt-1 mb-4">
+              Create a new workout routine. Push, Pull, Legs, and Custom days will be set up automatically.
+            </p>
           </DialogHeader>
-          <div className="py-3 w-full">
+          <div className="w-full pt-1 pb-1">
             <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
             <Input
               id="workout-name"
@@ -1168,19 +1171,21 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <ResetConfirmationModal
         isOpen={isDeleteAllWorkoutsOpen}
         onClose={() => setIsDeleteAllWorkoutsOpen(false)}
+        intent="delete"
         onConfirm={() => {
           if (pendingDeleteWorkoutId) {
             onUpdateWorkoutsAndDays(workouts.filter((w) => w.id !== pendingDeleteWorkoutId), workoutDays);
             toast({
-              title: "Workout Deleted",
-              description: "Last workout routine removed.",
+              variant: "destructive",
+              title: "Routine deleted",
+              description: "Last routine deleted.",
               className: "bg-red-950/90 border border-red-800/30 text-red-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-2xl",
             });
             setPendingDeleteWorkoutId(null);
           }
         }}
         dayColor="#EA4335"
-        message={"Are you sure you want to delete your last workout routine? This will remove all associated days and exercises. This action cannot be undone."}
+        message={"Are you sure you want to delete your last routine? All associated days and exercises will be removed."}
       />
 
       <DeletionConfirmationModal

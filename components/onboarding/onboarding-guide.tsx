@@ -31,7 +31,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "split",
     title: "Build your split",
     subtitle: "",
-    description: "Organize your routine around Push, Pull, Legs, and Custom days. Easily personalize your training split in Settings.",
+    description: "Organize Push, Pull, Legs, and Custom days in Settings.",
     icon: Dumbbell,
     iconClass: "text-push-dark",
     barClass: "bg-push-dark",
@@ -119,7 +119,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging",
     title: "Log the set",
     subtitle: "",
-    description: "Record just one entry per exercise: weight, reps, and target sets. Simple and clean.",
+    description: "Record weight, reps, and target sets in one clean entry.",
     icon: PlusCircle,
     iconClass: "text-pull-dark",
     barClass: "bg-pull-dark",
@@ -211,7 +211,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress",
     title: "Track progress",
     subtitle: "",
-    description: "Visual trend indicators show whether you are progressively overloading compared to previous sessions.",
+    description: "Track progressive overload with visual trend indicators.",
     icon: TrendingUp,
     iconClass: "text-leg-dark",
     barClass: "bg-leg-dark",
@@ -428,7 +428,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                       <h2 className="text-[1.2rem] font-extrabold tracking-tight text-foreground sm:text-lg">
                         {step.title}
                       </h2>
-                      <p className="mx-auto max-w-[260px] text-[11px] font-medium leading-relaxed text-zinc-400">
+                      <p className="mx-auto max-w-[280px] w-full px-1 text-[11px] font-medium leading-relaxed text-zinc-400">
                         {step.description}
                       </p>
                     </div>

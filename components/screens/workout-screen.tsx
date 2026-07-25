@@ -322,26 +322,24 @@ export function WorkoutScreen({
             className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
           >
             <DialogHeader className="w-full flex flex-col items-center">
-              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
                 <PlusCircle className="h-5 w-5 text-flex-dark" aria-hidden="true" />
               </div>
               <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Routine</DialogTitle>
-            </DialogHeader>
-            
-            <div className="py-2.5 w-full flex flex-col items-center">
-              <p className="text-xs leading-relaxed text-zinc-400 text-center px-0.5 mb-3">
+              <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-1 mt-1 mb-4">
                 Create a new workout routine. Push, Pull, Legs, and Custom days will be set up automatically.
               </p>
-              <div className="w-full">
-                <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
-                <Input
-                  id="workout-name"
-                  value={newWorkoutName}
-                  onChange={(e) => setNewWorkoutName(e.target.value)}
-                  placeholder="e.g. Summer Cut, Bulking..."
-                  className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
-                />
-              </div>
+            </DialogHeader>
+            
+            <div className="w-full pt-1 pb-1">
+              <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
+              <Input
+                id="workout-name"
+                value={newWorkoutName}
+                onChange={(e) => setNewWorkoutName(e.target.value)}
+                placeholder="e.g. Summer Cut, Bulking..."
+                className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
+              />
             </div>
 
             {/* Buttons Row */}
