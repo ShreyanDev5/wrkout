@@ -1,92 +1,84 @@
-# <img src="public/logo_1.0-transparent.png" width="48" height="48" align="center" />wrkout
+# wrkout
 
-A fast, simple workout tracker built with **Next.js** and **Supabase**, optimized specifically for the **Push, Pull, Legs (PPL)** split. Built to log workouts without ads, subscriptions, or clutter.
+Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
 
-Most workout apps are slow, bloated, or locked behind paywalls. `wrkout` is a clean, single-page web app designed to log your sets in under 2 seconds so you can focus on lifting.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-blue?style=flat-square)](https://wrkout-tracker.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com/)
 
-![wrkout Home Page](public/readme_home_page.png)
-
----
-
-## ⚡ Features
-
-- **Fast Logging**: Contextual inline logger with custom number steppers.
-- **Volume & Trend Tracking**: Shows exercise volume trends compared to your previous workouts.
-- **Clean UI**: Dark-mode first design with smooth Framer Motion transitions.
-- **Tactile Feedback**: Audio ticks and mobile vibration (haptics) when you log sets.
-- **Simple Auth**: Login with just a username. Internally maps to a secure Supabase account.
-- **Routine Builder**: Create custom splits (like Push-Pull-Legs) and add your own exercises.
+![wrkout Preview](public/readme_home_page.png)
 
 ---
 
-## 🛠️ Tech Stack
+## Features
 
-- **Framework**: Next.js 15 (App Router) & React 18
-- **Database & Auth**: Supabase (PostgreSQL)
-- **State Management**: Zustand & Immer
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **Libraries**: Sonner (Toasts), Lucide React (Icons)
-- **AI Tools**: v0, Cursor, Windsurf, Gemini CLI, Qwen CLI, Codex, GitHub Copilot, Antigravity
-- **Deployment**: Vercel
+- **Rapid Set Logging**: Inline steppers to record weight and reps in seconds.
+- **Volume & Overload Tracking**: Auto-calculates volume and flags progress against previous sessions.
+- **PPL Routine Builder**: Custom workout split management and exercise library.
+- **Simple Auth**: Frictionless username login mapped to secure Supabase accounts.
+- **Tactile Feedback**: Audio clicks and device vibration on set completion.
 
 ---
 
-## 🔑 Local Setup
+## Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js 15 (App Router), React 18, TypeScript, Tailwind CSS, Framer Motion |
+| **State** | Zustand, Immer |
+| **Backend & DB** | Supabase (PostgreSQL, Auth, Migrations) |
+| **UI & Icons** | Radix UI, Lucide React, Sonner (Toasts) |
+| **Deployment** | Vercel |
+
+---
+
+## Project Structure
+
+```text
+wrkout/
+├── app/          # App Router pages, auth routes, and API endpoints
+├── components/   # UI components and workout modals
+├── hooks/        # Hooks for app state, audio, and haptics
+├── lib/          # Supabase client and shared utilities
+├── public/       # Static assets, audio, and icons
+└── supabase/     # Database schema and migrations
+```
+
+---
+
+## Quickstart
 
 ### Prerequisites
-- Node.js (v18+)
-- Docker (required to run Supabase locally)
+- Node.js 18+
+- Docker Desktop (running with WSL 2 backend)
 
-### 1. Clone the repository
+### 1. Clone & Install
 ```bash
-git clone https://github.com/yourusername/wrkout.git
+git clone https://github.com/ShreyanDev5/wrkout.git
 cd wrkout
+npm install
 ```
 
-### 2. Start the local database
-This project uses the Supabase CLI to run a local database instance.
-```bash
-npx supabase start
-```
-This command runs the database migrations automatically. Copy the local credentials outputted in the terminal:
-- `API URL`
-- `anon key`
-- `service_role key`
-
-### 3. Set up environment variables
+### 2. Environment Setup
 Create a `.env.local` file in the root directory:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-local-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-local-service-role-key
 
-# Optional: configure Resend for email delivery
+# Optional: leave blank to log reset codes in terminal
 RESEND_API_KEY=
-PASSWORD_RESET_FROM_EMAIL=noreply@yourdomain.com
 ```
-*Note: If `RESEND_API_KEY` is left empty, password recovery codes will log directly to your terminal console for local testing.*
 
-### 4. Install and Run
+### 3. Start DB & Dev Server
 ```bash
-npm install
+npx supabase start
 npm run dev
 ```
-Open [http://localhost:3000].
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📂 Project Structure
+## Author
 
-- **`app/`**: Routes, recovery pages, and auth API endpoints.
-- **`components/`**: Layouts, modals, and custom UI components.
-- **`hooks/`**: Custom hooks for app logic, audio, and haptics.
-- **`lib/`**: Supabase client, local storage helpers, and database types.
-- **`supabase/`**: Database migrations and configuration.
-
----
-
-## 🌐 Deployment
-
-* **Platform**: [Vercel](https://vercel.com)
-* **Live Link**: [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
+**Shreyan Sardar** — [Portfolio](https://shreyandev.vercel.app) · [GitHub](https://github.com/ShreyanDev5) · [Live Demo](https://wrkout-tracker.vercel.app/)
