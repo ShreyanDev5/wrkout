@@ -2,9 +2,7 @@
 
 Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-blue?style=flat-square)](https://wrkout-tracker.vercel.app/)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com/)
+**Live Demo:** [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
 
 ![wrkout Preview](public/readme_home_page.png)
 
@@ -28,6 +26,7 @@ Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. L
 | **State** | Zustand, Immer |
 | **Backend & DB** | Supabase (PostgreSQL, Auth, Migrations) |
 | **UI & Icons** | Radix UI, Lucide React, Sonner (Toasts) |
+| **AI Tooling** | Antigravity, Cursor |
 | **Deployment** | Vercel |
 
 ---
