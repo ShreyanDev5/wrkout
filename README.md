@@ -1,4 +1,4 @@
-# wrkout
+# <img src="public/logo_1.0-transparent.png" alt="wrkout" width="36" height="36" valign="middle" /> wrkout
 
 Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
 
