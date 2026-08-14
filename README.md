@@ -1,4 +1,4 @@
-# <img src="public/logo_1.0-transparent.png" width="48" height="48" align="center" />wrkout
+# <img src="public/logo_1.0-transparent.png" height="52" width="29" align="center" />wrkout
 
 Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
 
