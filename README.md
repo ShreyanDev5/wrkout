@@ -11,7 +11,7 @@ Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. L
 
 | Workout Dashboard & Logger |
 | :---: |
-| <img src="public/readme_home_page.png" alt="wrkout Dashboard" width="100%" /> |
+| <img src="public/readme_home_page.png" width="800" alt="wrkout Dashboard" /> |
 
 ---
 
@@ -53,9 +53,9 @@ wrkout/
 
 ### Prerequisites
 
-- Node.js 18+
-- Docker Desktop (for local Supabase database)
-- Git
+- **Node.js**: `18+`
+- **Docker Desktop**: For local Supabase CLI database
+- **Git**: `2.x` or higher
 
 ### 1. Clone & Install
 
@@ -92,8 +92,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Deployment
 
-- **Hosted Application**: [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
+- **Live Application**: [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
 - **Database & Backend Services**: [Supabase Cloud](https://supabase.com)
+- **Platform**: Hosted on [Vercel](https://vercel.com)
 
 ---
 
