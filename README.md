@@ -2,7 +2,7 @@
 
 Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-000000?style=flat-square&logo=vercel&logoColor=white)](https://wrkout-tracker.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-blue?style=flat-square&logo=vercel&logoColor=white)](https://wrkout-tracker.vercel.app/)
 [![Database](https://img.shields.io/badge/Database-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
 
 ---
