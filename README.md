@@ -11,7 +11,7 @@ Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. L
 
 | Workout Dashboard & Logger |
 | :---: |
-| <img src="public/readme_home_page.png" width="800" alt="wrkout Dashboard" /> |
+| <img src="public/readme_home_page.png" width="100%" alt="wrkout Dashboard" /> |
 
 ---
 
