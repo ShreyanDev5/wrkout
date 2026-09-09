@@ -19,7 +19,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PlusCircle, Dumbbell, ChevronDown, Check } from "lucide-react"
+import { PlusCircle, Dumbbell, ChevronDown } from "lucide-react"
 import { v4 as uuidv4 } from 'uuid'
 import { useAuth } from '@/lib/auth'
 
@@ -300,7 +300,7 @@ export function WorkoutScreen({
 
   if (workouts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[350px] p-8 text-center rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md max-w-[480px] mx-auto select-none my-8">
+      <div className="flex flex-col items-center justify-center min-h-[350px] p-8 text-center rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md max-w-[410px] mx-auto select-none my-8">
         <div className="w-14 h-14 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center mb-4 shadow-sm text-zinc-300">
           <Dumbbell className="h-7 w-7 text-zinc-400" />
         </div>
@@ -319,35 +319,35 @@ export function WorkoutScreen({
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
           <DialogContent 
             hideCloseButton
-            className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
+            className="w-[88%] max-w-[280px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/98 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
           >
             <DialogHeader className="w-full flex flex-col items-center">
-              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
-                <PlusCircle className="h-5 w-5 text-flex-dark" aria-hidden="true" />
+              <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+                <PlusCircle className="h-4.5 w-4.5 text-flex-dark" strokeWidth={2} aria-hidden="true" />
               </div>
               <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">New Routine</DialogTitle>
-              <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-1 mt-1 mb-4">
-                Create a new workout routine. Push, Pull, Legs, and Custom days will be set up automatically.
+              <p className="text-[11.5px] leading-relaxed text-zinc-400 text-center px-1 mt-0.5 mb-3">
+                Name your routine to get started.
               </p>
             </DialogHeader>
             
             <div className="w-full pt-1 pb-1">
-              <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 px-1">Routine Name</Label>
+              <Label htmlFor="workout-name" className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1.5 px-1">Routine Name</Label>
               <Input
                 id="workout-name"
                 value={newWorkoutName}
                 onChange={(e) => setNewWorkoutName(e.target.value)}
                 placeholder="e.g. Summer Cut, Bulking..."
-                className="h-10 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
+                className="h-9 rounded-xl border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"
               />
             </div>
 
             {/* Buttons Row */}
-            <div className="flex flex-row justify-between gap-2.5 mt-3 w-full px-0.5">
+            <div className="flex flex-row justify-between gap-2.5 mt-2.5 w-full px-0.5">
               <button
                 type="button"
                 onClick={() => setIsAddWorkoutOpen(false)}
-                className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
+                className="flex-1 h-9 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
                 aria-label="Cancel add workout"
               >
                 Cancel
@@ -385,7 +385,7 @@ export function WorkoutScreen({
                     console.error("Error creating workout with default days:", error)
                   }
                 }}
-                className="flex-1 h-10 rounded-xl bg-flex-dark hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none px-4 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
+                className="flex-1 h-9 rounded-xl bg-flex-dark hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none px-3 text-xs font-bold text-white transition-all active:scale-95 shadow-sm border-none"
                 aria-label="Confirm add workout"
               >
                 Add Routine
@@ -399,76 +399,77 @@ export function WorkoutScreen({
 
   return (
     <>
-      <Card className="border-0 shadow-none bg-transparent max-w-[480px] mx-auto w-full workout-selector">
+      <Card className="border-0 shadow-none bg-transparent max-w-[410px] mx-auto w-full workout-selector">
         <CardContent className="px-3 sm:px-4 pt-0 pb-2">
           <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-            {/* Unified Page Header */}
-            <div className="flex flex-col gap-1 mb-6 pt-2 sm:pt-4">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-                Train
-              </h1>
-              <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
-                Today&apos;s Agenda
-              </p>
-            </div>
+            {/* Unified Page Header with Header Routine Selector */}
+            <div className="flex items-start justify-between mb-5 pt-2 sm:pt-4">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                  Train
+                </h1>
+                <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
+                  Today&apos;s Workout
+                </p>
+              </div>
 
-            {/* Rebuilt Custom Routine Selector Dropdown (Edge-Safe & High Contrast) */}
-            <div className="relative w-full mb-4" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsRoutineDropdownOpen((prev) => !prev)}
-                className="w-full h-10 px-3.5 ios-segmented-container hover:bg-zinc-800/80 active:scale-[0.99] transition-all rounded-xl text-xs font-semibold text-zinc-200 focus:outline-none border border-zinc-800 shadow-sm flex items-center justify-between"
-                aria-haspopup="listbox"
-                aria-expanded={isRoutineDropdownOpen}
-              >
-                <div className="flex items-center gap-2 min-w-0 truncate">
-                  <Dumbbell className="h-4 w-4 text-zinc-400 flex-shrink-0" />
-                  <span className="text-xs text-zinc-400 font-semibold flex-shrink-0">Routine:</span>
-                  <span className="truncate font-bold text-zinc-100">{currentWorkout?.name || "Select Routine"}</span>
-                </div>
-                <ChevronDown className={cn("h-4 w-4 text-zinc-400 transition-transform duration-200 flex-shrink-0 ml-2", isRoutineDropdownOpen && "rotate-180")} />
-              </button>
+              {/* Routine Selector Dropdown (Minimal Header Trigger) */}
+              <div className="relative mt-1" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsRoutineDropdownOpen((prev) => !prev)}
+                  className="h-8 px-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors flex items-center gap-1.5 cursor-pointer max-w-[180px]"
+                  aria-haspopup="listbox"
+                  aria-expanded={isRoutineDropdownOpen}
+                >
+                  <span className="truncate font-semibold text-zinc-200">{currentWorkout?.name || "Select Routine"}</span>
+                  <ChevronDown className={cn("h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 flex-shrink-0", isRoutineDropdownOpen && "rotate-180")} />
+                </button>
 
-              {isRoutineDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 w-full mt-1.5 z-50 bg-zinc-900 border border-zinc-700/90 rounded-xl p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-100">
-                  <div className="max-h-60 overflow-y-auto py-0.5 space-y-0.5" role="listbox">
-                    {workouts.map((workout) => {
-                      const isChecked = workout.id === selectedWorkout
-                      return (
-                        <button
-                          key={workout.id}
-                          type="button"
-                          role="option"
-                          aria-selected={isChecked}
-                          onClick={() => {
-                            setSelectedWorkout(workout.id)
-                            saveSelectedWorkout(workout.id).catch(() => {})
-                            setIsRoutineDropdownOpen(false)
-                          }}
-                          className={cn(
-                            "w-full flex items-center justify-between px-3.5 py-2.5 text-xs rounded-lg transition-colors text-left",
-                            isChecked
-                              ? "bg-zinc-800 text-white font-bold"
-                              : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white font-medium"
-                          )}
-                        >
-                          <span className="truncate">{workout.name}</span>
-                          {isChecked && <Check className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0 ml-2" />}
-                        </button>
-                      )
-                    })}
+                {isRoutineDropdownOpen && (
+                  <div className="absolute top-full right-0 w-48 mt-1.5 z-50 bg-zinc-900 border border-zinc-700/90 rounded-xl p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-100">
+                    <div className="max-h-60 overflow-y-auto py-0.5 space-y-0.5" role="listbox">
+                      {workouts.map((workout) => {
+                        const isChecked = workout.id === selectedWorkout
+                        return (
+                          <button
+                            key={workout.id}
+                            type="button"
+                            role="option"
+                            aria-selected={isChecked}
+                            onClick={() => {
+                              setSelectedWorkout(workout.id)
+                              saveSelectedWorkout(workout.id).catch(() => {})
+                              setIsRoutineDropdownOpen(false)
+                            }}
+                            className={cn(
+                              "w-full flex items-center px-3 py-2 text-xs rounded-lg transition-colors text-left",
+                              isChecked
+                                ? "bg-zinc-800 text-white font-semibold"
+                                : "text-zinc-400 hover:bg-zinc-800/60 hover:text-white font-medium"
+                            )}
+                          >
+                            <span className="truncate">{workout.name}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Day Tabs Selector - Native Apple iOS Segmented Control */}
-            <div className="mb-6">
-              <TabsList className="grid grid-cols-4 w-full h-auto min-h-[44px] ios-segmented-container p-[4px] rounded-xl gap-1 items-center overflow-hidden">
+            <div className="mb-4">
+              <TabsList className="grid grid-cols-4 w-full h-auto min-h-[36px] ios-segmented-container p-[3px] rounded-xl gap-1 items-center overflow-hidden">
                 {displayDays.map((d) => {
                   const day = d.day_id
                   const dayColor = getWorkoutDayColor(day, colorMode)
-                  const label = (day === 'flex' || day === 'flexible' || day === 'custom') ? 'Custom' : day.charAt(0).toUpperCase() + day.slice(1)
+                  const label = (day === 'leg' || day === 'legs') 
+                    ? 'Legs' 
+                    : (day === 'flex' || day === 'flexible' || day === 'custom') 
+                      ? 'Custom' 
+                      : day.charAt(0).toUpperCase() + day.slice(1)
                   const isSelected = selectedDay === day
 
                   return (
@@ -476,8 +477,8 @@ export function WorkoutScreen({
                       key={day}
                       value={day}
                       className={cn(
-                        'w-full min-w-0 h-9 rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 transition-all duration-150 ease-out select-none border',
-                        'text-[11px] sm:text-xs font-semibold tracking-tight my-0',
+                        'w-full min-w-0 h-[30px] rounded-lg flex items-center justify-center px-1 sm:px-2 transition-all duration-150 ease-out select-none border',
+                        'text-[11px] font-semibold tracking-tight my-0',
                         isSelected
                           ? 'font-bold shadow-sm'
                           : 'bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.04]'
@@ -485,15 +486,14 @@ export function WorkoutScreen({
                       style={{
                         color: isSelected ? dayColor : undefined,
                         backgroundColor: isSelected
-                          ? `color-mix(in srgb, ${dayColor} 10%, #202024)`
+                          ? `color-mix(in srgb, ${dayColor} 7%, #1a1a1e)`
                           : undefined,
                         borderColor: isSelected
-                          ? `color-mix(in srgb, ${dayColor} 22%, #38383c)`
+                          ? `color-mix(in srgb, ${dayColor} 16%, #2c2c30)`
                           : 'transparent'
                       }}
                       aria-label={`${label} day`}
                     >
-                      {getWorkoutDayIcon(day, true, 'h-3.5 w-3.5 flex-shrink-0')}
                       <span className="truncate">{label}</span>
                     </TabsTrigger>
                   )

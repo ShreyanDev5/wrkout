@@ -5,7 +5,7 @@ import { ArrowLeft, Shield, Lock, Database, EyeOff, Trash2 } from "lucide-react"
 
 export default function PrivacyPage() {
   return (
-    <main className="relative isolate min-h-screen bg-zinc-950 text-foreground flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+    <main className="relative isolate min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
       {/* Subtle luxury ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-flex-dark/5 blur-[140px]" />
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
             </div>
 
             <div className="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800/60 bg-zinc-900/60">
-              <Trash2 className="h-4 w-4 text-rose-400 mt-0.5 flex-shrink-0" />
+              <Trash2 className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-white">Full Control & Deletion</p>
                 <p className="text-[11.5px] text-zinc-400 leading-snug">

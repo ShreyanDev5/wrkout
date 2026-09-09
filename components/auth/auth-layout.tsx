@@ -46,14 +46,14 @@ export function AuthLayout({
               href="/"
               className="inline-flex transition-transform active:scale-95"
             >
-              <div className="relative mx-auto h-14 w-14 sm:h-16 sm:w-16">
-                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/80 shadow-md sm:h-16 sm:w-16 transition-all duration-200 hover:border-zinc-700">
+              <div className="relative mx-auto h-11 w-11 sm:h-12 sm:w-12">
+                <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border border-zinc-800/80 bg-zinc-900/70 shadow-sm transition-all duration-200 hover:border-zinc-700/80 hover:bg-zinc-800/50 p-2">
                   <Image
                     src="/logo_1.0-transparent.png"
                     alt="wrkout logo"
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-contain p-0.5"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-contain"
                     priority
                   />
                 </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { LogIn } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 
 export function AuthPopup() {
@@ -44,11 +44,14 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
-        className="w-[92%] max-w-[330px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center text-center relative"
+        className="w-[85%] max-w-[260px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center text-center relative"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >
         <DialogHeader className="items-center w-full">
+          <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
+            <LogIn className="h-4.5 w-4.5 text-flex-dark" strokeWidth={2} aria-hidden="true" />
+          </div>
           <DialogTitle className="text-base font-extrabold text-white text-center tracking-tight">
             Sign in to wrkout
           </DialogTitle>
@@ -56,18 +59,18 @@ export function AuthPopup() {
             Stay in sync across all your devices.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 flex flex-col gap-2.5 w-full">
+        <div className="mt-4 flex flex-col gap-2 w-full">
           <button
             type="button"
             onClick={handleSignIn}
-            className="h-10 w-full rounded-xl bg-flex-dark text-white font-bold hover:opacity-90 transition-all active:scale-95 text-xs shadow-sm border-none"
+            className="h-9 w-full rounded-xl bg-flex-dark text-white font-bold hover:opacity-90 transition-all active:scale-95 text-xs shadow-sm border-none"
           >
             Sign in
           </button>
           <button
             type="button"
             onClick={handleSignUp}
-            className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-200 font-semibold hover:bg-zinc-800 hover:text-white transition-all active:scale-95 text-xs shadow-none"
+            className="h-9 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-300 font-medium hover:bg-zinc-800 hover:text-white transition-all active:scale-95 text-xs shadow-none"
           >
             Create account
           </button>

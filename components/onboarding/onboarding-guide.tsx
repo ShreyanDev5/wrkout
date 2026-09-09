@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { useAuth } from "@/lib/auth"
 import { motion, useMotionValue, useTransform } from "framer-motion"
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, BicepsFlexed, Dot, Dumbbell, Footprints, Hand, Minus, Plus, PlusCircle, TrendingUp, Zap } from "lucide-react"
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, BicepsFlexed, Check, Dot, Dumbbell, Hand, Minus, Plus, PlusCircle, TrendingUp, Zap } from "lucide-react"
 import { LucideProps } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -31,7 +31,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "split",
     title: "Build your split",
     subtitle: "",
-    description: "Organize Push, Pull, Legs, and Custom days with ease in Settings.",
+    description: "Organize Push, Pull, Legs, and Custom routines in Settings.",
     icon: Dumbbell,
     iconClass: "text-push-dark",
     barClass: "bg-push-dark",
@@ -86,7 +86,7 @@ const onboardingSteps: OnboardingStep[] = [
               label: "Legs",
               desc: "Quads & Hamstrings",
               tone: "bg-leg-dark/15 text-leg-dark border-leg-dark/30",
-              icon: Footprints,
+              icon: Dumbbell,
             },
             {
               label: "Custom",
@@ -119,7 +119,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging",
     title: "Log the set",
     subtitle: "",
-    description: "Record weight, reps, and sets in a single entry by logging either your last set or the average across all sets.",
+    description: "Record weight, reps, and sets in a single entry.",
     icon: PlusCircle,
     iconClass: "text-pull-dark",
     barClass: "bg-pull-dark",
@@ -196,9 +196,7 @@ const onboardingSteps: OnboardingStep[] = [
                 }}
                 className="flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border font-bold text-xs shadow-none cursor-pointer"
               >
-                <svg className="h-3.5 w-3.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <Check className="h-4 w-4 stroke-[2.5]" />
                 <span className="font-bold text-xs tracking-wide">DONE</span>
               </div>
             </div>
@@ -211,7 +209,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress",
     title: "Track progress",
     subtitle: "",
-    description: "Volume compares your previous workout to today's session, displaying real-time progress indicators.",
+    description: "Compare volume against previous workouts.",
     icon: TrendingUp,
     iconClass: "text-leg-dark",
     barClass: "bg-leg-dark",
@@ -229,32 +227,29 @@ const onboardingSteps: OnboardingStep[] = [
         >
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-leg-dark flex-shrink-0" />
-                <h3 className="text-xs font-bold text-white leading-none tracking-tight truncate">
-                  Barbell Squat
-                </h3>
-              </div>
-              <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-zinc-700/60 bg-zinc-900/80 text-zinc-400">
+              <h3 className="text-xs font-bold text-white leading-none tracking-tight truncate flex-1 min-w-0">
+                Barbell Squat
+              </h3>
+              <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
                 <ArrowUpRight className="h-3 w-3" strokeWidth={2.25} />
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5">
-              <div className="bg-zinc-950/85 rounded-xl p-1.5 border border-zinc-800/90 flex flex-col items-center justify-center">
-                <span className="text-[9px] font-semibold text-zinc-400">Weight</span>
+            <div className="grid grid-cols-3 rounded-xl bg-zinc-950/60 border border-zinc-800/70 divide-x divide-zinc-800/60 py-1.5">
+              <div className="flex flex-col items-center justify-center px-1.5">
+                <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-400">Weight</span>
                 <div className="flex items-baseline gap-0.5 mt-0.5">
-                  <span className="text-xs font-bold text-white">100</span>
-                  <span className="text-[8px] font-medium text-zinc-400">kg</span>
+                  <span className="text-xs font-extrabold text-white">100</span>
+                  <span className="text-[8px] font-semibold text-zinc-400">kg</span>
                 </div>
               </div>
-              <div className="bg-zinc-950/85 rounded-xl p-1.5 border border-zinc-800/90 flex flex-col items-center justify-center">
-                <span className="text-[9px] font-semibold text-zinc-400">Reps</span>
-                <span className="text-xs font-bold text-white mt-0.5">6</span>
+              <div className="flex flex-col items-center justify-center px-1.5">
+                <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-400">Reps</span>
+                <span className="text-xs font-extrabold text-white mt-0.5">6</span>
               </div>
-              <div className="bg-zinc-950/85 rounded-xl p-1.5 border border-zinc-800/90 flex flex-col items-center justify-center">
-                <span className="text-[9px] font-semibold text-zinc-400">Sets</span>
-                <span className="text-xs font-bold text-white mt-0.5">1</span>
+              <div className="flex flex-col items-center justify-center px-1.5">
+                <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-400">Sets</span>
+                <span className="text-xs font-extrabold text-white mt-0.5">1</span>
               </div>
             </div>
           </div>
@@ -266,23 +261,27 @@ const onboardingSteps: OnboardingStep[] = [
             {
               icon: ArrowUpRight,
               text: "Higher weight or reps",
+              tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
             },
             {
               icon: ArrowRight,
               text: "Equal weight & reps",
+              tone: "border-zinc-700/60 bg-zinc-900/80 text-zinc-400",
             },
             {
               icon: ArrowDownRight,
               text: "Lower weight or reps",
+              tone: "border-red-500/30 bg-red-500/10 text-red-400",
             },
             {
               icon: Dot,
               text: "First exercise logged",
+              tone: "border-zinc-700/60 bg-zinc-900/80 text-zinc-400",
             },
           ].map((item) => (
             <div key={item.text} className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-2.5 px-3 min-h-[46px]">
-              <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-zinc-700/60 bg-zinc-950 text-zinc-300">
-                <item.icon className="h-2.5 w-2.5" strokeWidth={2.5} />
+              <span className={cn("inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border", item.tone)}>
+                <item.icon className={item.icon === Dot ? "h-3.5 w-3.5" : "h-2.5 w-2.5"} strokeWidth={item.icon === Dot ? 3 : 2.5} />
               </span>
               <div className="text-left min-w-0 flex-1">
                 <div className="text-[9.5px] font-medium text-zinc-300 leading-tight break-words">{item.text}</div>

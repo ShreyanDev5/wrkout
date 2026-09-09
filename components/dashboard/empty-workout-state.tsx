@@ -80,7 +80,7 @@ export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutState
       </h3>
 
       <p className="text-zinc-400 text-xs max-w-xs mb-5 leading-snug font-medium">
-        Add {getExerciseTypeLabel()} exercises in Settings to get started.
+        Add exercises in Settings to get started.
       </p>
 
       {onStart && (

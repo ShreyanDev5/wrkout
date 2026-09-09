@@ -36,10 +36,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
 
   return (
     <nav
-      className={cn(
-        "flex w-[240px] h-12 px-1.5 rounded-full border border-zinc-800/80 bg-zinc-950/90 backdrop-blur-2xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] gap-1",
-        "md:w-[420px] md:px-2"
-      )}
+      className="flex w-[180px] h-12 px-1.5 rounded-full border border-zinc-800/80 bg-zinc-950/90 backdrop-blur-2xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] gap-1"
       role="tablist"
       aria-label="Main navigation"
     >
@@ -53,8 +50,9 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
               onTabChange(tab.id)
             }}
             role="tab"
+            title={tab.label}
             className={cn(
-              "flex-1 flex flex-row items-center justify-center gap-1.5 px-3 py-1.5 h-9 my-auto rounded-full transition-all duration-200 ease-out select-none cursor-pointer",
+              "flex-1 flex items-center justify-center h-9 my-auto rounded-full transition-all duration-200 ease-out select-none cursor-pointer",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
               isActive 
                 ? "bg-zinc-800/90 text-white border border-zinc-700/60 shadow-sm" 
@@ -75,14 +73,6 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
                 strokeWidth={isActive ? 2.25 : 1.75}
               />
             )}
-            <span
-              className={cn(
-                "hidden md:inline text-xs font-bold tracking-wide transition-all duration-200",
-                isActive ? "text-white opacity-100" : "text-zinc-400 opacity-70"
-              )}
-            >
-              {tab.label}
-            </span>
           </button>
         )
       })}

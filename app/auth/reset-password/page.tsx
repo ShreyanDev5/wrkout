@@ -143,7 +143,7 @@ export default function ResetPasswordPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <Alert variant="destructive" className="rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-xs p-3">
+          <Alert variant="destructive" className="rounded-xl border border-red-500/20 bg-red-500/10 text-red-300 text-xs p-3">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -211,7 +211,7 @@ export default function ResetPasswordPage() {
                 className={cn(
                   "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
                   confirm ? "pl-3" : "pl-9",
-                  password !== confirm && confirm && "border-rose-500/40"
+                  password !== confirm && confirm && "border-red-500/40"
                 )}
                 disabled={loading}
               />
@@ -224,7 +224,7 @@ export default function ResetPasswordPage() {
               </div>
             </div>
             {password !== confirm && confirm && (
-              <p className="text-xs text-rose-400 mt-1">
+              <p className="text-xs text-red-400 mt-1">
                 Passwords do not match.
               </p>
             )}

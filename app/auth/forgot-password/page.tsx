@@ -257,7 +257,7 @@ export default function ForgotPasswordPage() {
           </Alert>
         )}
         {error && (
-          <Alert variant="destructive" className="rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-xs p-3">
+          <Alert variant="destructive" className="rounded-xl border border-red-500/20 bg-red-500/10 text-red-300 text-xs p-3">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -318,7 +318,7 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
             <p className="text-[11px] font-medium text-zinc-500 mt-1">
-              Required for secure account recovery if you forget your password.
+              Used only for account recovery.
             </p>
           </div>
         ) : (

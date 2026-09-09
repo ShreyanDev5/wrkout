@@ -169,7 +169,7 @@ export function SignUpForm() {
             </div>
           </div>
           <p className="text-[10px] text-zinc-500 leading-4">
-            Required to securely recover your account if you forget your password.
+            Used only for account recovery.
           </p>
         </div>
 
@@ -235,7 +235,7 @@ export function SignUpForm() {
               className={cn(
                 "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
                 confirmPassword ? "pl-3" : "pl-9",
-                password !== confirmPassword && confirmPassword && "border-rose-500/40"
+                password !== confirmPassword && confirmPassword && "border-red-500/40"
               )}
               disabled={isLoading}
             />
@@ -248,7 +248,7 @@ export function SignUpForm() {
             </div>
           </div>
           {password !== confirmPassword && confirmPassword && (
-            <p className="text-xs text-rose-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               Passwords do not match.
             </p>
           )}

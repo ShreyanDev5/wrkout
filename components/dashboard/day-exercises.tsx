@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Exercise, WorkoutLog } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { AnimatedCheckbox } from "@/components/ui/animated-checkbox"
 import { InlineWorkoutLogger } from "@/components/dashboard/inline-workout-logger"
 import { motion, AnimatePresence } from "framer-motion"
@@ -77,116 +76,107 @@ export function DayExercises({
   }
 
   return (
-    <div className="space-y-1.5 md:space-y-2 flex flex-col w-full">
-      {exercises.map((exercise) => {
-        const completed = completedExerciseNames.has(exercise.name)
-        const isExpanded = expandedExerciseId === exercise.id
+    <div className="w-full">
+      {exercises.length > 0 ? (
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 overflow-hidden shadow-sm divide-y divide-zinc-800/80">
+          {exercises.map((exercise) => {
+            const completed = completedExerciseNames.has(exercise.name)
+            const isExpanded = expandedExerciseId === exercise.id
 
-        return (
-          <div
-            key={exercise.id}
-            id={`exercise-${exercise.id}`}
-            className={cn(
-              "rounded-xl transition-all duration-150 h-fit overflow-hidden",
-              isExpanded
-                ? "ios-card border-zinc-700"
-                : completed
-                  ? "bg-zinc-950/40 border border-zinc-800/40 opacity-55 hover:opacity-85 hover:border-zinc-800"
-                  : "ios-card hover:border-zinc-700/80"
-            )}
-          >
-            <div
-              className={cn(
-                "relative py-4 px-4 md:py-3.5 md:px-3.5 flex items-center gap-4 cursor-pointer select-none",
-              )}
-              onClick={() => handleToggleExpand(exercise.id)}
-            >
-              <div onClick={(e) => e.stopPropagation()}>
-                <AnimatedCheckbox
-                  checked={completed}
-                  dayColor={dayColor}
-                  className="mr-1 flex-shrink-0"
-                  onClick={() => handleCheckboxToggle(exercise)}
-                  aria-label={completed ? `Completed ${exercise.name}` : `Mark ${exercise.name} as completed`}
-                />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <Label
-                  className={cn(
-                    "text-[0.9375rem] md:text-sm font-semibold block leading-tight cursor-pointer tracking-tight",
-                    "text-foreground",
-                    isExpanded ? "whitespace-normal" : "truncate",
-                    completed && "exercise-label-checked opacity-40 font-medium"
-                  )}
-                  title={exercise.name}
-                >
-                  {exercise.name}
-                </Label>
-                {exercise.description && (
-                  <p className={cn(
-                    "text-[0.75rem] text-muted-foreground/70 mt-1 tracking-normal font-medium",
-                    isExpanded ? "whitespace-normal" : "truncate"
-                  )} title={exercise.description}>
-                    {exercise.description}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
+            return (
+              <div
+                key={exercise.id}
+                id={`exercise-${exercise.id}`}
                 className={cn(
-                  "h-8 w-8 rounded-full p-0 flex items-center justify-center transition-all duration-300",
-                  isExpanded ? "bg-secondary text-foreground rotate-90" : "text-muted-foreground hover:bg-secondary/50"
+                  "transition-colors duration-150 overflow-hidden",
+                  isExpanded
+                    ? "bg-zinc-800/40"
+                    : completed
+                      ? "bg-zinc-950/40 hover:bg-zinc-800/30"
+                      : "hover:bg-zinc-800/40"
                 )}
-                aria-label={isExpanded ? "Close logger" : "Log session"}
               >
-                <PlusCircle
-                  className={cn(
-                    "h-5 w-5 transition-transform duration-300",
-                    isExpanded && "rotate-45"
-                  )}
-                />
-              </Button>
-            </div>
-
-            {/* Inline Logger - Smooth Motion Collapse */}
-            <AnimatePresence initial={false}>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-                  className="overflow-hidden border-t border-white/[0.05]"
+                <div
+                  className="relative py-3 px-3.5 flex items-center gap-3.5 cursor-pointer select-none"
+                  onClick={() => handleToggleExpand(exercise.id)}
                 >
-                  <div className="px-4 pb-4 pt-2">
-                    <InlineWorkoutLogger
-                      exercise={exercise}
-                      workoutId={workoutId}
-                      onSave={(log) => {
-                        onLogWorkout(log)
-                        setExpandedExerciseId(null) // Close on save
-                      }}
-                      onCancel={() => setExpandedExerciseId(null)}
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <AnimatedCheckbox
+                      checked={completed}
                       dayColor={dayColor}
+                      className="mr-0.5 flex-shrink-0"
+                      onClick={() => handleCheckboxToggle(exercise)}
+                      aria-label={completed ? `Completed ${exercise.name}` : `Mark ${exercise.name} as completed`}
                     />
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
 
-      {
-        exercises.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground/50 text-sm">
-            <p>No exercises for this day.</p>
-          </div>
-        )
-      }
+                  <div className="flex-1 min-w-0">
+                    <Label
+                      className={cn(
+                        "text-sm font-semibold block leading-tight cursor-pointer tracking-tight",
+                        "text-foreground",
+                        isExpanded ? "whitespace-normal" : "truncate",
+                        completed && "exercise-label-checked opacity-40 font-medium"
+                      )}
+                      title={exercise.name}
+                    >
+                      {exercise.name}
+                    </Label>
+                    {exercise.description && (
+                      <p className={cn(
+                        "text-[0.75rem] text-muted-foreground/70 mt-1 tracking-normal font-medium",
+                        isExpanded ? "whitespace-normal" : "truncate"
+                      )} title={exercise.description}>
+                        {exercise.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex-shrink-0 text-zinc-500 pl-1">
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 text-zinc-500 transition-transform duration-200",
+                        isExpanded && "rotate-180"
+                      )}
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+
+                {/* Inline Logger - Smooth Motion Collapse */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+                      className="overflow-hidden border-t border-zinc-800/60"
+                    >
+                      <div className="px-4 pb-4 pt-2">
+                        <InlineWorkoutLogger
+                          exercise={exercise}
+                          workoutId={workoutId}
+                          onSave={(log) => {
+                            onLogWorkout(log)
+                            setExpandedExerciseId(null) // Close on save
+                          }}
+                          onCancel={() => setExpandedExerciseId(null)}
+                          dayColor={dayColor}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-muted-foreground/50 text-sm rounded-2xl border border-dashed border-zinc-800/70 bg-zinc-900/20">
+          <p>No exercises for this day.</p>
+        </div>
+      )}
 
       {/* Dynamic Spacer - Synchronized smooth collapse */}
       <motion.div

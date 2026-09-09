@@ -1,63 +1,39 @@
-# <img src="public/logo_1.0-transparent.png" width="28" height="28" style="vertical-align: middle;" /> wrkout
+# wrkout
 
-Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume trends, and calculate progressive overload without ads or clutter.
+Fast, distraction-free workout logger built for Push, Pull, Legs (PPL) splits. Log sets in seconds, track volume, and monitor progressive overload.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-blue?style=flat-square&logo=vercel&logoColor=white)](https://wrkout-tracker.vercel.app/)
-[![Database](https://img.shields.io/badge/Database-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-wrkout--tracker.vercel.app-blue?style=flat-square)](https://wrkout-tracker.vercel.app/)
+[![Database](https://img.shields.io/badge/Database-Supabase-3ECF8E?style=flat-square)](https://supabase.com)
 
 ---
 
 ## Preview
 
-| Workout Dashboard & Logger |
-| :---: |
-| <img src="public/readme_home_page.png" width="100%" alt="wrkout Dashboard" /> |
+![wrkout Dashboard](public/readme_home_page.png)
 
 ---
 
 ## Features
 
-- **Rapid Set Logging**: Log weight, reps, and completed sets in seconds with inline steppers and real-time state synchronization.
-- **Volume & Overload Tracking**: Automatically calculate total tonnage and compare progression metrics against previous workout sessions.
-- **PPL Routine Management**: Organize custom Push, Pull, and Legs workout routines with a pre-configured exercise library.
-- **Frictionless Auth**: Username-based authentication mapped seamlessly to secure Supabase accounts with email recovery flows.
-- **Tactile Feedback**: Integrated audio cues and Web Haptic API vibration triggers for immediate set completion confirmation.
+- **Inline logging**: Adjust weight, reps, and sets with steppers and save in one tap.
+- **Progressive overload**: Automatic volume calculation and workout-to-workout comparisons.
+- **Custom routines**: Organize Push, Pull, Legs, and custom splits with built-in exercises.
+- **Fast sign-in**: Simple username login with optional email recovery.
+- **Audio & haptics**: Subtle sound cues and vibration feedback when completing sets.
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15 (App Router), React 18, TypeScript, Tailwind CSS, Framer Motion, Radix UI, Zustand, Immer
-- **Backend**: Supabase (PostgreSQL, Auth, Migrations, Row-Level Security)
-- **Deployment & Infra**: Vercel, Supabase Cloud / Docker (Local Supabase CLI)
-- **AI Tooling**: Antigravity, Cursor
-
----
-
-## Project Structure
-
-```text
-wrkout/
-├── app/          # App Router pages, auth recovery routes, and global styles
-├── components/   # UI components, workout builders, and dialog modals
-├── hooks/        # React hooks for workout logic, audio feedback, and haptics
-├── lib/          # Supabase client, Zustand stores, and shared utilities
-├── public/       # Static assets, branding, audio cues, and PWA manifest
-├── supabase/     # Database migrations, seed scripts, and local config
-└── types/        # TypeScript global type definitions
-```
+- **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS, Framer Motion
+- **Backend**: Supabase (PostgreSQL, Auth)
+- **Deployment**: Vercel
 
 ---
 
 ## Getting Started
 
-### Prerequisites
-
-- **Node.js**: `18+`
-- **Docker Desktop**: For local Supabase CLI database
-- **Git**: `2.x` or higher
-
-### 1. Clone & Install
+### 1. Clone & install
 
 ```bash
 git clone https://github.com/ShreyanDev5/wrkout.git
@@ -65,42 +41,29 @@ cd wrkout
 npm install
 ```
 
-### 2. Environment Setup
+### 2. Environment setup
 
-Create a `.env.local` file in the root directory:
+Create `.env.local` in the project root:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-local-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-local-service-role-key
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# Optional: Resend API key for password recovery emails
+# Optional: Resend API for password recovery
 RESEND_API_KEY=
 PASSWORD_RESET_FROM_EMAIL=
 ```
 
-### 3. Start Database & Development Server
+### 3. Run development server
 
 ```bash
-npx supabase start
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## Deployment
-
-- **Live Application**: [wrkout-tracker.vercel.app](https://wrkout-tracker.vercel.app/)
-- **Database & Backend Services**: [Supabase Cloud](https://supabase.com)
-- **Platform**: Hosted on [Vercel](https://vercel.com)
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Author
 
-**Shreyan Sardar**
-- **Portfolio**: [shreyandev.vercel.app](https://shreyandev.vercel.app)
-- **GitHub**: [@ShreyanDev5](https://github.com/ShreyanDev5)
-- **LinkedIn**: [shreyansardar](https://www.linkedin.com/in/shreyansardar/)
+**Shreyan Sardar** — [Portfolio](https://shreyandev.vercel.app) · [GitHub](https://github.com/ShreyanDev5) · [LinkedIn](https://www.linkedin.com/in/shreyansardar/)
