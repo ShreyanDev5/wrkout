@@ -1,7 +1,8 @@
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+import type { Database } from '@/lib/database.types';
 import { createPseudoEmail } from './auth-utils';
 
-export function createServiceRoleClient(): SupabaseClient {
+export function createServiceRoleClient(): SupabaseClient<Database> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -9,7 +10,7 @@ export function createServiceRoleClient(): SupabaseClient {
     throw new Error('Supabase service role credentials are not configured');
   }
 
-  return createClient(supabaseUrl, serviceRoleKey, {
+  return createClient<Database>(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

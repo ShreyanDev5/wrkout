@@ -22,8 +22,9 @@ import {
 const DEFAULT_EXERCISE_SUGGESTIONS = [
   "Incline Dumbbell Press", "Bench Press", "Shoulder Press", "Triceps Pushdown",
   "Lat Pulldown", "Barbell Row", "Bicep Curl", "Squat", "Romanian Deadlift",
-  "Calf Raise", "Leg Press", "Hammer Curl", "Chest Fly", "Overhead Extension",
-  "Core Plank", "Jumping Jacks", "Kettlebell Swings", "Lateral Raise", "Face Pull"
+  "Calf Raise", "Leg Press", "Leg Curl", "Hammer Curl", "Chest Fly", "Overhead Extension",
+  "Core Plank", "Jumping Jacks", "Kettlebell Swings", "Russian Twists", "Burpees",
+  "Lateral Raise", "Face Pull"
 ]
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"

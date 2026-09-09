@@ -173,6 +173,35 @@ export interface Database {
           created_at?: string
         }
       }
+      verification_codes: {
+        Row: {
+          id: string
+          email: string
+          code: string
+          expires_at: string
+          used_at: string | null
+          created_at: string
+          attempts: number
+        }
+        Insert: {
+          id?: string
+          email: string
+          code: string
+          expires_at: string
+          used_at?: string | null
+          created_at?: string
+          attempts?: number
+        }
+        Update: {
+          id?: string
+          email?: string
+          code?: string
+          expires_at?: string
+          used_at?: string | null
+          created_at?: string
+          attempts?: number
+        }
+      }
     }
     Views: {
       [_ in never]: never

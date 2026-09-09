@@ -325,20 +325,28 @@ export async function createDefaultRoutinesForWorkout(
   const defaultExercises = [
     // Push
     { name: "Incline Dumbbell Press", type: "push" },
+    { name: "Bench Press", type: "push" },
     { name: "Shoulder Press", type: "push" },
+    { name: "Lateral Raise", type: "push" },
     { name: "Triceps Pushdown", type: "push" },
     // Pull
     { name: "Lat Pulldown", type: "pull" },
     { name: "Barbell Row", type: "pull" },
+    { name: "Face Pull", type: "pull" },
     { name: "Bicep Curl", type: "pull" },
+    { name: "Hammer Curl", type: "pull" },
     // Legs
     { name: "Squat", type: "leg" },
     { name: "Romanian Deadlift", type: "leg" },
+    { name: "Leg Press", type: "leg" },
+    { name: "Leg Curl", type: "leg" },
     { name: "Calf Raise", type: "leg" },
     // Custom
     { name: "Core Plank", type: "flex" },
     { name: "Jumping Jacks", type: "flex" },
     { name: "Kettlebell Swings", type: "flex" },
+    { name: "Russian Twists", type: "flex" },
+    { name: "Burpees", type: "flex" },
   ]
 
   // 1. Upsert exercises to database
@@ -378,7 +386,9 @@ export async function createDefaultRoutinesForWorkout(
       name: "Push Day",
       exercises: [
         { id: uuidv4(), exercise_id: findExId("Incline Dumbbell Press"), name: "Incline Dumbbell Press" },
+        { id: uuidv4(), exercise_id: findExId("Bench Press"), name: "Bench Press" },
         { id: uuidv4(), exercise_id: findExId("Shoulder Press"), name: "Shoulder Press" },
+        { id: uuidv4(), exercise_id: findExId("Lateral Raise"), name: "Lateral Raise" },
         { id: uuidv4(), exercise_id: findExId("Triceps Pushdown"), name: "Triceps Pushdown" },
       ],
       created_at: now,
@@ -392,7 +402,9 @@ export async function createDefaultRoutinesForWorkout(
       exercises: [
         { id: uuidv4(), exercise_id: findExId("Lat Pulldown"), name: "Lat Pulldown" },
         { id: uuidv4(), exercise_id: findExId("Barbell Row"), name: "Barbell Row" },
+        { id: uuidv4(), exercise_id: findExId("Face Pull"), name: "Face Pull" },
         { id: uuidv4(), exercise_id: findExId("Bicep Curl"), name: "Bicep Curl" },
+        { id: uuidv4(), exercise_id: findExId("Hammer Curl"), name: "Hammer Curl" },
       ],
       created_at: now,
       updated_at: now
@@ -405,6 +417,8 @@ export async function createDefaultRoutinesForWorkout(
       exercises: [
         { id: uuidv4(), exercise_id: findExId("Squat"), name: "Squat" },
         { id: uuidv4(), exercise_id: findExId("Romanian Deadlift"), name: "Romanian Deadlift" },
+        { id: uuidv4(), exercise_id: findExId("Leg Press"), name: "Leg Press" },
+        { id: uuidv4(), exercise_id: findExId("Leg Curl"), name: "Leg Curl" },
         { id: uuidv4(), exercise_id: findExId("Calf Raise"), name: "Calf Raise" },
       ],
       created_at: now,
@@ -419,6 +433,8 @@ export async function createDefaultRoutinesForWorkout(
         { id: uuidv4(), exercise_id: findExId("Core Plank"), name: "Core Plank" },
         { id: uuidv4(), exercise_id: findExId("Jumping Jacks"), name: "Jumping Jacks" },
         { id: uuidv4(), exercise_id: findExId("Kettlebell Swings"), name: "Kettlebell Swings" },
+        { id: uuidv4(), exercise_id: findExId("Russian Twists"), name: "Russian Twists" },
+        { id: uuidv4(), exercise_id: findExId("Burpees"), name: "Burpees" },
       ],
       created_at: now,
       updated_at: now
