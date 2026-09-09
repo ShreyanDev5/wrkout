@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
       const normalizedEmail = recoveryEmail.trim().toLowerCase();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(normalizedEmail)) {
-        setError("Enter a valid email address.");
+        setError("Enter a valid email.");
         return;
       }
 
@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "We could not send the code.");
+        setError(result.error || "Could not send the code. Try again.");
         console.error(`API error: ${response.status} - ${JSON.stringify(result)}`);
       } else {
         setRecoveryEmail(normalizedEmail);
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
 
     try {
       if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
-        setError("Please enter a valid 6-digit code.");
+        setError("Enter a 6-digit code.");
         return;
       }
 
@@ -152,11 +152,11 @@ export default function ForgotPasswordPage() {
       const resetResult = await resetResponse.json();
 
       if (!resetResponse.ok) {
-        setError(resetResult.error || "We could not send the reset link.");
+        setError(resetResult.error || "Could not send the reset link. Try again.");
         console.error(`API error: ${resetResponse.status} - ${JSON.stringify(resetResult)}`);
       } else {
         setStep('success');
-        setMessage("Your reset link is on the way. Check your inbox and spam folder.");
+        setMessage("Reset link sent. Check your inbox or spam folder.");
         setResetUrl(resetResult.resetUrl || "");
         setDebugInfo(resetResult.resetUrl ? "Email delivery is not configured; reset link generated for development." : "Email sent successfully via API");
       }
@@ -182,51 +182,52 @@ export default function ForgotPasswordPage() {
   if (step === 'success') {
     return (
       <AuthLayout
-        title="Check your inbox"
-        subtitle="We've sent a recovery link to your email."
+        title="Check your email"
+        subtitle="We sent a reset link to your recovery email."
         footerText=""
         footerLink=""
         footerLinkText=""
       >
         <div className="space-y-6 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-pull-light/20 bg-pull-light/10 text-pull-light animate-pulse">
-            <CheckCircle2 className="h-6 w-6" strokeWidth={2.5} />
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-400 shadow-sm">
+            <CheckCircle2 className="h-5 w-5" strokeWidth={2} />
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-base font-semibold text-zinc-100">Reset Link Sent</h3>
-            <p className="text-[0.92rem] text-zinc-400 leading-relaxed max-w-xs mx-auto">
-              We&apos;ve sent a password recovery link to <span className="text-zinc-200 font-medium">{recoveryEmail}</span>. Please check your inbox and spam folders.
+          <div className="space-y-1.5">
+            <h3 className="text-base font-bold tracking-tight text-white">Reset link sent</h3>
+            <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto">
+              We sent a password reset link to <span className="text-zinc-200 font-semibold">{recoveryEmail}</span>. Check your inbox or spam folder.
             </p>
           </div>
 
           {resetUrl && (
-            <div className="rounded-xl border border-white/5 bg-zinc-950/40 p-4 space-y-2 text-left">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-2 text-left">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Development Mode</p>
-              <Button
+              <button
+                type="button"
                 onClick={() => window.location.href = resetUrl}
-                variant="outline"
-                className="h-9 w-full rounded-lg border-white/10 bg-zinc-900/60 text-xs font-medium text-zinc-300 hover:bg-white/5 hover:text-white"
+                className="h-9 w-full rounded-xl border border-zinc-700/80 bg-zinc-800/80 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer flex items-center justify-center"
               >
                 Bypass Email & Continue
-              </Button>
+              </button>
             </div>
           )}
 
-          <div className="space-y-2 pt-2">
-            <Button
+          <div className="space-y-2 pt-1">
+            <button
+              type="button"
               onClick={() => window.location.href = '/auth/signin'}
-              className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer"
+              className="h-10 w-full rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs shadow-sm transition-all active:scale-[0.98] border-none cursor-pointer flex items-center justify-center"
             >
               Back to sign in
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={resetForm}
-              variant="ghost"
-              className="h-10 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all"
+              className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200 transition-all border-none bg-transparent cursor-pointer flex items-center justify-center"
             >
               Start over
-            </Button>
+            </button>
           </div>
         </div>
       </AuthLayout>
@@ -235,16 +236,16 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout
-      title="Reset your password"
+      title="Reset password"
       subtitle={step === 'username'
-        ? "Enter your username to begin."
+        ? "Enter your username."
         : step === 'email'
-        ? "Enter your recovery email address."
-        : "Enter the verification code sent to your email."
+        ? "Enter your recovery email."
+        : "Enter the 6-digit code."
       }
-      footerText="Need to return?"
+      footerText="Remember your password?"
       footerLink="/auth/signin"
-      footerLinkText="Back to sign in"
+      footerLinkText="Sign in"
     >
       <form onSubmit={
         step === 'username' ? handleUsernameSubmit :
@@ -264,7 +265,7 @@ export default function ForgotPasswordPage() {
 
         {step === 'username' ? (
           <div className="space-y-1.5">
-            <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="username" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               Username
             </Label>
             <div className="relative w-full group">
@@ -275,24 +276,18 @@ export default function ForgotPasswordPage() {
                 onChange={e => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className={cn(
-                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                  username ? "pl-3" : "pl-9"
-                )}
+                placeholder="Enter your username"
+                className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
                 disabled={loading}
               />
-              <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-                "transition-all duration-200",
-                username && "opacity-0 -translate-x-2"
-              )}>
-                <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+              <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+                <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
               </div>
             </div>
           </div>
         ) : step === 'email' ? (
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               Email address
             </Label>
             <div className="relative w-full group">
@@ -303,27 +298,21 @@ export default function ForgotPasswordPage() {
                 onChange={e => setRecoveryEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className={cn(
-                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                  recoveryEmail ? "pl-3" : "pl-9"
-                )}
+                placeholder="you@example.com"
+                className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
                 disabled={loading}
               />
-              <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-                "transition-all duration-200",
-                recoveryEmail && "opacity-0 -translate-x-2"
-              )}>
-                <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+              <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+                <Mail className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
               </div>
             </div>
             <p className="text-[11px] font-medium text-zinc-500 mt-1">
-              Used only for account recovery.
+              Used for password recovery.
             </p>
           </div>
         ) : (
           <div className="space-y-1.5">
-            <Label htmlFor="code" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="code" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               6-Digit Code
             </Label>
             <div className="relative w-full group">
@@ -336,28 +325,24 @@ export default function ForgotPasswordPage() {
                 placeholder="000000"
                 maxLength={6}
                 className={cn(
-                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 text-center tracking-widest transition-all",
-                  verificationCode && "pl-3 text-center tracking-[0.3em] font-mono font-semibold"
+                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 text-center tracking-widest transition-all",
+                  verificationCode ? "pl-3 text-center tracking-[0.3em] font-mono font-semibold" : "pl-9"
                 )}
                 disabled={loading}
               />
-              <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-                "transition-all duration-200",
-                verificationCode && "opacity-0 -translate-x-2"
-              )}>
-                <Hash className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+              <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+                <Hash className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
               </div>
             </div>
             <p className="text-[11px] font-medium text-zinc-500 mt-1">
-              Enter the 6-digit code sent to <span className="text-zinc-300 font-semibold">{recoveryEmail}</span>.
+              Sent to <span className="text-zinc-300 font-semibold">{recoveryEmail}</span>.
             </p>
           </div>
         )}
 
         <button
           type="submit"
-          className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer flex items-center justify-center mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 w-full rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs shadow-sm transition-all active:scale-[0.98] border-none cursor-pointer flex items-center justify-center mt-3 disabled:opacity-35 disabled:cursor-not-allowed disabled:pointer-events-none"
           disabled={loading}
         >
           {loading ? "Please wait..." : (
@@ -371,7 +356,7 @@ export default function ForgotPasswordPage() {
           <button
             type="button"
             onClick={resetForm}
-            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all border-none bg-transparent cursor-pointer"
+            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200 transition-all border-none bg-transparent cursor-pointer flex items-center justify-center"
           >
             Change username
           </button>
@@ -381,7 +366,7 @@ export default function ForgotPasswordPage() {
           <button
             type="button"
             onClick={() => setStep('email')}
-            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100 transition-all border-none bg-transparent cursor-pointer"
+            className="h-9 w-full rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200 transition-all border-none bg-transparent cursor-pointer flex items-center justify-center"
           >
             Change email
           </button>

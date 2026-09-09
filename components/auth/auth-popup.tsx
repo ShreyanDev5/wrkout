@@ -44,33 +44,33 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
-        className="w-[85%] max-w-[260px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center text-center relative"
+        className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center text-center relative"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key
       >
-        <DialogHeader className="items-center w-full">
-          <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-flex-dark/20 bg-flex-dark/10 shadow-sm">
-            <LogIn className="h-4.5 w-4.5 text-flex-dark" strokeWidth={2} aria-hidden="true" />
+        <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">
+          <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-300 shadow-sm">
+            <LogIn className="h-5 w-5 text-zinc-300" strokeWidth={2} aria-hidden="true" />
           </div>
-          <DialogTitle className="text-base font-extrabold text-white text-center tracking-tight">
+          <DialogTitle className="text-base font-bold tracking-tight text-white text-center w-full">
             Sign in to wrkout
           </DialogTitle>
-          <DialogDescription className="mt-1 text-center text-xs leading-relaxed text-zinc-400">
+          <DialogDescription className="text-xs text-zinc-400 text-center w-full mt-1.5 leading-relaxed">
             Stay in sync across all your devices.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 flex flex-col gap-2 w-full">
+        <div className="mt-6 flex flex-col gap-2.5 w-full">
           <button
             type="button"
             onClick={handleSignIn}
-            className="h-9 w-full rounded-xl bg-flex-dark text-white font-bold hover:opacity-90 transition-all active:scale-95 text-xs shadow-sm border-none"
+            className="w-full h-10 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-semibold transition-all active:scale-[0.98] shadow-sm border-none cursor-pointer flex items-center justify-center"
           >
             Sign in
           </button>
           <button
             type="button"
             onClick={handleSignUp}
-            className="h-9 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-300 font-medium hover:bg-zinc-800 hover:text-white transition-all active:scale-95 text-xs shadow-none"
+            className="w-full h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-semibold transition-all active:scale-[0.98] shadow-none cursor-pointer flex items-center justify-center"
           >
             Create account
           </button>

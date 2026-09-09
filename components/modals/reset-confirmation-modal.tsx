@@ -1,6 +1,6 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { AlertTriangle, LogOut, RefreshCw, Play } from "lucide-react"
 
 interface ResetConfirmationModalProps {
@@ -63,28 +63,28 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
     const getModalIcon = () => {
         if (intent === 'sign_out' || buttonLabel === 'Sign Out') {
             return (
-                <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
-                    <LogOut className="h-4.5 w-4.5 text-red-500" strokeWidth={2} aria-hidden="true" />
+                <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
+                    <LogOut className="h-5 w-5 text-red-500" strokeWidth={2} aria-hidden="true" />
                 </div>
             )
         }
         if (intent === 'start_new' || buttonLabel === 'Start') {
             return (
-                <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-leg-dark/25 bg-leg-dark/10 shadow-sm">
-                    <Play className="h-4.5 w-4.5 text-leg-dark fill-leg-dark/20 ml-0.5" strokeWidth={2} aria-hidden="true" />
+                <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-leg-dark/25 bg-leg-dark/10 shadow-sm">
+                    <Play className="h-5 w-5 text-leg-dark fill-leg-dark/20 ml-0.5" strokeWidth={2} aria-hidden="true" />
                 </div>
             )
         }
         if (buttonLabel === 'Delete') {
             return (
-                <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
-                    <AlertTriangle className="h-4.5 w-4.5 text-red-500" strokeWidth={2} aria-hidden="true" />
+                <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
+                    <AlertTriangle className="h-5 w-5 text-red-500" strokeWidth={2} aria-hidden="true" />
                 </div>
             )
         }
         return (
-            <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
-                <RefreshCw className="h-4.5 w-4.5 text-red-500" strokeWidth={2} aria-hidden="true" />
+            <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 shadow-sm">
+                <RefreshCw className="h-5 w-5 text-red-500" strokeWidth={2} aria-hidden="true" />
             </div>
         )
     }
@@ -100,27 +100,24 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent 
                 hideCloseButton
-                className="w-[88%] max-w-[280px] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl backdrop-saturate-150 outline-none select-none mx-auto flex flex-col items-center relative"
+                className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center relative"
             >
-                <DialogHeader className="w-full flex flex-col items-center">
+                <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">
                     {getModalIcon()}
-                    <DialogTitle className="text-base font-extrabold tracking-tight text-white text-center w-full leading-snug">
+                    <DialogTitle className="text-base font-bold tracking-tight text-white text-center w-full">
                         {heading}
                     </DialogTitle>
+                    <DialogDescription className="text-xs text-zinc-400 text-center w-full mt-1.5 leading-relaxed px-1">
+                        {message || 'Are you sure you want to restart this session? Completed exercises will be reset.'}
+                    </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-2 w-full">
-                    <p className="text-xs leading-relaxed text-zinc-400 text-center px-0.5">
-                        {message || 'Are you sure you want to restart this session? Completed exercises will be reset.'}
-                    </p>
-                </div>
-
                 {/* Buttons Row */}
-                <div className="flex flex-row justify-between gap-2.5 mt-2.5 w-full px-0.5">
+                <div className="flex flex-row justify-between gap-2.5 mt-6 w-full">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 h-9 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white active:scale-95 shadow-none"
+                        className="flex-1 h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 hover:text-white transition-all active:scale-[0.98] shadow-none cursor-pointer"
                         aria-label={cancelAria}
                     >
                         Cancel
@@ -131,7 +128,7 @@ export function ResetConfirmationModal({ isOpen, onClose, onConfirm, dayColor, m
                             onConfirm()
                             onClose()
                         }}
-                        className={`flex-1 h-9 rounded-xl px-3 text-xs font-bold transition-all active:scale-95 border-none ${getConfirmButtonClasses()}`}
+                        className={`flex-1 h-10 rounded-xl font-semibold px-3 text-xs transition-all active:scale-[0.98] border-none shadow-sm cursor-pointer ${getConfirmButtonClasses()}`}
                         aria-label={confirmAria}
                     >
                         {buttonLabel}

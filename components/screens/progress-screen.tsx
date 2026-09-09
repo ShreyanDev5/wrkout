@@ -109,32 +109,32 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
   return (
     <div className="w-full max-w-[410px] mx-auto pb-24 px-3 sm:px-4 animate-in fade-in duration-500" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Header - Progress */}
-      <div className="flex flex-col gap-1 mb-4 pt-2 sm:pt-4">
+      <div className="flex flex-col mb-5 pt-2 sm:pt-4">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           Progress
         </h1>
-        <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase leading-none">
+        <p className="text-xs text-zinc-400 font-medium mt-1">
           {formatDate(new Date().toISOString())}
         </p>
       </div>
 
       {/* Session Summary Pulse Strip */}
       {sessionSummary && (
-        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/80 border border-zinc-800 mb-4 text-xs select-none">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800/90 mb-4 text-xs select-none shadow-sm">
           <div className="flex items-center gap-1.5">
-            <span className="font-extrabold text-white">{sessionSummary.exerciseCount}</span>
+            <span className="font-bold text-white tracking-tight">{sessionSummary.exerciseCount}</span>
             <span className="text-zinc-400 font-medium">{sessionSummary.exerciseCount === 1 ? "Exercise" : "Exercises"}</span>
           </div>
           <span className="text-zinc-600 font-bold">•</span>
           <div className="flex items-center gap-1.5">
-            <span className="font-extrabold text-white">{sessionSummary.totalSets}</span>
+            <span className="font-bold text-white tracking-tight">{sessionSummary.totalSets}</span>
             <span className="text-zinc-400 font-medium">Sets</span>
           </div>
           {sessionSummary.totalVolume > 0 && (
             <>
               <span className="text-zinc-600 font-bold">•</span>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-white">{sessionSummary.totalVolume.toLocaleString()}</span>
+                <span className="font-bold text-white tracking-tight">{sessionSummary.totalVolume.toLocaleString()}</span>
                 <span className="text-zinc-400 font-medium">kg Volume</span>
               </div>
             </>
@@ -165,7 +165,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                 className="group"
               >
                 <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm transition-all duration-200">
-                  <div className="p-3.5 space-y-2.5">
+                  <div className="p-4 space-y-3">
                     {/* Exercise Header */}
                     <div className="flex items-center justify-between gap-3 px-0.5">
                       <h3 className="text-sm sm:text-base font-bold text-zinc-100 leading-none tracking-tight truncate flex-1 min-w-0" title={exerciseName}>
@@ -179,27 +179,27 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                       )}
                     </div>
 
-                    {/* Unified 3-Column Stats Row */}
-                    <div className="grid grid-cols-3 divide-x divide-zinc-800/60 pt-2.5 border-t border-zinc-800/60">
+                    {/* Clean 3-Column Stats Row */}
+                    <div className="grid grid-cols-3 pt-3 border-t border-zinc-800/70">
                       {/* Weight */}
-                      <div className="flex flex-col items-center justify-center px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Weight</span>
-                        <div className="flex items-baseline gap-0.5 mt-0.5">
-                          <span className="text-base font-extrabold text-white tracking-tight">{weight}</span>
-                          <span className="text-[10.5px] font-semibold text-zinc-400">kg</span>
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-[11px] font-medium text-zinc-400">Weight</span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="text-base font-bold text-white tracking-tight">{weight}</span>
+                          <span className="text-xs font-medium text-zinc-400">kg</span>
                         </div>
                       </div>
 
                       {/* Reps */}
-                      <div className="flex flex-col items-center justify-center px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Reps</span>
-                        <span className="text-base font-extrabold text-white tracking-tight mt-0.5">{reps}</span>
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-[11px] font-medium text-zinc-400">Reps</span>
+                        <span className="text-base font-bold text-white tracking-tight mt-0.5">{reps}</span>
                       </div>
 
                       {/* Sets */}
-                      <div className="flex flex-col items-center justify-center px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Sets</span>
-                        <span className="text-base font-extrabold text-white tracking-tight mt-0.5">{sets}</span>
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-[11px] font-medium text-zinc-400">Sets</span>
+                        <span className="text-base font-bold text-white tracking-tight mt-0.5">{sets}</span>
                       </div>
                     </div>
                   </div>

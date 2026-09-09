@@ -3,7 +3,9 @@
 import {
     Dialog,
     DialogContent,
+    DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog"
 import { useEffect, useState } from "react"
 
@@ -36,37 +38,33 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="w-[85%] max-w-[260px] sm:max-w-[260px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-2xl backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center text-center relative"
+                className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center relative"
                 hideCloseButton={true}
             >
-                <div className="flex flex-col items-center justify-center text-center space-y-3.5 w-full">
-                    {/* Clean Crisp Flame Icon (No Boxes, No Glows) */}
-                    <div className="flex items-center justify-center pt-0.5">
-                        <Flame className="h-8 w-8 text-amber-500 fill-amber-500" strokeWidth={1.5} />
+                <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">
+                    <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 shadow-sm text-amber-500">
+                        <Flame className="h-5 w-5 fill-amber-500/20 text-amber-500" strokeWidth={2} />
                     </div>
 
-                    <div className="space-y-1">
-                        <DialogTitle className="text-base font-extrabold tracking-tight text-white">
-                            Session Complete
-                        </DialogTitle>
-                        <p className="text-xs font-medium text-zinc-400">
-                            Great work today.
-                        </p>
-                    </div>
+                    <DialogTitle className="text-base font-bold tracking-tight text-white text-center w-full">
+                        Session Complete
+                    </DialogTitle>
+                    <DialogDescription className="text-xs text-zinc-400 text-center w-full mt-1.5 leading-relaxed">
+                        Great work today.
+                    </DialogDescription>
+                </DialogHeader>
 
-                    {/* Full-width Action Button */}
-                    <div className="w-full pt-1.5">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                haptic("light")
-                                onClose()
-                            }}
-                            className="w-full h-9 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-xs font-bold text-zinc-950 transition-all active:scale-[0.98] shadow-none border-none cursor-pointer flex items-center justify-center"
-                        >
-                            Done
-                        </button>
-                    </div>
+                <div className="mt-6 w-full">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            haptic("light")
+                            onClose()
+                        }}
+                        className="w-full h-10 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-xs font-semibold text-zinc-950 transition-all active:scale-[0.98] shadow-sm border-none cursor-pointer flex items-center justify-center"
+                    >
+                        Done
+                    </button>
                 </div>
             </DialogContent>
         </Dialog>

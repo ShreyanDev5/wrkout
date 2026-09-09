@@ -75,7 +75,7 @@ export function SignInForm() {
 
       <div className="space-y-3.5">
         <div className="space-y-1.5">
-          <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <Label htmlFor="username" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
             Username
           </Label>
           <div className="relative w-full group">
@@ -86,23 +86,17 @@ export function SignInForm() {
               onChange={(e) => setUsername(e.target.value)}
               required
               autoComplete="username"
-              className={cn(
-                "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                username ? "pl-3" : "pl-9"
-              )}
+              placeholder="Enter your username"
+              className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
               disabled={isLoading}
             />
-            <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-              "transition-all duration-200",
-              username && "opacity-0 -translate-x-2"
-            )}>
-              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+            <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+              <User className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
             </div>
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
             Password
           </Label>
           <div className="relative w-full group">
@@ -113,18 +107,12 @@ export function SignInForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className={cn(
-                "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                password ? "pl-3" : "pl-9"
-              )}
+              placeholder="••••••••"
+              className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
               disabled={isLoading}
             />
-            <div className={cn(
-              "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-              "transition-all duration-200",
-              password && "opacity-0 -translate-x-2"
-            )}>
-              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+            <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+              <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
             </div>
           </div>
         </div>
@@ -133,14 +121,14 @@ export function SignInForm() {
       <button
         type="submit"
         className={cn(
-          "h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs transition-all active:scale-95 border-none shadow-sm flex items-center justify-center cursor-pointer mt-2",
-          "disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+          "h-10 w-full rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition-all active:scale-[0.98] shadow-sm border-none flex items-center justify-center cursor-pointer mt-3",
+          "disabled:opacity-35 disabled:cursor-not-allowed disabled:pointer-events-none"
         )}
         disabled={isLoading}
       >
         {isLoading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin text-zinc-950" />
             Signing in...
           </>
         ) : (

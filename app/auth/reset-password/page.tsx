@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
       if (!isMounted) return;
 
       if (!session) {
-        setError("This reset link is invalid or expired. Request a new one.");
+        setError("This link is invalid or expired. Request a new one.");
       } else {
         setHasResetSession(true);
       }
@@ -104,27 +104,27 @@ export default function ResetPasswordPage() {
     return (
       <AuthLayout
         title="Password updated"
-        subtitle="You can sign in with your new password."
+        subtitle="Your password has been changed."
         footerText=""
         footerLink=""
         footerLinkText=""
       >
-        <div className="space-y-6">
-          <div className="text-center space-y-3.5 sm:space-y-4">
-            <div className="mx-auto flex h-[42px] w-[42px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-pull-light sm:h-11 sm:w-11">
-              <CheckCircle2 className="h-5 w-5" />
+        <div className="space-y-6 text-center">
+          <div className="space-y-3.5 sm:space-y-4">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-400 shadow-sm">
+              <CheckCircle2 className="h-5 w-5" strokeWidth={2} />
             </div>
-            <div className="space-y-1.5 sm:space-y-2">
-              <h2 className="text-[1.05rem] font-semibold text-foreground sm:text-lg">All set</h2>
-              <p className="text-[0.9rem] text-zinc-500 sm:text-sm">
-                {message} Redirecting to sign in.
+            <div className="space-y-1.5">
+              <h2 className="text-base font-bold tracking-tight text-white">All set</h2>
+              <p className="text-xs text-zinc-400">
+                Redirecting to sign in...
               </p>
             </div>
           </div>
 
           <button
             onClick={() => router.push('/auth/signin')}
-            className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer"
+            className="h-10 w-full rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs shadow-sm transition-all active:scale-[0.98] border-none cursor-pointer flex items-center justify-center"
           >
             Sign in
           </button>
@@ -134,12 +134,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-      <AuthLayout
-        title="Create a new password"
-      subtitle="Choose a strong password."
-      footerText="Need to return?"
+    <AuthLayout
+      title="New password"
+      subtitle="Choose your new password."
+      footerText="Remember your password?"
       footerLink="/auth/signin"
-      footerLinkText="Back to sign in"
+      footerLinkText="Sign in"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
@@ -150,7 +150,7 @@ export default function ResetPasswordPage() {
 
         <div className="space-y-3.5">
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               New password
             </Label>
             <div className="relative w-full group">
@@ -161,18 +161,12 @@ export default function ResetPasswordPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className={cn(
-                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                  password ? "pl-3" : "pl-9"
-                )}
+                placeholder="••••••••"
+                className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
                 disabled={loading}
               />
-              <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-                "transition-all duration-200",
-                password && "opacity-0 -translate-x-2"
-              )}>
-                <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+              <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
               </div>
             </div>
             <div className="mt-2 grid gap-1">
@@ -197,7 +191,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="confirm" className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="confirm" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               Confirm new password
             </Label>
             <div className="relative w-full group">
@@ -208,19 +202,15 @@ export default function ResetPasswordPage() {
                 onChange={e => setConfirm(e.target.value)}
                 required
                 autoComplete="new-password"
+                placeholder="••••••••"
                 className={cn(
-                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-all",
-                  confirm ? "pl-3" : "pl-9",
+                  "h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all",
                   password !== confirm && confirm && "border-red-500/40"
                 )}
                 disabled={loading}
               />
-              <div className={cn(
-                "absolute left-0 top-0 h-full flex items-center pointer-events-none",
-                "transition-all duration-200",
-                confirm && "opacity-0 -translate-x-2"
-              )}>
-                <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-flex-dark transition-colors duration-200" />
+              <div className="absolute left-0 top-0 h-full flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 ml-3 text-zinc-500 group-focus-within:text-zinc-300 transition-colors duration-200" />
               </div>
             </div>
             {password !== confirm && confirm && (
@@ -233,16 +223,16 @@ export default function ResetPasswordPage() {
 
         <button
           type="submit"
-          className="h-10 w-full rounded-xl bg-flex-dark text-white hover:opacity-90 font-bold text-xs shadow-sm transition-all active:scale-95 border-none cursor-pointer flex items-center justify-center mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 w-full rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs shadow-sm transition-all active:scale-[0.98] border-none cursor-pointer flex items-center justify-center mt-3 disabled:opacity-35 disabled:cursor-not-allowed disabled:pointer-events-none"
           disabled={loading}
         >
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin text-zinc-950" />
               Updating password...
             </>
           ) : (
-            'Reset password'
+            'Update password'
           )}
         </button>
       </form>

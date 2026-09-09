@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -12,7 +13,26 @@ import {
 import { Check, Trash2 } from "lucide-react"
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts, dismiss } = useToast()
+
+  // Smooth dismiss when clicking anywhere outside an active toast
+  React.useEffect(() => {
+    const hasOpenToast = toasts.some((t) => t.open !== false)
+    if (!hasOpenToast) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest("[data-toast-root]") || target?.closest("[data-radix-toast-root]")) {
+        return
+      }
+      dismiss()
+    }
+
+    window.addEventListener("pointerdown", handlePointerDown, true)
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown, true)
+    }
+  }, [toasts, dismiss])
 
   return (
     <ToastProvider>
@@ -21,15 +41,15 @@ export function Toaster() {
         return (
           <Toast key={id} variant={variant} {...props}>
             {/* Left Status Badge for Perfect Symmetry */}
-            <div className={`flex items-center justify-center h-6 w-6 rounded-lg flex-shrink-0 ${
+            <div className={`flex items-center justify-center h-7 w-7 rounded-xl flex-shrink-0 ${
               isDestructive
-                ? "bg-red-500/15 border border-red-500/25 text-red-400"
-                : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+                ? "bg-red-500/15 border border-red-500/20 text-red-400"
+                : "bg-emerald-500/15 border border-emerald-500/20 text-emerald-400"
             }`}>
               {isDestructive ? (
-                <Trash2 className="h-3 w-3" strokeWidth={2.2} />
+                <Trash2 className="h-3.5 w-3.5" strokeWidth={2.2} />
               ) : (
-                <Check className="h-3 w-3" strokeWidth={2.5} />
+                <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
               )}
             </div>
 
