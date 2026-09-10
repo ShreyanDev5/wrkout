@@ -451,29 +451,72 @@ export function WorkoutScreen({
             className="w-full"
           >
             <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-              {/* Unified Page Header with Header Routine Selector */}
-              <motion.div variants={itemVariants} className="flex items-center justify-between mb-5 pt-2 sm:pt-4">
-                <div className="flex flex-col">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-                    Train
-                  </h1>
-                </div>
+              {/* Unified Page Header */}
+              <motion.div variants={itemVariants} className="flex flex-col mb-5 pt-2 sm:pt-4">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                  Train
+                </h1>
+              </motion.div>
 
-                {/* Routine Selector Dropdown (Minimal Header Trigger) */}
-                <div className="relative" ref={dropdownRef}>
+              {/* Filter Controls Row: PPL Filter & Routine Selector */}
+              <motion.div variants={itemVariants} className="flex items-center gap-2 mb-4">
+                {/* Day Tabs Selector - Native Apple iOS Segmented Control */}
+                <TabsList className="grid grid-cols-4 flex-1 min-w-0 h-[34px] min-h-[34px] bg-zinc-900/70 border border-zinc-800/70 backdrop-blur-xl p-[2px] rounded-xl gap-0.5 items-center overflow-hidden">
+                  {displayDays.map((d) => {
+                    const day = d.day_id
+                    const dayColor = getWorkoutDayColor(day, colorMode)
+                    const label = (day === 'leg' || day === 'legs') 
+                      ? 'Legs' 
+                      : (day === 'flex' || day === 'flexible' || day === 'custom') 
+                        ? 'Flex' 
+                        : day.charAt(0).toUpperCase() + day.slice(1)
+                    const isSelected = selectedDay === day
+
+                    return (
+                      <TabsTrigger
+                        key={day}
+                        value={day}
+                        className={cn(
+                          'w-full min-w-0 h-[28px] rounded-[9px] flex items-center justify-center px-1 sm:px-2 transition-all duration-150 ease-out select-none border',
+                          'text-[11px] font-semibold tracking-tight my-0',
+                          isSelected
+                            ? 'font-bold shadow-sm'
+                            : 'bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.04]'
+                        )}
+                        style={{
+                          color: isSelected ? dayColor : undefined,
+                          backgroundColor: isSelected
+                            ? `color-mix(in srgb, ${dayColor} 7%, #1a1a1e)`
+                            : undefined,
+                          borderColor: isSelected
+                            ? `color-mix(in srgb, ${dayColor} 16%, #2c2c30)`
+                            : 'transparent'
+                        }}
+                        aria-label={`${label} day`}
+                      >
+                        <span className="truncate">{label}</span>
+                      </TabsTrigger>
+                    )
+                  })}
+                </TabsList>
+
+                {/* Routine Selector Dropdown */}
+                <div className="relative flex-shrink-0" ref={dropdownRef}>
                   <button
                     type="button"
                     onClick={() => setIsRoutineDropdownOpen((prev) => !prev)}
-                    className="h-8 px-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors flex items-center gap-1.5 cursor-pointer max-w-[180px]"
+                    className="h-[34px] px-2.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900/70 hover:bg-zinc-800/70 border border-zinc-800/70 backdrop-blur-xl transition-all flex items-center justify-between gap-1.5 cursor-pointer max-w-[125px] sm:max-w-[150px] shadow-sm select-none"
                     aria-haspopup="listbox"
                     aria-expanded={isRoutineDropdownOpen}
                   >
-                    <span className="truncate font-semibold text-zinc-200">{currentWorkout?.name || "Select Routine"}</span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 flex-shrink-0", isRoutineDropdownOpen && "rotate-180")} />
+                    <span className="truncate font-semibold text-zinc-200 text-[11px] sm:text-xs">
+                      {currentWorkout?.name || "Routine"}
+                    </span>
+                    <ChevronDown className={cn("h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 flex-shrink-0", isRoutineDropdownOpen && "rotate-180")} />
                   </button>
 
                   {isRoutineDropdownOpen && (
-                    <div className="absolute top-full right-0 w-48 mt-1.5 z-50 bg-zinc-900 border border-zinc-700/90 rounded-xl p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-100">
+                    <div className="absolute top-full right-0 w-44 mt-1.5 z-50 bg-zinc-900 border border-zinc-700/90 rounded-xl p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-100">
                       <div className="max-h-60 overflow-y-auto py-0.5 space-y-0.5" role="listbox">
                         {workouts.map((workout) => {
                           const isChecked = workout.id === selectedWorkout
@@ -503,48 +546,6 @@ export function WorkoutScreen({
                     </div>
                   )}
                 </div>
-              </motion.div>
-
-              {/* Day Tabs Selector - Native Apple iOS Segmented Control */}
-              <motion.div variants={itemVariants} className="mb-4">
-                <TabsList className="grid grid-cols-4 w-full h-auto min-h-[36px] ios-segmented-container p-[3px] rounded-xl gap-1 items-center overflow-hidden">
-                  {displayDays.map((d) => {
-                    const day = d.day_id
-                    const dayColor = getWorkoutDayColor(day, colorMode)
-                    const label = (day === 'leg' || day === 'legs') 
-                      ? 'Legs' 
-                      : (day === 'flex' || day === 'flexible' || day === 'custom') 
-                        ? 'Custom' 
-                        : day.charAt(0).toUpperCase() + day.slice(1)
-                    const isSelected = selectedDay === day
-
-                    return (
-                      <TabsTrigger
-                        key={day}
-                        value={day}
-                        className={cn(
-                          'w-full min-w-0 h-[30px] rounded-lg flex items-center justify-center px-1 sm:px-2 transition-all duration-150 ease-out select-none border',
-                          'text-[11px] font-semibold tracking-tight my-0',
-                          isSelected
-                            ? 'font-bold shadow-sm'
-                            : 'bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.04]'
-                        )}
-                        style={{
-                          color: isSelected ? dayColor : undefined,
-                          backgroundColor: isSelected
-                            ? `color-mix(in srgb, ${dayColor} 7%, #1a1a1e)`
-                            : undefined,
-                          borderColor: isSelected
-                            ? `color-mix(in srgb, ${dayColor} 16%, #2c2c30)`
-                            : 'transparent'
-                        }}
-                        aria-label={`${label} day`}
-                      >
-                        <span className="truncate">{label}</span>
-                      </TabsTrigger>
-                    )
-                  })}
-                </TabsList>
               </motion.div>
 
               {/* Exercises Container */}

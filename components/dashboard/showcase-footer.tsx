@@ -8,16 +8,16 @@ interface ShowcaseFooterProps {
 
 export function ShowcaseFooter({ className = "" }: ShowcaseFooterProps) {
   return (
-    <footer className={`w-full mt-6 pt-4 pb-2 border-t border-zinc-800/60 flex items-center justify-between text-xs select-none ${className}`}>
+    <footer className={`w-full mt-6 pt-4 pb-2 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-2 text-xs select-none ${className}`}>
       {/* Left side: Project Name · Description */}
       <div className="flex items-center gap-1.5 min-w-0">
         <span className="font-semibold text-zinc-300 tracking-tight">wrkout</span>
         <span className="text-zinc-600 font-bold">·</span>
-        <span className="text-zinc-500 font-normal truncate">Overload Tracker</span>
+        <span className="text-zinc-500 font-normal">Overload Tracker</span>
       </div>
 
       {/* Right side: Shreyan Sardar ↗ / GitHub */}
-      <div className="flex items-center gap-2 font-medium flex-shrink-0">
+      <div className="flex items-center gap-2.5 font-medium flex-shrink-0">
         <a
           href="https://shreyandev.vercel.app"
           target="_blank"

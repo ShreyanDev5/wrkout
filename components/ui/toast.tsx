@@ -16,7 +16,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 z-[100] flex max-h-screen w-auto max-w-[calc(100vw-2rem)] sm:max-w-[340px] flex-col-reverse p-0 gap-2 select-none items-center pointer-events-none",
+      "fixed bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 z-[100] flex max-h-screen w-auto max-w-[calc(100vw-2rem)] sm:max-w-[410px] flex-col-reverse p-0 gap-2 select-none items-center pointer-events-none",
       className
     )}
     {...props}
@@ -25,7 +25,7 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-auto max-w-[calc(100vw-2rem)] sm:max-w-[340px] items-center gap-3 overflow-hidden rounded-2xl border py-2.5 px-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform] data-[swipe=cancel]:duration-200 data-[swipe=cancel]:ease-out data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-200 data-[state=open]:ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-bottom-2 data-[state=closed]:duration-150 data-[state=closed]:ease-in data-[swipe=end]:animate-out data-[swipe=end]:fade-out-0",
+  "group pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-2xl border py-2.5 px-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform] data-[swipe=cancel]:duration-200 data-[swipe=cancel]:ease-out data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-200 data-[state=open]:ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-bottom-2 data-[state=closed]:duration-150 data-[state=closed]:ease-in data-[swipe=end]:animate-out data-[swipe=end]:fade-out-0",
   {
     variants: {
       variant: {

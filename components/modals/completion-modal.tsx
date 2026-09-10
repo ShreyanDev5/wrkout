@@ -40,6 +40,7 @@ export function CompletionModal({ isOpen, onClose }: CompletionModalProps) {
             <DialogContent
                 className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center relative"
                 hideCloseButton={true}
+                centerMobile={true}
             >
                 <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">
                     <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 shadow-sm text-amber-500">

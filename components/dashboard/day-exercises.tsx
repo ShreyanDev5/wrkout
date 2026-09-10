@@ -78,7 +78,7 @@ export function DayExercises({
   return (
     <div className="w-full">
       {exercises.length > 0 ? (
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 overflow-hidden shadow-sm divide-y divide-zinc-800/80">
+        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 backdrop-blur-xl overflow-hidden shadow-sm divide-y divide-zinc-800/60">
           {exercises.map((exercise) => {
             const completed = completedExerciseNames.has(exercise.name)
             const isExpanded = expandedExerciseId === exercise.id
@@ -90,10 +90,10 @@ export function DayExercises({
                 className={cn(
                   "transition-colors duration-150 overflow-hidden",
                   isExpanded
-                    ? "bg-zinc-800/40"
+                    ? "bg-black/25"
                     : completed
-                      ? "bg-zinc-950/40 hover:bg-zinc-800/30"
-                      : "hover:bg-zinc-800/40"
+                      ? "bg-black/15 hover:bg-black/25"
+                      : "hover:bg-white/[0.02]"
                 )}
               >
                 <div
@@ -114,8 +114,7 @@ export function DayExercises({
                     <Label
                       className={cn(
                         "text-sm font-semibold block leading-tight cursor-pointer tracking-tight",
-                        "text-foreground",
-                        isExpanded ? "whitespace-normal" : "truncate",
+                        isExpanded ? "text-white font-bold whitespace-normal" : "text-zinc-200 truncate",
                         completed && "exercise-label-checked opacity-40 font-medium"
                       )}
                       title={exercise.name}
@@ -135,8 +134,8 @@ export function DayExercises({
                   <div className="flex-shrink-0 text-zinc-500 pl-1">
                     <ChevronDown
                       className={cn(
-                        "h-4 w-4 text-zinc-500 transition-transform duration-200",
-                        isExpanded && "rotate-180"
+                        "h-4 w-4 transition-transform duration-200",
+                        isExpanded ? "text-zinc-300 rotate-180" : "text-zinc-500"
                       )}
                       aria-hidden="true"
                     />
@@ -151,7 +150,7 @@ export function DayExercises({
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-                      className="overflow-hidden border-t border-zinc-800/60"
+                      className="overflow-hidden border-t border-zinc-800/50"
                     >
                       <div className="px-4 pb-4 pt-2">
                         <InlineWorkoutLogger

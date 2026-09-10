@@ -27,15 +27,21 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   hideCloseButton?: boolean;
+  containerClassName?: string;
+  centerMobile?: boolean;
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, hideCloseButton = false, ...props }, ref) => (
+>(({ className, children, hideCloseButton = false, containerClassName, centerMobile = false, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay className="bg-black/70 backdrop-blur-sm" />
-    <div className="fixed inset-0 z-50 flex items-center max-sm:items-start max-sm:pt-[8vh] justify-center p-4 overflow-y-auto pointer-events-none">
+    <div className={cn(
+      "fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto pointer-events-none",
+      centerMobile ? "items-center" : "max-sm:items-start max-sm:pt-[8vh]",
+      containerClassName
+    )}>
       <DialogPrimitive.Content
         ref={ref}
         className={cn(

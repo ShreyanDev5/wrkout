@@ -38,8 +38,14 @@ export function Toaster() {
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, variant, ...props }) {
         const isDestructive = variant === "destructive"
+        const hasAction = Boolean(action)
         return (
-          <Toast key={id} variant={variant} {...props}>
+          <Toast
+            key={id}
+            variant={variant}
+            className={hasAction ? "w-[92vw] max-w-[390px]" : "w-auto max-w-[calc(100vw-2rem)]"}
+            {...props}
+          >
             {/* Left Status Badge for Perfect Symmetry */}
             <div className={`flex items-center justify-center h-7 w-7 rounded-xl flex-shrink-0 ${
               isDestructive
@@ -53,10 +59,10 @@ export function Toaster() {
               )}
             </div>
 
-            <div className="flex flex-col min-w-0 flex-1 py-0.5">
-              {title && <ToastTitle>{title}</ToastTitle>}
+            <div className={`flex flex-col min-w-0 ${hasAction ? "flex-1 pr-1" : "pr-0.5"}`}>
+              {title && <ToastTitle className="truncate">{title}</ToastTitle>}
               {description && (
-                <ToastDescription>{description}</ToastDescription>
+                <ToastDescription className="truncate text-zinc-400 text-xs mt-0.5">{description}</ToastDescription>
               )}
             </div>
             {action}

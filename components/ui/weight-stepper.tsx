@@ -52,7 +52,7 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
   }
 
   return (
-    <div className={cn("space-y-2 w-full bg-secondary/20 rounded-2xl py-1.5 px-0.5 border border-white/5", className)}>
+    <div className={cn("space-y-2 w-full bg-black/35 rounded-[10px] py-1 px-0.5 border border-white/[0.06]", className)}>
       <div className="flex items-center justify-between px-1">
         <Button
           type="button"
@@ -61,7 +61,7 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
           onClick={decrement}
           disabled={value <= min}
           className={cn(
-            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
+            "rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all active:scale-95",
             size === "large" ? "h-8 w-8" : "h-7 w-7",
             isPlaying && "bg-accent/20 text-accent"
           )}
@@ -73,7 +73,7 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
         <div className="flex flex-col items-center justify-center">
           <span
             className={cn(
-              "font-medium tracking-tight transition-all",
+              "font-bold tracking-tight transition-all",
               size === "large"
                 ? (value === 0 ? "text-xl tracking-normal" : "text-2xl")
                 : (value === 0 ? "text-base tracking-normal" : "text-lg")

@@ -120,20 +120,20 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
 
       {/* Session Summary Pulse Strip */}
       {sessionSummary && (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800/90 mb-4 text-xs select-none shadow-sm">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800/90 mb-4 text-xs select-none shadow-sm whitespace-nowrap overflow-x-auto hide-scrollbar">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <span className="font-bold text-white tracking-tight">{sessionSummary.exerciseCount}</span>
             <span className="text-zinc-400 font-medium">{sessionSummary.exerciseCount === 1 ? "Exercise" : "Exercises"}</span>
           </div>
-          <span className="text-zinc-600 font-bold">•</span>
-          <div className="flex items-center gap-1.5">
+          <span className="text-zinc-600 font-bold flex-shrink-0">•</span>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <span className="font-bold text-white tracking-tight">{sessionSummary.totalSets}</span>
             <span className="text-zinc-400 font-medium">Sets</span>
           </div>
           {sessionSummary.totalVolume > 0 && (
             <>
-              <span className="text-zinc-600 font-bold">•</span>
-              <div className="flex items-center gap-1.5">
+              <span className="text-zinc-600 font-bold flex-shrink-0">•</span>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className="font-bold text-white tracking-tight">{sessionSummary.totalVolume.toLocaleString()}</span>
                 <span className="text-zinc-400 font-medium">kg Volume</span>
               </div>
@@ -144,7 +144,7 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
 
       {/* Detailed Session Breakdown */}
       <motion.div
-        className="space-y-3"
+        className="space-y-2.5"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -165,22 +165,24 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                 className="group"
               >
                 <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm transition-all duration-200">
-                  <div className="p-4 space-y-3">
+                  <div className="px-3.5 py-2.5 sm:px-4 sm:py-3 space-y-2">
                     {/* Exercise Header */}
-                    <div className="flex items-center justify-between gap-3 px-0.5">
+                    <div className="flex items-center justify-between gap-3 px-0.5 min-h-5">
                       <h3 className="text-sm sm:text-base font-bold text-zinc-100 leading-none tracking-tight truncate flex-1 min-w-0" title={exerciseName}>
                         {exerciseName}
                       </h3>
 
-                      {renderTrendBadge(trend) && (
+                      {renderTrendBadge(trend) ? (
                         <div className="flex-shrink-0">
                           {renderTrendBadge(trend)}
                         </div>
+                      ) : (
+                        <div className="w-5 h-5 flex-shrink-0 opacity-0 pointer-events-none" aria-hidden="true" />
                       )}
                     </div>
 
                     {/* Clean 3-Column Stats Row */}
-                    <div className="grid grid-cols-3 pt-3 border-t border-zinc-800/70">
+                    <div className="grid grid-cols-3 pt-2 border-t border-zinc-800/70">
                       {/* Weight */}
                       <div className="flex flex-col items-center justify-center">
                         <span className="text-[11px] font-medium text-zinc-400">Weight</span>
