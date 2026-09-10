@@ -64,6 +64,7 @@ export function DeletionConfirmationModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         hideCloseButton
+        centerMobile={true}
         className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center relative"
       >
         <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">

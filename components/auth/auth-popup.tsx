@@ -44,6 +44,7 @@ export function AuthPopup() {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         hideCloseButton
+        centerMobile={true}
         className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center text-center relative"
         onInteractOutside={e => e.preventDefault()} // Prevent click outside
         onEscapeKeyDown={e => e.preventDefault()} // Prevent Escape key

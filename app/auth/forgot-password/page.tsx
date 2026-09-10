@@ -265,7 +265,7 @@ export default function ForgotPasswordPage() {
 
         {step === 'username' ? (
           <div className="space-y-1.5">
-            <Label htmlFor="username" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="username" className="text-xs font-semibold text-zinc-300">
               Username
             </Label>
             <div className="relative w-full group">
@@ -287,7 +287,7 @@ export default function ForgotPasswordPage() {
           </div>
         ) : step === 'email' ? (
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="email" className="text-xs font-semibold text-zinc-300">
               Email address
             </Label>
             <div className="relative w-full group">
@@ -312,7 +312,7 @@ export default function ForgotPasswordPage() {
           </div>
         ) : (
           <div className="space-y-1.5">
-            <Label htmlFor="code" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="code" className="text-xs font-semibold text-zinc-300">
               6-Digit Code
             </Label>
             <div className="relative w-full group">

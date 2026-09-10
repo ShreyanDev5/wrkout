@@ -174,17 +174,17 @@ export function DayExercises({
       ) : (
         <div className="flex flex-col items-center justify-center py-10 px-4 text-center rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md select-none">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 border shadow-sm"
+            className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3.5 border shadow-sm"
             style={{
-              backgroundColor: dayColor ? `color-mix(in srgb, ${dayColor} 10%, #18181b)` : '#18181b',
-              borderColor: dayColor ? `color-mix(in srgb, ${dayColor} 22%, #27272a)` : '#27272a',
+              backgroundColor: dayColor ? `color-mix(in srgb, ${dayColor} 16%, #18181b)` : '#18181b',
+              borderColor: dayColor ? `color-mix(in srgb, ${dayColor} 30%, #27272a)` : '#27272a',
               color: dayColor || '#a1a1aa'
             }}
           >
-            <Dumbbell className="h-4 w-4" strokeWidth={1.8} />
+            <Dumbbell className="h-5 w-5" strokeWidth={1.8} />
           </div>
-          <p className="text-xs font-semibold text-zinc-200 mb-0.5">No exercises for this day</p>
-          <p className="text-[11px] text-zinc-400">Add exercises in Settings to get started.</p>
+          <h3 className="text-base font-bold text-zinc-100 mb-1 tracking-tight">No exercises for this day</h3>
+          <p className="text-zinc-400 text-xs max-w-xs leading-relaxed font-medium">Add exercises in Settings to get started.</p>
         </div>
       )}
 

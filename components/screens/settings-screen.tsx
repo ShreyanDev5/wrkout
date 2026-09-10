@@ -149,6 +149,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
   const { trigger: haptic } = useHaptics()
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [isAccountExpanded, setIsAccountExpanded] = useState(false)
   const supabase = createClientComponentClient();
 
   const [recoveryEmailState, setRecoveryEmailState] = useState(user?.user_metadata?.recovery_email || '');
@@ -350,7 +351,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
 
       toast({
         title: "Routine created",
-        description: `${newWorkoutName} created with default routines.`,
+        description: newWorkoutName,
       })
     } catch (error) {
       console.error("Failed to add workout with default days:", error)
@@ -383,7 +384,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     toast({
       variant: "destructive",
       title: "Routine deleted",
-      description: `${workoutToDelete.name} has been removed.`,
+      description: workoutToDelete.name,
     });
     setWorkoutToDelete(null);
     setIsDeleteWorkoutOpen(false);
@@ -440,7 +441,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       setIsAddExerciseOpen(false);
       toast({
         title: "Exercise added",
-        description: `${finalExerciseName} added to routine.`,
+        description: finalExerciseName,
       });
     } catch (err) {
       console.error("Failed to add exercise:", err);
@@ -533,8 +534,8 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
     onUpdateWorkoutsAndDays(workouts, updatedWorkoutDays);
     toast({
       variant: "destructive",
-      title: "Exercise Deleted",
-      description: `${exerciseToDelete.name} removed from routine.`,
+      title: "Exercise deleted",
+      description: exerciseToDelete.name,
     });
     setExerciseToDelete(null);
     setIsDeleteExerciseOpen(false);
@@ -693,7 +694,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                         onClick={() => toggleDayExpanded(dayKey)}
                                       >
                                         <p className="text-sm font-semibold text-zinc-100 truncate leading-tight pr-2">
-                                          {(day.name === 'Flex / Custom' || day.name === 'Flex') ? 'Custom Day' : day.name}
+                                          {(day.name === 'Flex / Custom' || day.name === 'Custom' || day.name === 'Custom Day' || day.name === 'Flex') ? 'Flex Day' : day.name}
                                         </p>
                                         <ChevronDown className={cn("h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 flex-shrink-0", isDayExpanded && "rotate-180")} />
                                       </div>
@@ -753,7 +754,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                               </div>
                             ) : (
                               <div className="text-center py-6 rounded-xl border border-zinc-800/70 bg-zinc-900/30 select-none">
-                                <p className="text-xs text-zinc-400 font-medium">No sessions in this routine</p>
+                                <p className="text-xs text-zinc-400 font-medium">No days in this routine</p>
                               </div>
                             )}
                           </div>
@@ -768,11 +769,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                 variants={itemVariants}
                 className="flex flex-col items-center justify-center py-8 px-4 text-center rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-md select-none"
               >
-                <div className="w-11 h-11 rounded-2xl border border-zinc-800/90 bg-zinc-900/80 flex items-center justify-center mb-3 shadow-sm text-zinc-400">
+                <div className="w-12 h-12 rounded-2xl border border-zinc-800/90 bg-zinc-900/80 flex items-center justify-center mb-3.5 shadow-sm text-zinc-400">
                   <Dumbbell className="h-5 w-5 text-zinc-400" strokeWidth={1.8} />
                 </div>
-                <h3 className="text-sm font-bold text-zinc-100 mb-1 tracking-tight">No routines yet</h3>
-                <p className="text-xs text-zinc-400 mb-3.5 max-w-xs mx-auto leading-relaxed">
+                <h3 className="text-base font-bold text-zinc-100 mb-1 tracking-tight">No routines yet</h3>
+                <p className="text-xs text-zinc-400 mb-4 max-w-xs mx-auto leading-relaxed font-medium">
                   Create your first routine to start tracking.
                 </p>
                 <Button
@@ -796,85 +797,113 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
             </h2>
           </div>
 
-          <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-4 shadow-sm space-y-4">
-            {/* Recovery Email Form */}
-            <div className="space-y-2.5">
-              <div className="space-y-0.5">
-                <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
-                <p className="text-xs text-muted-foreground">Used only for account recovery.</p>
-              </div>
-              
-              <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-0.5">
-                {emailMessage && (
-                  <p className="text-xs text-pull-light font-medium bg-pull-light/10 border border-pull-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
-                    {emailMessage}
-                  </p>
-                )}
-                {emailError && (
-                  <p className="text-xs text-leg-light font-medium bg-leg-light/10 border border-leg-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
-                    {emailError}
-                  </p>
-                )}
-                
-                <div className="flex flex-row items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      id="settings-recovery-email"
-                      type="email"
-                      value={recoveryEmailState}
-                      onChange={(e) => setRecoveryEmailState(e.target.value)}
-                      placeholder="e.g. you@example.com"
-                      required
-                      className="h-9 rounded-xl border-zinc-700/60 bg-zinc-950/70 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 w-full pl-9"
-                    />
-                    <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
-                      <Mail className="h-4 w-4" />
+          <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm transition-all duration-200">
+            <div
+              className="flex items-center justify-between py-3 px-3.5 cursor-pointer select-none"
+              onClick={() => {
+                haptic("light")
+                setIsAccountExpanded((prev) => !prev)
+              }}
+            >
+              <span className="font-bold text-zinc-100 text-sm tracking-tight truncate">
+                {displayUsername ? `@${displayUsername}` : user?.email || "Account Options"}
+              </span>
+              <ChevronDown className={cn("h-4 w-4 text-zinc-400 transition-transform duration-200 flex-shrink-0", isAccountExpanded && "rotate-180")} />
+            </div>
+
+            <AnimatePresence>
+              {isAccountExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                >
+                  <div className="px-3.5 pb-3.5 pt-0 space-y-4">
+                    <div className="w-full h-px bg-zinc-800/80 mb-3" />
+
+                    {/* Recovery Email Form */}
+                    <div className="space-y-2.5">
+                      <div className="space-y-0.5">
+                        <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
+                        <p className="text-xs text-muted-foreground">Used only for account recovery.</p>
+                      </div>
+                      
+                      <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-0.5">
+                        {emailMessage && (
+                          <p className="text-xs text-pull-light font-medium bg-pull-light/10 border border-pull-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                            {emailMessage}
+                          </p>
+                        )}
+                        {emailError && (
+                          <p className="text-xs text-leg-light font-medium bg-leg-light/10 border border-leg-light/20 px-3 py-2 rounded-lg animate-in fade-in duration-300">
+                            {emailError}
+                          </p>
+                        )}
+                        
+                        <div className="flex flex-row items-center gap-2">
+                          <div className="relative flex-1">
+                            <Input
+                              id="settings-recovery-email"
+                              type="email"
+                              value={recoveryEmailState}
+                              onChange={(e) => setRecoveryEmailState(e.target.value)}
+                              placeholder="e.g. you@example.com"
+                              required
+                              className="h-9 rounded-xl border-zinc-700/60 bg-zinc-950/70 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 w-full pl-9"
+                            />
+                            <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
+                              <Mail className="h-4 w-4" />
+                            </div>
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
+                            className="h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none px-3.5 text-xs font-semibold text-zinc-200 transition-all active:scale-[0.98] border border-zinc-700/50 flex items-center justify-center cursor-pointer flex-shrink-0"
+                          >
+                            {updatingEmail ? 'Saving...' : 'Save'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div className="w-full h-px bg-zinc-800/60" />
+
+                    {/* Account Actions */}
+                    <div className="space-y-2.5">
+                      <div className="space-y-0.5">
+                        <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>
+                        <p className="text-xs text-muted-foreground">App guide and account options.</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5 w-full pt-0.5">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full h-9 px-3 rounded-xl bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-200 transition-all text-xs font-medium border border-zinc-700/50 active:scale-[0.98]"
+                          onClick={() => {
+                            haptic("light");
+                            setShowOnboarding(true);
+                          }}
+                        >
+                          View Guide
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full h-9 px-3 rounded-xl bg-zinc-800/60 hover:bg-red-950/40 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/50 hover:border-red-900/40 active:scale-[0.98]"
+                          onClick={() => {
+                            haptic("warning");
+                            setIsSignOutOpen(true);
+                          }}
+                        >
+                          Sign Out
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
-                    className="h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none px-3.5 text-xs font-semibold text-zinc-200 transition-all active:scale-[0.98] border border-zinc-700/50 flex items-center justify-center cursor-pointer flex-shrink-0"
-                  >
-                    {updatingEmail ? 'Saving...' : 'Save'}
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div className="w-full h-px bg-zinc-800/60" />
-
-            {/* Account Actions */}
-            <div className="space-y-2.5">
-              <div className="space-y-0.5">
-                <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>
-                <p className="text-xs text-muted-foreground">App guide and account options.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2.5 w-full pt-0.5">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full h-9 px-3 rounded-xl bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-200 transition-all text-xs font-medium border border-zinc-700/50 active:scale-[0.98]"
-                  onClick={() => {
-                    haptic("light");
-                    setShowOnboarding(true);
-                  }}
-                >
-                  View Guide
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full h-9 px-3 rounded-xl bg-zinc-800/60 hover:bg-red-950/40 text-red-400 hover:text-red-300 transition-all text-xs font-medium border border-zinc-700/50 hover:border-red-900/40 active:scale-[0.98]"
-                  onClick={() => {
-                    haptic("warning");
-                    setIsSignOutOpen(true);
-                  }}
-                >
-                  Sign Out
-                </Button>
-              </div>
-            </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.section>
       </div>
@@ -891,6 +920,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
         <DialogContent 
           hideCloseButton
+          centerMobile
           className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
         >
           <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">
@@ -943,6 +973,7 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
       <Dialog open={isAddExerciseOpen} onOpenChange={setIsAddExerciseOpen}>
         <DialogContent 
           hideCloseButton
+          centerMobile
           className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
         >
           <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">

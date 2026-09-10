@@ -150,7 +150,7 @@ export default function ResetPasswordPage() {
 
         <div className="space-y-3.5">
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="password" className="text-xs font-semibold text-zinc-300">
               New password
             </Label>
             <div className="relative w-full group">
@@ -191,7 +191,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="confirm" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            <Label htmlFor="confirm" className="text-xs font-semibold text-zinc-300">
               Confirm new password
             </Label>
             <div className="relative w-full group">

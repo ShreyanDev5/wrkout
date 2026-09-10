@@ -110,7 +110,7 @@ export function WorkoutScreen({
           id: `${selectedWorkout || 'temp'}-${dayId}`,
           workout_id: selectedWorkout,
           day_id: dayId,
-          name: (dayId === 'flex' || dayId === 'custom' || dayId === 'flexible') ? 'Custom Day' : `${dayId.charAt(0).toUpperCase() + dayId.slice(1)} Day`,
+          name: (dayId === 'flex' || dayId === 'custom' || dayId === 'flexible') ? 'Flex Day' : `${dayId.charAt(0).toUpperCase() + dayId.slice(1)} Day`,
           exercises: [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -316,7 +316,7 @@ export function WorkoutScreen({
                 <Dumbbell className="h-5 w-5 text-zinc-400" strokeWidth={1.8} />
               </div>
               <h3 className="text-base font-bold text-zinc-100 mb-1 tracking-tight">No Workout Routines</h3>
-              <p className="text-zinc-400 text-xs max-w-xs mb-4 leading-relaxed font-normal">
+              <p className="text-zinc-400 text-xs max-w-xs mb-4 leading-relaxed font-medium">
                 Create a routine to start tracking your workouts.
               </p>
               <Button
@@ -334,6 +334,7 @@ export function WorkoutScreen({
         <Dialog open={isAddWorkoutOpen} onOpenChange={setIsAddWorkoutOpen}>
           <DialogContent 
             hideCloseButton
+            centerMobile
             className="w-[90%] max-w-[320px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none mx-auto flex flex-col items-center"
           >
             <DialogHeader className="w-full flex flex-col items-center space-y-0 text-center">

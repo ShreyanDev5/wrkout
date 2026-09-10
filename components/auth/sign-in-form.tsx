@@ -75,7 +75,7 @@ export function SignInForm() {
 
       <div className="space-y-3.5">
         <div className="space-y-1.5">
-          <Label htmlFor="username" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+          <Label htmlFor="username" className="text-xs font-semibold text-zinc-300">
             Username
           </Label>
           <div className="relative w-full group">
@@ -96,7 +96,7 @@ export function SignInForm() {
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+          <Label htmlFor="password" className="text-xs font-semibold text-zinc-300">
             Password
           </Label>
           <div className="relative w-full group">

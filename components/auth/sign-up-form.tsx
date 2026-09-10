@@ -79,11 +79,11 @@ export function SignUpForm() {
       if (signInData && signInData.user) {
         const supabase = createClientComponentClient();
         const defaultWorkoutId = crypto.randomUUID();
-        // Create a default 'My Workouts' routine for new users (one-time, only on sign-up)
+        // Create a default 'Routine 1' routine for new users (one-time, only on sign-up)
         await saveUserWorkouts(supabase, [{
           id: defaultWorkoutId,
           user_id: signInData.user.id,
-          name: 'My Workouts',
+          name: 'Routine 1',
           days: [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -118,7 +118,7 @@ export function SignUpForm() {
 
       <div className="space-y-3.5">
         <div className="space-y-1.5">
-          <Label htmlFor="username" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Username</Label>
+          <Label htmlFor="username" className="text-xs font-semibold text-zinc-300">Username</Label>
           <div className="relative w-full group">
             <Input
               id="username"
@@ -138,7 +138,7 @@ export function SignUpForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="recoveryEmail" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Recovery Email</Label>
+          <Label htmlFor="recoveryEmail" className="text-xs font-semibold text-zinc-300">Recovery Email</Label>
           <div className="relative w-full group">
             <Input
               id="recoveryEmail"
@@ -161,7 +161,7 @@ export function SignUpForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+          <Label htmlFor="password" className="text-xs font-semibold text-zinc-300">
             Password
           </Label>
           <div className="relative w-full group">

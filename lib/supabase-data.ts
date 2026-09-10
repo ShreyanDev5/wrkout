@@ -428,7 +428,7 @@ export async function createDefaultRoutinesForWorkout(
       id: uuidv4(),
       workout_id: workoutId,
       day_id: "flex",
-      name: "Custom Day",
+      name: "Flex Day",
       exercises: [
         { id: uuidv4(), exercise_id: findExId("Core Plank"), name: "Core Plank" },
         { id: uuidv4(), exercise_id: findExId("Jumping Jacks"), name: "Jumping Jacks" },

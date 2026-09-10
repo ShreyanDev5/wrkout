@@ -65,7 +65,7 @@ const AnimatedCheckbox = React.forwardRef<
           className,
         )}
         style={{
-          backgroundColor: checked ? `color-mix(in srgb, ${checkboxColor} 22%, transparent)` : undefined,
+          backgroundColor: checked ? checkboxColor : undefined,
           borderColor: checked ? checkboxColor : undefined,
         }}
         checked={checked}
@@ -76,9 +76,8 @@ const AnimatedCheckbox = React.forwardRef<
             "flex items-center justify-center transition-all duration-200",
             checked ? "scale-100 opacity-100" : "scale-0 opacity-0",
           )}
-          style={{ color: checkboxColor }}
         >
-          <Check className="h-3.5 w-3.5 stroke-[3px]" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
+          <Check className="h-3.5 w-3.5 stroke-[3.5px] text-zinc-950" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {/* Touch target overlay for better mobile accessibility */}

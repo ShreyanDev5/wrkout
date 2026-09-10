@@ -18,7 +18,7 @@ export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutState
   // Get human-friendly day title
   const getCategoryTitle = () => {
     if (dayName && dayName.trim()) {
-      if (dayName.toLowerCase().includes("flex")) return "Custom Day"
+      if (dayName.toLowerCase().includes("flex") || dayName.toLowerCase().includes("custom")) return "Flex Day"
       return dayName
     }
     switch (dayId.toLowerCase()) {
@@ -32,7 +32,7 @@ export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutState
       case "flex":
       case "flexible":
       case "custom":
-        return "Custom Day"
+        return "Flex Day"
       default:
         return `${dayId.charAt(0).toUpperCase() + dayId.slice(1)} Workout`
     }
@@ -43,8 +43,8 @@ export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutState
       <div
         className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3.5 border shadow-sm transition-colors"
         style={{
-          backgroundColor: `color-mix(in srgb, ${dayColor} 10%, #18181b)`,
-          borderColor: `color-mix(in srgb, ${dayColor} 22%, #27272a)`,
+          backgroundColor: `color-mix(in srgb, ${dayColor} 16%, #18181b)`,
+          borderColor: `color-mix(in srgb, ${dayColor} 30%, #27272a)`,
           color: dayColor
         }}
       >
@@ -55,7 +55,7 @@ export function EmptyWorkoutState({ dayId, dayName, onStart }: EmptyWorkoutState
         No exercises in {getCategoryTitle()}
       </h3>
 
-      <p className="text-zinc-400 text-xs max-w-xs mb-4 leading-relaxed font-normal">
+      <p className="text-zinc-400 text-xs max-w-xs mb-4 leading-relaxed font-medium">
         Add exercises in Settings to get started.
       </p>
 

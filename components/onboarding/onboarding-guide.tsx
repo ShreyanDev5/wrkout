@@ -10,12 +10,12 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   Dumbbell,
   Minus,
   Plus,
-  PlusCircle,
   TrendingUp,
 } from "lucide-react"
 import { LucideProps } from "lucide-react"
@@ -44,7 +44,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "split",
     title: "Build your split",
     subtitle: "",
-    description: "Organize your workout routines and split days in Settings.",
+    description: "Organize your routines and split days in Settings.",
     icon: Dumbbell,
     iconClass: "text-push-dark",
     barClass: "bg-push-dark",
@@ -57,7 +57,7 @@ const onboardingSteps: OnboardingStep[] = [
           {/* Routine Header */}
           <div className="flex items-center justify-between px-0.5">
             <span className="text-[11.5px] font-bold text-zinc-100 tracking-tight">
-              My Workouts
+              Routine 1
             </span>
             <ChevronDown className="h-3.5 w-3.5 text-zinc-400 rotate-180" />
           </div>
@@ -69,7 +69,7 @@ const onboardingSteps: OnboardingStep[] = [
           <div className="space-y-1.5">
             {/* Push Day - Collapsed */}
             <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[7px] border border-zinc-700/60 bg-zinc-800/70"
+              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
               style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--push-dark))" }}
             >
               <span className="text-[11px] font-semibold text-zinc-100">Push Day</span>
@@ -78,7 +78,7 @@ const onboardingSteps: OnboardingStep[] = [
 
             {/* Pull Day - Collapsed */}
             <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[7px] border border-zinc-700/60 bg-zinc-800/70"
+              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
               style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--pull-dark))" }}
             >
               <span className="text-[11px] font-semibold text-zinc-100">Pull Day</span>
@@ -87,19 +87,19 @@ const onboardingSteps: OnboardingStep[] = [
 
             {/* Legs Day - Collapsed */}
             <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[7px] border border-zinc-700/60 bg-zinc-800/70"
+              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
               style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--leg-dark))" }}
             >
               <span className="text-[11px] font-semibold text-zinc-100">Legs Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
 
-            {/* Custom Day - Collapsed */}
+            {/* Flex Day - Collapsed */}
             <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[7px] border border-zinc-700/60 bg-zinc-800/70"
+              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
               style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--flex-dark))" }}
             >
-              <span className="text-[11px] font-semibold text-zinc-100">Custom Day</span>
+              <span className="text-[11px] font-semibold text-zinc-100">Flex Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
           </div>
@@ -111,8 +111,8 @@ const onboardingSteps: OnboardingStep[] = [
     id: "logging",
     title: "Log the set",
     subtitle: "",
-    description: "Tap any exercise to record weight, reps, and sets in seconds.",
-    icon: PlusCircle,
+    description: "Record your weight, reps, and sets in seconds.",
+    icon: CheckCircle2,
     iconClass: "text-pull-dark",
     barClass: "bg-pull-dark",
     buttonClass: "bg-pull-dark hover:opacity-90 active:scale-95 shadow-sm",
@@ -120,21 +120,21 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="mx-auto w-full max-w-[305px] select-none text-left">
         {/* Exercise Row + Expanded Logger Container */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3 shadow-sm space-y-2.5">
+        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 backdrop-blur-xl p-3 shadow-sm space-y-2.5">
           {/* Exercise Header Row */}
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-800/80">
+          <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800/80">
             <div className="flex items-center gap-2.5 min-w-0">
               <span
-                className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[6px] border border-pull-dark"
+                className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[6px]"
                 style={{
-                  backgroundColor: "color-mix(in srgb, hsl(var(--pull-dark)) 22%, transparent)",
+                  backgroundColor: "hsl(var(--pull-dark))",
                 }}
               >
-                <Check className="h-3.5 w-3.5 stroke-[3px] text-pull-dark" />
+                <Check className="h-3.5 w-3.5 stroke-[3.5px] text-zinc-950" />
               </span>
               <span className="text-xs font-bold text-white tracking-tight truncate">Lat Pulldown</span>
             </div>
-            <ChevronDown className="h-3.5 w-3.5 text-zinc-400 flex-shrink-0 ml-1.5" />
+            <ChevronDown className="h-3.5 w-3.5 text-zinc-300 rotate-180 flex-shrink-0 ml-1.5" />
           </div>
 
           {/* Stepper Controls */}
@@ -143,32 +143,32 @@ const onboardingSteps: OnboardingStep[] = [
             <div className="grid grid-cols-2 gap-2">
               {/* Weight */}
               <div className="space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-400 block text-center">
-                  Weight (KG)
+                <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
+                  Weight (kg)
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-2xl border border-white/5 bg-secondary/20 px-1.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Minus className="h-3 w-3" />
+                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Minus className="h-3.5 w-3.5" />
                   </span>
-                  <span className="text-sm font-semibold text-pull-dark tabular-nums">65</span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Plus className="h-3 w-3" />
+                  <span className="text-sm font-bold text-pull-dark tabular-nums">65</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Plus className="h-3.5 w-3.5" />
                   </span>
                 </div>
               </div>
 
               {/* Reps */}
               <div className="space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-400 block text-center">
+                <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
                   Reps
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-2xl border border-white/5 bg-secondary/20 px-1.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Minus className="h-3 w-3" />
+                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Minus className="h-3.5 w-3.5" />
                   </span>
-                  <span className="text-sm font-semibold text-pull-dark tabular-nums">10</span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Plus className="h-3 w-3" />
+                  <span className="text-sm font-bold text-pull-dark tabular-nums">10</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Plus className="h-3.5 w-3.5" />
                   </span>
                 </div>
               </div>
@@ -178,16 +178,16 @@ const onboardingSteps: OnboardingStep[] = [
             <div className="grid grid-cols-2 gap-2 pt-0.5">
               {/* Sets */}
               <div className="space-y-1">
-                <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-400 block text-center">
+                <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
                   Sets
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-2xl border border-white/5 bg-secondary/20 px-1.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Minus className="h-3 w-3" />
+                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Minus className="h-3.5 w-3.5" />
                   </span>
-                  <span className="text-sm font-semibold text-pull-dark tabular-nums">3</span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-zinc-400 bg-secondary/40">
-                    <Plus className="h-3 w-3" />
+                  <span className="text-sm font-bold text-pull-dark tabular-nums">3</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
+                    <Plus className="h-3.5 w-3.5" />
                   </span>
                 </div>
               </div>
@@ -196,11 +196,11 @@ const onboardingSteps: OnboardingStep[] = [
               <div className="flex flex-col justify-end">
                 <div
                   style={{
-                    backgroundColor: "color-mix(in srgb, hsl(var(--pull-dark)) 14%, transparent)",
-                    borderColor: "color-mix(in srgb, hsl(var(--pull-dark)) 30%, transparent)",
+                    backgroundColor: "color-mix(in srgb, hsl(var(--pull-dark)) 24%, #18181b)",
+                    borderColor: "color-mix(in srgb, hsl(var(--pull-dark)) 45%, #27272a)",
                     color: "hsl(var(--pull-dark))",
                   }}
-                  className="flex h-9 w-full items-center justify-center gap-1.5 rounded-2xl border font-bold text-xs shadow-none cursor-pointer"
+                  className="flex h-9 w-full items-center justify-center gap-1.5 rounded-[10px] border font-bold text-xs shadow-sm cursor-pointer"
                 >
                   <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                   <span className="font-bold text-xs tracking-wide">DONE</span>
@@ -216,7 +216,7 @@ const onboardingSteps: OnboardingStep[] = [
     id: "progress",
     title: "Track progress",
     subtitle: "",
-    description: "Compare volume and monitor performance trends across workouts.",
+    description: "Track volume and performance trends across workouts.",
     icon: TrendingUp,
     iconClass: "text-leg-dark",
     barClass: "bg-leg-dark",
@@ -225,30 +225,33 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="mx-auto w-full max-w-[305px] space-y-2.5 select-none text-left">
         {/* Session Summary Strip - Aligned with Progress Screen */}
-        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/70 border border-zinc-800/90 text-xs select-none shadow-sm">
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-white tracking-tight">3</span>
-            <span className="text-zinc-400 font-medium">Exercises</span>
+        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/70 border border-zinc-800/90 text-xs select-none shadow-sm whitespace-nowrap">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="font-bold text-white tracking-tight">1</span>
+            <span className="text-zinc-400 font-medium">Exercise</span>
           </div>
-          <span className="text-zinc-600 font-bold">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-white tracking-tight">6</span>
+          <span className="text-zinc-600 font-bold flex-shrink-0">•</span>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="font-bold text-white tracking-tight">3</span>
             <span className="text-zinc-400 font-medium">Sets</span>
           </div>
-          <span className="text-zinc-600 font-bold">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-white tracking-tight">665</span>
-            <span className="text-zinc-400 font-medium">kg Volume</span>
+          <span className="text-zinc-600 font-bold flex-shrink-0">•</span>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="font-bold text-white tracking-tight">1,800</span>
+            <span className="text-zinc-400 font-medium">
+              <span className="sm:hidden">kg Vol</span>
+              <span className="hidden sm:inline">kg Volume</span>
+            </span>
           </div>
         </div>
 
         {/* Progress Exercise Card - Clean 3-Column Stats Row */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3 space-y-2.5 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xs font-bold text-white tracking-tight truncate flex-1 min-w-0">
+        <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm p-3 space-y-2">
+          <div className="flex items-center justify-between gap-2 min-h-5 px-0.5">
+            <h3 className="text-xs font-bold text-zinc-100 tracking-tight truncate flex-1 min-w-0">
               Squat
             </h3>
-            <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+            <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 select-none">
               <ArrowUpRight className="h-3 w-3" strokeWidth={2.25} />
             </span>
           </div>
@@ -256,19 +259,19 @@ const onboardingSteps: OnboardingStep[] = [
           {/* Borderless 3-Column Stats Row */}
           <div className="grid grid-cols-3 pt-2 border-t border-zinc-800/70">
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10px] font-medium text-zinc-400">Weight</span>
+              <span className="text-[10.5px] font-medium text-zinc-400">Weight</span>
               <div className="flex items-baseline gap-0.5 mt-0.5">
-                <span className="text-xs font-bold text-white">5</span>
-                <span className="text-[9px] font-medium text-zinc-400">kg</span>
+                <span className="text-sm font-bold text-white tracking-tight">60</span>
+                <span className="text-[10px] font-medium text-zinc-400">kg</span>
               </div>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10px] font-medium text-zinc-400">Reps</span>
-              <span className="text-xs font-bold text-white mt-0.5">5</span>
+              <span className="text-[10.5px] font-medium text-zinc-400">Reps</span>
+              <span className="text-sm font-bold text-white tracking-tight mt-0.5">10</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10px] font-medium text-zinc-400">Sets</span>
-              <span className="text-xs font-bold text-white mt-0.5">1</span>
+              <span className="text-[10.5px] font-medium text-zinc-400">Sets</span>
+              <span className="text-sm font-bold text-white tracking-tight mt-0.5">3</span>
             </div>
           </div>
         </div>
@@ -376,6 +379,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         hideCloseButton
+        centerMobile={true}
         className="w-[calc(100%-1.5rem)] max-w-[360px] overflow-hidden rounded-2xl border border-zinc-800/90 bg-zinc-950/95 p-0 shadow-[0_24px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl outline-none select-none my-auto"
       >
         <DialogTitle className="sr-only">Onboarding Guide</DialogTitle>
@@ -428,7 +432,7 @@ export function OnboardingGuide({ isOpen, onClose }: OnboardingGuideProps) {
                       <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
                         {step.title}
                       </h2>
-                      <p className="mx-auto max-w-[290px] w-full px-2 text-xs font-medium leading-relaxed text-zinc-400 text-center">
+                      <p className="mx-auto max-w-[290px] w-full px-2 text-xs font-medium leading-snug text-zinc-400 text-center">
                         {step.description}
                       </p>
                     </div>

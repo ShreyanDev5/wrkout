@@ -135,7 +135,10 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
               <span className="text-zinc-600 font-bold flex-shrink-0">•</span>
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className="font-bold text-white tracking-tight">{sessionSummary.totalVolume.toLocaleString()}</span>
-                <span className="text-zinc-400 font-medium">kg Volume</span>
+                <span className="text-zinc-400 font-medium">
+                  <span className="sm:hidden">kg Vol</span>
+                  <span className="hidden sm:inline">kg Volume</span>
+                </span>
               </div>
             </>
           )}

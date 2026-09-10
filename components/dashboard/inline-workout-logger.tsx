@@ -109,7 +109,7 @@ export function InlineWorkoutLogger({
                 <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3">
                     {/* Weight (Primary) */}
                     <div className="space-y-1">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Weight (KG)</span>
+                        <span className="text-[11px] font-medium text-zinc-400 block text-center w-full">Weight (kg)</span>
                         <WeightStepper
                             value={weight}
                             onChange={setWeight}
@@ -123,7 +123,7 @@ export function InlineWorkoutLogger({
 
                     {/* Reps (Primary) */}
                     <div className="space-y-1">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Reps</span>
+                        <span className="text-[11px] font-medium text-zinc-400 block text-center w-full">Reps</span>
                         <NumberStepper
                             value={reps}
                             onChange={setReps}
@@ -140,7 +140,7 @@ export function InlineWorkoutLogger({
                 <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3 pt-0.5">
                     {/* Sets (Secondary) */}
                     <div className="flex flex-col justify-end space-y-1">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block text-center w-full">Sets</span>
+                        <span className="text-[11px] font-medium text-zinc-400 block text-center w-full">Sets</span>
                         <NumberStepper
                             value={sets}
                             onChange={setSets}
@@ -157,8 +157,8 @@ export function InlineWorkoutLogger({
                         <Button
                             onClick={handleSave}
                             style={{
-                                backgroundColor: `color-mix(in srgb, ${dayColor} 15%, #18181b)`,
-                                borderColor: `color-mix(in srgb, ${dayColor} 35%, #27272a)`,
+                                backgroundColor: `color-mix(in srgb, ${dayColor} 24%, #18181b)`,
+                                borderColor: `color-mix(in srgb, ${dayColor} 45%, #27272a)`,
                                 color: dayColor
                             }}
                             className="h-[40px] w-full rounded-[10px] border font-bold hover:brightness-110 active:scale-95 transition-all duration-150 shadow-sm"
