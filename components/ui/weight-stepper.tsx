@@ -52,55 +52,58 @@ export function WeightStepper({ value, onChange, min, max, step = 2.5, className
   }
 
   return (
-    <div className={cn("space-y-2 w-full bg-black/35 rounded-[10px] py-1 px-0.5 border border-white/[0.06]", className)}>
-      <div className="flex items-center justify-between px-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={decrement}
-          disabled={value <= min}
-          className={cn(
-            "rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all active:scale-95",
-            size === "large" ? "h-8 w-8" : "h-7 w-7",
-            isPlaying && "bg-accent/20 text-accent"
-          )}
-          aria-label="Decrease weight"
-        >
-          <Minus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
-        </Button>
+    <div
+      className={cn(
+        "w-full flex items-center justify-between px-1.5 bg-black/40 rounded-xl border border-white/[0.08] transition-all",
+        size === "large" ? "h-11" : "h-10",
+        className
+      )}
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={decrement}
+        disabled={value <= min}
+        className={cn(
+          "rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] active:scale-90 transition-all duration-150 flex-shrink-0 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
+          size === "large" ? "h-8 w-8" : "h-7 w-7",
+          isPlaying && "bg-accent/20 text-accent"
+        )}
+        aria-label="Decrease weight"
+      >
+        <Minus className={cn(size === "large" ? "h-4 w-4" : "h-3.5 w-3.5")} />
+      </Button>
 
-        <div className="flex flex-col items-center justify-center">
-          <span
-            className={cn(
-              "font-bold tracking-tight transition-all",
-              size === "large"
-                ? (value === 0 ? "text-xl tracking-normal" : "text-2xl")
-                : (value === 0 ? "text-base tracking-normal" : "text-lg")
-            )
-            }
-            style={{ color: dayColor }}
-          >
-            {value === 0 ? "B.W." : value}
-          </span>
-        </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={increment}
-          disabled={value >= max}
+      <div className="flex flex-col items-center justify-center px-1 truncate select-none">
+        <span
           className={cn(
-            "rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95",
-            size === "large" ? "h-8 w-8" : "h-7 w-7",
-            isPlaying && "bg-accent/20 text-accent"
+            "font-bold tracking-tight transition-all",
+            size === "large"
+              ? (value === 0 ? "text-lg sm:text-xl tracking-normal" : "text-xl sm:text-2xl")
+              : (value === 0 ? "text-sm sm:text-base tracking-normal" : "text-base sm:text-lg")
           )}
-          aria-label="Increase weight"
+          style={{ color: dayColor }}
         >
-          <Plus className={cn(size === "large" ? "h-5 w-5" : "h-4 w-4")} />
-        </Button>
+          {value === 0 ? "B.W." : value}
+        </span>
       </div>
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={increment}
+        disabled={value >= max}
+        className={cn(
+          "rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] active:scale-90 transition-all duration-150 flex-shrink-0 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
+          size === "large" ? "h-8 w-8" : "h-7 w-7",
+          isPlaying && "bg-accent/20 text-accent"
+        )}
+        aria-label="Increase weight"
+      >
+        <Plus className={cn(size === "large" ? "h-4 w-4" : "h-3.5 w-3.5")} />
+      </Button>
     </div>
   )
 }

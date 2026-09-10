@@ -15,7 +15,6 @@ import {
   GripVertical,
   Settings,
   AlertCircle,
-  Mail,
   ChevronDown,
 } from "lucide-react"
 
@@ -28,7 +27,7 @@ const DEFAULT_EXERCISE_SUGGESTIONS = [
 ]
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { formatDate, getWorkoutDayColor, cn } from "@/lib/utils"
+import { formatDate, cn } from "@/lib/utils"
 import { v4 as uuidv4 } from 'uuid'
 import type { Workout, WorkoutDay, WorkoutExercise } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
@@ -670,10 +669,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="border-t border-zinc-800/80"
                         >
-                          <div className="px-3.5 pb-3.5 pt-0">
-                            <div className="w-full h-px bg-zinc-800/80 mb-2.5" />
-
+                          <div className="p-3 sm:p-3.5">
                             {daysForWorkout.length > 0 ? (
                               <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
                                 {daysForWorkout.map((day) => {
@@ -684,10 +682,6 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                     <div
                                       key={dayKey}
                                       className="relative rounded-xl border border-zinc-700/60 bg-zinc-800/70 hover:bg-zinc-800/90 transition-colors overflow-hidden"
-                                      style={{
-                                        borderLeftWidth: '3px',
-                                        borderLeftColor: getWorkoutDayColor(day.day_id)
-                                      }}
                                     >
                                       <div
                                         className="flex items-center justify-between py-2.5 px-3.5 cursor-pointer hover:bg-zinc-700/30 transition-colors"
@@ -706,9 +700,9 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
                                             transition={{ duration: 0.2 }}
+                                            className="border-t border-zinc-700/50"
                                           >
-                                            <div className="pt-0 pb-1.5 px-1">
-                                              <div className="w-full h-px bg-zinc-700/40 mb-0.5" />
+                                            <div className="p-1">
                                               {day.exercises.length > 0 ? (
                                                 <ul className="divide-y divide-zinc-700/30">
                                                   {day.exercises.map((exercise, index) => (
@@ -818,16 +812,12 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25, ease: "easeInOut" }}
+                  className="border-t border-zinc-800/80"
                 >
-                  <div className="px-3.5 pb-3.5 pt-0 space-y-4">
-                    <div className="w-full h-px bg-zinc-800/80 mb-3" />
-
+                  <div className="p-3.5 space-y-4">
                     {/* Recovery Email Form */}
-                    <div className="space-y-2.5">
-                      <div className="space-y-0.5">
-                        <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
-                        <p className="text-xs text-muted-foreground">Used only for account recovery.</p>
-                      </div>
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-foreground text-sm">Recovery Email</h3>
                       
                       <form onSubmit={handleUpdateRecoveryEmail} className="space-y-3 pt-0.5">
                         {emailMessage && (
@@ -842,20 +832,15 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                         )}
                         
                         <div className="flex flex-row items-center gap-2">
-                          <div className="relative flex-1">
-                            <Input
-                              id="settings-recovery-email"
-                              type="email"
-                              value={recoveryEmailState}
-                              onChange={(e) => setRecoveryEmailState(e.target.value)}
-                              placeholder="e.g. you@example.com"
-                              required
-                              className="h-9 rounded-xl border-zinc-700/60 bg-zinc-950/70 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 w-full pl-9"
-                            />
-                            <div className="absolute left-3 top-0 h-full flex items-center text-zinc-500">
-                              <Mail className="h-4 w-4" />
-                            </div>
-                          </div>
+                          <Input
+                            id="settings-recovery-email"
+                            type="email"
+                            value={recoveryEmailState}
+                            onChange={(e) => setRecoveryEmailState(e.target.value)}
+                            placeholder="e.g. you@example.com"
+                            required
+                            className="h-9 rounded-xl border-zinc-700/60 bg-zinc-950/70 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 flex-1 px-3"
+                          />
                           <button
                             type="submit"
                             disabled={updatingEmail || recoveryEmailState === (user?.user_metadata?.recovery_email || '')}
@@ -867,14 +852,11 @@ export function SettingsScreen({ workouts, workoutDays, onUpdateWorkoutsAndDays 
                       </form>
                     </div>
 
-                    <div className="w-full h-px bg-zinc-800/60" />
+                    <div className="-mx-3.5 h-px bg-zinc-800/80" />
 
                     {/* Account Actions */}
-                    <div className="space-y-2.5">
-                      <div className="space-y-0.5">
-                        <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>
-                        <p className="text-xs text-muted-foreground">App guide and account options.</p>
-                      </div>
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-foreground text-sm">Quick Actions</h3>
                       <div className="grid grid-cols-2 gap-2.5 w-full pt-0.5">
                         <Button
                           variant="ghost"

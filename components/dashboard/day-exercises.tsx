@@ -90,14 +90,14 @@ export function DayExercises({
                 className={cn(
                   "transition-colors duration-150 overflow-hidden",
                   isExpanded
-                    ? "bg-black/25"
+                    ? "bg-zinc-950/40"
                     : completed
-                      ? "bg-black/15 hover:bg-black/25"
+                      ? "bg-black/20 hover:bg-black/30"
                       : "hover:bg-white/[0.02]"
                 )}
               >
                 <div
-                  className="relative py-3.5 px-4 flex items-center gap-3.5 cursor-pointer select-none"
+                  className="relative py-3 px-3.5 sm:px-4 flex items-center gap-3 cursor-pointer select-none"
                   onClick={() => handleToggleExpand(exercise.id)}
                 >
                   <div onClick={(e) => e.stopPropagation()}>
@@ -115,7 +115,7 @@ export function DayExercises({
                       className={cn(
                         "text-sm font-semibold block leading-tight cursor-pointer tracking-tight",
                         isExpanded ? "text-white font-bold whitespace-normal" : "text-zinc-200 truncate",
-                        completed && "exercise-label-checked opacity-40 font-medium"
+                        completed && "exercise-label-checked opacity-40 font-medium text-zinc-400"
                       )}
                       title={exercise.name}
                     >
@@ -123,7 +123,7 @@ export function DayExercises({
                     </Label>
                     {exercise.description && (
                       <p className={cn(
-                        "text-[0.75rem] text-muted-foreground/70 mt-1 tracking-normal font-medium",
+                        "text-[0.75rem] text-muted-foreground/70 mt-0.5 tracking-normal font-medium",
                         isExpanded ? "whitespace-normal" : "truncate"
                       )} title={exercise.description}>
                         {exercise.description}
@@ -150,9 +150,9 @@ export function DayExercises({
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-                      className="overflow-hidden border-t border-zinc-800/50"
+                      className="overflow-hidden border-t border-zinc-800/60 bg-zinc-950/30"
                     >
-                      <div className="px-4 pb-4 pt-2">
+                      <div className="px-3.5 sm:px-4 pb-3 pt-1.5">
                         <InlineWorkoutLogger
                           exercise={exercise}
                           workoutId={workoutId}

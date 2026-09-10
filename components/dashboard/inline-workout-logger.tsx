@@ -104,9 +104,9 @@ export function InlineWorkoutLogger({
             }}
             className="overflow-hidden"
         >
-            <div className="pt-2 pb-4 px-1 space-y-3">
+            <div className="pt-2 pb-2 px-0.5 space-y-2.5">
                 {/* Top Row: Weight & Reps */}
-                <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                     {/* Weight (Primary) */}
                     <div className="space-y-1">
                         <span className="text-[11px] font-medium text-zinc-400 block text-center w-full">Weight (kg)</span>
@@ -137,9 +137,9 @@ export function InlineWorkoutLogger({
                 </div>
 
                 {/* Bottom Row: Sets & Done Button */}
-                <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-3 pt-0.5">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                     {/* Sets (Secondary) */}
-                    <div className="flex flex-col justify-end space-y-1">
+                    <div className="space-y-1">
                         <span className="text-[11px] font-medium text-zinc-400 block text-center w-full">Sets</span>
                         <NumberStepper
                             value={sets}
@@ -152,27 +152,28 @@ export function InlineWorkoutLogger({
                         />
                     </div>
 
-                    {/* Done Button - Exactly matching stepper height for symmetry */}
-                    <div className="flex flex-col justify-end">
+                    {/* Done Button - Perfectly symmetric and matching height and curvature */}
+                    <div className="space-y-1">
+                        <span className="text-[11px] font-medium invisible block select-none" aria-hidden="true">&nbsp;</span>
                         <Button
                             onClick={handleSave}
                             style={{
-                                backgroundColor: `color-mix(in srgb, ${dayColor} 24%, #18181b)`,
-                                borderColor: `color-mix(in srgb, ${dayColor} 45%, #27272a)`,
+                                backgroundColor: `color-mix(in srgb, ${dayColor} 18%, #18181b)`,
+                                borderColor: `color-mix(in srgb, ${dayColor} 38%, #27272a)`,
                                 color: dayColor
                             }}
-                            className="h-[40px] w-full rounded-[10px] border font-bold hover:brightness-110 active:scale-95 transition-all duration-150 shadow-sm"
+                            className="h-10 w-full rounded-xl border font-bold hover:brightness-110 active:scale-[0.98] transition-all duration-150 shadow-sm cursor-pointer"
                             disabled={isSaving}
                         >
                             {isSaving ? (
                                 <span 
-                                    className="h-5 w-5 rounded-full border-[3px] border-current/30 animate-spin" 
+                                    className="h-4 w-4 rounded-full border-2 border-current/30 animate-spin" 
                                     style={{ borderTopColor: 'currentColor' }}
                                 />
                             ) : (
                                 <div className="flex items-center justify-center gap-1.5">
-                                    <Check className="h-4.5 w-4.5 stroke-[2.5]" />
-                                    <span className="font-bold text-sm tracking-wide">DONE</span>
+                                    <Check className="h-4 w-4 stroke-[2.5]" />
+                                    <span className="font-bold text-xs tracking-wider">DONE</span>
                                 </div>
                             )}
                         </Button>

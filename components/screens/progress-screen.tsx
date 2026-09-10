@@ -168,44 +168,42 @@ export function ProgressScreen({ logs, workoutDays }: ProgressScreenProps) {
                 className="group"
               >
                 <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm transition-all duration-200">
-                  <div className="px-3.5 py-2.5 sm:px-4 sm:py-3 space-y-2">
-                    {/* Exercise Header */}
-                    <div className="flex items-center justify-between gap-3 px-0.5 min-h-5">
-                      <h3 className="text-sm sm:text-base font-bold text-zinc-100 leading-none tracking-tight truncate flex-1 min-w-0" title={exerciseName}>
-                        {exerciseName}
-                      </h3>
+                  {/* Exercise Header */}
+                  <div className="flex items-center justify-between gap-3 px-3.5 py-2 sm:py-2.5 sm:px-4 min-h-5">
+                    <h3 className="text-sm sm:text-base font-bold text-zinc-100 leading-none tracking-tight truncate flex-1 min-w-0" title={exerciseName}>
+                      {exerciseName}
+                    </h3>
 
-                      {renderTrendBadge(trend) ? (
-                        <div className="flex-shrink-0">
-                          {renderTrendBadge(trend)}
-                        </div>
-                      ) : (
-                        <div className="w-5 h-5 flex-shrink-0 opacity-0 pointer-events-none" aria-hidden="true" />
-                      )}
+                    {renderTrendBadge(trend) ? (
+                      <div className="flex-shrink-0">
+                        {renderTrendBadge(trend)}
+                      </div>
+                    ) : (
+                      <div className="w-5 h-5 flex-shrink-0 opacity-0 pointer-events-none" aria-hidden="true" />
+                    )}
+                  </div>
+
+                  {/* Clean 3-Column Stats Row - Joined both ends */}
+                  <div className="grid grid-cols-3 py-2.5 px-3.5 sm:px-4 border-t border-zinc-800/80 bg-zinc-950/20">
+                    {/* Weight */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-[11px] font-medium text-zinc-400">Weight</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-base font-bold text-white tracking-tight">{weight}</span>
+                        <span className="text-xs font-medium text-zinc-400">kg</span>
+                      </div>
                     </div>
 
-                    {/* Clean 3-Column Stats Row */}
-                    <div className="grid grid-cols-3 pt-2 border-t border-zinc-800/70">
-                      {/* Weight */}
-                      <div className="flex flex-col items-center justify-center">
-                        <span className="text-[11px] font-medium text-zinc-400">Weight</span>
-                        <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="text-base font-bold text-white tracking-tight">{weight}</span>
-                          <span className="text-xs font-medium text-zinc-400">kg</span>
-                        </div>
-                      </div>
+                    {/* Reps */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-[11px] font-medium text-zinc-400">Reps</span>
+                      <span className="text-base font-bold text-white tracking-tight mt-0.5">{reps}</span>
+                    </div>
 
-                      {/* Reps */}
-                      <div className="flex flex-col items-center justify-center">
-                        <span className="text-[11px] font-medium text-zinc-400">Reps</span>
-                        <span className="text-base font-bold text-white tracking-tight mt-0.5">{reps}</span>
-                      </div>
-
-                      {/* Sets */}
-                      <div className="flex flex-col items-center justify-center">
-                        <span className="text-[11px] font-medium text-zinc-400">Sets</span>
-                        <span className="text-base font-bold text-white tracking-tight mt-0.5">{sets}</span>
-                      </div>
+                    {/* Sets */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-[11px] font-medium text-zinc-400">Sets</span>
+                      <span className="text-base font-bold text-white tracking-tight mt-0.5">{sets}</span>
                     </div>
                   </div>
                 </div>

@@ -53,52 +53,37 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="mx-auto w-full max-w-[285px] select-none text-left">
         {/* Routines Card Mockup */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3 shadow-sm space-y-2">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 overflow-hidden shadow-sm">
           {/* Routine Header */}
-          <div className="flex items-center justify-between px-0.5">
+          <div className="flex items-center justify-between p-3">
             <span className="text-[11.5px] font-bold text-zinc-100 tracking-tight">
               Routine 1
             </span>
             <ChevronDown className="h-3.5 w-3.5 text-zinc-400 rotate-180" />
           </div>
 
-          {/* Divider matching settings screen */}
-          <div className="w-full h-px bg-zinc-800/80 mb-1.5" />
-
-          {/* Routine Days Stack - All Collapsed */}
-          <div className="space-y-1.5">
+          {/* Divider matching settings screen - Joined both ends */}
+          <div className="border-t border-zinc-800/80 p-3 pt-2.5 space-y-1.5">
             {/* Push Day - Collapsed */}
-            <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
-              style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--push-dark))" }}
-            >
+            <div className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70">
               <span className="text-[11px] font-semibold text-zinc-100">Push Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
 
             {/* Pull Day - Collapsed */}
-            <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
-              style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--pull-dark))" }}
-            >
+            <div className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70">
               <span className="text-[11px] font-semibold text-zinc-100">Pull Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
 
             {/* Legs Day - Collapsed */}
-            <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
-              style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--leg-dark))" }}
-            >
+            <div className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70">
               <span className="text-[11px] font-semibold text-zinc-100">Legs Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
 
             {/* Flex Day - Collapsed */}
-            <div
-              className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70"
-              style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(var(--flex-dark))" }}
-            >
+            <div className="flex items-center justify-between py-1.5 px-2.5 rounded-[9px] border border-zinc-700/60 bg-zinc-800/70">
               <span className="text-[11px] font-semibold text-zinc-100">Flex Day</span>
               <ChevronDown className="h-3 w-3 text-zinc-400" />
             </div>
@@ -120,9 +105,9 @@ const onboardingSteps: OnboardingStep[] = [
     content: (
       <div className="mx-auto w-full max-w-[305px] select-none text-left">
         {/* Exercise Row + Expanded Logger Container */}
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 backdrop-blur-xl p-3 shadow-sm space-y-2.5">
+        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 backdrop-blur-xl overflow-hidden shadow-sm">
           {/* Exercise Header Row */}
-          <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800/80">
+          <div className="flex items-center justify-between px-3 py-2.5">
             <div className="flex items-center gap-2.5 min-w-0">
               <span
                 className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[6px]"
@@ -137,8 +122,8 @@ const onboardingSteps: OnboardingStep[] = [
             <ChevronDown className="h-3.5 w-3.5 text-zinc-300 rotate-180 flex-shrink-0 ml-1.5" />
           </div>
 
-          {/* Stepper Controls */}
-          <div className="space-y-2">
+          {/* Stepper Controls in Docked Logger Container */}
+          <div className="border-t border-zinc-800/60 bg-zinc-950/30 p-2.5 space-y-2">
             {/* Top Row: Weight & Reps */}
             <div className="grid grid-cols-2 gap-2">
               {/* Weight */}
@@ -146,13 +131,13 @@ const onboardingSteps: OnboardingStep[] = [
                 <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
                   Weight (kg)
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                <div className="flex h-9 items-center justify-between rounded-xl border border-white/[0.08] bg-black/40 px-1">
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Minus className="h-3.5 w-3.5" />
+                    <Minus className="h-3 w-3" />
                   </span>
                   <span className="text-sm font-bold text-pull-dark tabular-nums">65</span>
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-3 w-3" />
                   </span>
                 </div>
               </div>
@@ -162,48 +147,49 @@ const onboardingSteps: OnboardingStep[] = [
                 <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
                   Reps
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                <div className="flex h-9 items-center justify-between rounded-xl border border-white/[0.08] bg-black/40 px-1">
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Minus className="h-3.5 w-3.5" />
+                    <Minus className="h-3 w-3" />
                   </span>
                   <span className="text-sm font-bold text-pull-dark tabular-nums">10</span>
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-3 w-3" />
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Row: Sets & Done */}
-            <div className="grid grid-cols-2 gap-2 pt-0.5">
+            {/* Bottom Row: Sets & Done - Symmetrical 2x2 grid */}
+            <div className="grid grid-cols-2 gap-2">
               {/* Sets */}
               <div className="space-y-1">
                 <span className="text-[10.5px] font-medium text-zinc-400 block text-center">
                   Sets
                 </span>
-                <div className="flex h-9 items-center justify-between rounded-[10px] border border-white/[0.06] bg-black/35 px-1">
+                <div className="flex h-9 items-center justify-between rounded-xl border border-white/[0.08] bg-black/40 px-1">
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Minus className="h-3.5 w-3.5" />
+                    <Minus className="h-3 w-3" />
                   </span>
                   <span className="text-sm font-bold text-pull-dark tabular-nums">3</span>
                   <span className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400">
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-3 w-3" />
                   </span>
                 </div>
               </div>
 
               {/* Done Button */}
-              <div className="flex flex-col justify-end">
+              <div className="space-y-1">
+                <span className="text-[10.5px] font-medium invisible block select-none" aria-hidden="true">&nbsp;</span>
                 <div
                   style={{
-                    backgroundColor: "color-mix(in srgb, hsl(var(--pull-dark)) 24%, #18181b)",
-                    borderColor: "color-mix(in srgb, hsl(var(--pull-dark)) 45%, #27272a)",
+                    backgroundColor: "color-mix(in srgb, hsl(var(--pull-dark)) 18%, #18181b)",
+                    borderColor: "color-mix(in srgb, hsl(var(--pull-dark)) 38%, #27272a)",
                     color: "hsl(var(--pull-dark))",
                   }}
-                  className="flex h-9 w-full items-center justify-center gap-1.5 rounded-[10px] border font-bold text-xs shadow-sm cursor-pointer"
+                  className="flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border font-bold text-xs shadow-sm cursor-pointer"
                 >
                   <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-                  <span className="font-bold text-xs tracking-wide">DONE</span>
+                  <span className="font-bold text-xs tracking-wider">DONE</span>
                 </div>
               </div>
             </div>
@@ -245,9 +231,9 @@ const onboardingSteps: OnboardingStep[] = [
           </div>
         </div>
 
-        {/* Progress Exercise Card - Clean 3-Column Stats Row */}
-        <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm p-3 space-y-2">
-          <div className="flex items-center justify-between gap-2 min-h-5 px-0.5">
+        {/* Progress Exercise Card - Joined both ends */}
+        <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 overflow-hidden shadow-sm">
+          <div className="flex items-center justify-between gap-2 px-3 py-2 min-h-5">
             <h3 className="text-xs font-bold text-zinc-100 tracking-tight truncate flex-1 min-w-0">
               Squat
             </h3>
@@ -256,21 +242,21 @@ const onboardingSteps: OnboardingStep[] = [
             </span>
           </div>
 
-          {/* Borderless 3-Column Stats Row */}
-          <div className="grid grid-cols-3 pt-2 border-t border-zinc-800/70">
+          {/* Clean 3-Column Stats Row - Joined both ends */}
+          <div className="grid grid-cols-3 py-2 px-3 border-t border-zinc-800/80 bg-zinc-950/20">
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10.5px] font-medium text-zinc-400">Weight</span>
+              <span className="text-[10px] font-medium text-zinc-400">Weight</span>
               <div className="flex items-baseline gap-0.5 mt-0.5">
                 <span className="text-sm font-bold text-white tracking-tight">60</span>
                 <span className="text-[10px] font-medium text-zinc-400">kg</span>
               </div>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10.5px] font-medium text-zinc-400">Reps</span>
+              <span className="text-[10px] font-medium text-zinc-400">Reps</span>
               <span className="text-sm font-bold text-white tracking-tight mt-0.5">10</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <span className="text-[10.5px] font-medium text-zinc-400">Sets</span>
+              <span className="text-[10px] font-medium text-zinc-400">Sets</span>
               <span className="text-sm font-bold text-white tracking-tight mt-0.5">3</span>
             </div>
           </div>
