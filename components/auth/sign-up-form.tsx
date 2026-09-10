@@ -34,13 +34,10 @@ export function SignUpForm() {
       return;
     }
 
-    // Validate recovery email
+    // Validate recovery email (optional)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!recoveryEmail) {
-      setError('Recovery email is required.');
-      return;
-    }
-    if (!emailRegex.test(recoveryEmail)) {
+    const trimmedRecoveryEmail = recoveryEmail.trim().toLowerCase();
+    if (trimmedRecoveryEmail && !emailRegex.test(trimmedRecoveryEmail)) {
       setError('Enter a valid recovery email.');
       return;
     }
@@ -64,7 +61,12 @@ export function SignUpForm() {
       const normalizedUsername = normalizeUsername(username);
       const pseudoEmail = createPseudoEmail(normalizedUsername);
       
-      const { error } = await signUp(pseudoEmail, password, normalizedUsername, recoveryEmail);
+      const { error } = await signUp(
+        pseudoEmail,
+        password,
+        normalizedUsername,
+        trimmedRecoveryEmail || undefined
+      );
       if (error) {
         setError(error.message);
         return;
@@ -118,7 +120,9 @@ export function SignUpForm() {
 
       <div className="space-y-3.5">
         <div className="space-y-1.5">
-          <Label htmlFor="username" className="text-xs font-semibold text-zinc-300">Username</Label>
+          <Label htmlFor="username" className="text-xs font-semibold text-zinc-300">
+            Username <span className="text-red-400">*</span>
+          </Label>
           <div className="relative w-full group">
             <Input
               id="username"
@@ -138,14 +142,15 @@ export function SignUpForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="recoveryEmail" className="text-xs font-semibold text-zinc-300">Recovery Email</Label>
+          <Label htmlFor="recoveryEmail" className="text-xs font-semibold text-zinc-300">
+            Recovery Email
+          </Label>
           <div className="relative w-full group">
             <Input
               id="recoveryEmail"
               type="email"
               value={recoveryEmail}
               onChange={(e) => setRecoveryEmail(e.target.value)}
-              required
               autoComplete="email"
               placeholder="you@example.com"
               className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-9 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/50 transition-all"
@@ -162,7 +167,7 @@ export function SignUpForm() {
 
         <div className="space-y-1.5">
           <Label htmlFor="password" className="text-xs font-semibold text-zinc-300">
-            Password
+            Password <span className="text-red-400">*</span>
           </Label>
           <div className="relative w-full group">
             <Input
@@ -202,8 +207,8 @@ export function SignUpForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="confirmPassword" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-            Confirm password
+          <Label htmlFor="confirmPassword" className="text-xs font-semibold text-zinc-300">
+            Confirm Password <span className="text-red-400">*</span>
           </Label>
           <div className="relative w-full group">
             <Input
